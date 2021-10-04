@@ -30,15 +30,33 @@ export const getChromeExtensionsPath = (appids: string[]): Promise<any[]> => {
   ))
 }
 
+export const getBinPath = (function () {
+  let fullpath = new Map();
+  const paths = (process.env.PATH as string).split(':');
+
+  return (name: string) => {
+    if (fullpath.get(name)) {
+      return fullpath.get(name)
+    }
+    for (let i = 0; i < paths.length; i++) {
+      if (fs.existsSync(path.join(paths[i], name))) {
+        fullpath.set(name, path.join(paths[i], name));
+        break;
+      }
+    }
+    return fullpath.get(name);
+  }
+})();
+
 export const getSSLocalBinPath = () => {
   switch (os.platform()) {
     case 'linux':
-      return 'ss-local';
+      return getBinPath('ss-local');
       // return path.join(app.getAppPath(), `linux/x64/ss-local`);
     case 'darwin':
       return path.join(app.getAppPath(), `bin/darwin/x64/ss-local`);
     default:
-      return 'ss-local';
+      return getBinPath('ss-local') ?? 'ss-local';
   }
 }
 
