@@ -1,3 +1,5 @@
+> The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
+
 # Shadowsocks Electron
 > Test on Ubuntu20.4 amd64
 
