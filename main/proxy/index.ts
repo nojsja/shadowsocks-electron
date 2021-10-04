@@ -8,7 +8,7 @@ import * as networksetup from "./networksetup";
 import * as gsettings from "./gsettings";
 import { startPacServer, stopPacServer } from "../server";
 import { generateFullPac } from "../pac";
-import { setupIfFirstRun, binDir } from "../install";
+import { setupIfFirstRun } from "../install";
 import { MessageChannel } from "electron-re";
 import checkPortInUse from "../utils/checkPortInUse";
 import { getSSLocalBinPath } from "../utils/utils";
@@ -102,12 +102,12 @@ const spawnClient = async (config: Config, settings: Settings) : Promise<{code: 
           });
           return;
         }
+
+        logger.info(`Exec command: \`${sslocalPath} ${args.filter(args => !!args).join(' ')}\``);
+
         ssLocal = spawn(
           sslocalPath,
-          args.filter(arg => arg !== ''),
-          {
-            cwd: binDir
-          }
+          args.filter(arg => arg !== '')
         );
 
         ssLocal.stdout?.once("data", async () => {
