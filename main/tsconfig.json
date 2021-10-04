@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["esnext"],
+    "module": "commonjs",
+    "noEmit": false,
+    "isolatedModules": false,
+    "outDir": "../public",
+    "typeRoots": ["../node_modules/@types/", "./types/"],
+  },
+  "include": ["**/*"]
+}

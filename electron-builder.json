@@ -1,0 +1,93 @@
+{
+  "appId": "io.robertying.shadowsocks-electron",
+  "productName": "Shadowsocks Electron",
+  "asar": false,
+  "copyright": "© 2020 nojsja",
+  "files": [
+    "assets/**/*",
+    "bin/**/*"
+  ],
+  "extraFiles": [
+    {
+      "from": "bin/${os}/${arch}",
+      "to": "bin",
+      "filter": [
+        "!.gitignore"
+      ]
+    },
+    {
+      "from": "pac",
+      "to": "pac",
+      "filter": [
+        "!.gitignore"
+      ]
+    }
+  ],
+  "mac": {
+    "target": [
+      {
+        "target": "zip",
+        "arch": "x64"
+      },
+      {
+        "target": "dmg",
+        "arch": "x64"
+      }
+    ],
+    "icon": "assets/icon.icns",
+    "category": "public.app-category.utilities",
+    "darkModeSupport": true,
+    "extendInfo": {
+      "LSUIElement": 1
+    }
+  },
+  "dmg": {
+    "contents": [
+      {
+        "x": 410,
+        "y": 150,
+        "type": "link",
+        "path": "/Applications"
+      },
+      {
+        "x": 130,
+        "y": 150,
+        "type": "file"
+      }
+    ]
+  },
+  "linux": {
+    "icon": "assets/icon.png",
+    "target": [
+      "AppImage",
+      "deb"
+    ],
+    "category": "Network",
+    "executableName": "shadowsocks-electron",
+    "desktop": {
+      "Type": "Application",
+      "Encoding": "UTF-8",
+      "Name": "Shadowsocks Electron",
+      "Comment": "Shadowsocks GUI with cross-platform desktop support",
+      "Terminal": "false"
+    }
+  },
+  "deb": {
+    "depends": [
+      "gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3",
+      "shadowsocks-libev"
+    ]
+  },
+  "publish": [
+    {
+      "provider": "bintray",
+      "package": "shadowsocks-electron",
+      "repo": "shadowsocks-electron",
+      "owner": "nojsja"
+    },
+    {
+      "provider": "github",
+      "releaseType": "prerelease"
+    }
+  ]
+}

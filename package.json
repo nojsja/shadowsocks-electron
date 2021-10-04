@@ -1,0 +1,118 @@
+{
+  "name": "shadowsocks-electron",
+  "version": "1.0.0",
+  "description": "Shadowsocks GUI with cross-platform desktop support",
+  "author": {
+    "name": "nojsja",
+    "email": "yangwei13@outlook.com"
+  },
+  "repository": "https://github.com/nojsja/shadowsocks-electron",
+  "license": "MIT",
+  "homepage": ".",
+  "main": "public/electron.js",
+  "private": true,
+  "scripts": {
+    "start:main": "nodemon",
+    "start:renderer": "BROWSER=none react-app-rewired start",
+    "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3000 && yarn start:main\"",
+    "start:inspector": "yarn build:main && electron --inspect=5858 .",
+    "build:main": "cp -R renderer/types main/ && yarn tsc -p main/tsconfig.json",
+    "build:renderer": "react-app-rewired build",
+    "build": "yarn build:main && yarn build:renderer",
+    "pack:linux": "electron-builder --linux",
+    "pack:mac": "electron-builder --mac",
+    "dist": "electron-builder",
+    "eject": "react-app-rewired eject",
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "lint": "eslint --ext .tsx,.ts .",
+    "typecheck": "tsc --noUnusedLocals",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "dependencies": {
+    "electron-devtools-installer": "^3.2.0",
+    "electron-is-dev": "1.1.0",
+    "electron-re": "^1.1.0",
+    "electron-store": "^8.0.0",
+    "electron-updater": "4.2.5",
+    "fs-extra": "9.0.0",
+    "i18next": "^20.6.1",
+    "js-base64": "^2.4.0",
+    "jsqr": "^1.4.0",
+    "node-fetch": "2.6.0",
+    "open": "7.0.3",
+    "qrcode": "^1.4.4",
+    "react-i18next": "^11.12.0",
+    "winston": "3.2.1",
+    "winston-daily-rotate-file": "^4.5.5"
+  },
+  "devDependencies": {
+    "@material-ui/core": "4.9.8",
+    "@material-ui/icons": "4.9.1",
+    "@types/i18next": "^13.0.0",
+    "@types/js-base64": "^2.3.0",
+    "@types/node": "12.12.26",
+    "@types/node-fetch": "2.5.5",
+    "@types/qrcode": "^1.4.1",
+    "@types/react": "16.9.32",
+    "@types/react-dom": "16.9.6",
+    "@types/react-redux": "7.1.7",
+    "@types/react-router-dom": "5.1.3",
+    "@types/uuid": "7.0.2",
+    "babel-plugin-import": "1.13.0",
+    "concurrently": "5.1.0",
+    "customize-cra": "0.9.1",
+    "dotenv": "8.2.0",
+    "electron": "13.4.0",
+    "electron-builder": "22.11.11",
+    "electron-notarize": "0.3.0",
+    "eslint-plugin-node": "^11.1.0",
+    "husky": "4.2.3",
+    "lint-staged": "10.0.9",
+    "nodemon": "2.0.2",
+    "prettier": "2.0.2",
+    "react": "16.13.1",
+    "react-app-rewire-svg-react-loader": "github:codebandits/react-app-rewire-svg-react-loader",
+    "react-app-rewired": "2.1.5",
+    "react-dom": "16.13.1",
+    "react-redux": "7.2.0",
+    "react-router-dom": "5.1.2",
+    "react-scripts": "3.4.1",
+    "redux": "4.0.5",
+    "redux-persist": "6.0.0",
+    "redux-persist-electron-storage": "2.1.0",
+    "redux-thunk": "^2.3.0",
+    "source-map-explorer": "2.4.1",
+    "targz": "1.0.1",
+    "typeface-roboto": "0.0.75",
+    "typescript": "3.8.3",
+    "uuid": "7.0.2",
+    "wait-on": "4.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged && yarn lint && yarn typecheck"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "nodemonConfig": {
+    "watch": [
+      "main"
+    ],
+    "ignore": [
+      "main/types/**/*"
+    ],
+    "ext": "ts,json",
+    "exec": "yarn build:main && electron ."
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    "Electron >= 8"
+  ]
+}

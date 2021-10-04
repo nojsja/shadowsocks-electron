@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <style>
+    #drawer {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      background-color: 'rgba(256, 256, 256, 0.2)';
+    }
+    html{
+  	  height: 100%;
+    }
+    body {
+  	  height: 100%;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="drawer"></canvas>
+  <script>
+      const { ipcRenderer } = require('electron');
+      const screenWidth = window.screen.availWidth * window.devicePixelRatio;
+      const screenHeight = window.screen.availHeight * window.devicePixelRatio;
+      const $drawer = document.querySelector('#drawer');
+      $drawer.width = screenWidth;
+      $drawer.height = screenHeight;
+
+      ipcRenderer.on('renderer:twin', (e, args) => {
+        console.log(args);
+        switch(args.action) {
+          case 'fillRect':
+            args.params.forEach(function(param) {
+              fillRect(param, $drawer);
+            });
+          default:
+            break;
+        }
+      });
+
+      function fillRectWithCrosshair(x, y, width, height, ctx) {
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "red";
+        ctx.moveTo(x - width / 2, y + height / 2);
+        ctx.lineTo(x + width * (3 / 2), y + height / 2);
+        ctx.stroke();
+        ctx.moveTo(x + width / 2, y - height / 2);
+        ctx.lineTo(x + width / 2, y + height * (3 / 2));
+        ctx.stroke();
+      }
+
+      function fillRectWithRect(x, y, width, height, ctx) {
+          ctx.fillStyle = 'rgba(255, 0, 0, .4)';
+          ctx.fillRect(x, y, width, height);
+      }
+
+      function fillRect(p, drawer) {
+        if (!drawer) return;
+        var ctx = drawer.getContext('2d');
+        const {x, y, width, height} = p;
+        if (ctx) {
+          ctx.fillStyle = 'rgba(0, 0, 0, .3)';
+          ctx.fillRect(0, 0, drawer.width, drawer.height);
+          // fillRectWithCrosshair(x, y, width, height, ctx);
+          fillRectWithRect(x, y, width, height, ctx);
+        }
+      }
+  </script>
+</body>
+</html>
