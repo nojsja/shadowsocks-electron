@@ -51,8 +51,7 @@ export const getBinPath = (function () {
 export const getSSLocalBinPath = () => {
   switch (os.platform()) {
     case 'linux':
-      return getBinPath('ss-local');
-      // return path.join(app.getAppPath(), `linux/x64/ss-local`);
+      return getBinPath('ss-local') || path.join(app.getAppPath(), `bin/linux/x64/ss-local`);
     case 'darwin':
       return path.join(app.getAppPath(), `bin/darwin/x64/ss-local`);
     default:
