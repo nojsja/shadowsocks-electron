@@ -1,4 +1,4 @@
-import { execAsync } from "./shell";
+import { execAsync } from "../utils/utils";
 import { ignoredHosts } from "./config";
 
 export const unsetProxy = async () => {

@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { app } from 'electron';
+import { exec, ExecOptions } from "child_process";
 
 export const getChromeExtensionsPath = (appids: string[]): Promise<any[]> => {
   const macBaseDir = `${process.env.HOME}/Library/Application Support/Google/Chrome/Default/Extensions`;
@@ -153,3 +154,25 @@ export const copyDirAsync = (src: string, dist: string, callback?: (params: any)
     }
   }
 }
+
+export const execAsync = (command: string, options?: ExecOptions) => {
+  return new Promise<{
+    code: number;
+    stdout?: string;
+    stderr?: string;
+  }>((resolve, reject) => {
+    exec(command, { ...options, windowsHide: true }, (err, stdout, stderr) => {
+      if (!stderr) {
+        resolve({
+          code: err ? 1 : 0,
+          stdout
+        });
+      } else {
+        reject({
+          code: err ? 1 : 0,
+          stderr
+        });
+      }
+    });
+  });
+};
