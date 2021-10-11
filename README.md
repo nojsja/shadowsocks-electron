@@ -29,7 +29,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - Manual mode (no system-wide proxy set)
 - Clipboard import
 - QR code scan import
-- Language switching (chinese/english supported)
+- Language switching (zh-CN/en-US only)
 - Configuration backup / recovery
 - Auto start on boot
 - Server sharing
@@ -42,13 +42,16 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - SIP003 plugins (v2ray & kcptun)
 
 > Comming Soon
+
 - HTTP proxy
 - ACL
 
 ## Development
+
 >Please confirm the node version is not lower than `14.18`.
 
 ### 1. Prepare
+
 - __Mac__ developers need to install `shadowsocks-libev` at first, use command here: `brew install shadowsocks-libev`. For china users, if brew is not installed, run this in terminal: `/bin/zsh -c "$(curl -fsSL https://gitee.com/cunkai/HomebrewCN/raw/master/Homebrew.sh)"` to install brew.
 - __Ubuntu__ developers can install `shadowsocks-libev` with apt manager.
 

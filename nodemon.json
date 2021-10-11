@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "main2"
+  ],
+  "ignore": [
+    "main/types/**/*"
+  ],
+  "ext": "ts,json",
+  "exec": "yarn build:main && electron ."
+}

@@ -163,7 +163,7 @@ const createWindow = () => {
 
   if (isDev) {
     ProcessManager.openWindow();
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
     win.removeMenu();
   } else {
     win.removeMenu();
