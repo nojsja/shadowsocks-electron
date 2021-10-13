@@ -1,11 +1,22 @@
-> The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
-
 # Shadowsocks Electron
-> Test on Ubuntu20.4 amd64
+
+> Test on Ubuntu20.4.3 (amd64) and MacOS catalina (x64)
+
+> The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
 
 Shadowsocks GUI with cross-platform desktop support based on Electron⚛️, made specially for Linux/Mac users.
 
+## Screenshots
+
 ![screenshot](./assets/screenshot.png)
+
+![screenshot](./assets/screenshot2.png)
+
+![screenshot](./assets/screenshot3.png)
+
+![screenshot](./assets/screenshot4.png)
+
+![screenshot](./assets/screenshot5.png)
 
 ## Downloads
 
