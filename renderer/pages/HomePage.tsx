@@ -229,6 +229,13 @@ const HomePage: React.FC = () => {
 
   {/* -------- hooks ------- */}
 
+  setInterval(() => {
+    // MessageChannel.invoke('main', 'service:main', {
+    //   action: 'httpsProxyTest',
+    //   params: {}
+    // });
+  }, 2e3);
+
   useEffect(() => {
     (async () => {
       if (selectedServer && connected) {

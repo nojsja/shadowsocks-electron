@@ -8,7 +8,7 @@ import {
   rectPoint, ServiceResult
 } from '../types/extention';
 import { openLogDir } from '../logs';
-import { createTransparentWindow } from '../electron';
+import TransparentWindow from '../window/TransparentWindow';
 import {
   setStartupOnBoot_darwin, getStartupOnBoot_darwin,
   getStartupOnBoot_linux, setStartupOnBoot_linux
@@ -182,7 +182,8 @@ export class DesktopService implements DesktopServiceType {
 
   async createTransparentWindow(params: rectPoint[]): Promise<ServiceResult> {
     return new Promise(resolve => {
-      createTransparentWindow({
+      const win = new TransparentWindow();
+      win.create({
         fillRect: params.map(item => ({
           x: item.x ?? 0,
           y: item.y ?? 0,
@@ -191,6 +192,9 @@ export class DesktopService implements DesktopServiceType {
         }))
       })
       .then(() => {
+        setTimeout(() => {
+          win.destroy();
+        }, 1.2e3);
         resolve({
           code: 200,
           result: 'success'

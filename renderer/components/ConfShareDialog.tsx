@@ -45,8 +45,8 @@ const useStyles = makeStyles((theme: Theme) =>
       color: theme.palette.grey[500],
     },
     media: {
-      height: 100,
-      width: 100,
+      height: 150,
+      width: 150,
       margin: 'auto'
     },
     textOverflow: {

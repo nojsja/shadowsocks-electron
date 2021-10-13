@@ -1,7 +1,37 @@
-import { IpcMain as _IpcMain } from 'electron';
+import { MenuItemConstructorOptions } from "electron/main";
+import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem } from 'electron';
 
 export interface Service {
   ipc: IpcMain
+}
+
+export type TrayMenu = (MenuItem | MenuItemConstructorOptions)[]
+
+export interface TransparentWindowType {
+  icon: string
+  url: string
+  win: null | BrowserWindow
+  width: number
+  height: number
+  create: (params: { fillRect: rectPoint[] }) => Promise<any>
+  destroy: () => void
+}
+
+export interface IpcMainWindowType {
+  win: null | BrowserWindow
+  tray: null | Tray
+  icon: string
+  trayIcon: string
+  trayMenu: TrayMenu
+  width: number
+  height: number
+  quitting: boolean
+  create: () => Promise<any>
+  createTray: () => Promise<any>
+  show: () => void
+  quit: () => void
+  hide: () => void
+  beforeQuitting: () => void
 }
 
 export interface MainService extends Service {

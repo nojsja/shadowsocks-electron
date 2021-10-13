@@ -1,0 +1,70 @@
+{
+  "_from": "socksv5",
+  "_id": "socksv5@0.0.6",
+  "_inBundle": false,
+  "_integrity": "sha1-EycjX/fo3iGsQ0oKV53GnD8HEGE=",
+  "_location": "/socksv5",
+  "_phantomChildren": {
+    "cli": "0.4.5",
+    "cliff": "0.1.10"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "socksv5",
+    "name": "socksv5",
+    "escapedName": "socksv5",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmmirror.com/socksv5/download/socksv5-0.0.6.tgz",
+  "_shasum": "1327235ff7e8de21ac434a0a579dc69c3f071061",
+  "_spec": "socksv5",
+  "_where": "/home/nojsja/github/shadowsocks-electron/main/proxy",
+  "author": {
+    "name": "Brian White",
+    "email": "mscdex@mscdex.net"
+  },
+  "bugs": {
+    "url": "https://github.com/mscdex/socksv5/issues"
+  },
+  "bundleDependencies": [
+    "ipv6"
+  ],
+  "dependencies": {
+    "ipv6": "*"
+  },
+  "deprecated": false,
+  "description": "SOCKS protocol version 5 server and client implementations for node.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "homepage": "https://github.com/mscdex/socksv5#readme",
+  "keywords": [
+    "socks",
+    "socks5",
+    "socksv5",
+    "proxy"
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/mscdex/socksv5/raw/master/LICENSE"
+    }
+  ],
+  "main": "./index",
+  "name": "socksv5",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mscdex/socksv5.git"
+  },
+  "scripts": {
+    "test": "node test/test.js"
+  },
+  "version": "0.0.6"
+}

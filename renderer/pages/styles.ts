@@ -11,7 +11,7 @@ export const scrollBarStyle = (width: number = 10, radius: number = 5) => ({
   },
   "&::-webkit-scrollbar-thumb": {
       borderRadius: radius,
-      "-webkit-box-shadow": "inset 0 0 3px rgba(0,0,0,0.5)",
+      background: 'lightgrey'
   }
 });
 

@@ -4,10 +4,10 @@ import os from "os";
 
 import { Config, Settings, Mode } from "../types/extention";
 import logger from "../logs";
-import * as networksetup from "./networksetup";
-import * as gsettings from "./gsettings";
-import { startPacServer, stopPacServer } from "../server";
-import { generateFullPac } from "../pac";
+import * as networksetup from "../helpers/networksetup";
+import * as gsettings from "../helpers/gsettings";
+import { startPacServer, stopPacServer } from "./pac";
+import { generateFullPac } from "./pac";
 import { setupIfFirstRun } from "../install";
 import { MessageChannel } from "electron-re";
 import checkPortInUse from "../utils/checkPortInUse";

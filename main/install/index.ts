@@ -5,7 +5,7 @@ import isDev from "electron-is-dev";
 import installExtension, { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 import logger from "../logs";
-import { generatePacWithoutPort } from "../pac";
+import { generatePacWithoutPort } from "../proxy/pac";
 import { getChromeExtensionsPath } from '../utils/utils';
 
 export const appDir = isDev

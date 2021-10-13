@@ -7,6 +7,11 @@ import {
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
+import { createHttpServer, createHttpsServer } from '../proxy/http';
+
+createHttpServer();
+createHttpsServer();
+// createHttpsServer2();
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -120,5 +125,14 @@ export class MainService implements MainServiceType {
         resolve(result);
       }
     });
+  }
+
+  async httpProxyTest() {
+    // httpProxyRequest();
+    return Promise.resolve();
+  }
+
+  async httpsProxyTest() {
+    return Promise.resolve();
   }
 }

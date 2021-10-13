@@ -6,7 +6,7 @@ const {
   setWebpackTarget
 } = require("customize-cra");
 const path = require("path");
-const rewireSvgReactLoader = require('react-app-rewire-svg-react-loader');
+const rewireSvgReactLoader = require('react-app-rewire-react-svg-loader');
 
 module.exports = {
   webpack: override(

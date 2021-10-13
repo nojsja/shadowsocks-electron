@@ -12,7 +12,7 @@
   "main": "public/electron.js",
   "private": true,
   "scripts": {
-    "start:main": "nodemon",
+    "start:main": "nodemon --config nodemon.json",
     "start:renderer": "BROWSER=none react-app-rewired start",
     "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3000 && yarn start:main\"",
     "start:inspector": "yarn build:main && electron --inspect=5858 .",
@@ -36,12 +36,14 @@
     "electron-updater": "4.2.5",
     "fs-extra": "9.0.0",
     "i18next": "^20.6.1",
+    "ipv6": "*",
     "js-base64": "^2.4.0",
     "jsqr": "^1.4.0",
     "node-fetch": "2.6.0",
     "open": "7.0.3",
     "qrcode": "^1.4.4",
     "react-i18next": "^11.12.0",
+    "socksv5": "0.0.6",
     "winston": "3.2.1",
     "winston-daily-rotate-file": "^4.5.5"
   },
@@ -71,7 +73,7 @@
     "nodemon": "2.0.2",
     "prettier": "2.0.2",
     "react": "16.13.1",
-    "react-app-rewire-svg-react-loader": "github:codebandits/react-app-rewire-svg-react-loader",
+    "react-app-rewire-react-svg-loader": "^1.0.1",
     "react-app-rewired": "2.1.5",
     "react-dom": "16.13.1",
     "react-redux": "7.2.0",
@@ -98,16 +100,6 @@
       "prettier --write",
       "git add"
     ]
-  },
-  "nodemonConfig": {
-    "watch": [
-      "main"
-    ],
-    "ignore": [
-      "main/types/**/*"
-    ],
-    "ext": "ts,json",
-    "exec": "yarn build:main && electron ."
   },
   "eslintConfig": {
     "extends": "react-app"
