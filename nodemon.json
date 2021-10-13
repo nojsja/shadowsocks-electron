@@ -1,6 +1,6 @@
 {
   "watch": [
-    "main2"
+    "main"
   ],
   "ignore": [
     "main/types/**/*"
