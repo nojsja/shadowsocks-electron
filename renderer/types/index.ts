@@ -67,6 +67,7 @@ export interface Settings {
 
 export interface Status {
   connected: boolean;
+  loading: boolean;
 }
 
 export interface RootState {

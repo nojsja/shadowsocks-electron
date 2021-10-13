@@ -3,7 +3,8 @@ import { RootState } from "../types";
 const defaultStore: RootState = {
   config: [],
   status: {
-    connected: false
+    connected: false,
+    loading: false
   },
   settings: {
     selectedServer: null,

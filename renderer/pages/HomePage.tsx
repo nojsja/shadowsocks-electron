@@ -32,7 +32,7 @@ import {
 } from "../redux/actions/config";
 import { SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
-import { openNotification } from '../utils';
+import { startClientAction } from '../redux/actions/status';
 
 const menuItems = ["PAC", "Global", "Manual"];
 
@@ -52,8 +52,8 @@ const HomePage: React.FC = () => {
   const mode = useTypedSelector(state => state.settings.mode);
   const settings = useTypedSelector(state => state.settings);
   const connected = useTypedSelector(state => state.status.connected);
+  const loading = useTypedSelector(state => state.status.loading);
 
-  const [loading, setLoading] = useState(false);
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
   const [BackDrop, setBackDrop] = useBackDrop();
@@ -150,33 +150,22 @@ const HomePage: React.FC = () => {
 
   const handleServerConnect = async () => {
     if (selectedServer) {
-      setLoading(true);
-
       if (connected) {
         await MessageChannel.invoke('main', 'service:main', {
           action: 'stopClient',
           params: {}
         });
       } else {
-        await MessageChannel.invoke('main', 'service:main', {
-          action: 'startClient',
-          params: {
-            config: config.find(i => i.id === selectedServer)!,
-            settings
-          }
-        }).then(rsp => {
-          if (rsp.code === 600 && rsp.result.isInUse) {
-            openNotification({
-              title: t('warning'),
-              body: t('the_local_port_is_occupied'),
-              urgency: 'low'
-            });
-          }
-        });
+        dispatch(
+          startClientAction(
+            config.find(i => i.id === selectedServer),
+            settings,
+            t('warning'),
+            t('the_local_port_is_occupied')
+          )
+        );
       }
-
       await new Promise(resolve => setTimeout(resolve, 1000));
-      setLoading(false);
     }
   };
 
@@ -229,37 +218,32 @@ const HomePage: React.FC = () => {
 
   {/* -------- hooks ------- */}
 
-  setInterval(() => {
-    // MessageChannel.invoke('main', 'service:main', {
-    //   action: 'httpsProxyTest',
-    //   params: {}
-    // });
-  }, 2e3);
+  useEffect(() => {
+    setTimeout(() => {
+      if (!connected) {
+        dispatch(
+          startClientAction(
+            config.find(i => i.id === selectedServer),
+            settings,
+            t('warning'),
+            t('the_local_port_is_occupied')
+          )
+        );
+      }
+    }, 500);
+  }, [])
 
   useEffect(() => {
     (async () => {
       if (selectedServer && connected) {
-        setLoading(true);
-
-        await MessageChannel.invoke('main', 'service:main', {
-          action: 'startClient',
-          params: {
-            config: config.find(i => i.id === selectedServer)!,
-            settings
-          }
-        }).then(rsp => {
-          if (rsp.code === 600 && rsp.result.isInUse) {
-            MessageChannel.invoke('main', 'service:desktop', {
-              action: 'openNotification',
-              params: {
-                title: t('warning'),
-                body: t('the_local_port_is_occupied')
-              }
-            });
-          }
-        });
-
-        setLoading(false);
+        dispatch(
+          startClientAction(
+            config.find(i => i.id === selectedServer),
+            settings,
+            t('warning'),
+            t('the_local_port_is_occupied')
+          )
+        );
       }
     })();
   }, [config, selectedServer, settings]);

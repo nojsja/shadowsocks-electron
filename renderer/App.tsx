@@ -13,7 +13,6 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
-import { MessageChannel } from 'electron-re';
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ipcRenderer } from "electron";
@@ -23,7 +22,7 @@ import SettingsPage from "./pages/SettingsPage";
 import AboutPage from "./pages/AboutPage";
 import { store, persistor } from "./redux/store";
 import Loading from "./components/Loading";
-import { SET_STATUS } from "./redux/actions/status";
+import { getConnectionStatus, SET_STATUS } from "./redux/actions/status";
 import prepareForLanguage from './i18n';
 import { getDefaultLang } from "./utils";
 
@@ -77,17 +76,12 @@ const App: React.FC = () => {
   const [darkMode] = useState(false);
 
   useEffect(() => {
-    MessageChannel.invoke('main','service:main', {
-      action: 'isConnected',
-      params: {}
-    }).then(rsp => {
-      if (rsp.code === 200) {
-        store.dispatch({
-          type: SET_STATUS,
-          key: "connected",
-          value: rsp.result
-        });
-      }
+    getConnectionStatus((status) => {
+      store.dispatch({
+        type: SET_STATUS,
+        key: "connected",
+        value: status
+      });
     });
   }, []);
 
