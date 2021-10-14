@@ -8,7 +8,6 @@ import { InnerCallback } from '../types/extention';
 import checkPortInUse from '../utils/checkPortInUse';
 const socks = require('./socksv5');
 
-
 const socksConfig = {
   proxyHost: '127.0.0.1',
   proxyPort: 1080,
@@ -19,7 +18,9 @@ let httpServer: http.Server | null;
 let httpsServer: http.Server | null;
 
 /* Start Https Proxy server */
-export const createHttpsServer = (port: number, host: string, callback: InnerCallback) => {
+export const createHttpsServer = (options: {port: number, host: string, proxyPort: number}, callback: InnerCallback) => {
+  const { port, host, proxyPort } = options;
+
   /**
     * request [client/server request chain]
     * @author nojsja
@@ -38,7 +39,7 @@ export const createHttpsServer = (port: number, host: string, callback: InnerCal
 
     const pReq = http.request({
       ...options,
-      agent: new socks.HttpAgent(socksConfig)
+      agent: new socks.HttpAgent({...socksConfig, proxyPort})
     }, function(pRes) {
         cRes.writeHead(pRes.statusCode || 500, pRes.headers);
         pRes.pipe(cRes);
@@ -79,7 +80,7 @@ export const createHttpsServer = (port: number, host: string, callback: InnerCal
         .on('connect', connect)
         .listen((port), host, () => {
           callback(null);
-          console.log(`https proxy server listen on ${1091}`);
+          console.log(`https proxy server listen on ${port}`);
         });
     })
   } else {
@@ -88,11 +89,12 @@ export const createHttpsServer = (port: number, host: string, callback: InnerCal
 };
 
 /* Start Http Proxy server */
-export const createHttpServer = (port: number, host: string, callback: InnerCallback) => {
+export const createHttpServer = (options: {port: number, host: string, proxyPort: number}, callback: InnerCallback) => {
+  const { port, host, proxyPort } = options;
   const httpProxyRequest = (proxy: ServerResponse, opts: any): ClientRequest => {
     const request = http.request({
       ...opts,
-      agent: new socks.HttpAgent(socksConfig)
+      agent: new socks.HttpAgent({...socksConfig, proxyPort })
     }, (res: any) => {
       proxy.writeHead(res.statusCode, res.headers);
       res.pipe(proxy);
@@ -125,7 +127,7 @@ export const createHttpServer = (port: number, host: string, callback: InnerCall
 
       httpServer.listen((port), () => {
         callback(null);
-        console.log(`http proxy server listen on ${1090}`);
+        console.log(`http proxy server listen on ${port}`);
       });
     });
   } else {

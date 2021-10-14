@@ -30,7 +30,7 @@ import {
   EDIT_CONFIG,
   REMOVE_CONFIG
 } from "../redux/actions/config";
-import { SET_SETTING } from "../redux/actions/settings";
+import { setHttpAndHttpsProxy, SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
 import { startClientAction } from '../redux/actions/status';
 
@@ -230,6 +230,23 @@ const HomePage: React.FC = () => {
           )
         );
       }
+
+      if (settings.httpProxy.enable) {
+        setHttpAndHttpsProxy({
+          ...settings.httpProxy,
+          type: 'http',
+          proxyPort: settings.localPort
+        });
+      }
+
+      if (settings.httpsProxy.enable) {
+        setHttpAndHttpsProxy({
+          ...settings.httpsProxy,
+          type: 'https',
+          proxyPort: settings.localPort
+        });
+      }
+
     }, 500);
   }, [])
 

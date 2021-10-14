@@ -61,14 +61,19 @@ export const setStartupOnBoot = (on: boolean): ThunkAction<void, RootState, unkn
   }
 }
 
-export const setHttpAndHttpsProxy = (params: { enable: boolean, port: number, type: 'https' | 'http' }) => {
-  const { enable, type, port } = params;
+export const setHttpAndHttpsProxy = (
+  params: {
+    enable: boolean, port: number,
+    type: 'https' | 'http',
+    proxyPort: number
+  }) => {
+  const { enable, type, port, proxyPort } = params;
   if (type === 'https' || (type === 'http')) {
     const action = `${enable ? 'start' : 'stop'}H${type.slice(1)}ProxyServer`
     MessageChannel
       .invoke('main', 'service:main', {
         action: action,
-        params: { enable, port }
+        params: { port, proxyPort }
       });
   };
 }

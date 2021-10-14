@@ -123,9 +123,9 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async startHttpsProxyServer(params: { port: number }) {
+  async startHttpsProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
-      return createHttpsServer(params.port, '127.0.0.1', (error) => {
+      return createHttpsServer({...params, host: '127.0.0.1'}, (error) => {
         resolve({
           code: error ? 500 : 200,
           result: error ?? ''
@@ -134,9 +134,9 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async startHttpProxyServer(params: { port: number }) {
+  async startHttpProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
-      return createHttpServer(params.port, '127.0.0.1', (error) => {
+      return createHttpServer({...params, host: '127.0.0.1'}, (error) => {
         resolve({
           code: error ? 500 : 200,
           result: error ?? ''

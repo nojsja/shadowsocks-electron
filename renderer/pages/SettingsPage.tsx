@@ -66,6 +66,25 @@ const SettingsPage: React.FC = () => {
     return true;
   }
 
+  const checkPortUsed = (value: number, target: 'httpsProxy' | 'httpProxy', useValue?: boolean) => {
+    if (
+      useValue === undefined ?
+      (value == settings[target].port &&
+      settings.httpsProxy.enable &&
+      settings.httpProxy.enable)
+      :
+      (value == settings[target].port &&
+      settings[target].enable &&
+      useValue)
+    ) {
+      setTimeout(() => {
+        setSnackbarMessage(t("https_http_proxy_port_not_same"));
+      }, 200);
+      return false;
+    }
+    return true;
+  };
+
   const handleValueChange = (
     key: keyof Settings,
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -79,24 +98,14 @@ const SettingsPage: React.FC = () => {
         if (!checkPortValid(value)) return;
         break;
       case 'httpProxy':
-        if (value == settings.httpsProxy.port) {
-          setTimeout(() => {
-            setSnackbarMessage(t("https_http_proxy_port_not_same"));
-          }, 200);
-          return;
-        }
+        if (!checkPortUsed(value, 'httpsProxy')) return;
         value = {
           ...settings.httpProxy,
           port: value
         }
         break;
       case 'httpsProxy':
-        if (settings.httpProxy.port == value) {
-          setTimeout(() => {
-            setSnackbarMessage(t("https_http_proxy_port_not_same"));
-          }, 200);
-          return;
-        }
+        if (!checkPortUsed(value, 'httpProxy')) return;
         value = {
           ...settings.httpsProxy,
           port: value
@@ -123,18 +132,20 @@ const SettingsPage: React.FC = () => {
         dispatch(setStartupOnBoot(value));
         break;
       case 'httpProxy':
+        if (!checkPortUsed(settings.httpProxy.port, 'httpsProxy', value)) return;
         value = {
           ...settings.httpProxy,
           enable: value
         };
-        setHttpAndHttpsProxy({...value, type: 'http'});
+        setHttpAndHttpsProxy({...value, type: 'http', proxyPort: settings.localPort });
         break;
       case 'httpsProxy':
+        if (!checkPortUsed(settings.httpsProxy.port, 'httpProxy', value)) return;
         value = {
           ...settings.httpsProxy,
           enable: value
         };
-        setHttpAndHttpsProxy({...value, type: 'https'});
+        setHttpAndHttpsProxy({...value, type: 'https', proxyPort: settings.localPort });
         break;
       default:
         break;
