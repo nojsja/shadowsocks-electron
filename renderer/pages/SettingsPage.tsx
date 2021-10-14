@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
-import { SET_SETTING, getStartupOnBoot, setStartupOnBoot } from "../redux/actions/settings";
+import { SET_SETTING, getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy } from "../redux/actions/settings";
 import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
 import { Settings } from "../types";
 import { getDefaultLang } from "../utils";
@@ -57,22 +57,59 @@ const SettingsPage: React.FC = () => {
     }));
   }
 
+  const checkPortValid = (value: string) => {
+    const parsedValue = parseInt(value.trim(), 10);
+    if (!(parsedValue && parsedValue > 1024 && parsedValue <= 65535)) {
+          setSnackbarMessage(t("invalid_port"));
+          return false;
+    }
+    return true;
+  }
+
   const handleValueChange = (
     key: keyof Settings,
     e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
   ) => {
-    if (key === "localPort" || key === "pacPort") {
-      const value = parseInt(e.target.value.trim(), 10);
-      if (!(value && value > 1024 && value <= 65535)) {
-        setSnackbarMessage(t("invalid_port"));
-        return;
-      }
+    let value: any = e.target.value;
+    switch (key) {
+      case 'localPort':
+        if (!checkPortValid(value)) return;
+        break;
+      case 'pacPort':
+        if (!checkPortValid(value)) return;
+        break;
+      case 'httpProxy':
+        if (value == settings.httpsProxy.port) {
+          setTimeout(() => {
+            setSnackbarMessage(t("https_http_proxy_port_not_same"));
+          }, 200);
+          return;
+        }
+        value = {
+          ...settings.httpProxy,
+          port: value
+        }
+        break;
+      case 'httpsProxy':
+        if (settings.httpProxy.port == value) {
+          setTimeout(() => {
+            setSnackbarMessage(t("https_http_proxy_port_not_same"));
+          }, 200);
+          return;
+        }
+        value = {
+          ...settings.httpsProxy,
+          port: value
+        }
+        break;
+      default:
+        break;
     }
 
     dispatch({
       type: SET_SETTING,
       key,
-      value: e.target.value
+      value: value
     });
   };
 
@@ -80,15 +117,32 @@ const SettingsPage: React.FC = () => {
     key: keyof Settings,
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    dispatch({
-      type: SET_SETTING,
-      key,
-      value: e.target.checked
-    });
-
-    if (key === "autoLaunch") {
-      dispatch(setStartupOnBoot(e.target.checked));
+    let value: any = e.target.checked;
+    switch (key) {
+      case 'autoLaunch':
+        dispatch(setStartupOnBoot(value));
+        break;
+      case 'httpProxy':
+        value = {
+          ...settings.httpProxy,
+          enable: value
+        };
+        setHttpAndHttpsProxy({...value, type: 'http'});
+        break;
+      case 'httpsProxy':
+        value = {
+          ...settings.httpsProxy,
+          enable: value
+        };
+        setHttpAndHttpsProxy({...value, type: 'https'});
+        break;
+      default:
+        break;
     }
+    dispatch({
+      type: SET_SETTING, key,
+      value: value
+    });
   };
 
   const handleOpenLog = async () => {
@@ -163,6 +217,66 @@ const SettingsPage: React.FC = () => {
         onChange={e => handleValueChange("gfwListUrl", e)}
       />
       <List className={styles.list}>
+        <ListItem>
+            <ListItemText
+              primary={t('http_proxy')}
+              // secondary="Not applicable to Linux"
+            />
+            <ListItemSecondaryAction>
+              <Switch
+                edge="end"
+                color="primary"
+                checked={settings.httpProxy.enable}
+                onChange={e => handleSwitchValueChange("httpProxy", e)}
+              />
+            </ListItemSecondaryAction>
+        </ListItem>
+        {
+          settings.httpProxy.enable && (
+            <ListItem>
+              <TextField
+                className={styles.textField}
+                required
+                fullWidth
+                type="number"
+                label={t('http_proxy_port')}
+                placeholder={t('http_proxy_port')}
+                value={settings.httpProxy.port}
+                onChange={e => handleValueChange("httpProxy", e)}
+              />
+            </ListItem>
+          )
+        }
+        <ListItem>
+            <ListItemText
+              primary={t('https_proxy')}
+              // secondary="Not applicable to Linux"
+            />
+            <ListItemSecondaryAction>
+              <Switch
+                edge="end"
+                color="primary"
+                checked={settings.httpsProxy.enable}
+                onChange={e => handleSwitchValueChange("httpsProxy", e)}
+              />
+            </ListItemSecondaryAction>
+        </ListItem>
+        {
+          settings.httpsProxy.enable && (
+            <ListItem>
+              <TextField
+                className={styles.textField}
+                required
+                fullWidth
+                type="number"
+                label={t('https_proxy_port')}
+                placeholder={t('https_proxy_port')}
+                value={settings.httpsProxy.port}
+                onChange={e => handleValueChange("httpsProxy", e)}
+              />
+            </ListItem>
+          )
+        }
         <ListItem>
           <ListItemText
             primary={t('launch_on_boot')}

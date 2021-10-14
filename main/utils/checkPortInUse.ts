@@ -18,12 +18,6 @@ const socketConnect = (port: number, host: string, timeout: number = 1e3): Promi
       socket.destroy();
     });
     socket.on('error', (err: { code: string }) => {
-      // console.log(err);
-      // if (err.code !== 'ECONNREFUSED') {
-      //   status = err.toString();
-      // } else {
-      //   isInUse = true;
-      // }
       isInUse = false;
     });
 

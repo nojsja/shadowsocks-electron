@@ -7,11 +7,7 @@ import {
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
-import { createHttpServer, createHttpsServer } from '../proxy/http';
-
-createHttpServer();
-createHttpsServer();
-// createHttpsServer2();
+import { createHttpServer, createHttpsServer, stopHttpServer, stopHttpsServer } from '../proxy/http';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -127,12 +123,48 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async httpProxyTest() {
-    // httpProxyRequest();
-    return Promise.resolve();
+  async startHttpsProxyServer(params: { port: number }) {
+    return new Promise(resolve => {
+      return createHttpsServer(params.port, '127.0.0.1', (error) => {
+        resolve({
+          code: error ? 500 : 200,
+          result: error ?? ''
+        });
+      });
+    });
   }
 
-  async httpsProxyTest() {
-    return Promise.resolve();
+  async startHttpProxyServer(params: { port: number }) {
+    return new Promise(resolve => {
+      return createHttpServer(params.port, '127.0.0.1', (error) => {
+        resolve({
+          code: error ? 500 : 200,
+          result: error ?? ''
+        });
+      });
+    });
   }
+
+  async stopHttpsProxyServer(params: { port: number }) {
+    return new Promise(resolve => {
+      return stopHttpsServer(params.port, '127.0.0.1', (error) => {
+        resolve({
+          code: error ? 500 : 200,
+          result: error ?? ''
+        });
+      });
+    });
+  }
+
+  async stopHttpProxyServer(params: { port: number }) {
+    return new Promise(resolve => {
+      return stopHttpServer(params.port, '127.0.0.1', (error) => {
+        resolve({
+          code: error ? 500 : 200,
+          result: error ?? ''
+        });
+      });
+    });
+  }
+
 }

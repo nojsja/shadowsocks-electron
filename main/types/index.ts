@@ -60,6 +60,14 @@ export interface Settings {
   verbose: boolean;
   localPort: number;
   pacPort: number;
+  httpProxy: {
+    enable: boolean,
+    port: number
+  },
+  httpsProxy: {
+    enable: boolean,
+    port: number
+  },
   gfwListUrl: string;
   autoLaunch: boolean;
   lang: string;

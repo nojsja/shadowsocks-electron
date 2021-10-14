@@ -129,3 +129,5 @@ export interface Settings {
 };
 
 export type rectPoint = { x: number, y: number, width: number, height: number };
+
+export type InnerCallback = (params: Error | null) => void;
