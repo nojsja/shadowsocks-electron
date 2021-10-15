@@ -3,6 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import { app } from 'electron';
 import { exec, ExecOptions } from "child_process";
+import { Config, SSConfig, SSRConfig } from '../types/extention';
 
 export const getChromeExtensionsPath = (appids: string[]): Promise<any[]> => {
   const macBaseDir = `${process.env.HOME}/Library/Application Support/Google/Chrome/Default/Extensions`;
@@ -49,15 +50,81 @@ export const getBinPath = (function () {
   }
 })();
 
-export const getSSLocalBinPath = () => {
+export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
+  const binName = `${type}-local`;
   switch (os.platform()) {
     case 'linux':
-      return getBinPath('ss-local') || path.join(app.getAppPath(), `bin/linux/x64/ss-local`);
+      return getBinPath(binName) || path.join(app.getAppPath(), `bin/linux/x64/${binName}`);
     case 'darwin':
-      return path.join(app.getAppPath(), `bin/darwin/x64/ss-local`);
+      return path.join(app.getAppPath(), `bin/darwin/x64/${binName}`);
     default:
-      return getBinPath('ss-local') ?? 'ss-local';
+      return getBinPath(binName) ?? binName;
   }
+}
+
+export const getEncryptMethod = (config: Config): string => {
+  if (config.type === 'ss') return config.encryptMethod ?? '';
+  if (config.type === 'ssr') {
+    if (config.encryptMethod === 'none') return config.protocol ?? '';
+    return config.encryptMethod ?? '';
+  };
+  return '';
+}
+
+export const buildParamsForSS = (config: SSConfig, others: { localPort: number, verbose: boolean }) => {
+  return [
+    "-s",
+    config.serverHost,
+    "-p",
+    config.serverPort.toString(),
+    "-l",
+    others.localPort.toString(),
+    "-k",
+    config.password,
+    "-m",
+    config.encryptMethod,
+    config.udp ? "-u" : "",
+    config.fastOpen ? "--fast-open" : "",
+    config.noDelay ? "--no-delay" : "",
+    config.plugin ? "--plugin" : "",
+    config.plugin ?? "",
+    config.pluginOpts ? "--plugin-opts" : "",
+    config.pluginOpts ?? "",
+    others.verbose ? "-v" : "",
+    "-t",
+    (config.timeout ?? "600").toString()
+  ];
+}
+
+export const buildParamsForSSR = (config: SSRConfig, others: { localPort: number, verbose: boolean }) => {
+  return [
+    "-s",
+    config.serverHost,
+    "-p",
+    config.serverPort.toString(),
+    "-l",
+    others.localPort.toString(),
+    "-k",
+    config.password,
+    "-m",
+    config.encryptMethod,
+    "-t",
+    (config.timeout ?? "600").toString(),
+    "-o",
+    config.obfs,
+    config.obfsParam ? `-g ${config.protocolParam}` : '',
+    "-O",
+    config.protocol,
+    config.protocolParam ? `-G ${config.protocolParam}` : '',
+    config.udp ? "-u" : "",
+    config.fastOpen ? "--fast-open" : "",
+    config.noDelay ? "--no-delay" : "",
+    config.plugin ? "--plugin" : "",
+    config.plugin ?? "",
+    config.pluginOpts ? "--plugin-opts" : "",
+    config.pluginOpts ?? "",
+    others.verbose ? "-v" : ""
+  ];
 }
 
 /**

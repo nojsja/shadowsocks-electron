@@ -2,7 +2,7 @@ import { ChildProcess, spawn } from "child_process";
 import { BrowserWindow } from "electron";
 import os from "os";
 
-import { Config, Settings, Mode } from "../types/extention";
+import { Config, Settings, Mode, SSRConfig, SSConfig } from "../types/extention";
 import logger from "../logs";
 import * as networksetup from "../helpers/networksetup";
 import * as gsettings from "../helpers/gsettings";
@@ -11,7 +11,7 @@ import { generateFullPac } from "./pac";
 import { setupIfFirstRun } from "../install";
 import { MessageChannel } from "electron-re";
 import checkPortInUse from "../utils/checkPortInUse";
-import { getSSLocalBinPath } from "../utils/utils";
+import { buildParamsForSS, buildParamsForSSR, getSSLocalBinPath } from "../utils/utils";
 
 const platform = os.platform();
 let mainWindow: BrowserWindow | null = null;
@@ -67,29 +67,12 @@ const setProxy = async (
 };
 
 const spawnClient = async (config: Config, settings: Settings) : Promise<{code: number, result: any}> => {
-  const sslocalPath = getSSLocalBinPath();
-  const args = [
-    "-s",
-    config.serverHost,
-    "-p",
-    config.serverPort.toString(),
-    "-l",
-    settings.localPort.toString(),
-    "-k",
-    config.password,
-    "-m",
-    config.encryptMethod,
-    config.udp ? "-u" : "",
-    config.fastOpen ? "--fast-open" : "",
-    config.noDelay ? "--no-delay" : "",
-    config.plugin ? "--plugin" : "",
-    config.plugin ?? "",
-    config.pluginOpts ? "--plugin-opts" : "",
-    config.pluginOpts ?? "",
-    settings.verbose ? "-v" : "",
-    "-t",
-    (config.timeout ?? "60").toString()
-  ];
+  console.log(config);
+  const sslocalPath = getSSLocalBinPath(config.type ?? 'ss');
+  let error: Error;
+  const args = (config.type === 'ssr') ?
+    buildParamsForSSR(config as SSRConfig, { localPort: settings.localPort, verbose: settings.verbose }) :
+    buildParamsForSS(config as SSConfig, { localPort: settings.localPort, verbose: settings.verbose }) ;
 
   return new Promise((resolve) => {
     console.log(`check port ${settings.localPort} usage...`);
@@ -110,6 +93,11 @@ const spawnClient = async (config: Config, settings: Settings) : Promise<{code: 
           args.filter(arg => arg !== '')
         );
 
+        if (!ssLocal) return resolve({
+          code: 500,
+          result: `Failed to exec command [${sslocalPath}] with args [${JSON.stringify(args)}].`
+        });
+
         ssLocal.stdout?.once("data", async () => {
           logger.info("Started ss-local");
 
@@ -128,17 +116,29 @@ const spawnClient = async (config: Config, settings: Settings) : Promise<{code: 
         ssLocal.stdout?.on("data", data => {
           logger.info(data);
         });
-        ssLocal.on("error", err => {
+        ssLocal.stderr?.on('data', err => {
+          error = err;
           logger.error(err);
+          ssLocal?.kill();
+        });
+        ssLocal.on("error", async (err) => {
+          error = err;
+          logger.error(err);
+          ssLocal?.kill();
         });
         ssLocal.on("exit", async (code, signal) => {
-          logger.info(`Exited ss-local with code ${code} or signal ${signal}`);
+          logger.info(`Exited ${sslocalPath} with code ${code} or signal ${signal}`);
 
           await setProxy("off");
           logger.info("Set proxy off");
 
           connected = false;
           MessageChannel.sendTo(mainWindow?.id || 1, 'connected', false);
+
+          resolve({
+            code: 500,
+            result: error?.toString() ?? `Exited ${sslocalPath} with code ${code} or signal ${signal}`
+          });
 
           ssLocal = null;
         });

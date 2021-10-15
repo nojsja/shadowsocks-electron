@@ -3,7 +3,7 @@ import QRCode from 'qrcode';
 
 import {
   MainService as MainServiceType,
-  Config, Settings, ServiceResult
+  Config, Settings, ServiceResult, SSRConfig
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
@@ -49,17 +49,34 @@ export class MainService implements MainServiceType {
   async parseClipboardText(params: { text: string }): Promise<ServiceResult> {
     const text = params.text || clipboard.readText('clipboard');
     const parsedInfo = ProxyURI.parse(text);
-    const result: Config[] = parsedInfo.map(info => ({
-      remark: info.remark || info.host,
-      serverHost: info.host,
-      serverPort: info.port,
-      password: info.password || '',
-      encryptMethod: info.authscheme,
-      protocol: info.protocol || '',
-      protocolParam: info.protocolParam || '',
-      type: info.type as any,
-      timeout: 60,
-    }));
+
+    const result: Config[] = parsedInfo.map(info => {
+      const base = {
+        remark: info.remark || info.host,
+        serverHost: info.host,
+        serverPort: info.port,
+        password: info.password || '',
+        encryptMethod: info.authscheme,
+        timeout: 60
+      };
+      if (info.type === 'ssr') {
+        return ({
+          ...base,
+          type: info.type as any,
+          protocol: info.protocol || '',
+          protocolParam: info.protocolParam || '',
+          obfs: info.obfs || '',
+          obfsParam: info.obfsParam
+        }) as SSRConfig;
+      }
+      return ({
+        ...base,
+        type: info.type as any,
+      }) as SSRConfig
+    });
+
+    console.log(result);
+
     return Promise.resolve({
       code: 200,
       result
@@ -96,8 +113,6 @@ export class MainService implements MainServiceType {
           params.serverHost, params.serverPort, params.encryptMethod,
           params.password, params.remark
         );
-        break;
-      case 'http':
         break;
       default:
         break;
