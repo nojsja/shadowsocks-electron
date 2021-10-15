@@ -54,11 +54,11 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - AEAD ciphers
 - SIP003 plugins (v2ray & kcptun)
 
-> Comming Soon
-
+> Coming Soon
 - HTTP(s) proxy
 - SSR
 - ACL
+- VMess(v2ray protocol)
 
 ## Development
 
