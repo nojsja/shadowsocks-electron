@@ -75,7 +75,32 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       flexDirection: "column",
       height: `calc(100vh - 64px)`,
       padding: theme.spacing(2)
-    }
+    },
+    'text-center': {
+      textAlign: 'center'
+    },
+    'author-info__wrapper': {
+      width: '40%',
+      height: '40%',
+      display: 'inline-flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      marginBottom: '20px',
+      textAlign: 'center',
+      border: 'double 4px lightgrey',
+      borderRadius: '50%'
+    },
+    'author-info__image': {
+      width: '80%',
+      height: 'auto'
+    },
+    'author-info__others': {
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      maxWidth: '70%'
+    },
   })
 );
 
