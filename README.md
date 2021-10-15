@@ -56,7 +56,8 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 
 > Comming Soon
 
-- HTTP proxy
+- HTTP(s) proxy
+- SSR
 - ACL
 
 ## Development
