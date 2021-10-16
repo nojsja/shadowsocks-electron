@@ -40,7 +40,7 @@ export interface MainService extends Service {
   startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>
   stopClient: () => Promise<ServiceResult>
   parseClipboardText: (params: { text: string }) => Promise<ServiceResult>
-  generateUrlFromConfig: (params: Config) => Promise<ServiceResult>
+  generateUrlFromConfig: (params: SSRConfig | SSConfig) => Promise<ServiceResult>
 }
 
 export interface DesktopService extends Service {
@@ -96,7 +96,9 @@ export type Plugin = typeof plugins[number];
 
 export type ACL = "bypass";
 
-export interface Config {
+export type Config = SSConfig | SSRConfig;
+
+export interface SSConfig {
   id?: string;
   remark?: string;
   serverHost: string;
@@ -111,10 +113,33 @@ export interface Config {
   udp?: boolean;
   plugin?: Plugin;
   pluginOpts?: string;
-  type?: 'ss' | 'ssr' | 'http';
+  type?: 'ss' | 'ssr';
   protocol?: string;
   protocolParam?: string;
 }
+
+export interface SSRConfig {
+  id?: string;
+  remark?: string;
+  serverHost: string;
+  serverPort: number;
+  password: string;
+  encryptMethod: Encryption | string;
+  protocol: string;
+  protocolParam: string;
+  obfs: string,
+  obfsParam: string,
+  timeout?: number;
+  acl?: ACL;
+  fastOpen?: boolean;
+  noDelay?: boolean;
+  maxOpenFile?: number;
+  udp?: boolean;
+  plugin?: Plugin;
+  pluginOpts?: string;
+  type?: 'ss' | 'ssr';
+}
+
 
 export type Mode = "PAC" | "Global" | "Manual";
 
@@ -129,3 +154,5 @@ export interface Settings {
 };
 
 export type rectPoint = { x: number, y: number, width: number, height: number };
+
+export type InnerCallback = (params: Error | null) => void;

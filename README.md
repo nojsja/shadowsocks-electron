@@ -4,7 +4,7 @@
 
 > The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
 
-Shadowsocks GUI with cross-platform desktop support based on Electron⚛️, made specially for Linux/Mac users.
+Shadowsocks GUI application with cross-platform desktop support based on Electron⚛️, made specially for Linux/Mac users.
 
 ## Screenshots
 
@@ -35,30 +35,30 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 
 ## Features
 
-> Supported
+> ➣ Supported
 
-- PAC mode (GFWList)
-- Global mode (socks proxy)
-- Manual mode (no system-wide proxy set)
-- Clipboard import
-- QR code scan import
-- Language switching (zh-CN/en-US only)
-- Configuration backup / recovery
-- Auto start on boot
-- Server sharing
-- Application logs
-- Application process manager
+- __SS / SSR__ Protocol
+- __PAC__ Mode (GFWList)
+- __Global__ Mode (socks proxy)
+- __Manual__ Mode (no system-wide proxy set)
+- HTTP Proxy (HTTPS not working now)
+- Clipboard / QR-code Import
+- Language Detecting / Switching (zh-CN / en-US)
+- Configuration Backup / Recovery
+- Auto Start
+- Server Share
+- Logs
 
-> In Testing
+> ➣ In Testing
 
 - AEAD ciphers
 - SIP003 plugins (v2ray & kcptun)
 
-> Coming Soon
-- HTTP(s) proxy
-- SSR
+> ➣ Comming Soon
+
+- HTTPS Proxy
 - ACL
-- VMess(v2ray protocol)
+- VMess Protocol (v2ray)
 
 ## Development
 
@@ -104,7 +104,9 @@ $: cp pac/gfwlist.txt ~/Library/Application\ Support/shadowsocks-electron/pac/
 $: npm start
 ```
 
-## Supported Platforms
+## Supported Platforms & Arch
+
+> More architecture will be supported if necessary, just give me an issue. Forget about windows (x32/x64), there are tons of apps on it already.
 
 - Ubuntu (linux x64)
 - MacOS (darwin x64)
@@ -112,7 +114,7 @@ $: npm start
 
 ## Credit
 
+- [tindy2013/shadowsocks-static-binaries](https://github.com/tindy2013/shadowsocks-static-binaries)
 - [robertying/shadowsocks-electron](https://github.com/robertying/shadowsocks-electron)
 - [shadowsocks/shadowsocks-libev](https://github.com/shadowsocks/shadowsocks-libev)
 - [shadowsocks/ShadowsocksX-NG](https://github.com/shadowsocks/ShadowsocksX-NG)
-- [himanshub16/ProxyMan](https://github.com/himanshub16/ProxyMan)

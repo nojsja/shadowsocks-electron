@@ -66,6 +66,7 @@ app.on("ready", async () => {
   ipcMainWindow.create().then((win: BrowserWindow) => {
     (global as any).win = win;
     if (isDev) {
+      win.webContents.openDevTools({ mode: 'undocked' });
       ProcessManager.openWindow();
     }
     setMainWindow(win);
