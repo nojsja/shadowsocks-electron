@@ -11,8 +11,9 @@ import { generateFullPac } from "./pac";
 import { setupIfFirstRun } from "../install";
 import { MessageChannel } from "electron-re";
 import checkPortInUse from "../utils/checkPortInUse";
-import { getSSLocalBinPath } from "../utils/utils";
+import { debounce, getSSLocalBinPath } from "../utils/utils";
 import { EventEmitter } from "events";
+import electronIsDev from "electron-is-dev";
 
 const platform = os.platform();
 let mainWindow: BrowserWindow | null = null;
@@ -43,6 +44,7 @@ const setProxy = async (
       } else if (mode === "PAC") {
         await setupIfFirstRun();
         await generateFullPac(localPort ?? 1080);
+        await stopPacServer();
         startPacServer(pacPort ?? 1090);
         await networksetup.setPacProxy(
           `http://localhost:${pacPort ?? 1090}/proxy.pac`
@@ -58,6 +60,7 @@ const setProxy = async (
       } else if (mode === "PAC") {
         await setupIfFirstRun();
         await generateFullPac(localPort ?? 1080);
+        await stopPacServer();
         startPacServer(pacPort ?? 1090);
         await gsettings.setPacProxy(
           `http://localhost:${pacPort ?? 1090}/proxy.pac`
@@ -83,6 +86,8 @@ class Client extends EventEmitter {
     this.error = '';
     this.settings = settings;
     this.child = null;
+    this.on('connected', this.onConnected);
+    this.on('exited', debounce(this.onExited, 600));
   }
 
   async onConnected(cb?: (success: boolean) => void) {
@@ -119,8 +124,6 @@ class SSClient extends Client {
     this.on('error', () => {
 
     });
-    this.on('connected', this.onConnected);
-    this.on('exited', this.onExited);
   }
 
   parseParams(config: SSConfig) {
@@ -151,6 +154,8 @@ class SSClient extends Client {
   connect(config: SSConfig): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
+      logger.info(`Exec command:${this.bin} ${this.params.join(' ')}`);
+
       this.child = spawn(
         this.bin,
         this.params
@@ -232,8 +237,6 @@ class SSRClient extends Client {
     this.on('error', () => {
 
     });
-    this.on('connected', this.onConnected);
-    this.on('exited', this.onExited);
   }
 
   parseParams(config: SSRConfig) {
@@ -270,10 +273,13 @@ class SSRClient extends Client {
   connect(config: SSRConfig): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
+      logger.info(`Exec command: ${this.bin} ${this.params.join(' ')}`);
+
       this.child = spawn(
         this.bin,
         this.params
       );
+
 
       if (!this.child) return resolve({
         code: 500,
@@ -346,15 +352,25 @@ class SSRClient extends Client {
 }
 
 const spawnClient = async (config: Config, settings: Settings) : Promise<{code: number, result: any}> => {
-  console.log(config);
-
-  if (config.type === 'ssr') {
-    ssLocal = new SSRClient(settings);
-    return (ssLocal as SSRClient).connect(config as SSRConfig);
-  } else {
-    ssLocal= new SSClient(settings);
-    return (ssLocal as SSClient).connect(config as SSConfig);
+  if (electronIsDev) {
+    console.log(config);
   }
+  return checkPortInUse([settings.localPort], '127.0.0.1')
+    .then(results => {
+      if (results[0]?.isInUse) {
+        return Promise.resolve({
+          code: 600,
+          result: results[0]
+        });
+      }
+      if (config.type === 'ssr') {
+        ssLocal = new SSRClient(settings);
+        return (ssLocal as SSRClient).connect(config as SSRConfig);
+      } else {
+        ssLocal= new SSClient(settings);
+        return (ssLocal as SSClient).connect(config as SSConfig);
+      }
+    });
 };
 
 const killClient = async () => {

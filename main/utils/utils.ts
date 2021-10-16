@@ -187,3 +187,14 @@ export const execAsync = (command: string, options?: ExecOptions) => {
     });
   });
 };
+
+export function debounce<params extends any[]> (fn: (...args: params) => any, timeout: number) {
+  let timer: NodeJS.Timeout;
+
+  return function(this: any, ...args: params) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, timeout);
+  }
+}
