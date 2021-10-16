@@ -1,4 +1,4 @@
-import { ChildProcess, spawn } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { BrowserWindow } from "electron";
 import os from "os";
 
@@ -11,11 +11,12 @@ import { generateFullPac } from "./pac";
 import { setupIfFirstRun } from "../install";
 import { MessageChannel } from "electron-re";
 import checkPortInUse from "../utils/checkPortInUse";
-import { buildParamsForSS, buildParamsForSSR, getSSLocalBinPath } from "../utils/utils";
+import { getSSLocalBinPath } from "../utils/utils";
+import { EventEmitter } from "events";
 
 const platform = os.platform();
 let mainWindow: BrowserWindow | null = null;
-let ssLocal: ChildProcess | null = null;
+let ssLocal: SSRClient | SSClient | null;
 let connected = false;
 
 export const setMainWindow = (window: BrowserWindow) => {
@@ -66,98 +67,299 @@ const setProxy = async (
   }
 };
 
-const spawnClient = async (config: Config, settings: Settings) : Promise<{code: number, result: any}> => {
-  console.log(config);
-  const sslocalPath = getSSLocalBinPath(config.type ?? 'ss');
-  let error: Error;
-  const args = (config.type === 'ssr') ?
-    buildParamsForSSR(config as SSRConfig, { localPort: settings.localPort, verbose: settings.verbose }) :
-    buildParamsForSS(config as SSConfig, { localPort: settings.localPort, verbose: settings.verbose }) ;
+class Client extends EventEmitter {
+  bin: string
+  type: 'ss' | 'ssr'
+  child: ChildProcessWithoutNullStreams | null
+  error: null | Error | string
+  params: string[]
+  settings: Settings
 
-  return new Promise((resolve) => {
-    console.log(`check port ${settings.localPort} usage...`);
-    checkPortInUse([settings.localPort], '127.0.0.1')
-      .then(results => {
-        if (results && results[0] && results[0].isInUse) {
-          resolve({
-            code: 600,
-            result: results[0]
-          });
-          return;
-        }
+  constructor(settings: Settings, type: 'ssr' | 'ss') {
+    super();
+    this.type = type;
+    this.bin = getSSLocalBinPath(type);
+    this.params = [];
+    this.error = '';
+    this.settings = settings;
+    this.child = null;
+  }
 
-        logger.info(`Exec command: \`${sslocalPath} ${args.filter(args => !!args).join(' ')}\``);
+  async onConnected(cb?: (success: boolean) => void) {
+    logger.info(`Started ${this.type}-local`);
+    await setProxy("on", this.settings.mode, this.settings.localPort, this.settings.pacPort);
+    logger.info("Set proxy on");
+    connected = true;
+    mainWindow?.webContents.send("connected", true);
+    cb && cb(true);
+  }
 
-        ssLocal = spawn(
-          sslocalPath,
-          args.filter(arg => arg !== '')
-        );
+  async onExited(cb?: (success: boolean) => void) {
+    checkPortInUse([this.settings.localPort], '127.0.0.1')
+    .then(async results => {
+      if (results[0]?.isInUse) {
+        cb && cb(true);
+      } else {
+        logger.info(`Exited ${this.bin} with error ${this.error}.`);
+        await setProxy("off");
+        logger.info("Set proxy off");
 
-        if (!ssLocal) return resolve({
-          code: 500,
-          result: `Failed to exec command [${sslocalPath}] with args [${JSON.stringify(args)}].`
-        });
+        connected = false;
+        MessageChannel.sendTo(mainWindow?.id || 1, 'connected', false);
 
-        ssLocal.stdout?.once("data", async () => {
-          logger.info("Started ss-local");
+        cb && cb(false);
+      }
+    });
+  }
+}
 
-          await setProxy("on", settings.mode, settings.localPort, settings.pacPort);
-          logger.info("Set proxy on");
+class SSClient extends Client {
+  constructor(settings: Settings) {
+    super(settings, 'ss');
+    this.on('error', () => {
 
-          connected = true;
-          mainWindow?.webContents.send("connected", true);
+    });
+    this.on('connected', this.onConnected);
+    this.on('exited', this.onExited);
+  }
 
+  parseParams(config: SSConfig) {
+    this.params = [
+      "-s",
+      config.serverHost,
+      "-p",
+      config.serverPort.toString(),
+      "-l",
+      this.settings.localPort.toString(),
+      "-k",
+      config.password,
+      "-m",
+      config.encryptMethod,
+      config.udp ? "-u" : "",
+      config.fastOpen ? "--fast-open" : "",
+      config.noDelay ? "--no-delay" : "",
+      config.plugin ? "--plugin" : "",
+      config.plugin ?? "",
+      config.pluginOpts ? "--plugin-opts" : "",
+      config.pluginOpts ?? "",
+      this.settings.verbose ? "-v" : "",
+      "-t",
+      (config.timeout ?? "600").toString()
+    ].filter(arg => arg !== '');
+  }
+
+  connect(config: SSConfig): Promise<{code: number, result: any}> {
+    return new Promise(resolve => {
+      this.parseParams(config);
+      this.child = spawn(
+        this.bin,
+        this.params
+      );
+
+      if (!this.child) return resolve({
+        code: 500,
+        result: `Failed to exec command [${this.bin}] with args [${JSON.stringify(this.params)}].`
+      });
+
+      this.child.stdout?.once("data", async () => {
+        this.emit('connected', () => {
           resolve({
             code: 200,
-            result: null
+            result: 'success'
           });
         });
+      });
 
-        ssLocal.stdout?.on("data", data => {
-          logger.info(data);
-        });
-        ssLocal.stderr?.on('data', err => {
-          error = err;
-          logger.error(err);
-          ssLocal?.kill();
-        });
-        ssLocal.on("error", async (err) => {
-          error = err;
-          logger.error(err);
-          ssLocal?.kill();
-        });
-        ssLocal.on("exit", async (code, signal) => {
-          logger.info(`Exited ${sslocalPath} with code ${code} or signal ${signal}`);
+      this.child.stdout?.on("data", data => {
+        logger.info(data);
+      });
 
-          await setProxy("off");
-          logger.info("Set proxy off");
-
-          connected = false;
-          MessageChannel.sendTo(mainWindow?.id || 1, 'connected', false);
-
-          resolve({
-            code: 500,
-            result: error?.toString() ?? `Exited ${sslocalPath} with code ${code} or signal ${signal}`
-          });
-
-          ssLocal = null;
-        });
-      })
-      .catch(err => {
-        resolve({
-          code: 500,
-          result: {
-            error: err.toString()
+      this.child.stderr?.on('data', err => {
+        this.error = err || null;
+        console.log('child.stderr.on.data >> ');
+        logger.error(err);
+        this.emit('exited', (isAlive: boolean) => {
+          if (!isAlive) {
+            this.child?.kill();
+          } else {
+            this.emit('connected', () => {
+              resolve({
+                code: 200,
+                result: 'success'
+              });
+            });
           }
         });
       });
-  });
 
+      this.child.on("error", async (err) => {
+        this.error = err || null;
+        console.log('child.on.error >> ');
+        logger.error(err);
+        this.emit('exited', (isAlive: boolean) => {
+          if (!isAlive) {
+            this.child?.kill();
+          } else {
+            this.emit('connected', () => {
+              resolve({
+                code: 200,
+                result: 'success'
+              });
+            });
+          }
+        });
+      });
+
+      this.child.on("exit", async () => {
+        resolve({
+          code: 500,
+          result: String(this.error)
+        });
+        this.child = null;
+      });
+    });
+  }
+
+  disconnect() {
+    this.child?.kill("SIGKILL");
+    mainWindow?.webContents.send("connected", false);
+  }
+}
+
+class SSRClient extends Client {
+  constructor(settings: Settings) {
+    super(settings, 'ssr');
+    this.on('error', () => {
+
+    });
+    this.on('connected', this.onConnected);
+    this.on('exited', this.onExited);
+  }
+
+  parseParams(config: SSRConfig) {
+    this.params = [
+      "-s",
+      config.serverHost,
+      "-p",
+      config.serverPort.toString(),
+      "-l",
+      this.settings.localPort.toString(),
+      "-k",
+      config.password,
+      "-m",
+      config.encryptMethod,
+      "-t",
+      (config.timeout ?? "600").toString(),
+      "-o",
+      config.obfs,
+      "-O",
+      config.protocol,
+      config.obfsParam ? `-g ${config.obfsParam}` : '',
+      config.protocolParam ? `-G ${config.protocolParam}` : '',
+      config.udp ? "-u" : "",
+      config.fastOpen ? "--fast-open" : "",
+      // config.noDelay ? "--no-delay" : "",
+      config.plugin ? "--plugin" : "",
+      config.plugin ?? "",
+      config.pluginOpts ? "--plugin-opts" : "",
+      config.pluginOpts ?? "",
+      this.settings.verbose ? "-v" : ""
+    ].filter(arg => arg !== '');
+  }
+
+  connect(config: SSRConfig): Promise<{code: number, result: any}> {
+    return new Promise(resolve => {
+      this.parseParams(config);
+      this.child = spawn(
+        this.bin,
+        this.params
+      );
+
+      if (!this.child) return resolve({
+        code: 500,
+        result: `Failed to exec command [${this.bin}] with args [${JSON.stringify(this.params)}].`
+      });
+
+      this.child.stdout?.once("data", async () => {
+        this.emit('connected', () => {
+          resolve({
+            code: 200,
+            result: 'success'
+          });
+        });
+      });
+
+      this.child.stdout?.on("data", data => {
+        logger.info(data);
+      });
+
+      this.child.stderr?.on('data', err => {
+        this.error = err || null;
+        console.log('child.stderr.on.data >> ');
+        logger.error(err);
+        this.emit('exited', (isAlive: boolean) => {
+          if (!isAlive) {
+            this.child?.kill();
+          } else {
+            this.emit('connected', () => {
+              resolve({
+                code: 200,
+                result: 'success'
+              });
+            });
+          }
+        });
+      });
+
+      this.child.on("error", async (err) => {
+        this.error = err || null;
+        console.log('child.on.error >> ');
+        logger.error(err);
+        this.emit('exited', (isAlive: boolean) => {
+          if (!isAlive) {
+            this.child?.kill();
+          } else {
+            this.emit('connected', () => {
+              resolve({
+                code: 200,
+                result: 'success'
+              });
+            });
+          }
+        });
+      });
+
+      this.child.on("exit", async () => {
+        resolve({
+          code: 500,
+          result: String(this.error)
+        });
+        this.child = null;
+      });
+    });
+  }
+
+  disconnect() {
+    this.child?.kill("SIGKILL");
+    mainWindow?.webContents.send("connected", false);
+  }
+}
+
+const spawnClient = async (config: Config, settings: Settings) : Promise<{code: number, result: any}> => {
+  console.log(config);
+
+  if (config.type === 'ssr') {
+    ssLocal = new SSRClient(settings);
+    return (ssLocal as SSRClient).connect(config as SSRConfig);
+  } else {
+    ssLocal= new SSClient(settings);
+    return (ssLocal as SSClient).connect(config as SSConfig);
+  }
 };
 
 const killClient = async () => {
-  ssLocal?.kill("SIGKILL");
-  logger.info("Killed ss-local");
+  ssLocal?.disconnect();
+  logger.info(`Killed ${ssLocal?.type || 'ss'}-local`);
 };
 
 export const startClient = async (config: Config, settings: Settings): Promise<{ code: number, result: any }> => {
