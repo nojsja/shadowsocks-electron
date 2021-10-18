@@ -1,9 +1,10 @@
-import { IpcMain, app, dialog, Notification } from 'electron';
+import { IpcMain, app, dialog, Notification, Menu } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import { ProcessManager } from 'electron-re';
 
 import {
+  contextAction,
   DesktopService as DesktopServiceType,
   rectPoint, ServiceResult
 } from '../types/extention';
@@ -236,6 +237,25 @@ export class DesktopService implements DesktopServiceType {
             result: error.toString()
           });
         })
+    });
+  }
+
+  async contextMenu(actions: contextAction[]): Promise<ServiceResult> {
+    return new Promise(resolve => {
+      const templates = actions.map(action => {
+        let a: Electron.MenuItemConstructorOptions = {
+          ...action
+        };
+        a.click = (function(this: any) {
+          resolve({
+            code: 200,
+            result: this.action
+          });
+        }).bind(a);
+
+        return a;
+      })
+      Menu.buildFromTemplate(templates).popup();
     });
   }
 }

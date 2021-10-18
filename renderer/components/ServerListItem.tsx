@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { MessageChannel } from 'electron-re';
 import {
   ListItem,
   ListItemText,
@@ -56,11 +57,13 @@ export interface ServerListItemProps extends ListItemProps {
   remark?: string;
   serverType?: string;
   ip: string;
+  id: string;
   port: number;
   plugin?: string;
-  onEdit?: () => void;
-  onShare?: () => void;
-  onRemove?: () => void;
+  onChoose: (key: string) => void;
+  onEdit?: (key: string) => void;
+  onShare?: (key: string) => void;
+  onRemove?: (key: string) => void;
 }
 
 const ServerListItem: React.FC<ServerListItemProps> = props => {
@@ -69,10 +72,11 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
   const {
     remark,
     ip,
+    id,
     port,
     plugin,
     selected,
-    onClick,
+    onChoose,
     onEdit,
     onShare,
     onRemove,
@@ -93,20 +97,52 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
   };
 
   const handleEditButtonClick = () => {
-    onEdit?.();
+    onEdit?.(id);
   };
 
   const handleShareButtonClick = () => {
-    onShare?.();
+    onShare?.(id);
   };
 
   const handleRemoveButtonClick = () => {
-    onRemove?.();
+    onRemove?.(id);
+  };
+
+  const handleChooseButtonClick = () => {
+    onChoose?.(id);
+  }
+
+  const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    // alert('码云笔记')
+    e.preventDefault();
+    MessageChannel.invoke('main', 'service:desktop', {
+      action: 'contextMenu',
+      params: [
+        {
+          label: "连接",
+          action: 'connect',
+          accelerator: '',
+        },
+        {
+          label: "复制",
+          action: 'copy',
+          accelerator: '',
+        },
+        {
+          label: "测试延迟",
+          action: 'test',
+          accelerator: '',
+        }
+      ]
+    })
+    .then(rsp => {
+      console.log(rsp);
+    });
   };
 
   return (
     <div onMouseEnter={handleActionShow} onMouseLeave={handleActionHide}>
-      <ListItem button onClick={onClick as any}>
+      <ListItem button onClick={handleChooseButtonClick} onContextMenu={onContextMenu}>
         <ListItemIcon
           className={styles.listIcon}
         >

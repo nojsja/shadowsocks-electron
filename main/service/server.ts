@@ -8,6 +8,7 @@ import {
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
 import { createHttpServer, createHttpsServer, stopHttpServer, stopHttpsServer } from '../proxy/http';
+import tcpPing from '../utils/tcp-ping';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -182,4 +183,12 @@ export class MainService implements MainServiceType {
     });
   }
 
+  async tcpPing() {
+    tcpPing({
+      host: 'cn4.mydarkcloud.info',
+      port: 12600
+    }).then(([result, records]) => {
+      console.log(result, records);
+    });
+  }
 }

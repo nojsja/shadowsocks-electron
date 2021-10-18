@@ -21,7 +21,7 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      height: `calc(100vh - 56px)`,
+      height: `calc(100vh - 56px - 24px)`,
       padding: theme.spacing(1)
     },
     empty: {

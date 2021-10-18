@@ -15,10 +15,6 @@ import { green, yellow } from "@material-ui/core/colors";
 import AddIcon from "@material-ui/icons/Add";
 import uuid from "uuid/v1";
 
-import ServerListItem from "../components/ServerListItem";
-import AddServerDialog from "../components/AddServerDialog";
-import ConfShareDialog from '../components/ConfShareDialog';
-import EditServerDialog from "../components/EditServerDialog";
 import { Config, Mode, closeOptions } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
@@ -33,6 +29,12 @@ import {
 import { setHttpAndHttpsProxy, SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
 import { startClientAction } from '../redux/actions/status';
+
+import ServerListItem from "../components/ServerListItem";
+import AddServerDialog from "../components/AddServerDialog";
+import ConfShareDialog from '../components/ConfShareDialog';
+import EditServerDialog from "../components/EditServerDialog";
+import StatusBar from '../components/StatusBar';
 
 const menuItems = ["PAC", "Global", "Manual"];
 
@@ -248,6 +250,11 @@ const HomePage: React.FC = () => {
       }
 
     }, 500);
+
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'tcpPing'
+    });
+
   }, [])
 
   useEffect(() => {
@@ -302,16 +309,17 @@ const HomePage: React.FC = () => {
             {config.map((item, index) => (
               <ServerListItem
                 key={item.id}
+                id={item.id}
                 remark={item.remark}
                 serverType={item.type}
                 ip={item.serverHost}
                 port={item.serverPort}
                 plugin={item.plugin}
                 selected={item.id === selectedServer}
-                onClick={() => handleServerSelect(item.id)}
-                onShare={() => handleShareButtonClick(item.id)}
-                onEdit={() => handleEditButtonClick(item.id)}
-                onRemove={() => handleRemoveButtonClick(item.id)}
+                onChoose={handleServerSelect}
+                onShare={handleShareButtonClick}
+                onEdit={handleEditButtonClick}
+                onRemove={handleRemoveButtonClick}
                 isLast={index === config.length - 1}
               />
             ))}
@@ -370,7 +378,7 @@ const HomePage: React.FC = () => {
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleServerRemove} />
       { SnackbarAlert }
       <BackDrop />
-
+      <StatusBar />
     </Container>
   );
 };
