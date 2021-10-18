@@ -303,6 +303,7 @@ const HomePage: React.FC = () => {
               <ServerListItem
                 key={item.id}
                 remark={item.remark}
+                serverType={item.type}
                 ip={item.serverHost}
                 port={item.serverPort}
                 plugin={item.plugin}

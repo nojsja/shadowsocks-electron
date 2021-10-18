@@ -55,13 +55,11 @@ export const startClientAction =
             settings
           }
         }).then(rsp => {
-          setTimeout(() => {
-            dispatch({
-              type: SET_STATUS,
-              key: "loading",
-              value: false
-            });
-          }, 1e3);
+          dispatch({
+            type: SET_STATUS,
+            key: "loading",
+            value: false
+          });
           dispatch(getConnectionStatusAction());
           if (rsp.code === 600 && rsp.result.isInUse) {
             MessageChannel.invoke('main', 'service:desktop', {

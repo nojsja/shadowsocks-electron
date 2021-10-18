@@ -6,10 +6,11 @@ import {
   IconButton,
   ListItemProps,
   ListItemIcon,
+  Badge,
   Divider
 } from "@material-ui/core";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-import { red } from '@material-ui/core/colors';
+import { makeStyles, createStyles, Theme, withStyles } from "@material-ui/core/styles";
+import { grey, red } from '@material-ui/core/colors';
 import EditIcon from "@material-ui/icons/Edit";
 import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
 import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
@@ -34,9 +35,26 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const StyledBadge = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      right: -20,
+      top: 12,
+      borderRadius: 3,
+      padding: '0 5',
+      color: grey[500],
+      backgroundColor: 'white',
+      fontWeight: 'bold',
+      border: 'solid 1px ' + grey[400]
+      // backgroundColor: grey[400]
+    },
+  }),
+)(Badge);
+
 export interface ServerListItemProps extends ListItemProps {
   isLast?: boolean;
   remark?: string;
+  serverType?: string;
   ip: string;
   port: number;
   plugin?: string;
@@ -58,6 +76,7 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
     onEdit,
     onShare,
     onRemove,
+    serverType,
     isLast
   } = props;
 
@@ -99,18 +118,24 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
           }
           </ListItemIcon>
 
-        <ListItemText
-          primary={remark ? remark : origin}
-          secondary={
-            remark && plugin
-              ? `${origin} / ${plugin}`
-              : remark
-              ? origin
-              : plugin
-              ? plugin
-              : ""
-          }
-        />
+            <ListItemText
+              primary={
+                <StyledBadge
+                  badgeContent={serverType} color="primary"
+                >
+                  <span>{remark ? remark : origin}</span>
+                </StyledBadge>
+              }
+              secondary={
+                remark && plugin
+                  ? `${origin} / ${plugin}`
+                  : remark
+                  ? origin
+                  : plugin
+                  ? plugin
+                  : ""
+              }
+            />
         <ListItemSecondaryAction
           className={styles.action}
           hidden={actionHidden}

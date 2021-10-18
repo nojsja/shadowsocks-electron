@@ -97,8 +97,7 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       height: 'auto'
     },
     'author-info__others': {
-      marginLeft: 'auto',
-      marginRight: 'auto',
+      margin: '10px auto',
       maxWidth: '70%'
     },
   })
