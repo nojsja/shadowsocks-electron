@@ -13,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 // import { green, yellow } from "@material-ui/core/colors";
 import AddIcon from "@material-ui/icons/Add";
+import SyncIcon from '@material-ui/icons/Sync';
 import uuid from "uuid/v1";
 
 import { Config, Mode, closeOptions } from "../types";
@@ -28,7 +29,7 @@ import {
 } from "../redux/actions/config";
 import { setHttpAndHttpsProxy, SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
-import { startClientAction } from '../redux/actions/status';
+import { getConnectionDelay, startClientAction } from '../redux/actions/status';
 
 import ServerListItem from "../components/ServerListItem";
 import AddServerDialog from "../components/AddServerDialog";
@@ -57,7 +58,7 @@ const HomePage: React.FC = () => {
   const settings = useTypedSelector(state => state.settings);
   const connected = useTypedSelector(state => state.status.connected);
   const delay = useTypedSelector(state => state.status.delay);
-  // const loading = useTypedSelector(state => state.status.loading);
+  const loading = useTypedSelector(state => state.status.loading);
 
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
@@ -155,6 +156,7 @@ const HomePage: React.FC = () => {
 
   const handleServerConnect = async (useValue?: string) => {
     const value = useValue === undefined ? selectedServer : useValue;
+    let conf: Config | undefined;
     if (value) {
       if (selectedServer) {
         if (connected) {
@@ -163,14 +165,18 @@ const HomePage: React.FC = () => {
             params: {}
           });
         } else {
-          dispatch(
-            startClientAction(
-              config.find(i => i.id === value),
-              settings,
-              t('warning'),
-              t('the_local_port_is_occupied')
-            )
-          );
+          conf = config.find(i => i.id === value);
+          if (conf) {
+            dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
+            dispatch(
+              startClientAction(
+                conf,
+                settings,
+                t('warning'),
+                t('the_local_port_is_occupied')
+              )
+            );
+          }
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -262,14 +268,18 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (selectedServer && connected) {
-        dispatch(
-          startClientAction(
-            config.find(i => i.id === selectedServer),
-            settings,
-            t('warning'),
-            t('the_local_port_is_occupied')
-          )
-        );
+        let conf = config.find(i => i.id === selectedServer);
+        if (conf) {
+          dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
+          dispatch(
+            startClientAction(
+              conf,
+              settings,
+              t('warning'),
+              t('the_local_port_is_occupied')
+            )
+          );
+        }
       }
     })();
   }, [config, selectedServer, settings]);
@@ -335,29 +345,6 @@ const HomePage: React.FC = () => {
         <Fab size="small" color="secondary" className={styles.noShadow} variant="round" onClick={handleDialogOpen}>
           <AddIcon />
         </Fab>
-        {/* <Fab
-          size="small"
-          variant="extended"
-          disabled={loading}
-          style={{
-            backgroundColor: !connected ? yellow["800"] : green["A700"],
-            color: 'white',
-            paddingLeft: 14,
-            paddingRight: 14
-          }}
-          onClick={() => handleServerConnect()}
-        >
-          {loading ? (
-            <CircularProgress
-              className={styles.extendedIcon}
-              color="inherit"
-              size={20}
-            />
-          ) : (
-            null // <Logo className={styles.extendedIcon} />
-          )}
-          {loading ? t("loading") : connected ? t("connected") : t("offline")}
-        </Fab> */}
       </div>
 
       {/* -------- dialog ------- */}
@@ -384,10 +371,11 @@ const HomePage: React.FC = () => {
       <BackDrop />
       <StatusBar
         left={[
-          <StatusBarNetwork delay={delay}/>
+          <SyncIcon key="status_bar_rotate" fontSize='small' className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}/>,
+          <StatusBarNetwork key="status_bar_network" delay={delay}/>
         ]}
         right={[
-          <StatusBarConnection status={connected ? 'online' : 'offline'} />
+          <StatusBarConnection key="status_bar_connection" status={connected ? 'online' : 'offline'} />
         ]}
       />
     </Container>

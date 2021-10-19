@@ -17,12 +17,31 @@ export const scrollBarStyle = (width: number = 10, radius: number = 5) => ({
 
 export const useStylesOfHome = makeStyles((theme: Theme) =>
   createStyles({
+    "@keyframes rotate": {
+      "0%": {
+        transform: "rotateZ(0deg)"
+      },
+      "100%": {
+        transform: "rotateZ(360deg)"
+      }
+    },
+    'loading-icon': {
+      marginRight: '0',
+      fontSize: '14px',
+      '&.rotate': {
+        animationName: '$rotate',
+        animationDuration: '1s',
+        animationTimingFunction: 'linear',
+        animationIterationCount: 'infinite'
+      }
+    },
     container: {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      height: `calc(100vh - 56px - 24px)`,
-      padding: theme.spacing(1)
+      height: `calc(100vh - 56px)`,
+      padding: theme.spacing(1),
+      paddingTop: 0
     },
     empty: {
       flex: 1,
@@ -36,8 +55,8 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       width: "100%",
       flex: 1,
       overflowY: "auto",
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2)
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1)
     },
     scrollbar: scrollBarStyle(10, 0),
     fabs: {
@@ -48,7 +67,7 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
         marginLeft: theme.spacing(2)
       },
       position: "fixed",
-      bottom: theme.spacing(2),
+      bottom: theme.spacing(2.5),
       right: theme.spacing(2),
       left: theme.spacing(0),
     },

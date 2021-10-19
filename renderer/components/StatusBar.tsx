@@ -3,6 +3,7 @@ import {
   Theme
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+// import { grey } from '@material-ui/core/colors';
 
 type StatusBarProps = {
   left: React.ReactElement[];
@@ -12,23 +13,30 @@ type StatusBarProps = {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     'status-bar-wrapper': {
-      display: 'flex',
       padding: '4px 8px',
-      alignItems: 'center',
       position: 'fixed',
       height: '20px',
       bottom: 0,
       left: 0,
       width: '100%',
       backgroundColor: theme.palette.primary.main,
+      // backgroundColor: grey[800],
       fontSize: '12px',
       color: 'white',
       '& > .left-pannel': {
+        display: 'inline-flex',
+        height: '100%',
         width: '50%',
+        alignItems: 'center',
+        verticalAlign: 'top'
       },
       '& > .right-pannel': {
+        display: 'inline-flex',
+        height: '100%',
         width: '50%',
-        direction: 'rtl'
+        direction: 'rtl',
+        alignItems: 'center',
+        verticalAlign: 'top'
       }
     },
   })

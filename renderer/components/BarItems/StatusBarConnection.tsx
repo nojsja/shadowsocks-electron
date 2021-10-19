@@ -16,10 +16,7 @@ const StyledBadge = withStyles((theme: Theme) =>
     badge: {
       left: -8,
       bottom: 8,
-      borderRadius: 3,
-      padding: '0 5',
       color: grey[500],
-      fontWeight: 'bold',
       backgroundColor: green[400]
     }
   }),
@@ -54,7 +51,7 @@ const StatusBarConnection: React.FC<StatusBarConnectionProps> = (props) => {
       }}>
       <span>
         {
-          props.status === 'online' ? t('connected') : t('offline')
+          props.status === 'online' ? t('connected').toLowerCase() : t('offline').toLowerCase()
         }
       </span>
     </StyledBadge>

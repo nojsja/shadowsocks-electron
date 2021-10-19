@@ -76,6 +76,7 @@ export interface Settings {
 export interface Status {
   connected: boolean;
   loading: boolean;
+  delay: number | null | '';
 }
 
 export interface RootState {

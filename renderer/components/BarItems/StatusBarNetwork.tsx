@@ -11,7 +11,11 @@ type StatusBarProps = {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    text: {}
+    text: {
+      display: 'inline-block',
+      fontSize: '11px',
+      padding: '2px 2px'
+    }
   })
 );
 
@@ -20,7 +24,7 @@ const StatusBarNetwork: React.FC<StatusBarProps> = (props) => {
   const { t } = useTranslation();
 
   return (
-    <span className={styles.text}>{t('delay')} [{props.delay ?? 0} ms]</span>
+    <span className={styles.text}>{t('delay').toLowerCase()}:{props.delay ? props.delay : 0}ms</span>
   );
 };
 

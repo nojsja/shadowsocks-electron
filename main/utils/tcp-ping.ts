@@ -44,7 +44,7 @@ const tcpPing = (options: pingOptions): Promise<[pingResult, connectResult[]]> =
           }
 
           if (index === count - 1) {
-            result.ave = result.ave / (count - result.failed);
+            result.ave = +(result.ave / (count - result.failed)).toFixed(0);
             resolve([result, results]);
           }
 
@@ -86,7 +86,6 @@ const tcpConnect = (options: pingOptions, callback: (error: Error | null, delay:
   });
   client.on('end', () => {
     isEnd = true;
-    console.log('disconnected from server');
   });
 };
 
