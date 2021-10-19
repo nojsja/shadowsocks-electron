@@ -1,6 +1,10 @@
 {
+  "delay": "延迟",
+  "delay_test": "延迟测试",
   "loading": "加载中",
   "connected": "已连接",
+  "connect": "连接",
+  "disconnect": "断开连接",
   "pac": "PAC",
   "global": "全局",
   "manual": "手动",
@@ -49,6 +53,7 @@
   "remove_this_server?": "删除这个服务器？",
   "this_action_cannot_be_undone": "此操作不能恢复，请谨慎操作！",
   "copied": "已复制",
+  "copy": "复制",
   "edit_server": "编辑服务器",
   "save": "保存",
   "language": "语言",

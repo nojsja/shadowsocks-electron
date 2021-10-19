@@ -5,13 +5,13 @@ import {
   Container,
   List,
   Fab,
-  CircularProgress,
+  // CircularProgress,
   Typography,
   Tabs,
   Tab
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
-import { green, yellow } from "@material-ui/core/colors";
+// import { green, yellow } from "@material-ui/core/colors";
 import AddIcon from "@material-ui/icons/Add";
 import uuid from "uuid/v1";
 
@@ -35,6 +35,8 @@ import AddServerDialog from "../components/AddServerDialog";
 import ConfShareDialog from '../components/ConfShareDialog';
 import EditServerDialog from "../components/EditServerDialog";
 import StatusBar from '../components/StatusBar';
+import StatusBarConnection from '../components/BarItems/StatusBarConnection';
+import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
 
 const menuItems = ["PAC", "Global", "Manual"];
 
@@ -54,7 +56,8 @@ const HomePage: React.FC = () => {
   const mode = useTypedSelector(state => state.settings.mode);
   const settings = useTypedSelector(state => state.settings);
   const connected = useTypedSelector(state => state.status.connected);
-  const loading = useTypedSelector(state => state.status.loading);
+  const delay = useTypedSelector(state => state.status.delay);
+  // const loading = useTypedSelector(state => state.status.loading);
 
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
@@ -150,24 +153,27 @@ const HomePage: React.FC = () => {
     setEditingServerId(null);
   };
 
-  const handleServerConnect = async () => {
-    if (selectedServer) {
-      if (connected) {
-        await MessageChannel.invoke('main', 'service:main', {
-          action: 'stopClient',
-          params: {}
-        });
-      } else {
-        dispatch(
-          startClientAction(
-            config.find(i => i.id === selectedServer),
-            settings,
-            t('warning'),
-            t('the_local_port_is_occupied')
-          )
-        );
+  const handleServerConnect = async (useValue?: string) => {
+    const value = useValue === undefined ? selectedServer : useValue;
+    if (value) {
+      if (selectedServer) {
+        if (connected) {
+          await MessageChannel.invoke('main', 'service:main', {
+            action: 'stopClient',
+            params: {}
+          });
+        } else {
+          dispatch(
+            startClientAction(
+              config.find(i => i.id === value),
+              settings,
+              t('warning'),
+              t('the_local_port_is_occupied')
+            )
+          );
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   };
 
@@ -251,10 +257,6 @@ const HomePage: React.FC = () => {
 
     }, 500);
 
-    MessageChannel.invoke('main', 'service:main', {
-      action: 'tcpPing'
-    });
-
   }, [])
 
   useEffect(() => {
@@ -316,10 +318,12 @@ const HomePage: React.FC = () => {
                 port={item.serverPort}
                 plugin={item.plugin}
                 selected={item.id === selectedServer}
-                onChoose={handleServerSelect}
+                connected={connected}
                 onShare={handleShareButtonClick}
                 onEdit={handleEditButtonClick}
                 onRemove={handleRemoveButtonClick}
+                handleServerSelect={handleServerSelect}
+                handleServerConnect={handleServerConnect}
                 isLast={index === config.length - 1}
               />
             ))}
@@ -331,7 +335,7 @@ const HomePage: React.FC = () => {
         <Fab size="small" color="secondary" className={styles.noShadow} variant="round" onClick={handleDialogOpen}>
           <AddIcon />
         </Fab>
-        <Fab
+        {/* <Fab
           size="small"
           variant="extended"
           disabled={loading}
@@ -341,7 +345,7 @@ const HomePage: React.FC = () => {
             paddingLeft: 14,
             paddingRight: 14
           }}
-          onClick={handleServerConnect}
+          onClick={() => handleServerConnect()}
         >
           {loading ? (
             <CircularProgress
@@ -353,7 +357,7 @@ const HomePage: React.FC = () => {
             null // <Logo className={styles.extendedIcon} />
           )}
           {loading ? t("loading") : connected ? t("connected") : t("offline")}
-        </Fab>
+        </Fab> */}
       </div>
 
       {/* -------- dialog ------- */}
@@ -378,7 +382,14 @@ const HomePage: React.FC = () => {
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleServerRemove} />
       { SnackbarAlert }
       <BackDrop />
-      <StatusBar />
+      <StatusBar
+        left={[
+          <StatusBarNetwork delay={delay}/>
+        ]}
+        right={[
+          <StatusBarConnection status={connected ? 'online' : 'offline'} />
+        ]}
+      />
     </Container>
   );
 };

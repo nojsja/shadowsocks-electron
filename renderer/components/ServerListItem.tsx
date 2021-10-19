@@ -17,6 +17,9 @@ import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
 import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
 import ShareIcon from "@material-ui/icons/Share";
 import RemoveIcon from "@material-ui/icons/Delete";
+import { useDispatch } from "react-redux";
+import { getConnectionDelay } from "../redux/actions/status";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,14 +63,18 @@ export interface ServerListItemProps extends ListItemProps {
   id: string;
   port: number;
   plugin?: string;
-  onChoose: (key: string) => void;
+  connected: boolean;
   onEdit?: (key: string) => void;
   onShare?: (key: string) => void;
   onRemove?: (key: string) => void;
+  handleServerConnect: (key: string) => void;
+  handleServerSelect: (key: string) => void;
 }
 
 const ServerListItem: React.FC<ServerListItemProps> = props => {
   const styles = useStyles();
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const {
     remark,
@@ -76,11 +83,13 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
     port,
     plugin,
     selected,
-    onChoose,
+    connected,
     onEdit,
     onShare,
     onRemove,
     serverType,
+    handleServerConnect,
+    handleServerSelect,
     isLast
   } = props;
 
@@ -109,7 +118,22 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
   };
 
   const handleChooseButtonClick = () => {
-    onChoose?.(id);
+    if (selected) {
+      if (connected) {
+        handleServerConnect(id);
+      } else {
+        handleServerConnect(id);
+      }
+    } else {
+      if (connected) {
+        handleServerSelect(id);
+      } else {
+        handleServerSelect(id);
+        setTimeout(() => {
+          handleServerConnect(id);
+        }, 300);
+      }
+    }
   }
 
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
@@ -119,24 +143,40 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
       action: 'contextMenu',
       params: [
         {
-          label: "连接",
-          action: 'connect',
+          label: (connected && selected) ? t('disconnect') : t('connect'),
+          action: (connected && selected) ? ('disconnect') : ('connect'),
           accelerator: '',
         },
         {
-          label: "复制",
+          label: t('copy'),
           action: 'copy',
           accelerator: '',
         },
         {
-          label: "测试延迟",
+          label: t('delay_test'),
           action: 'test',
           accelerator: '',
         }
       ]
     })
     .then(rsp => {
-      console.log(rsp);
+      if (rsp.code === 200) {
+        switch (rsp.result) {
+          case 'connect':
+            handleChooseButtonClick();
+            break;
+          case 'disconnect':
+            handleChooseButtonClick();
+            break;
+          case 'copy':
+            break;
+          case 'test':
+            dispatch(getConnectionDelay(ip, port));
+            break;
+          default:
+            break;
+        }
+      }
     });
   };
 

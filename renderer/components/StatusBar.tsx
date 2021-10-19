@@ -1,24 +1,13 @@
 import React from 'react';
 import {
-  Theme,
-  Badge
+  Theme
 } from '@material-ui/core';
-import { makeStyles, createStyles, withStyles } from '@material-ui/core/styles';
-import { green, grey } from '@material-ui/core/colors';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 
-const StyledBadge = withStyles((theme: Theme) =>
-  createStyles({
-    badge: {
-      left: -8,
-      bottom: 8,
-      borderRadius: 3,
-      padding: '0 5',
-      color: grey[500],
-      fontWeight: 'bold',
-      backgroundColor: green[400]
-    },
-  }),
-)(Badge);
+type StatusBarProps = {
+  left: React.ReactElement[];
+  right: React.ReactElement[];
+};
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,23 +34,20 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export default () => {
+const StatusBar: React.FC<StatusBarProps> =  (props) => {
   const styles = useStyles();
+  const { left, right } = props;
 
   return (
     <div className={styles['status-bar-wrapper']}>
       <div className={'left-pannel'}>
-        <span>延迟：145 ms</span>
+        { left }
       </div>
       <div className={'right-pannel'}>
-        <StyledBadge variant="dot"
-          anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}>
-          <span>已连接</span>
-        </StyledBadge>
+        { right }
       </div>
     </div>
   );
 };
+
+export default StatusBar;

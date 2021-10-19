@@ -183,12 +183,20 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async tcpPing() {
-    tcpPing({
-      host: 'cn4.mydarkcloud.info',
-      port: 12600
-    }).then(([result, records]) => {
-      console.log(result, records);
-    });
+  async tcpPing(params: { host: string, port: number }) {
+    return new Promise(resolve => {
+      tcpPing({
+        host: params.host,
+        port: params.port
+      }).then(([result, records]) => {
+        resolve({
+          code: 200,
+          result: {
+            ...result,
+            records: records
+          }
+        });
+      });
+    })
   }
 }
