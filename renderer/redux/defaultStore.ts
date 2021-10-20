@@ -4,6 +4,7 @@ const defaultStore: RootState = {
   config: [],
   status: {
     connected: false,
+    delay: 0,
     loading: false
   },
   settings: {

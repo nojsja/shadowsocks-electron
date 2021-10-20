@@ -75,7 +75,7 @@ const AppNav: React.FC = () => {
   return (
     <div>
       <AppBar position="fixed" className={styles.appBar}>
-        <Toolbar className={styles.toolBar}>
+        <Toolbar className={styles.toolBar} variant="dense">
           <div>
               <IconButton
                 color="inherit"

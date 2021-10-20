@@ -201,6 +201,8 @@ const SettingsPage: React.FC = () => {
         className={styles.textField}
         required
         fullWidth
+        // variant="outlined"
+        size="small"
         type="number"
         label={t('local_port')}
         placeholder={t('local_port_tips')}
@@ -212,6 +214,8 @@ const SettingsPage: React.FC = () => {
         required
         fullWidth
         type="number"
+        // variant="outlined"
+        size="small"
         label={t('pac_port')}
         placeholder={t('pac_port_tips')}
         value={settings.pacPort}
@@ -222,11 +226,14 @@ const SettingsPage: React.FC = () => {
         required
         fullWidth
         type="url"
+        // variant="outlined"
+        size="small"
         label={t('gfwlist_url')}
         placeholder={t('gfwlist_url_tips')}
         value={settings.gfwListUrl}
         onChange={e => handleValueChange("gfwListUrl", e)}
       />
+
       <List className={styles.list}>
         <ListItem>
             <ListItemText
@@ -318,8 +325,21 @@ const SettingsPage: React.FC = () => {
           </Select>
           </ListItemSecondaryAction>
         </ListItem>
+
+        <ListItem button onClick={backupConfiguration}>
+            <ListItemText primary={t('backup')} />
+        </ListItem>
+        <ListItem button onClick={() => restoreConfiguration()}>
+            <ListItemText primary={t('restore')} />
+        </ListItem>
+        <ListItem button onClick={handleAlertDialogOpen}>
+          <ListItemText primary={t('reset_data')} />
+        </ListItem>
+
         <Divider className={styles.margin} />
+
         <ListSubheader>{t('debugging')}</ListSubheader>
+
         <ListItem>
           <ListItemText
             primary="Verbose"
@@ -334,20 +354,11 @@ const SettingsPage: React.FC = () => {
             />
           </ListItemSecondaryAction>
         </ListItem>
-        <ListItem button onClick={backupConfiguration}>
-            <ListItemText primary={t('backup')} />
-        </ListItem>
-        <ListItem button onClick={() => restoreConfiguration()}>
-            <ListItemText primary={t('restore')} />
-        </ListItem>
         <ListItem button onClick={handleOpenLog}>
           <ListItemText primary={t('open_log_dir')} />
         </ListItem>
         <ListItem button onClick={handleOpenProcessManager}>
           <ListItemText primary={t('open_process_manager')} />
-        </ListItem>
-        <ListItem button onClick={handleAlertDialogOpen}>
-          <ListItemText primary={t('reset_data')} />
         </ListItem>
       </List>
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />

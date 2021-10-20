@@ -1,6 +1,10 @@
 {
+  "delay": "Delay",
+  "delay_test": "Delay Test",
   "loading": "Loading",
   "connected": "Connected",
+  "connect": "Connect",
+  "disconnect": "Disconnect",
   "pac": "PAC",
   "global": "Global",
   "manual": "Manual",
@@ -49,6 +53,7 @@
   "remove_this_server?": "Remove this server?",
   "this_action_cannot_be_undone": "Please note: this action cannot be undone.",
   "copied": "copied",
+  "copy": "Copy",
   "edit_server": "Edit Server",
   "save": "Save",
   "language": "Language",

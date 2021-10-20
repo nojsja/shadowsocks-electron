@@ -8,6 +8,7 @@ import {
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
 import { createHttpServer, createHttpsServer, stopHttpServer, stopHttpsServer } from '../proxy/http';
+import tcpPing from '../utils/tcp-ping';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -182,4 +183,20 @@ export class MainService implements MainServiceType {
     });
   }
 
+  async tcpPing(params: { host: string, port: number }) {
+    return new Promise(resolve => {
+      tcpPing({
+        host: params.host,
+        port: params.port
+      }).then(([result, records]) => {
+        resolve({
+          code: 200,
+          result: {
+            ...result,
+            records: records
+          }
+        });
+      });
+    })
+  }
 }

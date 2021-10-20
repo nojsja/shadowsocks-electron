@@ -39,6 +39,22 @@ export const getConnectionStatusAction = (): ThunkAction<void, RootState, unknow
     };
 };
 
+export const getConnectionDelay = (host: string, port: number): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'tcpPing',
+      params: {
+        host, port
+      }
+    })
+    .then(rsp => {
+      if (rsp.code === 200) {
+        dispatch(setStatus('delay', rsp.result.ave));
+      }
+    });
+  };
+};
+
 export const startClientAction =
   (config: Config | undefined, settings: Settings, warningTitle: string, warningBody: string):
     ThunkAction<void, RootState, unknown, AnyAction> => {
@@ -55,13 +71,11 @@ export const startClientAction =
             settings
           }
         }).then(rsp => {
-          setTimeout(() => {
-            dispatch({
-              type: SET_STATUS,
-              key: "loading",
-              value: false
-            });
-          }, 1e3);
+          dispatch({
+            type: SET_STATUS,
+            key: "loading",
+            value: false
+          });
           dispatch(getConnectionStatusAction());
           if (rsp.code === 600 && rsp.result.isInUse) {
             MessageChannel.invoke('main', 'service:desktop', {

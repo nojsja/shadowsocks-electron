@@ -30,7 +30,7 @@ const AboutPage: React.FC = () => {
             github
           </Typography>.
       </Typography>
-      <p className={styles['author-info__others']}>
+      <div className={styles['author-info__others']}>
         <div>
             <Typography variant="caption" gutterBottom>
               Arch: {process.platform} ({process.arch})
@@ -51,7 +51,7 @@ const AboutPage: React.FC = () => {
               © 2021 nojsja
             </Typography>
           </div>
-      </p>
+      </div>
     </Container>
   );
 };

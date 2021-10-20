@@ -5,20 +5,16 @@ import {
   Container,
   List,
   Fab,
-  CircularProgress,
-  Typography,
-  Tabs,
-  Tab
+  ButtonGroup,
+  Button,
+  Typography
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
-import { green, yellow } from "@material-ui/core/colors";
+// import { green, yellow } from "@material-ui/core/colors";
 import AddIcon from "@material-ui/icons/Add";
+import SyncIcon from '@material-ui/icons/Sync';
 import uuid from "uuid/v1";
 
-import ServerListItem from "../components/ServerListItem";
-import AddServerDialog from "../components/AddServerDialog";
-import ConfShareDialog from '../components/ConfShareDialog';
-import EditServerDialog from "../components/EditServerDialog";
 import { Config, Mode, closeOptions } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
@@ -32,9 +28,17 @@ import {
 } from "../redux/actions/config";
 import { setHttpAndHttpsProxy, SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
-import { startClientAction } from '../redux/actions/status';
+import { getConnectionDelay, startClientAction } from '../redux/actions/status';
 
-const menuItems = ["PAC", "Global", "Manual"];
+import ServerListItem from "../components/ServerListItem";
+import AddServerDialog from "../components/AddServerDialog";
+import ConfShareDialog from '../components/ConfShareDialog';
+import EditServerDialog from "../components/EditServerDialog";
+import StatusBar from '../components/StatusBar';
+import StatusBarConnection from '../components/BarItems/StatusBarConnection';
+import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
+
+const menuItems = ["Global", "PAC", "Manual"];
 
 /**
  * HomePage
@@ -52,6 +56,7 @@ const HomePage: React.FC = () => {
   const mode = useTypedSelector(state => state.settings.mode);
   const settings = useTypedSelector(state => state.settings);
   const connected = useTypedSelector(state => state.status.connected);
+  const delay = useTypedSelector(state => state.status.delay);
   const loading = useTypedSelector(state => state.status.loading);
 
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
@@ -69,12 +74,14 @@ const HomePage: React.FC = () => {
 
   {/* -------- functions ------- */}
 
-  const handleModeChange = ((event: React.ChangeEvent<{}>, value: string) => {
-    dispatch({
-      type: SET_SETTING,
-      key: "mode",
-      value: value as Mode
-    });
+  const handleModeChange = ((value: string) => {
+    if (value !== mode) {
+      dispatch({
+        type: SET_SETTING,
+        key: "mode",
+        value: value as Mode
+      });
+    }
   });
 
   const handleServerSelect = (id: string) => {
@@ -148,24 +155,32 @@ const HomePage: React.FC = () => {
     setEditingServerId(null);
   };
 
-  const handleServerConnect = async () => {
-    if (selectedServer) {
-      if (connected) {
-        await MessageChannel.invoke('main', 'service:main', {
-          action: 'stopClient',
-          params: {}
-        });
-      } else {
-        dispatch(
-          startClientAction(
-            config.find(i => i.id === selectedServer),
-            settings,
-            t('warning'),
-            t('the_local_port_is_occupied')
-          )
-        );
+  const handleServerConnect = async (useValue?: string) => {
+    const value = useValue === undefined ? selectedServer : useValue;
+    let conf: Config | undefined;
+    if (value) {
+      if (selectedServer) {
+        if (connected) {
+          await MessageChannel.invoke('main', 'service:main', {
+            action: 'stopClient',
+            params: {}
+          });
+        } else {
+          conf = config.find(i => i.id === value);
+          if (conf) {
+            dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
+            dispatch(
+              startClientAction(
+                conf,
+                settings,
+                t('warning'),
+                t('the_local_port_is_occupied')
+              )
+            );
+          }
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   };
 
@@ -248,44 +263,30 @@ const HomePage: React.FC = () => {
       }
 
     }, 500);
+
   }, [])
 
   useEffect(() => {
     (async () => {
       if (selectedServer && connected) {
-        dispatch(
-          startClientAction(
-            config.find(i => i.id === selectedServer),
-            settings,
-            t('warning'),
-            t('the_local_port_is_occupied')
-          )
-        );
+        let conf = config.find(i => i.id === selectedServer);
+        if (conf) {
+          dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
+          dispatch(
+            startClientAction(
+              conf,
+              settings,
+              t('warning'),
+              t('the_local_port_is_occupied')
+            )
+          );
+        }
       }
     })();
   }, [config, selectedServer, settings]);
 
   return (
     <Container className={styles.container}>
-
-      {/* -------- menu ------- */}
-
-      <Tabs
-        value={mode} onChange={handleModeChange} centered
-        indicatorColor="primary"
-        textColor="primary"
-      >
-      {
-        menuItems.map(value => (
-          <Tab
-            key={value}
-            id={value}
-            label={t(value.toLocaleLowerCase())}
-            value={value}
-          />
-        ))
-      }
-      </Tabs>
 
       {/* -------- main ------- */}
 
@@ -302,15 +303,20 @@ const HomePage: React.FC = () => {
             {config.map((item, index) => (
               <ServerListItem
                 key={item.id}
+                id={item.id}
                 remark={item.remark}
+                serverType={item.type}
                 ip={item.serverHost}
                 port={item.serverPort}
                 plugin={item.plugin}
                 selected={item.id === selectedServer}
-                onClick={() => handleServerSelect(item.id)}
-                onShare={() => handleShareButtonClick(item.id)}
-                onEdit={() => handleEditButtonClick(item.id)}
-                onRemove={() => handleRemoveButtonClick(item.id)}
+                conf={JSON.stringify(item)}
+                connected={connected}
+                onShare={handleShareButtonClick}
+                onEdit={handleEditButtonClick}
+                onRemove={handleRemoveButtonClick}
+                handleServerSelect={handleServerSelect}
+                handleServerConnect={handleServerConnect}
                 isLast={index === config.length - 1}
               />
             ))}
@@ -322,29 +328,23 @@ const HomePage: React.FC = () => {
         <Fab size="small" color="secondary" className={styles.noShadow} variant="round" onClick={handleDialogOpen}>
           <AddIcon />
         </Fab>
-        <Fab
-          size="small"
-          variant="extended"
-          disabled={loading}
-          style={{
-            backgroundColor: !connected ? yellow["800"] : green["A700"],
-            color: 'white',
-            paddingLeft: 14,
-            paddingRight: 14
-          }}
-          onClick={handleServerConnect}
-        >
-          {loading ? (
-            <CircularProgress
-              className={styles.extendedIcon}
-              color="inherit"
-              size={20}
-            />
-          ) : (
-            null // <Logo className={styles.extendedIcon} />
-          )}
-          {loading ? t("loading") : connected ? t("connected") : t("offline")}
-        </Fab>
+        <span>
+
+        <ButtonGroup size="small" aria-label="small outlined button group">
+        {
+          menuItems.map(value => (
+            <Button
+              key={value}
+              variant="text"
+              color={mode === value ? 'primary' : 'default'}
+              onClick={() => handleModeChange(value)}
+            >
+                {t(value.toLocaleLowerCase())}
+            </Button>
+          ))
+        }
+        </ButtonGroup>
+          </span>
       </div>
 
       {/* -------- dialog ------- */}
@@ -369,7 +369,16 @@ const HomePage: React.FC = () => {
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleServerRemove} />
       { SnackbarAlert }
       <BackDrop />
-
+      <StatusBar
+        left={[
+          <SyncIcon key="status_bar_rotate" fontSize='small' className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}/>,
+          <StatusBarNetwork key="status_bar_network" delay={delay}/>
+        ]}
+        right={[
+          <StatusBarConnection key="status_bar_connection" status={connected ? 'online' : 'offline'} />
+          // <span key="status_bar_mode" className={styles['statu-sbar_modeinfo']}>{t(mode.toLowerCase())}</span>
+        ]}
+      />
     </Container>
   );
 };
