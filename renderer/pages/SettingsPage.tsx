@@ -201,7 +201,7 @@ const SettingsPage: React.FC = () => {
         className={styles.textField}
         required
         fullWidth
-        variant="outlined"
+        // variant="outlined"
         size="small"
         type="number"
         label={t('local_port')}
@@ -214,7 +214,7 @@ const SettingsPage: React.FC = () => {
         required
         fullWidth
         type="number"
-        variant="outlined"
+        // variant="outlined"
         size="small"
         label={t('pac_port')}
         placeholder={t('pac_port_tips')}
@@ -226,7 +226,7 @@ const SettingsPage: React.FC = () => {
         required
         fullWidth
         type="url"
-        variant="outlined"
+        // variant="outlined"
         size="small"
         label={t('gfwlist_url')}
         placeholder={t('gfwlist_url_tips')}

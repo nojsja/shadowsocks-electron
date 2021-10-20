@@ -5,10 +5,9 @@ import {
   Container,
   List,
   Fab,
-  // CircularProgress,
-  Typography,
-  Tabs,
-  Tab
+  Radio,
+  Tooltip,
+  Typography
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 // import { green, yellow } from "@material-ui/core/colors";
@@ -39,7 +38,7 @@ import StatusBar from '../components/StatusBar';
 import StatusBarConnection from '../components/BarItems/StatusBarConnection';
 import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
 
-const menuItems = ["PAC", "Global", "Manual"];
+const menuItems = ["Global", "PAC", "Manual"];
 
 /**
  * HomePage
@@ -75,12 +74,14 @@ const HomePage: React.FC = () => {
 
   {/* -------- functions ------- */}
 
-  const handleModeChange = ((event: React.ChangeEvent<{}>, value: string) => {
-    dispatch({
-      type: SET_SETTING,
-      key: "mode",
-      value: value as Mode
-    });
+  const handleModeChange = ((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    if (checked) {
+      dispatch({
+        type: SET_SETTING,
+        key: "mode",
+        value: event.target.value as Mode
+      });
+    }
   });
 
   const handleServerSelect = (id: string) => {
@@ -287,25 +288,6 @@ const HomePage: React.FC = () => {
   return (
     <Container className={styles.container}>
 
-      {/* -------- menu ------- */}
-
-      <Tabs
-        value={mode} onChange={handleModeChange} centered
-        indicatorColor="primary"
-        textColor="primary"
-      >
-      {
-        menuItems.map(value => (
-          <Tab
-            key={value}
-            id={value}
-            label={t(value.toLocaleLowerCase())}
-            value={value}
-          />
-        ))
-      }
-      </Tabs>
-
       {/* -------- main ------- */}
 
       {config.length === 0 && (
@@ -345,6 +327,24 @@ const HomePage: React.FC = () => {
         <Fab size="small" color="secondary" className={styles.noShadow} variant="round" onClick={handleDialogOpen}>
           <AddIcon />
         </Fab>
+        <span>
+
+        {
+        menuItems.map(value => (
+          <Tooltip placement="top" title={t(value.toLocaleLowerCase())} aria-label="add">
+            <Radio
+              color={'primary'}
+              checked={mode === value}
+              onChange={handleModeChange}
+              value={value}
+              key={value}
+              // color="default"
+              size="small"
+            />
+          </Tooltip>
+        ))
+        }
+          </span>
       </div>
 
       {/* -------- dialog ------- */}
@@ -375,7 +375,8 @@ const HomePage: React.FC = () => {
           <StatusBarNetwork key="status_bar_network" delay={delay}/>
         ]}
         right={[
-          <StatusBarConnection key="status_bar_connection" status={connected ? 'online' : 'offline'} />
+          <StatusBarConnection key="status_bar_connection" status={connected ? 'online' : 'offline'} />,
+          <span key="status_bar_mode" className={styles['statu-sbar_modeinfo']}>{t(mode.toLowerCase())}</span>
         ]}
       />
     </Container>

@@ -25,6 +25,9 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
         transform: "rotateZ(360deg)"
       }
     },
+    'statu-sbar_modeinfo': {
+      marginRight: theme.spacing(3)
+    },
     'loading-icon': {
       marginRight: '0',
       fontSize: '14px',
@@ -137,7 +140,7 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
       width: "100%"
     },
     textField: {
-      marginBottom: theme.spacing(2)
+      marginBottom: `${theme.spacing(2)}px !important`
     },
     formControl: {
       margin: theme.spacing(1),
