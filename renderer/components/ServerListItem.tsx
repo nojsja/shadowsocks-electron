@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { MessageChannel } from 'electron-re';
+import { useTranslation } from "react-i18next";
+import { clipboard } from "electron";
 import {
   ListItem,
   ListItemText,
@@ -19,7 +21,6 @@ import ShareIcon from "@material-ui/icons/Share";
 import RemoveIcon from "@material-ui/icons/Delete";
 import { useDispatch } from "react-redux";
 import { getConnectionDelay } from "../redux/actions/status";
-import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,6 +60,7 @@ export interface ServerListItemProps extends ListItemProps {
   isLast?: boolean;
   remark?: string;
   serverType?: string;
+  conf: string;
   ip: string;
   id: string;
   port: number;
@@ -87,6 +89,7 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
     onEdit,
     onShare,
     onRemove,
+    conf,
     serverType,
     handleServerConnect,
     handleServerSelect,
@@ -169,6 +172,7 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
             handleChooseButtonClick();
             break;
           case 'copy':
+            clipboard.writeText(conf);
             break;
           case 'test':
             dispatch(getConnectionDelay(ip, port));

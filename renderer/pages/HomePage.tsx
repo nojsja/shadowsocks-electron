@@ -5,8 +5,8 @@ import {
   Container,
   List,
   Fab,
-  Radio,
-  Tooltip,
+  ButtonGroup,
+  Button,
   Typography
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
@@ -74,12 +74,12 @@ const HomePage: React.FC = () => {
 
   {/* -------- functions ------- */}
 
-  const handleModeChange = ((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
-    if (checked) {
+  const handleModeChange = ((value: string) => {
+    if (value !== mode) {
       dispatch({
         type: SET_SETTING,
         key: "mode",
-        value: event.target.value as Mode
+        value: value as Mode
       });
     }
   });
@@ -310,6 +310,7 @@ const HomePage: React.FC = () => {
                 port={item.serverPort}
                 plugin={item.plugin}
                 selected={item.id === selectedServer}
+                conf={JSON.stringify(item)}
                 connected={connected}
                 onShare={handleShareButtonClick}
                 onEdit={handleEditButtonClick}
@@ -329,21 +330,20 @@ const HomePage: React.FC = () => {
         </Fab>
         <span>
 
+        <ButtonGroup size="small" aria-label="small outlined button group">
         {
-        menuItems.map(value => (
-          <Tooltip placement="top" title={t(value.toLocaleLowerCase())} aria-label="add">
-            <Radio
-              color={'primary'}
-              checked={mode === value}
-              onChange={handleModeChange}
-              value={value}
+          menuItems.map(value => (
+            <Button
               key={value}
-              // color="default"
-              size="small"
-            />
-          </Tooltip>
-        ))
+              variant="text"
+              color={mode === value ? 'primary' : 'default'}
+              onClick={() => handleModeChange(value)}
+            >
+                {t(value.toLocaleLowerCase())}
+            </Button>
+          ))
         }
+        </ButtonGroup>
           </span>
       </div>
 
@@ -375,8 +375,8 @@ const HomePage: React.FC = () => {
           <StatusBarNetwork key="status_bar_network" delay={delay}/>
         ]}
         right={[
-          <StatusBarConnection key="status_bar_connection" status={connected ? 'online' : 'offline'} />,
-          <span key="status_bar_mode" className={styles['statu-sbar_modeinfo']}>{t(mode.toLowerCase())}</span>
+          <StatusBarConnection key="status_bar_connection" status={connected ? 'online' : 'offline'} />
+          // <span key="status_bar_mode" className={styles['statu-sbar_modeinfo']}>{t(mode.toLowerCase())}</span>
         ]}
       />
     </Container>

@@ -22,7 +22,7 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
         transform: "rotateZ(0deg)"
       },
       "100%": {
-        transform: "rotateZ(360deg)"
+        transform: "rotateZ(-360deg)"
       }
     },
     'statu-sbar_modeinfo': {
@@ -59,7 +59,8 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       flex: 1,
       overflowY: "auto",
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
+      borderBottom: 'solid 2px white'
     },
     scrollbar: scrollBarStyle(10, 0),
     fabs: {
