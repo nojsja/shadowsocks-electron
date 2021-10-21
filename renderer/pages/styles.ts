@@ -46,14 +46,6 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       padding: theme.spacing(1),
       paddingTop: 0
     },
-    empty: {
-      flex: 1,
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
-    },
     list: {
       width: "100%",
       flex: 1,
@@ -63,25 +55,6 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       borderBottom: 'solid 2px white'
     },
     scrollbar: scrollBarStyle(10, 0),
-    fabs: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      "& > *": {
-        marginLeft: theme.spacing(2)
-      },
-      position: "fixed",
-      bottom: theme.spacing(2.5),
-      right: theme.spacing(2),
-      left: theme.spacing(0),
-    },
-    noShadow: {
-      backgroundColor: 'transparent',
-      boxShadow: 'none'
-    },
-    fabPlaceholder: {
-      height: theme.spacing(5)
-    },
     extendedIcon: {
       marginRight: theme.spacing(1)
     },

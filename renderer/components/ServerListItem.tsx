@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import { MessageChannel } from 'electron-re';
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
@@ -236,4 +236,4 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
   );
 };
 
-export default ServerListItem;
+export default memo(ServerListItem);

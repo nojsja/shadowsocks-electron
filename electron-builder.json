@@ -5,7 +5,13 @@
   "copyright": "© 2020 nojsja",
   "files": [
     "assets/**/*",
-    "bin/**/*"
+    "bin/**/*",
+    "!assets/add.png",
+    "!assets/edit.png",
+    "!assets/main.png",
+    "!assets/right.png",
+    "!assets/settings.png",
+    "!assets/share.png"
   ],
   "extraFiles": [
     {
@@ -74,7 +80,6 @@
   },
   "deb": {
     "depends": [
-      "gconf2", "gconf-service", "libnotify4", "libappindicator1", "libxtst6", "libnss3",
       "shadowsocks-libev"
     ]
   },
