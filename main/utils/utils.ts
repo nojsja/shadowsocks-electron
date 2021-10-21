@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { app } from 'electron';
 import { exec, ExecOptions } from "child_process";
 import { Config } from '../types/extention';
 
@@ -54,9 +53,9 @@ export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
   const binName = `${type}-local`;
   switch (os.platform()) {
     case 'linux':
-      return getBinPath(binName) || path.join(app.getAppPath(), `bin/linux/x64/${binName}`);
+      return getBinPath(binName) || path.join((global as any).pathRuntime, `bin/linux/x64/${binName}`);
     case 'darwin':
-      return path.join(app.getAppPath(), `bin/darwin/x64/${binName}`);
+      return path.join((global as any).pathRuntime, `bin/darwin/x64/${binName}`);
     default:
       return getBinPath(binName) ?? binName;
   }
