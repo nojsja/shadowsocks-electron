@@ -104,13 +104,6 @@ const SettingsPage: React.FC = () => {
           port: value
         }
         break;
-      case 'httpsProxy':
-        if (!checkPortUsed(value, 'httpProxy')) return;
-        value = {
-          ...settings.httpsProxy,
-          port: value
-        }
-        break;
       default:
         break;
     }
@@ -132,20 +125,12 @@ const SettingsPage: React.FC = () => {
         dispatch(setStartupOnBoot(value));
         break;
       case 'httpProxy':
-        if (!checkPortUsed(settings.httpProxy.port, 'httpsProxy', value)) return;
+        // if (!checkPortUsed(settings.httpProxy.port, 'httpsProxy', value)) return;
         value = {
           ...settings.httpProxy,
           enable: value
         };
         setHttpAndHttpsProxy({...value, type: 'http', proxyPort: settings.localPort });
-        break;
-      case 'httpsProxy':
-        if (!checkPortUsed(settings.httpsProxy.port, 'httpProxy', value)) return;
-        value = {
-          ...settings.httpsProxy,
-          enable: value
-        };
-        setHttpAndHttpsProxy({...value, type: 'https', proxyPort: settings.localPort });
         break;
       default:
         break;
@@ -261,36 +246,6 @@ const SettingsPage: React.FC = () => {
                 placeholder={t('http_proxy_port')}
                 value={settings.httpProxy.port}
                 onChange={e => handleValueChange("httpProxy", e)}
-              />
-            </ListItem>
-          )
-        }
-        <ListItem>
-            <ListItemText
-              primary={t('https_proxy')}
-              // secondary="Not applicable to Linux"
-            />
-            <ListItemSecondaryAction>
-              <Switch
-                edge="end"
-                color="primary"
-                checked={settings.httpsProxy.enable}
-                onChange={e => handleSwitchValueChange("httpsProxy", e)}
-              />
-            </ListItemSecondaryAction>
-        </ListItem>
-        {
-          settings.httpsProxy.enable && (
-            <ListItem>
-              <TextField
-                className={styles.textField}
-                required
-                fullWidth
-                type="number"
-                label={t('https_proxy_port')}
-                placeholder={t('https_proxy_port')}
-                value={settings.httpsProxy.port}
-                onChange={e => handleValueChange("httpsProxy", e)}
               />
             </ListItem>
           )

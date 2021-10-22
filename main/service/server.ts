@@ -7,7 +7,7 @@ import {
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
-import { createHttpServer, createHttpsServer, stopHttpServer, stopHttpsServer } from '../proxy/http';
+import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
 
 /* main service handler */
@@ -139,16 +139,16 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async startHttpsProxyServer(params: { port: number, proxyPort: number }) {
-    return new Promise(resolve => {
-      return createHttpsServer({...params, host: '127.0.0.1'}, (error) => {
-        resolve({
-          code: error ? 500 : 200,
-          result: error ?? ''
-        });
-      });
-    });
-  }
+  // async startHttpsProxyServer(params: { port: number, proxyPort: number }) {
+  //   return new Promise(resolve => {
+  //     return createHttpsServer({...params, host: '127.0.0.1'}, (error) => {
+  //       resolve({
+  //         code: error ? 500 : 200,
+  //         result: error ?? ''
+  //       });
+  //     });
+  //   });
+  // }
 
   async startHttpProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
@@ -161,16 +161,16 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async stopHttpsProxyServer(params: { port: number }) {
-    return new Promise(resolve => {
-      return stopHttpsServer(params.port, '127.0.0.1', (error) => {
-        resolve({
-          code: error ? 500 : 200,
-          result: error ?? ''
-        });
-      });
-    });
-  }
+  // async stopHttpsProxyServer(params: { port: number }) {
+  //   return new Promise(resolve => {
+  //     return stopHttpsServer(params.port, '127.0.0.1', (error) => {
+  //       resolve({
+  //         code: error ? 500 : 200,
+  //         result: error ?? ''
+  //       });
+  //     });
+  //   });
+  // }
 
   async stopHttpProxyServer(params: { port: number }) {
     return new Promise(resolve => {
