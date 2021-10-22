@@ -108,7 +108,7 @@ class HttpProxyServer extends EventEmitter {
 
     // proxy get http-client request and send new http request to http-server with socks5-agent (carry old http request info),
     // finnally proxy pipe http-server response to http-client response.
-    // the entire process: https-client <--(http)--> proxy-server <--(http)--> https-server (agent process: sockets-client <--(tcp)--> sockets-server)
+    // the entire process: https-client <--(http)--> proxy-server with agent <--(http)--> https-server (agent process: sockets-client <--(tcp)--> sockets-server)
     const pRequest = http.request({
       host: u.host,
       port: u.port,
