@@ -65,8 +65,30 @@
   "linux": {
     "icon": "assets/icon.png",
     "target": [
-      "AppImage",
-      "deb"
+      {
+        "target": "AppImage",
+        "arch": "x64"
+      },
+      {
+        "target": "deb",
+        "arch": "x64"
+      },
+      {
+        "target": "AppImage",
+        "arch": "ia32"
+      },
+      {
+        "target": "deb",
+        "arch": "ia32"
+      },
+      {
+        "target": "AppImage",
+        "arch": "arm64"
+      },
+      {
+        "target": "deb",
+        "arch": "arm64"
+      }
     ],
     "category": "Network",
     "executableName": "shadowsocks-electron",
