@@ -59,6 +59,14 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - ACL
 - VMess Protocol (v2ray)
 
+## Supported Platforms & Arch
+
+> More architecture will be supported if necessary, just give me an issue. Forget about windows (x32/x64), there are tons of apps on it already.
+
+- Ubuntu (linux x64/x86/arm64)
+- MacOS (darwin x64)
+- <del>Windows (windows x64)</del>
+
 ## Development
 
 ### 1. env
@@ -108,14 +116,6 @@ $: cp pac/gfwlist.txt ~/Library/Application\ Support/shadowsocks-electron/pac/
 # [04]start
 $: npm start
 ```
-
-## Supported Platforms & Arch
-
-> More architecture will be supported if necessary, just give me an issue. Forget about windows (x32/x64), there are tons of apps on it already.
-
-- Ubuntu (linux x64)
-- MacOS (darwin x64)
-- <del>Windows (windows x64)</del>
 
 ## Mention
 
