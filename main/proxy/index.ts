@@ -262,10 +262,6 @@ class SSRClient extends Client {
       config.udp ? "-u" : "",
       config.fastOpen ? "--fast-open" : "",
       // config.noDelay ? "--no-delay" : "",
-      config.plugin ? "--plugin" : "",
-      config.plugin ?? "",
-      config.pluginOpts ? "--plugin-opts" : "",
-      config.pluginOpts ?? "",
       this.settings.verbose ? "-v" : ""
     ].filter(arg => arg !== '');
   }

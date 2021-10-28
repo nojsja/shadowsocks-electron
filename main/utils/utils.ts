@@ -4,6 +4,14 @@ import os from 'os';
 import { exec, ExecOptions } from "child_process";
 import { Config } from '../types/extention';
 
+const archMap = new Map([
+  ['aarch64', 'arm64'],
+  ['x86', 'x86'],
+  ['x64', 'x64'],
+  ['ia32', 'x86'],
+  ['arm64', 'arm64']
+]);
+
 export const getChromeExtensionsPath = (appids: string[]): Promise<any[]> => {
   const macBaseDir = `${process.env.HOME}/Library/Application Support/Google/Chrome/Default/Extensions`;
   const ubuntuBaseDir = `${process.env.HOME}/.config/google-chrome/Default/Extensions`;
@@ -51,13 +59,18 @@ export const getBinPath = (function () {
 
 export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
   const binName = `${type}-local`;
-  switch (os.platform()) {
-    case 'linux':
-      return getBinPath(binName) || path.join((global as any).pathRuntime, `bin/linux/x64/${binName}`);
-    case 'darwin':
-      return path.join((global as any).pathRuntime, `bin/darwin/x64/${binName}`);
-    default:
-      return getBinPath(binName) ?? binName;
+  const arch = os.arch();
+  if (archMap.has(arch)) {
+    switch (os.platform()) {
+      case 'linux':
+        return getBinPath(binName) || path.join((global as any).pathRuntime, `bin/linux/${archMap.get(arch)}/${binName}`);
+      case 'darwin':
+        return path.join((global as any).pathRuntime, `bin/darwin/x64/${binName}`);
+      default:
+        return getBinPath(binName) ?? binName;
+    }
+  } else {
+    return getBinPath(binName) ?? binName;
   }
 }
 

@@ -41,7 +41,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - __PAC__ Mode (GFWList)
 - __Global__ Mode (socks proxy)
 - __Manual__ Mode (no system-wide proxy set)
-- HTTP Proxy (HTTPS not working now)
+- HTTP(s) Proxy
 - Clipboard / QR-code Import
 - Language Detecting / Switching (zh-CN / en-US)
 - Configuration Backup / Recovery
@@ -56,7 +56,6 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 
 > ➣ Comming Soon
 
-- HTTPS Proxy
 - ACL
 - VMess Protocol (v2ray)
 
