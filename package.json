@@ -21,9 +21,11 @@
     "build": "yarn build:main && yarn build:renderer",
     "pack:linux": "electron-builder --linux",
     "pack:mac": "electron-builder --mac",
-    "dist": "electron-builder",
+    "publish:linux": "electron-builder --linux --p always",
+    "publish:mac": "electron-builder --mac --p always",
     "eject": "react-app-rewired eject",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "clean": "rm -rf dist/linux-*unpacked",
     "lint": "eslint --ext .tsx,.ts .",
     "typecheck": "tsc --noUnusedLocals",
     "postinstall": "electron-builder install-app-deps"
@@ -92,7 +94,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && yarn lint && yarn typecheck"
+      "pre-commit": "yarn clean && lint-staged && yarn lint && yarn typecheck"
     }
   },
   "lint-staged": {

@@ -117,6 +117,14 @@ $: cp pac/gfwlist.txt ~/Library/Application\ Support/shadowsocks-electron/pac/
 $: npm start
 ```
 
+## Supported Platforms & Arch
+
+> More architecture will be supported if necessary, just give me an issue.
+
+- Ubuntu (linux x64)
+- MacOS (darwin x64)
+- <del>Windows (windows x64)</del>
+
 ## Mention
 
 > The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
