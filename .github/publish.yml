@@ -1,0 +1,49 @@
+name: Build Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release_mac:
+    name: Release Mac App
+    runs-on: macos-10.15
+
+    steps:
+      - name: Clone Repo
+        run: git clone https://github.com/nojsja/shadowsocks-electron
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Yarn
+        run: npm i -g yarn@latest
+
+      - name: Install Dependencies and Build App
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: cd shadowsocks-electron && yarn install && yarn publish:mac
+
+  release_linux:
+    name: Release Linux App
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clone Repo
+        run: git clone https://github.com/nojsja/shadowsocks-electron
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install Yarn
+        run: npm i -g yarn@latest
+
+      - name: Install Dependencies and Build App
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: cd shadowsocks-electron && yarn install && yarn publish:linux
