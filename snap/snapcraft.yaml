@@ -1,0 +1,92 @@
+name: shadowsocks-electron
+base: core18
+grade: stable
+confinement: strict
+architectures:
+  - build-on: ['arm64', 'amd64']
+    run-on: ['arm64', 'amd64']
+icon: ./assets/logo.png
+license: MIT
+version: 1.1.2
+website: https://github.com/nojsja/shadowsocks-electron
+parts:
+  gnome:
+    plugin: nil
+    build-packages:
+      - software-properties-common
+    override-pull: |
+      add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
+      apt -y update
+  electron-app:
+    after:
+      - gnome
+      - desktop-gnome-platform
+    plugin: nodejs
+    source: app/
+    node-engine: 14.17.6
+    stage-packages:
+      - fcitx-frontend-gtk3
+      - gvfs-libs
+      - libasound2
+      - libgconf-2-4
+      - libglib2.0-bin
+      - libgnome-keyring0
+      - libgtk-3-0
+      - libnotify4
+      - libnspr4
+      - libnss3
+      - libpcre3
+      - libpulse0
+      - libsecret-1-0
+      - libxss1
+      - libxtst6
+      - zlib1g
+    build: npm run build && electron-builder --linux snap
+    install: |
+      mkdir $SNAPCRAFT_PART_INSTALL/shadowsocks-electron
+      cd dist/*/
+      mv * $SNAPCRAFT_PART_INSTALL/shadowsocks-electron
+    stage:
+      - -lib/node_modules/*
+      - -usr/share/doc/*
+      - -usr/share/man/*
+      - -share/man/*
+      - -share/doc/*
+      - -CHANGELOG.md
+      - -README.md
+apps:
+  shadowsocks-electron-desktop:
+    command: bin/desktop-launch $SNAP/app/shadowsocks-electron-desktop
+    plugs:
+      - home
+      - desktop
+      - desktop-legacy
+      - x11
+      - unity7
+      - wayland
+      - browser-support
+      - network
+      - gsettings
+      - pulseaudio
+      - opengl
+    environment:
+      TMPDIR: $XDG_RUNTIME_DIR
+      DISABLE_WAYLAND: 1
+
+plugs:
+  gnome-3-28-1804:
+    interface: content
+    target: $SNAP/gnome-platform
+    default-provider: gnome-3-28-1804
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/data-dir/themes
+    default-provider: gtk-common-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/data-dir/icons
+    default-provider: gtk-common-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/data-dir/sounds
+    default-provider: gtk-common-themes
