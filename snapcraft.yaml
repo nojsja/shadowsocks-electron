@@ -1,3 +1,4 @@
+name: shadowsocks-electron
 base: core18
 grade: stable
 confinement: strict
