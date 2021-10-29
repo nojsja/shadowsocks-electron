@@ -87,6 +87,11 @@
   "deb": {
     "depends": []
   },
+  "snap": {
+    "title": "Shadowsocks Electron",
+    "summary": "Shadowsocks GUI with cross-platform desktop support",
+    "grade": "stable"
+  },
   "publish": [
     {
       "provider": "github",
