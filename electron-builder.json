@@ -33,11 +33,11 @@
     "target": [
       {
         "target": "zip",
-        "arch": "x64"
+        "arch": ["x64"]
       },
       {
         "target": "dmg",
-        "arch": "x64"
+        "arch": ["x64"]
       }
     ],
     "icon": "assets/icon.icns",
@@ -67,27 +67,11 @@
     "target": [
       {
         "target": "AppImage",
-        "arch": "x64"
+        "arch": ["x64", "ia32", "arm64"]
       },
       {
         "target": "deb",
-        "arch": "x64"
-      },
-      {
-        "target": "AppImage",
-        "arch": "ia32"
-      },
-      {
-        "target": "deb",
-        "arch": "ia32"
-      },
-      {
-        "target": "AppImage",
-        "arch": "arm64"
-      },
-      {
-        "target": "deb",
-        "arch": "arm64"
+        "arch": ["x64", "ia32", "arm64"]
       }
     ],
     "category": "Network",
@@ -101,20 +85,13 @@
     }
   },
   "deb": {
-    "depends": [
-      "shadowsocks-libev"
-    ]
+    "depends": []
   },
   "publish": [
     {
-      "provider": "bintray",
-      "package": "shadowsocks-electron",
-      "repo": "shadowsocks-electron",
-      "owner": "nojsja"
-    },
-    {
       "provider": "github",
-      "releaseType": "prerelease"
+      "owner": "nojsja",
+      "repo": "shadowsocks-electron"
     }
   ]
 }

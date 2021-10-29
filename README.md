@@ -111,7 +111,7 @@ $: npm start
 
 ## Supported Platforms & Arch
 
-> More architecture will be supported if necessary, just give me an issue. Forget about windows (x32/x64), there are tons of apps on it already.
+> More architecture will be supported if necessary, just give me an issue.
 
 - Ubuntu (linux x64)
 - MacOS (darwin x64)
