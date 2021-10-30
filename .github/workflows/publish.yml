@@ -48,9 +48,7 @@ jobs:
         run: npm i -g yarn@latest
 
       - name: Install Snapcraft
-        run: sudo apt install snapd snap snapcraft
-        run: sudo snap install multipass
-        run: sudo snap install review-tools
+        run: sudo apt install snapd snap snapcraft && sudo snap install multipass && sudo snap install review-tools
 
       - name: Install Dependencies and Build App
         env:
