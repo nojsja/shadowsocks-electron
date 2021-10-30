@@ -54,6 +54,9 @@
     }
   },
   "dmg": {
+    "publish": [
+      "github"
+    ],
     "contents": [
       {
         "x": 410,
@@ -70,25 +73,21 @@
   },
   "linux": {
     "icon": "assets/icon.png",
+    "publish": [
+      "github"
+    ],
     "target": [
       {
         "target": "deb",
-        "arch": ["x64", "ia32", "arm64"],
-        "publish": [
-          "github"
-        ]
+        "arch": ["x64", "ia32", "arm64"]
       },
       {
         "target": "AppImage",
-        "arch": ["x64", "ia32", "arm64"],
-        "publish": [
-          "github"
-        ]
+        "arch": ["x64", "ia32", "arm64"]
       },
       {
         "target": "snap",
-        "arch": ["x64", "ia32"],
-        "publish": []
+        "arch": ["x64", "ia32"]
       }
     ],
     "category": "Network",
@@ -115,7 +114,7 @@
       "repo": "shadowsocks-electron",
       "host": "github.com",
       "protocol": "https",
-      "releaseType": "draft"
+      "releaseType": "release"
     }
   ]
 }
