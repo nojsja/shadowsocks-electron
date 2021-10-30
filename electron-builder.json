@@ -30,20 +30,17 @@
     }
   ],
   "mac": {
+    "publish": [
+      "github"
+    ],
     "target": [
       {
         "target": "zip",
-        "arch": ["x64", "ia32"],
-        "publish": [
-          "github"
-        ]
+        "arch": ["x64", "ia32"]
       },
       {
         "target": "dmg",
-        "arch": ["x64", "ia32"],
-        "publish": [
-          "github"
-        ]
+        "arch": ["x64", "ia32"]
       }
     ],
     "icon": "assets/icon.icns",
@@ -54,9 +51,6 @@
     }
   },
   "dmg": {
-    "publish": [
-      "github"
-    ],
     "contents": [
       {
         "x": 410,
