@@ -26,7 +26,10 @@ jobs:
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
           CI: false
-        run: yarn install && yarn build && yarn publish:mac
+        run: yarn install && yarn build
+
+      - name: Publish Dmg/Zip
+        run:  yarn publish:mac
 
   release_linux:
     name: Release Linux App
@@ -45,10 +48,13 @@ jobs:
         run: npm i -g yarn@latest
 
       - name: Install Snapcraft
-        run: sudo apt install snapd snap snapcraft
+        run: sudo apt install snapd snap snapcraft && sudo snap install multipass
 
       - name: Install Dependencies and Build App
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
           CI: false
-        run: yarn install && yarn build && yarn publish:linux
+        run: yarn install && yarn build
+
+      - name: Publish Deb/AppImage
+        run:  yarn publish:linux
