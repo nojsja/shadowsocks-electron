@@ -20,10 +20,13 @@ jobs:
       - name: Install Yarn
         run: npm i -g yarn@latest
 
+      - name: Echo
+        run: ls
+
       - name: Install Dependencies and Build App
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run: echo `ls` && yarn install && yarn build && yarn publish:mac
+        run: yarn install && yarn build && yarn publish:mac
 
   release_linux:
     name: Release Linux App
@@ -38,7 +41,10 @@ jobs:
       - name: Install Yarn
         run: npm i -g yarn@latest
 
+      - name: Echo
+        run: ls
+
       - name: Install Dependencies and Build App
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        run: echo `ls` && yarn install && yarn build && yarn publish:linux
+        run: yarn install && yarn build && yarn publish:linux
