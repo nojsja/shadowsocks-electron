@@ -25,6 +25,7 @@ jobs:
       - name: Install Dependencies and Build App
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          CI: false
         run: yarn install && yarn build && yarn publish:mac
 
   release_linux:
@@ -46,4 +47,5 @@ jobs:
       - name: Install Dependencies and Build App
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          CI: false
         run: yarn install && yarn build && yarn publish:linux
