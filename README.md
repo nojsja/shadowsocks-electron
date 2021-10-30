@@ -69,7 +69,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 
 ## Development
 
-### 1. env
+### 1. Env
 
 - Node@^`14.18`
 - Ubuntu18.04 or higher version
@@ -85,6 +85,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 ```bash
 # for ubuntu developers
 $: sudo apt install shadowsocks-libev
+$: sudo snap install multipass
 # for mac developers
 $: brew install shadowsocks-libev
 ```
@@ -121,7 +122,7 @@ $: npm start
 
 > More architecture will be supported if necessary, just give me an issue.
 
-- Ubuntu (linux x64)
+- Ubuntu (linux x64/x86/arm64)
 - MacOS (darwin x64)
 - <del>Windows (windows x64)</del>
 

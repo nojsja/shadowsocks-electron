@@ -66,12 +66,8 @@
     "icon": "assets/icon.png",
     "target": [
       {
-        "target": "AppImage",
-        "arch": ["x64", "ia32", "arm64"]
-      },
-      {
-        "target": "deb",
-        "arch": ["x64", "ia32", "arm64"]
+        "target": "snap",
+        "arch": ["x64"]
       }
     ],
     "category": "Network",
@@ -88,7 +84,6 @@
     "depends": []
   },
   "snap": {
-    "title": "Shadowsocks Electron",
     "summary": "Shadowsocks GUI with cross-platform desktop support",
     "grade": "stable"
   },
