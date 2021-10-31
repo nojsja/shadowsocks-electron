@@ -36,11 +36,11 @@
     "target": [
       {
         "target": "zip",
-        "arch": ["x64", "ia32"]
+        "arch": ["x64"]
       },
       {
         "target": "dmg",
-        "arch": ["x64", "ia32"]
+        "arch": ["x64"]
       }
     ],
     "icon": "assets/icon.icns",
