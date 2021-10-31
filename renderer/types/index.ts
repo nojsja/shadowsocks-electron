@@ -58,6 +58,7 @@ export interface Settings {
   selectedServer?: string | null;
   mode: Mode;
   verbose: boolean;
+  darkMode: boolean;
   localPort: number;
   pacPort: number;
   httpProxy: {

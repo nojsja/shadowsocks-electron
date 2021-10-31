@@ -12,6 +12,7 @@ import { scrollBarStyle } from "../pages/styles";
 
 
 const useStyles = makeStyles((theme: Theme) =>
+
   createStyles({
     list: {
       width: "100%",
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
       overflowY: "auto",
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
-      borderBottom: 'solid 2px white'
+      borderBottom: `solid 1px ${theme.palette.secondary.main}`
     },
     scrollbar: scrollBarStyle(10, 0),
     empty: {

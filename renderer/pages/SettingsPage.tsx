@@ -132,6 +132,13 @@ const SettingsPage: React.FC = () => {
         };
         setHttpAndHttpsProxy({...value, type: 'http', proxyPort: settings.localPort });
         break;
+      case 'darkMode':
+        window.localStorage.setItem('darkMode', value ? 'true' : 'false');
+        MessageChannel.invoke('main', 'service:desktop', {
+          action: 'reloadMainWindow',
+          params: {}
+        });
+        break;
       default:
         break;
     }
@@ -160,6 +167,10 @@ const SettingsPage: React.FC = () => {
       type: CLEAR_STORE
     } as any);
     closeDialog();
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'stopClient',
+      params: {}
+    });
     setSnackbarMessage(t('cleared_all_data'));
   };
 
@@ -261,6 +272,19 @@ const SettingsPage: React.FC = () => {
               color="primary"
               checked={settings.autoLaunch}
               onChange={e => handleSwitchValueChange("autoLaunch", e)}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary={t('darkMode')}
+          />
+          <ListItemSecondaryAction>
+            <Switch
+              edge="end"
+              color="primary"
+              checked={settings.darkMode}
+              onChange={e => handleSwitchValueChange("darkMode", e)}
             />
           </ListItemSecondaryAction>
         </ListItem>

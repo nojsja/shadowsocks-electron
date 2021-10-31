@@ -10,10 +10,11 @@ import {
   ListItemProps,
   ListItemIcon,
   Badge,
-  Divider
+  Divider,
+  Tooltip
 } from "@material-ui/core";
 import { makeStyles, createStyles, Theme, withStyles } from "@material-ui/core/styles";
-import { grey, red } from '@material-ui/core/colors';
+import { red } from '@material-ui/core/colors';
 import EditIcon from "@material-ui/icons/Edit";
 import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
 import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
@@ -47,10 +48,10 @@ const StyledBadge = withStyles((theme: Theme) =>
       top: 12,
       borderRadius: 3,
       padding: '0 5',
-      color: grey[500],
-      backgroundColor: 'white',
-      fontWeight: 'bold',
-      border: 'solid 1px ' + grey[400]
+      color: 'black',
+      backgroundColor: '#e0e0e0',
+      // fontWeight: 'bold',
+      // border: 'solid 1px ' + grey[400]
       // backgroundColor: grey[400]
     },
   }),
@@ -220,15 +221,21 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
           className={styles.action}
           hidden={actionHidden}
         >
-          <IconButton edge="end" onClick={handleShareButtonClick} size="small">
-            <ShareIcon />
-          </IconButton>
-          <IconButton edge="end" onClick={handleEditButtonClick} size="small">
-            <EditIcon />
-          </IconButton>
-          <IconButton edge="end" onClick={handleRemoveButtonClick} size="small" className={styles.deleteButton}>
-            <RemoveIcon />
-          </IconButton>
+          <Tooltip title={t('share')}>
+            <IconButton edge="end" onClick={handleShareButtonClick} size="small">
+              <ShareIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('edit')}>
+            <IconButton edge="end" onClick={handleEditButtonClick} size="small">
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t('delete')}>
+            <IconButton edge="end" onClick={handleRemoveButtonClick} size="small" className={styles.deleteButton}>
+              <RemoveIcon />
+            </IconButton>
+          </Tooltip>
         </ListItemSecondaryAction>
       </ListItem>
       {!isLast && <Divider />}

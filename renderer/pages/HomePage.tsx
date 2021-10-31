@@ -216,14 +216,18 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       if (!connected) {
-        dispatch(
-          startClientAction(
-            config.find(i => i.id === selectedServer),
-            settings,
-            t('warning'),
-            t('the_local_port_is_occupied')
-          )
-        );
+        let conf: Config | undefined;
+        conf = config.find(i => i.id === selectedServer);
+        if (conf) {
+          dispatch(
+            startClientAction(
+              conf,
+              settings,
+              t('warning'),
+              t('the_local_port_is_occupied')
+            )
+          );
+        }
       }
 
       if (settings.httpProxy.enable) {
