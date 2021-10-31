@@ -6,34 +6,14 @@ on:
       - master
 
 jobs:
-  release_mac:
-    name: Release Mac App
-    runs-on: macos-10.15
+  publish:
+    name: Release Mac/Linux App
+    runs-on: ${{ matrix.os }}   #流水线会跑在哪些操作系统中
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - name: Install Yarn
-        run: npm i -g yarn@latest
-
-      - name: Install Dependencies and Build App
-        env:
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          CI: false
-        run: yarn install && yarn build
-
-      - name: Publish Dmg/Zip
-        run:  yarn publish:mac
-
-  release_linux:
-    name: Release Linux App
-    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-10.15, ubuntu-20.04]  # 流水线将分别触发在 macos、ubuntu 系统中
 
     steps:
       - uses: actions/checkout@v2
@@ -48,13 +28,34 @@ jobs:
         run: npm i -g yarn@latest
 
       - name: Install Snapcraft
+        if: matrix.os == 'ubuntu-20.04'
         run: sudo apt install snapd snap snapcraft && sudo snap install multipass && sudo snap install review-tools
 
-      - name: Install Dependencies and Build App
+      - name: Cache Desktop node_modules
+        id: cache-desktop-modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('yarn.lock', 'patches/**') }}
+
+      - name: Install Dependencies
+        if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
+        run: yarn install
+
+      - name: Build App
+        run: yarn build
+
+      - name: Publish Dmg/Zip (mac)
+        if: matrix.os == 'macos-10.15'
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
           CI: false
-        run: yarn install && yarn build
+        run:  yarn publish:mac
 
-      - name: Publish Deb/AppImage
+
+      - name: Publish Deb/AppImage (ubuntu)
+        if: matrix.os == 'ubuntu-20.04'
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          CI: false
         run:  yarn publish:linux
