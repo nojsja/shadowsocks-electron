@@ -31,7 +31,14 @@
   ],
   "mac": {
     "publish": [
-      "github"
+      {
+        "provider": "github",
+        "owner": "nojsja",
+        "repo": "shadowsocks-electron",
+        "host": "github.com",
+        "protocol": "https",
+        "releaseType": "release"
+      }
     ],
     "target": [
       {
@@ -68,7 +75,14 @@
   "linux": {
     "icon": "assets/icon.png",
     "publish": [
-      "github"
+      {
+        "provider": "github",
+        "owner": "nojsja",
+        "repo": "shadowsocks-electron",
+        "host": "github.com",
+        "protocol": "https",
+        "releaseType": "release"
+      }
     ],
     "target": [
       {
@@ -100,15 +114,5 @@
   "snap": {
     "summary": "Shadowsocks GUI with cross-platform desktop support",
     "grade": "stable"
-  },
-  "publish": [
-    {
-      "provider": "github",
-      "owner": "nojsja",
-      "repo": "shadowsocks-electron",
-      "host": "github.com",
-      "protocol": "https",
-      "releaseType": "release"
-    }
-  ]
+  }
 }
