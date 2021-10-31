@@ -54,7 +54,6 @@ jobs:
           CI: false
         run:  yarn publish:mac
 
-
       - name: Publish Deb/AppImage (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
         env:
