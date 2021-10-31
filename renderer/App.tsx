@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { CssBaseline } from "@material-ui/core";
 import {
   makeStyles,
@@ -16,6 +16,8 @@ import {
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ipcRenderer } from "electron";
+import { grey, indigo } from "@material-ui/core/colors";
+
 import AppNav from "./components/AppNav";
 import HomePage from "./pages/HomePage";
 import SettingsPage from "./pages/SettingsPage";
@@ -29,8 +31,12 @@ import { getDefaultLang } from "./utils";
 const mainTheme = createMuiTheme({
   spacing: 8,
   palette: {
+    primary: {
+      main: indigo[500],
+      light: indigo[400],
+    },
     secondary: {
-      main: "#fff"
+      main: grey[300]
     }
   }
 });
@@ -40,10 +46,12 @@ const darkTheme = createMuiTheme({
   palette: {
     type: "dark",
     primary: {
-      main: "#1769aa"
+      main: indigo[700],
+      light: indigo[400],
     },
     secondary: {
-      main: "#424242"
+      main: grey[800],
+      dark: grey[900]
     }
   }
 });
@@ -73,7 +81,7 @@ prepareForLanguage(getDefaultLang());
 const App: React.FC = () => {
   const styles = useStyles();
 
-  const [darkMode] = useState(false);
+  const darkMode = window.localStorage.getItem('darkMode') === 'true' ?? false;
 
   useEffect(() => {
     getConnectionStatus((status) => {

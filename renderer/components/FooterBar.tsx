@@ -30,12 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "center",
       justifyContent: "space-between",
       "& > *": {
-        marginLeft: theme.spacing(2)
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2)
       },
       position: "fixed",
       bottom: theme.spacing(2.5),
-      right: theme.spacing(2),
+      right: 0,
       left: theme.spacing(0),
+    },
+    button: {
+      color: theme.palette.primary.light,
     },
     noShadow: {
       backgroundColor: 'transparent',
@@ -79,7 +83,7 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
                 <Button
                   key={value}
                   variant="text"
-                  color={mode === value ? 'primary' : 'default'}
+                  className={mode === value ? styles.button : undefined}
                   onClick={() => handleModeChange(value)}
                 >
                   {t(value.toLocaleLowerCase())}

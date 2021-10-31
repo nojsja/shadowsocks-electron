@@ -10,6 +10,7 @@ const defaultStore: RootState = {
   settings: {
     selectedServer: null,
     mode: "PAC",
+    darkMode: false,
     verbose: false,
     localPort: 1080,
     pacPort: 1090,

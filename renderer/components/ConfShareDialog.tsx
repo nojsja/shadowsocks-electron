@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     button: {
       margin: theme.spacing(1),
+      color: theme.palette.primary.light
     }
   })
 );
@@ -106,14 +107,14 @@ const MediaCard: React.FC<MediaCard> = (props) => {
       <CardActions className={classes.action}>
         <Button
           className={classes.button}
-          size="small" color="primary" onClick={() => copyLink(props.url)}
+          size="small" onClick={() => copyLink(props.url)}
           endIcon={<FileCopyIcon />}
         >
           {t('copy_link')}
         </Button>
         <Button
           className={classes.button}
-          size="small" color="primary" onClick={() => downloadPicture(props.dataUrl)}
+          size="small" onClick={() => downloadPicture(props.dataUrl)}
           endIcon={<GetAppIcon />}
         >
           {t('save')}
