@@ -27,7 +27,7 @@ jobs:
       - name: Install Yarn
         run: npm i -g yarn@latest
 
-      - name: Install Snapcraft
+      - name: Install Snapcraft (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
         run: sudo apt install snapd snap snapcraft && sudo snap install multipass && sudo snap install review-tools
 
@@ -43,6 +43,8 @@ jobs:
         run: yarn install
 
       - name: Build App
+        env:
+          CI: false
         run: yarn build
 
       - name: Publish Dmg/Zip (mac)
