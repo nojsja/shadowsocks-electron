@@ -95,7 +95,7 @@
       },
       {
         "target": "snap",
-        "arch": ["x64", "ia32"]
+        "arch": ["x64"]
       }
     ],
     "category": "Network",
