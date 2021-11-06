@@ -5,7 +5,7 @@
   "copyright": "© 2020 nojsja",
   "files": [
     "assets/**/*",
-    "bin/**/*",
+    "!bin/**/*",
     "!assets/add.png",
     "!assets/edit.png",
     "!assets/main.png",
