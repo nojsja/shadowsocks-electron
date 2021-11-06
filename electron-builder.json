@@ -16,7 +16,7 @@
   "extraFiles": [
     {
       "from": "bin/${os}/${arch}",
-      "to": "bin",
+      "to": "runtime/bin/${os}/${arch}",
       "filter": [
         "!.gitignore"
       ]
