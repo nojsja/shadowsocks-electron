@@ -24,6 +24,7 @@ let ipcMainWindow: IpcMainWindowType;
 autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);
 const pathRuntime = (global as any).pathRuntime = path.join(appDataPath, 'runtime/');
+const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
 
 /* -------------- pre work -------------- */
 
@@ -36,7 +37,7 @@ checkEnvFiles(
     { _path: pathRuntime, isDir: true },
     { _path: path.join(pathRuntime, 'bin'), isDir: true,
       exec: () => {
-        copyDir(path.join(app.getAppPath(), 'bin'), path.join(pathRuntime, 'bin'));
+        copyDir(path.join(pathExecutable, 'bin'), path.join(pathRuntime, 'bin'));
       }
     }
   ]

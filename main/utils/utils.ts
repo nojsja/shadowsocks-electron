@@ -6,9 +6,9 @@ import { Config } from '../types/extention';
 
 const archMap = new Map([
   ['aarch64', 'arm64'],
-  ['x86', 'x86'],
+  ['x86', 'ia32'],
   ['x64', 'x64'],
-  ['ia32', 'x86'],
+  ['ia32', 'ia32'],
   ['arm64', 'arm64']
 ]);
 
