@@ -197,7 +197,6 @@ const SettingsPage: React.FC = () => {
         className={styles.textField}
         required
         fullWidth
-        variant="outlined"
         size="small"
         type="number"
         label={t('local_port')}
@@ -210,7 +209,6 @@ const SettingsPage: React.FC = () => {
         required
         fullWidth
         type="number"
-        variant="outlined"
         size="small"
         label={t('pac_port')}
         placeholder={t('pac_port_tips')}
@@ -222,7 +220,6 @@ const SettingsPage: React.FC = () => {
         required
         fullWidth
         type="url"
-        variant="outlined"
         size="small"
         label={t('gfwlist_url')}
         placeholder={t('gfwlist_url_tips')}
@@ -248,16 +245,21 @@ const SettingsPage: React.FC = () => {
         {
           settings.httpProxy.enable && (
             <ListItem>
-              <TextField
-                className={styles.textField}
-                required
-                fullWidth
-                type="number"
-                label={t('http_proxy_port')}
-                placeholder={t('http_proxy_port')}
-                value={settings.httpProxy.port}
-                onChange={e => handleValueChange("httpProxy", e)}
+              <ListItemText
+                primary={t('http_proxy_port')}
               />
+              <ListItemSecondaryAction>
+                <TextField
+                  className={`${styles.textField} ${styles.indentInput}`}
+                  style={{ width: '80px', textAlign: 'right' }}
+                  required
+                  size="small"
+                  type="number"
+                  placeholder={t('http_proxy_port')}
+                  value={settings.httpProxy.port}
+                  onChange={e => handleValueChange("httpProxy", e)}
+                />
+              </ListItemSecondaryAction>
             </ListItem>
           )
         }

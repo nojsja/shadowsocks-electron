@@ -33,7 +33,7 @@ const mainTheme = createMuiTheme({
   palette: {
     primary: {
       main: indigo[500],
-      light: indigo[400],
+      light: indigo[400]
     },
     secondary: {
       main: grey[300]
