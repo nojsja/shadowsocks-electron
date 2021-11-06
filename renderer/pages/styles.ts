@@ -54,7 +54,7 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(1),
       borderBottom: 'solid 2px white'
     },
-    scrollbar: scrollBarStyle(10, 0),
+    scrollbar: scrollBarStyle(6, 0),
     extendedIcon: {
       marginRight: theme.spacing(1)
     },
@@ -109,6 +109,12 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
       overflowY: 'scroll',
       padding: theme.spacing(2),
       ...scrollBarStyle(0, 0)
+    },
+    indentInput: {
+      '& input': {
+        width: theme.spacing(10),
+        textAlign: 'right'
+      }
     },
     list: {
       width: "100%"

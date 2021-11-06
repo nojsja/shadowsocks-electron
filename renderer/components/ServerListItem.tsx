@@ -16,8 +16,8 @@ import {
 import { makeStyles, createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { red } from '@material-ui/core/colors';
 import EditIcon from "@material-ui/icons/Edit";
-import CheckBoxOutlinedIcon from '@material-ui/icons/CheckBoxOutlined';
-import CheckBoxOutlineBlankOutlinedIcon from '@material-ui/icons/CheckBoxOutlineBlankOutlined';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ShareIcon from "@material-ui/icons/Share";
 import RemoveIcon from "@material-ui/icons/Delete";
 import { useDispatch } from "react-redux";
@@ -29,6 +29,16 @@ const useStyles = makeStyles((theme: Theme) =>
       "& > *": {
         marginLeft: theme.spacing(1)
       }
+    },
+    lighterPrimary: {
+      color: theme.palette.primary.light
+    },
+    gradientDivider: {
+      width: '50%',
+      margin: 'auto',
+      backgroundColor: 'transparent',
+      height: '2px',
+      backgroundImage: 'linear-gradient(to right, transparent, rgba(0, 0, 0, 0.12), transparent)'
     },
     deleteButton: {
       '&:hover': {
@@ -186,16 +196,19 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
   };
 
   return (
-    <div onMouseEnter={handleActionShow} onMouseLeave={handleActionHide}>
+    <div
+      onMouseEnter={handleActionShow}
+      onMouseLeave={handleActionHide}
+    >
       <ListItem button onClick={handleChooseButtonClick} onContextMenu={onContextMenu}>
         <ListItemIcon
           className={styles.listIcon}
         >
           {
             selected ? (
-              <CheckBoxOutlinedIcon />
+              <CheckBoxIcon className={styles.lighterPrimary} />
             ) :
-            <CheckBoxOutlineBlankOutlinedIcon />
+              <CheckBoxOutlineBlankIcon />
           }
           </ListItemIcon>
 
@@ -238,7 +251,7 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
           </Tooltip>
         </ListItemSecondaryAction>
       </ListItem>
-      {!isLast && <Divider />}
+      {!isLast && <Divider className={styles.gradientDivider} />}
     </div>
   );
 };
