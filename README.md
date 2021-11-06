@@ -49,7 +49,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - Configuration Backup / Recovery
 - Auto Start
 - Server Share
-- Logs
+- Activity Logs
 
 ### ➣ In Testing
 
@@ -66,8 +66,8 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 > More architecture will be supported if necessary, just give me an issue.
 
 - Ubuntu
-  - Deb `x64/arm64`
-  - AppImage `x64/arm64`
+  - Deb `x64/x86/arm64`
+  - AppImage `x64/x86/arm64`
   - Snap `x64`
 - MacOS
   - Dmg `x64`
