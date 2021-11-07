@@ -45,12 +45,10 @@ export default class IpcMainWindow implements IpcMainWindowType {
     this.url = isDev
     ? "http://localhost:3000"
     : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
-    this.icon = path.resolve(__dirname, "../../assets/logo.png");
+    this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
     this.trayIcon = path.resolve(
-      __dirname,
-      platform === "darwin"
-        ? "../../assets/icons/16x16.png"
-        : "../../assets/logo.png"
+      app.getAppPath(),
+      "assets/tray/tray.png"
     );
   }
 
