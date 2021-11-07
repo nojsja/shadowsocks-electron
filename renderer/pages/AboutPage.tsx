@@ -17,7 +17,7 @@ const AboutPage: React.FC = () => {
         Shadowsocks Electron {packageJson.version}
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Shadowsocks GUI application with cross-platform desktop support, see more info in &nbsp;
+        Shadowsocks GUI application with cross-platform desktop support, read more info in &nbsp;
         <Typography
             variant="body2"
             component="a"

@@ -1,5 +1,5 @@
 {
-  "appId": "io.robertying.shadowsocks-electron",
+  "appId": "io.nojsja.shadowsocks-electron",
   "productName": "Shadowsocks Electron",
   "asar": false,
   "copyright": "© 2020 nojsja",
