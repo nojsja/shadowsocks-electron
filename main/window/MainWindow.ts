@@ -58,6 +58,8 @@ export default class IpcMainWindow implements IpcMainWindowType {
         width: this.width,
         height: this.height,
         resizable: false,
+        fullscreenable: false,
+        fullscreen: false,
         icon: this.icon,
         webPreferences: {
           nodeIntegration: true,
@@ -69,7 +71,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
         this.win.hide();
       }
 
-      this.win.setVisibleOnAllWorkspaces(true);
+      // this.win.setVisibleOnAllWorkspaces(true);
 
       this.win.on("minimize", (e: Electron.Event) => {
         e.preventDefault();
