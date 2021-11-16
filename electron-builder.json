@@ -57,6 +57,35 @@
       "LSUIElement": 1
     }
   },
+  "win": {
+    "icon": "assets/logo.ico",
+    "target": [
+      {
+        "target": "zip",
+        "arch": [
+          "ia32", "x64"
+        ]
+      },
+      {
+        "target": "nsis",
+        "arch": [
+          "ia32", "x64"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowElevation": true,
+    "allowToChangeInstallationDirectory": true,
+    "installerIcon": "./assets/logo.ico",
+    "uninstallerIcon": "./assets/logo.ico",
+    "installerHeaderIcon": "./assets/logo.ico",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "deleteAppDataOnUninstall": true,
+    "shortcutName": "shadowsocks-electron"
+  },
   "dmg": {
     "contents": [
       {
