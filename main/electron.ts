@@ -5,7 +5,8 @@ import isDev from "electron-is-dev";
 import { autoUpdater } from "electron-updater";
 import { initRenderer } from 'electron-store';
 
-import { setMainWindow, stopClient } from "./proxy";
+import { stopClient } from "./proxy";
+import { setMainWindow } from "./proxy/client";
 import logger from "./logs";
 import { setupAfterInstall } from "./install";
 import { IpcMainProcess } from './service/index';
