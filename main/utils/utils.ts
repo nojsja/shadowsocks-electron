@@ -66,6 +66,8 @@ export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
         return getBinPath(binName) || path.join((global as any).pathRuntime, `bin/linux/${archMap.get(arch)}/${binName}`);
       case 'darwin':
         return path.join((global as any).pathRuntime, `bin/darwin/x64/${binName}`);
+      case 'win32':
+          return path.join((global as any).pathRuntime, `bin/win32/${archMap.get(arch)}/${binName}.exe`);
       default:
         return getBinPath(binName) ?? binName;
     }

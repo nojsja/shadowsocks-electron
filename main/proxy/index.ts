@@ -67,6 +67,22 @@ const setProxy = async (
         );
       }
       break;
+    case "win32":
+      if (status === "off") {
+        // await gsettings.unsetProxy();
+        stopPacServer();
+      } else if (mode === "Global") {
+        // await gsettings.setGlobalProxy("127.0.0.1", localPort ?? 1080);
+      } else if (mode === "PAC") {
+        await setupIfFirstRun();
+        await generateFullPac(localPort ?? 1080);
+        await stopPacServer();
+        startPacServer(pacPort ?? 1090);
+        // await gsettings.setPacProxy(
+        //   `http://localhost:${pacPort ?? 1090}/proxy.pac`
+        // );
+      }
+      break;
   }
 };
 
