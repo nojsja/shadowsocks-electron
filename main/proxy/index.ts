@@ -23,9 +23,14 @@ const spawnClient = async (config: Config, settings: Settings) : Promise<{code: 
       if (config.type === 'ssr') {
         ssLocal = new SSRClient(settings);
         return (ssLocal as SSRClient).connect(config as SSRConfig);
-      } else {
+      } else if(config.type === 'ss') {
         ssLocal= new SSClient(settings);
         return (ssLocal as SSClient).connect(config as SSConfig);
+      } else {
+        return Promise.resolve({
+          code: 600,
+          result: `Unknown shadowsocks client type: ${config.type}`
+        });
       }
     });
 };

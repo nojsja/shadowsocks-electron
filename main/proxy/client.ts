@@ -1,16 +1,18 @@
 import { EventEmitter } from "events";
 import { MessageChannel } from "electron-re";
 import { BrowserWindow } from "electron";
+import os from 'os';
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 
 import checkPortInUse from "../utils/checkPortInUse";
 import { debounce, getSSLocalBinPath } from "../utils/utils";
 import { Settings, SSRConfig, SSConfig } from "../types/extention";
 import logger from "../logs";
-import { setProxy } from './proxy';
+import { Proxy } from './proxy';
 
 let mainWindow: BrowserWindow | null = null;
 export let connected = false;
+const platform = os.platform();
 
 export const getConnected = () => connected;
 
@@ -25,6 +27,7 @@ export class Client extends EventEmitter {
   error: null | Error | string
   params: string[]
   settings: Settings
+  proxy: Proxy
 
   constructor(settings: Settings, type: 'ssr' | 'ss') {
     super();
@@ -36,11 +39,17 @@ export class Client extends EventEmitter {
     this.child = null;
     this.on('connected', this.onConnected);
     this.on('exited', debounce(this.onExited, 600));
+    this.proxy = Proxy.createProxy(
+      platform,
+      settings.localPort,
+      settings.pacPort,
+      settings.mode
+    );
   }
 
   async onConnected(cb?: (success: boolean) => void) {
     logger.info(`Started ${this.type}-local`);
-    await setProxy("on", this.settings.mode, this.settings.localPort, this.settings.pacPort);
+    await this.proxy.start();
     logger.info("Set proxy on");
     connected = true;
     mainWindow?.webContents.send("connected", true);
@@ -54,7 +63,7 @@ export class Client extends EventEmitter {
         cb && cb(true);
       } else {
         logger.info(`Exited ${this.bin} with error ${this.error}.`);
-        await setProxy("off");
+        await this.proxy.stop();
         logger.info("Set proxy off");
 
         connected = false;

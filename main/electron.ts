@@ -24,8 +24,10 @@ let ipcMainWindow: IpcMainWindowType;
 
 autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);
-const pathRuntime = (global as any).pathRuntime = path.join(appDataPath, 'runtime/');
+const pathRuntime = path.join(appDataPath, 'runtime/');
 const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
+
+export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
 
 /* -------------- pre work -------------- */
 

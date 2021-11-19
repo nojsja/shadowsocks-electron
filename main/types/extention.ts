@@ -140,8 +140,11 @@ export interface SSRConfig {
   type?: 'ss' | 'ssr';
 }
 
-
 export type Mode = "PAC" | "Global" | "Manual";
+
+export type ProxyStatus = "off" | "on";
+
+export type platform = "win32" | "darwin" | "linux";
 
 export interface Settings {
   selectedServer?: string | null;
