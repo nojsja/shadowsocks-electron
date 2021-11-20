@@ -27,7 +27,7 @@ export class Client extends EventEmitter {
   error: null | Error | string
   params: string[]
   settings: Settings
-  proxy: Proxy
+  proxy?: Proxy
 
   constructor(settings: Settings, type: 'ssr' | 'ss') {
     super();
@@ -39,17 +39,19 @@ export class Client extends EventEmitter {
     this.child = null;
     this.on('connected', this.onConnected);
     this.on('exited', debounce(this.onExited, 600));
-    this.proxy = Proxy.createProxy(
-      platform,
-      settings.localPort,
-      settings.pacPort,
-      settings.mode
-    );
+    if (settings.mode !== 'Manual') {
+      this.proxy = Proxy.createProxy(
+        platform,
+        settings.localPort,
+        settings.pacPort,
+        settings.mode
+      );
+    }
   }
 
   async onConnected(cb?: (success: boolean) => void) {
     logger.info(`Started ${this.type}-local`);
-    await this.proxy.start();
+    await this.proxy?.start();
     logger.info("Set proxy on");
     connected = true;
     mainWindow?.webContents.send("connected", true);
@@ -62,8 +64,8 @@ export class Client extends EventEmitter {
       if (results[0]?.isInUse) {
         cb && cb(true);
       } else {
-        logger.info(`Exited ${this.bin} with error ${this.error}.`);
-        await this.proxy.stop();
+        logger.info(`Exited ${this.bin} with error ${this.error}`);
+        await this.proxy?.stop();
         logger.info("Set proxy off");
 
         connected = false;
@@ -183,8 +185,22 @@ export class SSClient extends Client {
   }
 
   disconnect() {
-    this.child?.kill("SIGKILL");
-    mainWindow?.webContents.send("connected", false);
+    return new Promise((resolve, reject) => {
+      this.child?.kill("SIGKILL");
+      this.emit('exited', (isAlive: boolean) => {
+        if (isAlive) {
+          reject({
+            code: 500,
+            result: 'failed'
+          });
+        } else {
+          resolve({
+            code: 200,
+            result: 'success'
+          });
+        }
+      });
+    });
   }
 }
 
@@ -299,7 +315,21 @@ export class SSRClient extends Client {
   }
 
   disconnect() {
-    this.child?.kill("SIGKILL");
-    mainWindow?.webContents.send("connected", false);
+    return new Promise((resolve, reject) => {
+      this.child?.kill("SIGKILL");
+      this.emit('exited', (isAlive: boolean) => {
+        if (isAlive) {
+          reject({
+            code: 500,
+            result: 'failed'
+          });
+        } else {
+          resolve({
+            code: 200,
+            result: 'success'
+          });
+        }
+      });
+    });
   }
 }

@@ -36,8 +36,14 @@ const spawnClient = async (config: Config, settings: Settings) : Promise<{code: 
 };
 
 const killClient = async () => {
-  ssLocal?.disconnect();
-  logger.info(`Killed ${ssLocal?.type || 'ss'}-local`);
+  await ssLocal?.disconnect()?.then(
+    () => {
+      logger.info(`Killed ${ssLocal?.type || 'ss'}-local`);
+    },
+    () =>{
+      logger.info(`Killed ${ssLocal?.type || 'ss'}-local failed`);
+    }
+  );
 };
 
 export const startClient = async (config: Config, settings: Settings): Promise<{ code: number, result: any }> => {

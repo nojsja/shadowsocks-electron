@@ -48,7 +48,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
     this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
     this.trayIcon = path.resolve(
       app.getAppPath(),
-      "assets/tray/tray.png"
+      "assets/icons/16x16.png"
     );
   }
 
