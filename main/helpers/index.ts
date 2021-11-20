@@ -108,3 +108,14 @@ export const setStartupOnBoot_darwin = (params: { openAtLogin: boolean, openAsHi
     openAsHidden: params.openAsHidden
   });
 }
+
+export const getStartupOnBoot_win32 = (): Promise<any> => {
+  return Promise.resolve(app.getLoginItemSettings().openAtLogin);
+}
+
+
+export const setStartupOnBoot_win32 = (params: { openAtLogin: boolean }) => {
+  app.setLoginItemSettings({
+    openAtLogin: params.openAtLogin
+  });
+}
