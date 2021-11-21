@@ -66,11 +66,10 @@ const SettingsPage: React.FC = () => {
     return true;
   }
 
-  const checkPortUsed = (value: number, target: 'httpsProxy' | 'httpProxy', useValue?: boolean) => {
+  const checkPortUsed = (value: number, target: 'httpProxy', useValue?: boolean) => {
     if (
       useValue === undefined ?
       (value == settings[target].port &&
-      settings.httpsProxy.enable &&
       settings.httpProxy.enable)
       :
       (value == settings[target].port &&
@@ -98,7 +97,7 @@ const SettingsPage: React.FC = () => {
         if (!checkPortValid(value)) return;
         break;
       case 'httpProxy':
-        if (!checkPortUsed(value, 'httpsProxy')) return;
+        if (!checkPortUsed(value, 'httpProxy')) return;
         value = {
           ...settings.httpProxy,
           port: value

@@ -9,7 +9,7 @@ const defaultStore: RootState = {
   },
   settings: {
     selectedServer: null,
-    mode: "PAC",
+    mode: "Manual",
     darkMode: false,
     verbose: false,
     localPort: 1080,
@@ -17,10 +17,6 @@ const defaultStore: RootState = {
     httpProxy: {
       enable: false,
       port: 1095
-    },
-    httpsProxy: {
-      enable: false,
-      port: 1096
     },
     gfwListUrl:
       "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt",

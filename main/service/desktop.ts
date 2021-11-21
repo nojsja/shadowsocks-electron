@@ -12,7 +12,8 @@ import { openLogDir } from '../logs';
 import TransparentWindow from '../window/TransparentWindow';
 import {
   setStartupOnBoot_darwin, getStartupOnBoot_darwin,
-  getStartupOnBoot_linux, setStartupOnBoot_linux
+  getStartupOnBoot_linux, setStartupOnBoot_linux,
+  getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '../helpers';
 
 /* main service handler */
@@ -69,6 +70,19 @@ export class DesktopService implements DesktopServiceType {
             });
           });
           break;
+        case 'win32':
+          getStartupOnBoot_win32().then(value => {
+            resolve({
+              code: 200,
+              result: value
+            });
+          }).catch(error => {
+            resolve({
+              code: 500,
+              result: error.toString()
+            });
+          });
+          break;
         default:
           resolve({
             code: 500,
@@ -101,6 +115,15 @@ export class DesktopService implements DesktopServiceType {
           setStartupOnBoot_darwin({
             openAtLogin: on,
             openAsHidden: true
+          });
+          resolve({
+            code: 200,
+            result: {}
+          });
+          break;
+        case 'win32':
+          setStartupOnBoot_win32({
+            openAtLogin: on
           });
           resolve({
             code: 200,

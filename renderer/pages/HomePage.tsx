@@ -238,14 +238,6 @@ const HomePage: React.FC = () => {
         });
       }
 
-      if (settings.httpsProxy.enable) {
-        setHttpAndHttpsProxy({
-          ...settings.httpsProxy,
-          type: 'https',
-          proxyPort: settings.localPort
-        });
-      }
-
     }, 500);
 
   }, [])
