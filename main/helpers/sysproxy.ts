@@ -4,7 +4,7 @@ import { getPathRuntime } from '../electron';
 
 export const unsetProxy = async () => {
   const result = await execAsync(
-    `${getPathRuntime(`bin/win32/x64/sysproxy.exe`)} off`
+    `${getPathRuntime(`bin/win32/x64/sysproxy.exe`)} set 1 - -`
   );
   return result.code === 0;
 };

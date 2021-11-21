@@ -1,4 +1,4 @@
-var proxy = "SOCKS5 127.0.0.1:__PORT__; PROXY 127.0.0.1:__PORT__; SOCKS 127.0.0.1:__PORT__; DIRECT;";
+var proxy = "PROXY 127.0.0.1:__PORT__; DIRECT;";
 
 var rules = __RULES__;
 

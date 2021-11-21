@@ -239,12 +239,16 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
               <Switch checked={!!values.fastOpen} edge="end" color="primary" onChange={(e) => handleValueChange('fastOpen', e.target.checked)} />
             </ListItemSecondaryAction>
           </ListItem>
-          <ListItem>
-            <ListItemText primary="TCP No Delay" />
-            <ListItemSecondaryAction>
-              <Switch checked={!!values.noDelay} edge="end" color="primary" onChange={(e) => handleValueChange('noDelay', e.target.checked)} />
-            </ListItemSecondaryAction>
-          </ListItem>
+          {
+            values.type === 'ss' && (
+              <ListItem>
+                <ListItemText primary="TCP No Delay" />
+                <ListItemSecondaryAction>
+                  <Switch checked={!!values.noDelay} edge="end" color="primary" onChange={(e) => handleValueChange('noDelay', e.target.checked)} />
+                </ListItemSecondaryAction>
+              </ListItem>
+            )
+          }
           <ListItem>
             <ListItemText primary="UDP Relay" />
             <ListItemSecondaryAction>
@@ -253,29 +257,35 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           </ListItem>
         </List>
         <InputLabel style={{ marginBottom: 0 }}>{t('plugin')}</InputLabel>
-        <Select
-          label={t('plugin')}
-          displayEmpty
-          fullWidth
-          value={values.plugin ?? ""}
-          onChange={(e: any) => handleValueChange("plugin", e.target.value.trim())}
-        >
-          <MenuItem key="none" value="">
-            <em>{t('none')}</em>
-          </MenuItem>
-          {plugins.map(plugin => (
-            <MenuItem key={plugin} value={plugin}>
-              {plugin}
-            </MenuItem>
-          ))}
-        </Select>
-        <TextField
-          fullWidth
-          multiline
-          label={t('plugin_options')}
-          value={values.pluginOpts ?? ""}
-          onChange={e => handleValueChange("pluginOpts", e.target.value.trim())}
-        />
+        {
+          values.type === 'ss' && (
+            <>
+              <Select
+                label={t('plugin')}
+                displayEmpty
+                fullWidth
+                value={values.plugin ?? ""}
+                onChange={(e: any) => handleValueChange("plugin", e.target.value.trim())}
+              >
+                <MenuItem key="none" value="">
+                  <em>{t('none')}</em>
+                </MenuItem>
+                {plugins.map(plugin => (
+                  <MenuItem key={plugin} value={plugin}>
+                    {plugin}
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                fullWidth
+                multiline
+                label={t('plugin_options')}
+                value={values.pluginOpts ?? ""}
+                onChange={e => handleValueChange("pluginOpts", e.target.value.trim())}
+              />
+            </>
+          )
+        }
       </Container>
       { SnackbarAlert }
     </Dialog>

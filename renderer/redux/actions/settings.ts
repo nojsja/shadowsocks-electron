@@ -68,8 +68,8 @@ export const setHttpAndHttpsProxy = (
     proxyPort: number
   }) => {
   const { enable, type, port, proxyPort } = params;
-  if (type === 'https' || (type === 'http')) {
-    const action = `${enable ? 'start' : 'stop'}H${type.slice(1)}ProxyServer`
+  if (type === 'http') {
+    const action = `${enable ? 'start' : 'stop'}HttpProxyServer`
     MessageChannel
       .invoke('main', 'service:main', {
         action: action,

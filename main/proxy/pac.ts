@@ -1,12 +1,15 @@
 import http from "http";
 import fs from "fs";
 import path from "path";
+import os from "os";
+
 import logger from "../logs";
 import fsExtra from "fs-extra";
 import fetch from "node-fetch";
 import { pacDir } from "../install";
 
 let server: http.Server;
+const platform = os.platform();
 
 export const startPacServer = (pacPort: number) => {
   server = http.createServer((req, res) => {
@@ -38,7 +41,11 @@ export const generatePacWithoutPort = async (gfwListText: string) => {
       2
     );
 
-    const data = await fsExtra.readFile(path.resolve(pacDir, "template.pac"));
+    const data = await fsExtra.readFile(
+      platform === "win32" ?
+      path.resolve(pacDir, "template_win.pac") :
+      path.resolve(pacDir, "template.pac")
+    );
     const pac = data.toString("ascii").replace(/__RULES__/g, rules);
 
     await fsExtra.writeFile(path.resolve(pacDir, "pac.txt"), pac);

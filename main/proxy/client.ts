@@ -37,12 +37,14 @@ export class Client extends EventEmitter {
     this.error = '';
     this.settings = settings;
     this.child = null;
+    this.onExited.bind(this);
+    this.onConnected.bind(this);
     this.on('connected', this.onConnected);
     this.on('exited', debounce(this.onExited, 600));
     if (settings.mode !== 'Manual') {
       this.proxy = Proxy.createProxy(
         platform,
-        settings.localPort,
+        platform === 'win32' ? settings.httpProxy.port : settings.localPort,
         settings.pacPort,
         settings.mode
       );

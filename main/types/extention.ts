@@ -152,6 +152,10 @@ export interface Settings {
   verbose: boolean;
   localPort: number;
   pacPort: number;
+  httpProxy: {
+    enable: false,
+    port: 1095
+  },
   gfwListUrl: string;
   autoLaunch: boolean;
 };
