@@ -2,9 +2,9 @@
 
 # Shadowsocks Electron
 
-> Test on Ubuntu20.4.3 (amd64) and MacOS catalina (x64)
+> Test on Ubuntu20.4.3 (amd64) / MacOS catalina (x64) / Windows 10 (x64)
 
-Shadowsocks GUI application with cross-platform desktop support based on Electron⚛️, made specially for Linux/Mac users.
+Shadowsocks GUI application with cross-platform desktop support based on Electron⚛️, made specially for Ubuntu / Mac(intel) / Windows users.
 
 ## Screenshots
 
@@ -66,12 +66,13 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 > More architecture will be supported if necessary, just give me an issue.
 
 - Ubuntu
-  - Deb `x64/x86/arm64`
+  - deb `x64/x86/arm64`
   - AppImage `x64/x86/arm64`
-  - Snap `x64`
+  - snap `x64`
 - MacOS
-  - Dmg `x64`
-- <del>Windows</del>
+  - dmg `x64`
+- Windows
+  - exe `x64/x86`
 
 ## Development
 
@@ -80,6 +81,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - Node@^`14.18`
 - Ubuntu18.04 or higher version
 - Mac catalina or other versions (works in most recent versions in theory)
+- Windows 10 or higher version
 
 ### 2. Prepare
 
