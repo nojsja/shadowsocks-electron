@@ -65,7 +65,7 @@
   "restore": "恢复",
   "backup": "备份",
   "warning": "警告",
-  "use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings": "使用 PAC 和全局模式需要先在设置中开启 http 代理",
+  "use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings": "使用PAC模式和全局模式前需要先在设置中开启http代理",
   "the_recovery_is_successful": "成功恢复！",
   "the_recovery_is_failed": "恢复失败! 请检查目标文件是否为JSON格式",
   "user_canceled": "用户取消操作",

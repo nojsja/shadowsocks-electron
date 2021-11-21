@@ -65,7 +65,7 @@
   "restore": "Restore",
   "backup": "Backup",
   "warning": "Warning",
-  "use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings": "Using PAC and Global Mode requires to enable http proxy first",
+  "use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings": "Using PAC and Global Mode requires to enable http proxy in settings first",
   "the_recovery_is_successful": "The recovery is successful!",
   "the_recovery_is_failed": "The recovery is failed! please confirm whether the file format is json",
   "user_canceled": "User Canceled",

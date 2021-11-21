@@ -63,7 +63,7 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
     if (value !== mode) {
       if (
         platform === "win32" &&
-        mode !== 'Manual' &&
+        value !== 'Manual' &&
         !settings.httpProxy.enable
       ) {
         MessageChannel.invoke('main', 'service:desktop', {
