@@ -33,11 +33,15 @@ const mainTheme = createMuiTheme({
   palette: {
     primary: {
       main: indigo[500],
-      light: indigo[400]
+      light: indigo[400],
     },
     secondary: {
       main: grey[300]
-    }
+    },
+    background: {
+      paper: "#fff",
+      default: "#fafafa"
+    },
   }
 });
 
@@ -52,7 +56,11 @@ const darkTheme = createMuiTheme({
     secondary: {
       main: grey[800],
       dark: grey[900]
-    }
+    },
+    background: {
+      default: '#424242',
+      paper: grey[900],
+    },
   }
 });
 
@@ -81,7 +89,7 @@ prepareForLanguage(getDefaultLang());
 const App: React.FC = () => {
   const styles = useStyles();
 
-  const darkMode = window.localStorage.getItem('darkMode') === 'true' ?? false;
+  const darkMode = window.localStorage.getItem('darkMode') === 'true' || false;
 
   useEffect(() => {
     getConnectionStatus((status) => {

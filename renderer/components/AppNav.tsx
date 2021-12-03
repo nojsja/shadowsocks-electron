@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Drawer,
   Hidden,
   useTheme,
   AppBar,
@@ -9,11 +8,12 @@ import {
   Theme
 } from "@material-ui/core";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { makeStyles, createStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useTranslation } from 'react-i18next';
 import MenuIcon from "@material-ui/icons/Menu";
 import { useHistory, useLocation } from "react-router-dom";
 import DrawerMenu, { drawerWidth } from "./DrawerMenu";
+import { AdaptiveDrawer } from "./Pices/Drawer";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,12 +44,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
-
-const StyledDrawer = withStyles({
-  paper: {
-    width: drawerWidth
-  }
-})(Drawer);
 
 const AppNav: React.FC = () => {
   const theme = useTheme();
@@ -96,7 +90,7 @@ const AppNav: React.FC = () => {
       </AppBar>
       <nav className={styles.drawer}>
         <Hidden smUp implementation="css">
-          <StyledDrawer
+          <AdaptiveDrawer
             variant="temporary"
             anchor={theme.direction === "rtl" ? "right" : "left"}
             open={open}
@@ -106,12 +100,12 @@ const AppNav: React.FC = () => {
             }}
           >
             <DrawerMenu onClick={handleDrawerToggle} />
-          </StyledDrawer>
+          </AdaptiveDrawer>
         </Hidden>
         <Hidden xsDown implementation="css">
-          <StyledDrawer variant="permanent" open>
+          <AdaptiveDrawer variant="permanent" open>
             <DrawerMenu onClick={handleDrawerToggle} />
-          </StyledDrawer>
+          </AdaptiveDrawer>
         </Hidden>
       </nav>
     </div>

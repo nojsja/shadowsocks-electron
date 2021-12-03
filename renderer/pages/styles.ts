@@ -96,6 +96,9 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       margin: '10px auto',
       maxWidth: '70%'
     },
+    'link-color__light': {
+      color: theme.palette.primary.light,
+    }
   })
 );
 
@@ -125,6 +128,9 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     formControl: {
       margin: theme.spacing(1),
       minWidth: 120,
+    },
+    'switch-button__color': {
+      color: theme.palette.primary.light,
     },
     margin: {
       marginTop: theme.spacing(2),
