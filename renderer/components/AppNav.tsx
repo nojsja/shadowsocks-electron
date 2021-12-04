@@ -7,11 +7,13 @@ import {
   IconButton,
   Theme
 } from "@material-ui/core";
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useTranslation } from 'react-i18next';
-import MenuIcon from "@material-ui/icons/Menu";
-import { useHistory, useLocation } from "react-router-dom";
+import { Menu as MenuIcon, Close as CloseIcon, Remove as MinimizeIcon } from "@material-ui/icons";
+import { useLocation } from "react-router-dom";
+import { MessageChannel } from 'electron-re';
+import { red } from "@material-ui/core/colors";
+
 import DrawerMenu, { drawerWidth } from "./DrawerMenu";
 import { AdaptiveDrawer } from "./Pices/Drawer";
 
@@ -23,7 +25,27 @@ const useStyles = makeStyles((theme: Theme) =>
         flexShrink: 0
       }
     },
+    icons: {
+      transition: 'all .2s',
+      '&.minimum': {
+        backgroundColor: 'rgba(255, 255, 255, .2)',
+        '&:hover': {
+          transform: 'scale(.8)',
+        }
+      },
+      '&.close': {
+        marginLeft: '5px',
+        marginRight: '-5px',
+        '&:hover': {
+          color: red[500]
+        }
+      }
+    },
+    disableDrag: {
+      '-webkit-app-region': 'none',
+    },
     appBar: {
+      '-webkit-app-region': 'drag',
       [theme.breakpoints.up("sm")]: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth
@@ -45,11 +67,24 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const minimumApp = () => {
+  MessageChannel.invoke('main', 'service:desktop', {
+    action: 'minimumApp',
+    params: []
+  });
+};
+
+const hideApp = () => {
+  MessageChannel.invoke('main', 'service:desktop', {
+    action: 'hideApp',
+    params: []
+  });
+};
+
 const AppNav: React.FC = () => {
   const theme = useTheme();
   const styles = useStyles();
   const { t } = useTranslation();
-  const history = useHistory();
 
   const [open, setOpen] = React.useState(false);
 
@@ -70,7 +105,7 @@ const AppNav: React.FC = () => {
     <div>
       <AppBar position="fixed" className={styles.appBar}>
         <Toolbar className={styles.toolBar} variant="dense">
-          <div>
+          <div className={styles['disableDrag']}>
               <IconButton
                 color="inherit"
                 edge="start"
@@ -80,12 +115,24 @@ const AppNav: React.FC = () => {
               </IconButton>
               <span className={styles.title}>{title}</span>
           </div>
-          <IconButton
-            color="inherit"
-            onClick={() => history.goBack()}
-          >
-            <ChevronLeftIcon />
-          </IconButton>
+          <span>
+            <IconButton
+              style={{ padding: 0}}
+              color="inherit"
+              className={`${styles['disableDrag']} ${styles.icons} minimum`}
+              onClick={minimumApp}
+            >
+              <MinimizeIcon />
+            </IconButton>
+            <IconButton
+              color="inherit"
+              style={{ padding: 0}}
+              className={`${styles['disableDrag']} ${styles.icons} close`}
+              onClick={hideApp}
+            >
+              <CloseIcon />
+            </IconButton>
+          </span>
         </Toolbar>
       </AppBar>
       <nav className={styles.drawer}>

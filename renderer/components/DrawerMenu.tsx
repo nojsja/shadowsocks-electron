@@ -17,7 +17,7 @@ import banner from '../../assets/banner.png';
 
 const useStyles = makeStyles(theme => createStyles({
   text: {
-    color: theme.palette.type === 'dark' ? theme.palette.text.secondary : 'black',
+    color: theme.palette.type === 'dark' ? theme.palette.text.primary : 'black',
   },
   banner: {
     textAlign: 'center',

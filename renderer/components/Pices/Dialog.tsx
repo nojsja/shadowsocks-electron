@@ -1,12 +1,10 @@
 import React from 'react';
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Drawer, DrawerProps }  from '@material-ui/core';
-import { drawerWidth } from '../DrawerMenu';
+import { Dialog, DialogProps }  from '@material-ui/core';
 
-const StyledDrawer = withStyles((theme: Theme) => (
+const StyledDialog = withStyles((theme: Theme) => (
   createStyles({
     paper: {
-      width: drawerWidth,
       backgroundColor: theme.palette.type === "dark" ? 'rgba(255,255,255, .2)' : 'rgba(255, 255, 255, 1)',
       backdropFilter: `saturate(180%) blur(5px)`,
     },
@@ -15,8 +13,8 @@ const StyledDrawer = withStyles((theme: Theme) => (
       backdropFilter: `saturate(180%) blur(5px)`,
     }
   })
-))(Drawer);
+))(Dialog);
 
-export const AdaptiveDrawer = (props: DrawerProps) => {
-  return <StyledDrawer {...props} />;
+export const AdaptiveDialog = (props: DialogProps) => {
+  return <StyledDialog {...props} />;
 };
