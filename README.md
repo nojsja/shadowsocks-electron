@@ -20,6 +20,8 @@ Shadowsocks GUI application with cross-platform desktop support based on Electro
 
 ![screenshot](./assets/settings.png)
 
+![screenshot](./assets/dark.png)
+
 ## Downloads
 
 - GitHub Releases
