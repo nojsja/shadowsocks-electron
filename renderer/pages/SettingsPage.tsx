@@ -6,7 +6,6 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Switch,
   ListSubheader,
   TextField,
   Divider,
@@ -24,6 +23,7 @@ import { getDefaultLang } from "../utils";
 import { useStylesOfSettings as useStyles } from "./styles";
 import useSnackbarAlert from "../hooks/useSnackbarAlert";
 import useDialogConfirm from '../hooks/useDialogConfirm';
+import { AdaptiveSwitch } from "../components/Pices/Switch";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -233,9 +233,8 @@ const SettingsPage: React.FC = () => {
               // secondary="Not applicable to Linux"
             />
             <ListItemSecondaryAction>
-              <Switch
+              <AdaptiveSwitch
                 edge="end"
-                color="primary"
                 checked={settings.httpProxy.enable}
                 onChange={e => handleSwitchValueChange("httpProxy", e)}
               />
@@ -268,9 +267,8 @@ const SettingsPage: React.FC = () => {
             // secondary="Not applicable to Linux"
           />
           <ListItemSecondaryAction>
-            <Switch
+            <AdaptiveSwitch
               edge="end"
-              color="primary"
               checked={settings.autoLaunch}
               onChange={e => handleSwitchValueChange("autoLaunch", e)}
             />
@@ -281,9 +279,8 @@ const SettingsPage: React.FC = () => {
             primary={t('darkMode')}
           />
           <ListItemSecondaryAction>
-            <Switch
+            <AdaptiveSwitch
               edge="end"
-              color="primary"
               checked={settings.darkMode}
               onChange={e => handleSwitchValueChange("darkMode", e)}
             />
@@ -326,9 +323,8 @@ const SettingsPage: React.FC = () => {
             secondary={t('verbose_output')}
           />
           <ListItemSecondaryAction>
-            <Switch
+            <AdaptiveSwitch
               edge="end"
-              color="primary"
               checked={settings.verbose}
               onChange={e => handleSwitchValueChange("verbose", e)}
             />

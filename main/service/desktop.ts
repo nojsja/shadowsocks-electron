@@ -15,6 +15,7 @@ import {
   getStartupOnBoot_linux, setStartupOnBoot_linux,
   getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '../helpers';
+import { ipcMainWindow } from '../electron';
 
 /* main service handler */
 export class DesktopService implements DesktopServiceType {
@@ -279,6 +280,24 @@ export class DesktopService implements DesktopServiceType {
         return a;
       })
       Menu.buildFromTemplate(templates).popup();
+    });
+  }
+
+  async hideApp(actions: contextAction[]): Promise<void> {
+    return new Promise(resolve => {
+      // dialog.showMessageBoxSync({
+      //   message: 'Close server and quit?',
+      //   type: 'question',
+      // });
+      ipcMainWindow?.quit();
+      resolve();
+    });
+  }
+
+  async minimumApp(actions: contextAction[]): Promise<void> {
+    return new Promise(resolve => {
+      ipcMainWindow?.hide();
+      resolve();
     });
   }
 }

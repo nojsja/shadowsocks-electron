@@ -20,7 +20,7 @@ console.log(typeof MessageChannel);
 
 const packageName = 'shadowsocks-electron';
 let ipcMainProcess: IpcMainProcessType;
-let ipcMainWindow: IpcMainWindowType;
+export let ipcMainWindow: IpcMainWindowType;
 
 autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);

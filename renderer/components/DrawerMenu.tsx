@@ -16,6 +16,9 @@ import { Link } from "react-router-dom";
 import banner from '../../assets/banner.png';
 
 const useStyles = makeStyles(theme => createStyles({
+  text: {
+    color: theme.palette.type === 'dark' ? theme.palette.text.primary : 'black',
+  },
   banner: {
     textAlign: 'center',
     width: '100%',
@@ -39,26 +42,26 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
       <List>
         <Link to="/home" onClick={props.onClick}>
           <ListItem button>
-            <ListItemIcon>
+            <ListItemIcon className={styles['text']}>
               <HomeIcon />
             </ListItemIcon>
-            <ListItemText primary={t('home')} />
+            <ListItemText primary={t('home')} className={styles['text']}/>
           </ListItem>
         </Link>
-        <Link to="/settings" onClick={props.onClick}>
+        <Link to="/settings" onClick={props.onClick} className={styles['text']}>
           <ListItem button>
             <ListItemIcon>
-              <SettingsIcon />
+              <SettingsIcon className={styles['text']}/>
             </ListItemIcon>
-            <ListItemText primary={t('settings')} />
+            <ListItemText primary={t('settings')} className={styles['text']}/>
           </ListItem>
         </Link>
-        <Link to="/about" onClick={props.onClick}>
+        <Link to="/about" onClick={props.onClick} className={styles['text']}>
           <ListItem button>
             <ListItemIcon>
-              <InfoIcon />
+              <InfoIcon className={styles['text']} />
             </ListItemIcon>
-            <ListItemText primary={t('about')} />
+            <ListItemText primary={t('about')} className={styles['text']} />
           </ListItem>
         </Link>
       </List>

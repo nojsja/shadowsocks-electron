@@ -4,7 +4,6 @@ import {
   TextField,
   DialogProps,
   useMediaQuery,
-  AppBar,
   Toolbar,
   IconButton,
   Typography,
@@ -26,6 +25,7 @@ import {
   useTheme,
   makeStyles,
   createStyles,
+  withStyles,
   Theme
 } from "@material-ui/core/styles";
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,8 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 import { Config, encryptMethods, plugins } from "../types";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
+import { AdaptiveAppBar } from "./Pices/AppBar";
+import { scrollBarStyle } from "../pages/styles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBarRelative: {
       position: "relative"
     },
+    scrollbar: scrollBarStyle(6, 0),
     title: {
       marginLeft: theme.spacing(2),
       flex: 1
@@ -60,6 +63,16 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
+
+const StyledDialog = withStyles((theme: Theme) => (
+  createStyles({
+    paper: {
+    },
+    root: {
+      '& *': scrollBarStyle(6, 0)
+    }
+  })
+))(Dialog);
 
 export interface EditServerDialogProps extends DialogProps {
   defaultValues: Config | null;
@@ -147,13 +160,13 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
   };
 
   return (
-    <Dialog
+    <StyledDialog
       fullScreen={fullScreen}
       open={open}
       onClose={onClose}
       disableBackdropClick
     >
-      <AppBar className={fullScreen ? styles.appBar : styles.appBarRelative}>
+      <AdaptiveAppBar className={fullScreen ? styles.appBar : styles.appBarRelative}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleCancel}>
             <CloseIcon />
@@ -165,9 +178,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             { t('save') }
           </Button>
         </Toolbar>
-      </AppBar>
-      <Container className={styles.container}>
-        {fullScreen && <div className={styles.toolbar} />}
+      </AdaptiveAppBar>
+      <Container className={`${styles.container}`}>
+        {fullScreen && <div className={`${styles.toolbar}`} />}
         <TextField
           fullWidth
           label={t('remark')}
@@ -288,7 +301,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
         }
       </Container>
       { SnackbarAlert }
-    </Dialog>
+    </StyledDialog>
   );
 };
 

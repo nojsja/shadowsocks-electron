@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Dialog,
   List,
   ListItem,
   ListItemAvatar,
@@ -19,6 +18,7 @@ import CameraIcon from "@material-ui/icons/PhotoCamera";
 import CloseIcon from '@material-ui/icons/Close';
 import CopyIcon from "@material-ui/icons/Code";
 import CreateIcon from "@material-ui/icons/Create";
+import { AdaptiveDialog } from "./Pices/Dialog";
 
 import { closeOptions } from '../types';
 
@@ -76,7 +76,7 @@ const AddServerDialog: React.FC<AddServerDialog> = props => {
   const { t } = useTranslation();
 
   return (
-    <Dialog onClose={() => onClose('')} open={open}>
+    <AdaptiveDialog onClose={() => onClose('')} open={open}>
       <DialogTitle attr='' onClose={onClose}>{t('add_server')}</DialogTitle>
       <List>
         <ListItemButton button onClick={() => onClose("manual")}>
@@ -98,7 +98,7 @@ const AddServerDialog: React.FC<AddServerDialog> = props => {
           <ListItemText primary={t('import_server_url_from_clipboard')} />
         </ListItemButton>
       </List>
-    </Dialog>
+    </AdaptiveDialog>
   );
 };
 

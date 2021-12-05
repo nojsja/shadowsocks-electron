@@ -3,7 +3,7 @@ import {
   Theme
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-// import { grey } from '@material-ui/core/colors';
+import { grey } from '@material-ui/core/colors';
 
 type StatusBarProps = {
   left: React.ReactElement[];
@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
       bottom: 0,
       left: 0,
       width: '100%',
-      backgroundColor: theme.palette.primary.main,
+      backgroundColor: grey[900],
       // backgroundColor: grey[800],
       fontSize: '12px',
       color: 'white',

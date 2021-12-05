@@ -17,7 +17,7 @@ const AboutPage: React.FC = () => {
         Shadowsocks Electron {packageJson.version}
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Shadowsocks GUI application with cross-platform desktop support, read more info on &nbsp;
+        Shadowsocks GUI application with cross-platform desktop support, get more info on &nbsp;
         <Typography
             variant="body2"
             component="a"
@@ -25,6 +25,7 @@ const AboutPage: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             gutterBottom
+            className={styles['link-color__light']}
             color="primary"
           >
             github
@@ -33,17 +34,17 @@ const AboutPage: React.FC = () => {
       <div className={styles['author-info__others']}>
         <div>
             <Typography variant="caption" gutterBottom>
-              Arch: {process.platform} ({process.arch})
+              OS: {process.platform} ({process.arch})
             </Typography>
           </div>
         <div>
           <Typography variant="caption" gutterBottom>
-            Electron: 13.4.0
+            Electron: { packageJson.devDependencies['electron'] }
           </Typography>
         </div>
         <div>
           <Typography variant="caption" gutterBottom>
-            MaterialUI: 4.9.8
+            MaterialUI: { packageJson.devDependencies['@material-ui/core'] }
           </Typography>
         </div>
         <div>

@@ -58,6 +58,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
         width: this.width,
         height: this.height,
         resizable: false,
+        frame: false,
         fullscreenable: false,
         fullscreen: false,
         icon: this.icon,

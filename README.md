@@ -20,6 +20,8 @@ Shadowsocks GUI application with cross-platform desktop support based on Electro
 
 ![screenshot](./assets/settings.png)
 
+![screenshot](./assets/dark.png)
+
 ## Downloads
 
 - GitHub Releases
@@ -43,7 +45,7 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - __PAC__ Mode (GFWList)
 - __Global__ Mode (socks proxy)
 - __Manual__ Mode (no system-wide proxy set)
-- HTTP(s) Proxy
+- HTTP(S) Proxy
 - Clipboard / QR-code Import
 - Language Detecting / Switching (zh-CN / en-US)
 - Configuration Backup / Recovery
