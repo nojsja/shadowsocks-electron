@@ -2,7 +2,6 @@ import React from "react";
 import {
   Hidden,
   useTheme,
-  AppBar,
   Toolbar,
   IconButton,
   Theme
@@ -16,6 +15,7 @@ import { red } from "@material-ui/core/colors";
 
 import DrawerMenu, { drawerWidth } from "./DrawerMenu";
 import { AdaptiveDrawer } from "./Pices/Drawer";
+import { AdaptiveAppBar } from "./Pices/AppBar";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -103,7 +103,7 @@ const AppNav: React.FC = () => {
 
   return (
     <div>
-      <AppBar position="fixed" className={styles.appBar}>
+      <AdaptiveAppBar position="fixed" className={styles.appBar}>
         <Toolbar className={styles.toolBar} variant="dense">
           <div className={styles['disableDrag']}>
               <IconButton
@@ -134,7 +134,7 @@ const AppNav: React.FC = () => {
             </IconButton>
           </span>
         </Toolbar>
-      </AppBar>
+      </AdaptiveAppBar>
       <nav className={styles.drawer}>
         <Hidden smUp implementation="css">
           <AdaptiveDrawer
