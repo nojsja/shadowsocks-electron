@@ -50,7 +50,7 @@ export const loadExtensions = (dirPath: string) => {
 };
 
 export const getStartupOnBoot_linux = () => {
-  const startupDir = `${os.homedir()}/.config/autostart`;
+  const startupDir = `${os.userInfo().homedir}/.config/autostart`;
   const startupFile = 'shadowsocks-electron.desktop';
 
   return new Promise((resolve, reject) => {
@@ -70,7 +70,7 @@ export const getStartupOnBoot_linux = () => {
 }
 
 export const setStartupOnBoot_linux = (on: boolean) => {
-  const startupDir = `${os.homedir()}/.config/autostart`;
+  const startupDir = `${os.userInfo().homedir}/.config/autostart`;
   const startupFile = 'shadowsocks-electron.desktop';
   const fileContent = [
     "[Desktop Entry]",
