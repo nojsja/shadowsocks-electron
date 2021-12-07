@@ -13,8 +13,8 @@
   "private": true,
   "scripts": {
     "start:main": "nodemon --config nodemon.json",
-    "start:renderer": "cross-env BROWSER=none react-app-rewired start",
-    "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3000 && yarn start:main\"",
+    "start:renderer": "cross-env PORT=3001 cross-env BROWSER=none react-app-rewired start",
+    "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3001 && yarn start:main\"",
     "start:inspector": "yarn build:main && electron --inspect=5858 .",
     "build:main": "yarn tsc -p main/tsconfig.json",
     "build:renderer": "react-app-rewired build",
