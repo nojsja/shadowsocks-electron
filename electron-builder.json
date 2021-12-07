@@ -142,6 +142,20 @@
   },
   "snap": {
     "summary": "Shadowsocks GUI with cross-platform desktop support",
+    "plugs": [
+      "default",
+      {
+        "personal-files": {
+          "interface": "personal-files",
+          "read": [
+            "$HOME/.config/autostart/shadowsocks-electron.desktop"
+          ],
+          "write": [
+            "$HOME/.config/autostart/shadowsocks-electron.desktop"
+          ]
+        }
+      }
+    ],
     "grade": "stable"
   }
 }
