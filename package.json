@@ -27,7 +27,7 @@
     "publish:snap": "snapcraft login && snapcraft upload dist/shadowsocks-electron_1.1.2_amd64.snap",
     "eject": "react-app-rewired eject",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "clean": "rm -rf dist/linux-*unpacked && rm -rf dist/__snap*",
+    "clean": "rm -rf dist/linux-*unpacked && rm -rf dist/__snap* && rm -rf dist/win-*unpacked",
     "lint": "eslint --ext .tsx,.ts .",
     "typecheck": "tsc --noUnusedLocals",
     "postinstall": "electron-builder install-app-deps"

@@ -26,7 +26,7 @@ export const plugins = ["v2ray-plugin", "kcptun"] as const;
 
 export type Plugin = typeof plugins[number];
 
-export type ACL = "bypass";
+export type ACL = boolean;
 
 export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | '';
 

@@ -78,5 +78,8 @@
   "reset_all_data_tips": "This action will reset all data to its defaults.",
   "cleared_all_data": "Cleared all data",
   "the_local_port_is_occupied": "The local port is occupied!",
-  "verbose_output": "See App logs for verbose output"
+  "verbose_output": "See App logs for verbose output",
+  "acl_settings": "ACL Settings",
+  "acl_content": "ACL Content",
+  "click_to_edit": "Click to edit"
 }

@@ -14,6 +14,10 @@ const defaultStore: RootState = {
     verbose: false,
     localPort: 1080,
     pacPort: 1090,
+    acl: {
+      enable: false,
+      text: ""
+    },
     httpProxy: {
       enable: false,
       port: 1095
