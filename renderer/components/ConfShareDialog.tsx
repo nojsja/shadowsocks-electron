@@ -35,16 +35,6 @@ export interface MediaCard {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      maxWidth: 300,
-      boxShadow: 'none'
-    },
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
     media: {
       height: 150,
       width: 150,
@@ -69,19 +59,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const StyledDialogContent = withStyles(
+export const StyledCard = withStyles(
   (theme) => (
     createStyles({
-
       root: {
-        // backgroundColor: 'red',
+        backgroundColor: 'transparent !important',
+        maxWidth: 300,
+        boxShadow: 'none'
       },
-      paper: {
-        // backgroundColor: 'red',
-      }
     })
   )
-)(DialogContent);
+)(Card);
 
 const MediaCard: React.FC<MediaCard> = (props) => {
   const classes = useStyles();
@@ -105,7 +93,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
   }
 
   return (
-    <Card className={classes.root}>
+    <StyledCard>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -139,7 +127,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
         </Button>
       </CardActions>
       { SnackbarAlert }
-    </Card>
+    </StyledCard>
   );
 }
 
@@ -151,11 +139,11 @@ const ConfShareDialog: React.FC<ConfShareDialog> = props => {
   return (
     <AdaptiveDialog color="primary" onClose={() => onClose('share')} open={open}>
       <DialogTitle onClose={onClose} attr='share'></DialogTitle>
-      <StyledDialogContent className={classes['mediaWrapper']}>
+      <DialogContent className={classes['mediaWrapper']}>
         <MediaCard
           url={props.url} dataUrl={props.dataUrl} onClose={onClose}
         />
-      </StyledDialogContent>
+      </DialogContent>
     </AdaptiveDialog>
   );
 };
