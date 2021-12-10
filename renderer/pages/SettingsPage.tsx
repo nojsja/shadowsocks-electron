@@ -304,7 +304,6 @@ const SettingsPage: React.FC = () => {
                   placeholder={t('click_to_edit')}
                   onClick={() => setAclVisible(true)}
                   value={'*****'}
-                  onChange={e => handleValueChange("acl", e)}
                 />
               </ListItemSecondaryAction>
             </ListItem>
@@ -389,7 +388,12 @@ const SettingsPage: React.FC = () => {
 
       {/* dialog */}
 
-      <EditAclDialog open={aclVisible} onClose={() => setAclVisible(false)} children={undefined} />
+      <EditAclDialog
+        open={aclVisible}
+        onClose={() => setAclVisible(false)}
+        children={undefined}
+        onTextChange={handleValueChange}
+      />
 
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
       {SnackbarAlert}

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState, useCallback} from "react";
 import {
   DialogProps,
   DialogTitleProps,
   Typography,
   IconButton,
-  Container
+  Container,
 } from "@material-ui/core";
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -12,20 +12,21 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import { AdaptiveDialog } from "./Pices/Dialog";
 
-import { closeOptions } from '../types';
+import { closeOptions, Settings } from '../types';
 import { scrollBarStyle } from "../pages/styles";
+import StyledTextareaAutosize from "./Pices/TextAreaAutosize";
 
 export type onCloseType = (selection: closeOptions) => void;
 
 export interface EditAclDialog extends DialogProps {
-  onClose: onCloseType
+  onClose: onCloseType,
+  onTextChange: (attr: keyof Settings, e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void,
 }
 
 export interface DefineDialogTitleProps extends DialogTitleProps {
   onClose: onCloseType
   attr: closeOptions
 }
-
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -42,13 +43,9 @@ const useStyles = makeStyles((theme: Theme) =>
     container: {
       width: '320px',
       overflow: 'auto',
+      paddingBottom: '12px',
       ...scrollBarStyle(6, 0, theme)
     },
-    textarea: {
-      width: '100%',
-      border: 'solid 1px lightgrey',
-      outline: 'none'
-    }
   }));
 
 
@@ -92,15 +89,25 @@ const tips = `
 `
 
 const EditAclDialog: React.FC<EditAclDialog> = props => {
-  const { onClose, open } = props;
+  const { onClose, open, onTextChange } = props;
+  const [text, setText] = useState('');
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const setTextInfo = useCallback((attr: keyof Settings, event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(event.target.value);
+  }, []);
+
+  const onCloseDialog = () => {
+    onTextChange('acl', { target: { value: text } } as React.ChangeEvent<HTMLTextAreaElement>);
+    onClose('');
+  }
+
   return (
-    <AdaptiveDialog onClose={() => onClose('')} open={open}>
-      <DialogTitle attr='' onClose={onClose}>{t('acl_settings')}</DialogTitle>
+    <AdaptiveDialog onClose={onCloseDialog} open={open}>
+      <DialogTitle attr='' onClose={onCloseDialog}>{t('acl_settings')}</DialogTitle>
       <Container className={classes.container}>
-        <textarea placeholder={tips} className={classes.textarea} rows={25} />
+        <StyledTextareaAutosize rows={10} placeholder={tips} onTextChange={setTextInfo}/>
       </Container>
     </AdaptiveDialog>
   );
