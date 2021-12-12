@@ -142,6 +142,9 @@
   },
   "snap": {
     "summary": "Shadowsocks GUI with cross-platform desktop support",
+    "plugs": [
+      "default"
+    ],
     "grade": "stable"
   }
 }

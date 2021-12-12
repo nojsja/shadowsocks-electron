@@ -26,7 +26,10 @@ export const plugins = ["v2ray-plugin", "kcptun"] as const;
 
 export type Plugin = typeof plugins[number];
 
-export type ACL = "bypass";
+export type ACL = {
+  enable: boolean,
+  text: string
+};
 
 export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | '';
 
@@ -65,6 +68,7 @@ export interface Settings {
     enable: boolean,
     port: number
   },
+  acl: ACL,
   gfwListUrl: string;
   autoLaunch: boolean;
   lang: string;

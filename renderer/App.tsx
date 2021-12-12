@@ -50,7 +50,7 @@ const darkTheme = createMuiTheme({
   palette: {
     type: "dark",
     primary: {
-      main: indigo[700],
+      main: indigo[400],
       light: indigo[400],
     },
     secondary: {
@@ -88,7 +88,6 @@ prepareForLanguage(getDefaultLang());
 
 const App: React.FC = () => {
   const styles = useStyles();
-
   const darkMode = window.localStorage.getItem('darkMode') === 'true' || false;
 
   useEffect(() => {

@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     appBarRelative: {
       position: "relative"
     },
-    scrollbar: scrollBarStyle(6, 0),
+    scrollbar: scrollBarStyle(6, 0, theme),
     title: {
       marginLeft: theme.spacing(2),
       flex: 1
@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(2),
       paddingTop: 0,
       paddingBottom: theme.spacing(4),
+      backgroundColor: theme.palette.type === "dark" ? 'rgba(255,255,255, .2)' : 'rgba(255, 255, 255, 1)',
       "& > *": {
         marginTop: theme.spacing(1.5),
         marginBottom: theme.spacing(1.5)
@@ -69,7 +70,7 @@ const StyledDialog = withStyles((theme: Theme) => (
     paper: {
     },
     root: {
-      '& *': scrollBarStyle(6, 0)
+      '& *': scrollBarStyle(6, 0, theme)
     }
   })
 ))(Dialog);

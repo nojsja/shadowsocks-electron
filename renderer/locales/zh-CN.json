@@ -78,5 +78,8 @@
   "reset_all_data_tips": "此操作会将所有数据置为默认值。",
   "cleared_all_data": "已清除所有数据",
   "the_local_port_is_occupied": "本地端口被占用！",
-  "verbose_output": "记录完整的访问日志"
+  "verbose_output": "记录完整的访问日志",
+  "acl_settings": "ACL设置",
+  "acl_content": "ACL内容",
+  "click_to_edit": "点击编辑"
 }

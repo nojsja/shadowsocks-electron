@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { MessageChannel } from 'electron-re';
 import {
   Container,
@@ -24,6 +24,7 @@ import { useStylesOfSettings as useStyles } from "./styles";
 import useSnackbarAlert from "../hooks/useSnackbarAlert";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
+import EditAclDialog from "../components/EditAclDialog";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -32,7 +33,7 @@ const SettingsPage: React.FC = () => {
   const dispatch = useTypedDispatch();
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
-
+  const [aclVisible, setAclVisible] = useState(false);
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 1.5e3 });
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
 
@@ -103,6 +104,12 @@ const SettingsPage: React.FC = () => {
           port: value
         }
         break;
+      case 'acl':
+        value = {
+          ...settings.acl,
+          text: value
+        }
+        break;
       default:
         break;
     }
@@ -130,6 +137,13 @@ const SettingsPage: React.FC = () => {
           enable: value
         };
         setHttpAndHttpsProxy({...value, type: 'http', proxyPort: settings.localPort });
+        break;
+      case 'acl':
+        value = {
+          ...settings.acl,
+          enable: value
+        };
+        // setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
         break;
       case 'darkMode':
         window.localStorage.setItem('darkMode', value ? 'true' : 'false');
@@ -249,13 +263,47 @@ const SettingsPage: React.FC = () => {
               <ListItemSecondaryAction>
                 <TextField
                   className={`${styles.textField} ${styles.indentInput}`}
-                  style={{ width: '80px', textAlign: 'right' }}
+                  style={{ width: '120px', textAlign: 'right' }}
                   required
                   size="small"
                   type="number"
                   placeholder={t('http_proxy_port')}
                   value={settings.httpProxy.port}
                   onChange={e => handleValueChange("httpProxy", e)}
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
+          )
+        }
+        <ListItem>
+            <ListItemText
+              primary={'ACL'}
+              // secondary="Not applicable to Linux"
+            />
+            <ListItemSecondaryAction>
+              <AdaptiveSwitch
+                edge="end"
+                checked={settings.acl.enable}
+                onChange={e => handleSwitchValueChange("acl", e)}
+              />
+            </ListItemSecondaryAction>
+        </ListItem>
+        {
+          settings.acl.enable && (
+            <ListItem>
+              <ListItemText
+                primary={t('acl_content')}
+              />
+              <ListItemSecondaryAction>
+                <TextField
+                  className={`${styles.textField} ${styles.indentInput}`}
+                  style={{ width: '120px', textAlign: 'right' }}
+                  required
+                  size="small"
+                  type="text"
+                  placeholder={t('click_to_edit')}
+                  onClick={() => setAclVisible(true)}
+                  value={'*****'}
                 />
               </ListItemSecondaryAction>
             </ListItem>
@@ -337,6 +385,16 @@ const SettingsPage: React.FC = () => {
           <ListItemText primary={t('open_process_manager')} />
         </ListItem>
       </List>
+
+      {/* dialog */}
+
+      <EditAclDialog
+        open={aclVisible}
+        onClose={() => setAclVisible(false)}
+        children={undefined}
+        onTextChange={handleValueChange}
+      />
+
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
       {SnackbarAlert}
     </Container>

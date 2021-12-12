@@ -1,5 +1,6 @@
 import { IpcMain, clipboard } from 'electron';
 import QRCode from 'qrcode';
+import fs from 'fs';
 
 import {
   MainService as MainServiceType,
@@ -9,6 +10,7 @@ import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
 import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
+import { getPathRuntime } from '../electron';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -139,17 +141,6 @@ export class MainService implements MainServiceType {
     });
   }
 
-  // async startHttpsProxyServer(params: { port: number, proxyPort: number }) {
-  //   return new Promise(resolve => {
-  //     return createHttpsServer({...params, host: '127.0.0.1'}, (error) => {
-  //       resolve({
-  //         code: error ? 500 : 200,
-  //         result: error ?? ''
-  //       });
-  //     });
-  //   });
-  // }
-
   async startHttpProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
       return createHttpServer({...params, host: '127.0.0.1'}, (error) => {
@@ -160,17 +151,6 @@ export class MainService implements MainServiceType {
       });
     });
   }
-
-  // async stopHttpsProxyServer(params: { port: number }) {
-  //   return new Promise(resolve => {
-  //     return stopHttpsServer(params.port, '127.0.0.1', (error) => {
-  //       resolve({
-  //         code: error ? 500 : 200,
-  //         result: error ?? ''
-  //       });
-  //     });
-  //   });
-  // }
 
   async stopHttpProxyServer(params: { port: number }) {
     return new Promise(resolve => {
@@ -196,6 +176,24 @@ export class MainService implements MainServiceType {
             records: records
           }
         });
+      });
+    })
+  }
+
+  async setAclConfFile(params: { text: string }): Promise<ServiceResult> {
+    return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
+        fs.writeFile(
+          getPathRuntime('acl.conf'),
+          params.text,
+          (err => {
+            if (err) reject(err);
+            resolve({
+              code: 200,
+              result: getPathRuntime('acl.conf')
+            });
+          })
+        );
       });
     })
   }

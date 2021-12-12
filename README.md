@@ -98,6 +98,10 @@ $: sudo apt install shadowsocks-libev
 $: sudo snap install multipass
 # for mac developers
 $: brew install shadowsocks-libev
+
+# proxy env set (if your local machine support)
+export HTTPS_PROXY=http://127.0.0.1:<port>
+export HTTP_PROXY=http://127.0.0.1:<port>
 ```
 
 ### 3. Run commands in terminal

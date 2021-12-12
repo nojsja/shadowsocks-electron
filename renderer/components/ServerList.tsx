@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(1),
       borderBottom: `solid 1px ${theme.palette.secondary.main}`
     },
-    scrollbar: scrollBarStyle(6, 0),
+    scrollbar: scrollBarStyle(6, 0, theme),
     empty: {
       flex: 1,
       marginTop: theme.spacing(2),

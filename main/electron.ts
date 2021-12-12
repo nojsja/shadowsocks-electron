@@ -37,6 +37,7 @@ app.dock?.hide();
 checkEnvFiles(
   [
     { _path: appDataPath, isDir: true },
+    { _path: `${os.homedir}/.config/autostart`, isDir: true },
     { _path: pathRuntime, isDir: true },
     { _path: path.join(pathRuntime, 'bin'), isDir: true,
       exec: () => {

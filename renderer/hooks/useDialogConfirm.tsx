@@ -8,10 +8,10 @@ import {
   DialogContent,
   DialogActions,
   DialogContentText,
-  Dialog,
   Button
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
+import { AdaptiveDialog } from '../components/Pices/Dialog';
 
 type message = {
   title: string,
@@ -42,9 +42,10 @@ const useDialogConfirm = (): [React.FC<DialogConfirmProps>, SetMessage, () => vo
   const showDialog = (title: string, content: string) => {
     showMessage({ title, content, show: true });
   };
+
   return [
     ((props) =>
-      (<Dialog open={msg.show} onClose={() => closeDialog(props.onClose)}>
+      (<AdaptiveDialog open={msg.show} onClose={() => closeDialog(props.onClose)}>
         <DialogTitle>{msg.title}</DialogTitle>
         <DialogContent>
           <DialogContentText>{msg.content}</DialogContentText>
@@ -57,7 +58,7 @@ const useDialogConfirm = (): [React.FC<DialogConfirmProps>, SetMessage, () => vo
             {t('cancel')}
           </Button>
         </DialogActions>
-      </Dialog>)
+      </AdaptiveDialog>)
     ),
     showDialog,
     closeDialog

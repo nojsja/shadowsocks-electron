@@ -1,7 +1,6 @@
 import React from "react";
 import { clipboard } from "electron";
 import {
-  Dialog,
   DialogProps,
   DialogContent,
   Divider
@@ -21,6 +20,8 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { saveDataURLAsFile } from '../utils';
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import { DialogTitle } from './AddServerDialog';
+import { AdaptiveDialog } from "./Pices/Dialog";
+import { withStyles } from "@material-ui/styles";
 
 export interface ConfShareDialog extends DialogProps, MediaCard {
   onClose: (selection: "qrcode" | "url" | "manual" | "share" | '') => void
@@ -34,20 +35,13 @@ export interface MediaCard {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      maxWidth: 300,
-      boxShadow: 'none'
-    },
-    closeButton: {
-      position: 'absolute',
-      right: theme.spacing(1),
-      top: theme.spacing(1),
-      color: theme.palette.grey[500],
-    },
     media: {
       height: 150,
       width: 150,
       margin: 'auto'
+    },
+    mediaWrapper: {
+      padding: 0,
     },
     textOverflow: {
       width: '100%',
@@ -64,6 +58,18 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
+
+export const StyledCard = withStyles(
+  (theme) => (
+    createStyles({
+      root: {
+        backgroundColor: 'transparent !important',
+        maxWidth: 300,
+        boxShadow: 'none'
+      },
+    })
+  )
+)(Card);
 
 const MediaCard: React.FC<MediaCard> = (props) => {
   const classes = useStyles();
@@ -87,7 +93,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
   }
 
   return (
-    <Card className={classes.root}>
+    <StyledCard>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -121,23 +127,24 @@ const MediaCard: React.FC<MediaCard> = (props) => {
         </Button>
       </CardActions>
       { SnackbarAlert }
-    </Card>
+    </StyledCard>
   );
 }
 
 const ConfShareDialog: React.FC<ConfShareDialog> = props => {
   const { onClose, open } = props;
   // const { t } = useTranslation();
+  const classes = useStyles();
 
   return (
-    <Dialog color="primary" onClose={() => onClose('share')} open={open}>
+    <AdaptiveDialog color="primary" onClose={() => onClose('share')} open={open}>
       <DialogTitle onClose={onClose} attr='share'></DialogTitle>
-      <DialogContent>
+      <DialogContent className={classes['mediaWrapper']}>
         <MediaCard
           url={props.url} dataUrl={props.dataUrl} onClose={onClose}
         />
       </DialogContent>
-    </Dialog>
+    </AdaptiveDialog>
   );
 };
 
