@@ -13,7 +13,7 @@ import { IpcMainProcess } from './service/index';
 import { IpcMainProcess as IpcMainProcessType, IpcMainWindowType } from './types/extention';
 import IpcMainWindow from './window/MainWindow';
 import { MessageChannel, ProcessManager } from 'electron-re';
-import { checkEnvFiles, copyDir } from "./utils/utils";
+import { checkEnvFiles, /* copyDir */ } from "./utils/utils";
 import chmod from "./utils/fsChmod";
 
 console.log(typeof MessageChannel);
@@ -21,13 +21,18 @@ console.log(typeof MessageChannel);
 const packageName = 'shadowsocks-electron';
 let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
+const platform = os.platform();
 
 autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);
 const pathRuntime = path.join(appDataPath, 'runtime/');
-const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
+// const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
 
+export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
+
+logger.info(`appDataPath: ${appDataPath}`);
+logger.info(`pathRuntime: ${pathRuntime}`);
 
 /* -------------- pre work -------------- */
 
@@ -37,18 +42,18 @@ app.dock?.hide();
 checkEnvFiles(
   [
     { _path: appDataPath, isDir: true },
-    { _path: `${os.homedir}/.config/autostart`, isDir: true },
+    ...(platform === 'linux' ? [{ _path: `${os.homedir}/.config/autostart`, isDir: true }] : []),
     { _path: pathRuntime, isDir: true },
     { _path: path.join(pathRuntime, 'bin'), isDir: true,
       exec: () => {
-        copyDir(path.join(pathExecutable, 'bin'), path.join(pathRuntime, 'bin'));
+        // copyDir(path.join(pathExecutable, 'bin'), path.join(pathRuntime, 'bin'));
       }
     }
   ]
 );
 chmod(path.join(pathRuntime, 'bin'), 0o711);
 
-if (os.platform() === 'linux') {
+if (platform === 'linux') {
   try {
     app.disableHardwareAcceleration();
   } catch (error) {
@@ -82,7 +87,7 @@ app.on("ready", async () => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+  if (platform !== "darwin") {
     app.quit();
   }
 });

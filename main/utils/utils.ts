@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import { exec, ExecOptions } from "child_process";
 import { Config } from '../types/extention';
-import { getPathRuntime } from '../electron';
+import { getPathRoot } from '../electron';
 
 const archMap = new Map([
   ['aarch64', 'arm64'],
@@ -64,11 +64,11 @@ export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
   if (archMap.has(arch)) {
     switch (os.platform()) {
       case 'linux':
-        return getBinPath(binName) || getPathRuntime(`bin/linux/${archMap.get(arch)}/${binName}`);
+        return getBinPath(binName) || getPathRoot(`bin/linux/${archMap.get(arch)}/${binName}`);
       case 'darwin':
-        return getPathRuntime(`bin/darwin/x64/${binName}`);
+        return getPathRoot(`bin/darwin/x64/${binName}`);
       case 'win32':
-          return getPathRuntime(`bin/win32/${archMap.get(arch)}/${binName}.exe`);
+          return getPathRoot(`bin/win32/${archMap.get(arch)}/${binName}.exe`);
       default:
         return getBinPath(binName) ?? binName;
     }
