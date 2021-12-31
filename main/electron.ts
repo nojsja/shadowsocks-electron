@@ -13,7 +13,7 @@ import { IpcMainProcess } from './service/index';
 import { IpcMainProcess as IpcMainProcessType, IpcMainWindowType } from './types/extention';
 import IpcMainWindow from './window/MainWindow';
 import { MessageChannel, ProcessManager } from 'electron-re';
-import { checkEnvFiles, /* copyDir */ } from "./utils/utils";
+import { checkEnvFiles, copyDir } from "./utils/utils";
 import chmod from "./utils/fsChmod";
 
 console.log(typeof MessageChannel);
@@ -26,7 +26,7 @@ const platform = os.platform();
 autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);
 const pathRuntime = path.join(appDataPath, 'runtime/');
-// const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
+const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
 
 export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
@@ -46,7 +46,7 @@ checkEnvFiles(
     { _path: pathRuntime, isDir: true },
     { _path: path.join(pathRuntime, 'bin'), isDir: true,
       exec: () => {
-        // copyDir(path.join(pathExecutable, 'bin'), path.join(pathRuntime, 'bin'));
+        copyDir(path.join(pathExecutable, 'bin'), path.join(pathRuntime, 'bin'));
       }
     }
   ]
