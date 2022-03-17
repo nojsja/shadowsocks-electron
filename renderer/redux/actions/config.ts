@@ -86,7 +86,7 @@ export const parseClipboardText = (text?: string | null, callback?: (added: bool
   }
 };
 
-export const getQrCodeFromScreenResources = (callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?: string) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
       if (resources && resources.length) {
@@ -105,18 +105,24 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean) => void
             });
           }
         });
-        MessageChannel.invoke('main', 'service:desktop', {
-          action: 'createTransparentWindow',
-          params: qrs
-        }).then(() => {
-          values.forEach(value => {
-            dispatch(parseClipboardText(value));
+        if (qrs.length) {
+          MessageChannel.invoke('main', 'service:desktop', {
+            action: 'createTransparentWindow',
+            params: qrs
+          }).then(() => {
+            values.forEach(value => {
+              dispatch(parseClipboardText(value));
+            });
           });
-        });
-        callback && callback(!!qrs.length);
+          callback && callback(true);
+        } else {
+          callback && callback(false);
+        }
       } else {
         callback && callback(false);
       }
+    }).catch(error => {
+      callback && callback(false, error && error.toString());
     });
   }
 };

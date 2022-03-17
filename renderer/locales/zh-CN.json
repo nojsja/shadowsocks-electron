@@ -1,4 +1,9 @@
 {
+  "obfs": "混淆(obfs)",
+  "obfsParam":"混淆参数",
+  "protocol": "协议(protocol)",
+  "protocolParam":"协议参数",
+  "server_type": "服务器类型",
   "delay": "延迟",
   "delay_test": "测试延迟",
   "loading": "加载中",

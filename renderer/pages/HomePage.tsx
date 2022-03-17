@@ -82,10 +82,18 @@ const HomePage: React.FC = () => {
         break;
       case 'qrcode':
         setBackDrop(true);
-        dispatch(getQrCodeFromScreenResources((added: boolean) => {
+        dispatch(getQrCodeFromScreenResources((added: boolean, reason?: string) => {
           setTimeout(() => {
             setBackDrop(false);
-            setSnackbarMessage(added ? t('added_a_server') : t('no_qr_code_is_detected') )
+            if (added) {
+              setSnackbarMessage(t('added_a_server'));
+            } else {
+              if (reason) {
+                setSnackbarMessage(reason)
+              } else {
+                setSnackbarMessage(t('no_qr_code_is_detected'));
+              }
+            }
           }, .5e3);
         }));
         setDialogOpen(false);

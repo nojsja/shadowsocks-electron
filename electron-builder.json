@@ -15,8 +15,8 @@
   ],
   "extraFiles": [
     {
-      "from": "bin/${os}/${arch}",
-      "to": "bin/${os}/${arch}",
+      "from": "bin/${platform}/${arch}",
+      "to": "bin/${platform}/${arch}",
       "filter": [
         "!.gitignore"
       ]
@@ -30,16 +30,7 @@
     }
   ],
   "mac": {
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "nojsja",
-        "repo": "shadowsocks-electron",
-        "host": "github.com",
-        "protocol": "https",
-        "releaseType": "release"
-      }
-    ],
+    "publish": ["github"],
     "target": [
       {
         "target": "zip",
@@ -59,6 +50,7 @@
   },
   "win": {
     "icon": "assets/logo.ico",
+    "publish": ["github"],
     "target": [
       {
         "target": "zip",
@@ -103,16 +95,7 @@
   },
   "linux": {
     "icon": "assets/icon.png",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "nojsja",
-        "repo": "shadowsocks-electron",
-        "host": "github.com",
-        "protocol": "https",
-        "releaseType": "release"
-      }
-    ],
+    "publish": ["github"],
     "target": [
       {
         "target": "deb",

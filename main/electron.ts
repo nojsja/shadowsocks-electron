@@ -2,8 +2,8 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import os from "os";
 import isDev from "electron-is-dev";
-import { autoUpdater } from "electron-updater";
 import { initRenderer } from 'electron-store';
+import { autoUpdater } from'electron-updater';
 
 import { stopClient } from "./proxy";
 import { setMainWindow } from "./proxy/client";
@@ -21,13 +21,17 @@ console.log(typeof MessageChannel);
 const packageName = 'shadowsocks-electron';
 let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
+const platform = os.platform();
 
-autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);
 const pathRuntime = path.join(appDataPath, 'runtime/');
 const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
 
+export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
+
+logger.info(`appDataPath: ${appDataPath}`);
+logger.info(`pathRuntime: ${pathRuntime}`);
 
 /* -------------- pre work -------------- */
 
@@ -37,7 +41,7 @@ app.dock?.hide();
 checkEnvFiles(
   [
     { _path: appDataPath, isDir: true },
-    { _path: `${os.homedir}/.config/autostart`, isDir: true },
+    ...(platform === 'linux' ? [{ _path: `${os.homedir}/.config/autostart`, isDir: true }] : []),
     { _path: pathRuntime, isDir: true },
     { _path: path.join(pathRuntime, 'bin'), isDir: true,
       exec: () => {
@@ -48,7 +52,7 @@ checkEnvFiles(
 );
 chmod(path.join(pathRuntime, 'bin'), 0o711);
 
-if (os.platform() === 'linux') {
+if (platform === 'linux') {
   try {
     app.disableHardwareAcceleration();
   } catch (error) {
@@ -78,11 +82,11 @@ app.on("ready", async () => {
   });
   ipcMainWindow.createTray();
 
-  autoUpdater.checkForUpdatesAndNotify();
+  !isDev && autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+  if (platform !== "darwin") {
     app.quit();
   }
 });

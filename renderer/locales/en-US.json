@@ -1,4 +1,9 @@
 {
+  "obfs": "Obfs",
+  "obfsParam":"Obfs Param",
+  "protocol": "Protocol",
+  "protocolParam":"Protocol Param",
+  "server_type": "Server Type",
   "delay": "Delay",
   "delay_test": "Delay Test",
   "loading": "Loading",

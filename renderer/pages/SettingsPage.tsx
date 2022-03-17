@@ -39,7 +39,7 @@ const SettingsPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(getStartupOnBoot());
-  }, []);
+  }, [dispatch]);
 
   const backupConfiguration = () => {
     return backupConfigurationToFile({
@@ -275,7 +275,7 @@ const SettingsPage: React.FC = () => {
             </ListItem>
           )
         }
-        <ListItem>
+        {/* <ListItem>
             <ListItemText
               primary={'ACL'}
               // secondary="Not applicable to Linux"
@@ -308,7 +308,7 @@ const SettingsPage: React.FC = () => {
               </ListItemSecondaryAction>
             </ListItem>
           )
-        }
+        } */}
         <ListItem>
           <ListItemText
             primary={t('launch_on_boot')}

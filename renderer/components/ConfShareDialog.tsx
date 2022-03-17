@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: 'auto'
     },
     mediaWrapper: {
-      padding: 0,
+      marginTop: theme.spacing(2)
     },
     textOverflow: {
       width: '100%',
