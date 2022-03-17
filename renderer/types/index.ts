@@ -1,4 +1,5 @@
 export const encryptMethods = [
+  "none",
   "aes-128-gcm",
   "aes-192-gcm",
   "aes-256-gcm",
@@ -19,6 +20,22 @@ export const encryptMethods = [
   "chacha20",
   "chacha20-ietf"
 ] as const;
+
+export const serverTypes = ['ss', 'ssr'];
+
+export const obfs = ['plain', 'http_simple', 'http_post', 'tls1.2_ticket_auth'];
+
+export const protocols = [
+  "origin",
+  "verify_deflate",
+  "auth_sha1_v4",
+  "auth_aes128_md5",
+  "auth_aes128_sha1",
+  "auth_chain_a",
+  "auth_chain_b",
+  "auth_chain_c",
+  "auth_chain_d",
+];
 
 export type Encryption = typeof encryptMethods[number];
 
@@ -44,6 +61,10 @@ export interface Config {
   serverPort: number;
   password: string;
   encryptMethod: Encryption;
+  protocol?: typeof protocols[number];
+  protocolParam?: string;
+  obfs?: typeof obfs[number];
+  obfsParam?: string;
   timeout?: number;
   acl?: ACL;
   fastOpen?: boolean;

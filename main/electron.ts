@@ -2,8 +2,8 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import os from "os";
 import isDev from "electron-is-dev";
-import { autoUpdater } from "electron-updater";
 import { initRenderer } from 'electron-store';
+import { autoUpdater } from'electron-updater';
 
 import { stopClient } from "./proxy";
 import { setMainWindow } from "./proxy/client";
@@ -23,7 +23,6 @@ let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
 const platform = os.platform();
 
-autoUpdater.logger = logger;
 const appDataPath = path.join(app.getPath('appData'), packageName);
 const pathRuntime = path.join(appDataPath, 'runtime/');
 const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
@@ -83,7 +82,7 @@ app.on("ready", async () => {
   });
   ipcMainWindow.createTray();
 
-  autoUpdater.checkForUpdatesAndNotify();
+  !isDev && autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on("window-all-closed", () => {

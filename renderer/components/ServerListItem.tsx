@@ -58,8 +58,9 @@ const StyledBadge = withStyles((theme: Theme) =>
       top: 12,
       borderRadius: 3,
       padding: '0 5',
-      color: 'black',
-      backgroundColor: '#e0e0e0',
+      border: `solid 1px #8f8f8f`,
+      backgroundColor: 'inherit',
+      color: '#8f8f8f'
       // fontWeight: 'bold',
       // border: 'solid 1px ' + grey[400]
       // backgroundColor: grey[400]

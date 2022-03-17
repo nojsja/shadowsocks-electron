@@ -33,7 +33,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
-import { Config, encryptMethods, plugins } from "../types";
+import { Config, encryptMethods, plugins, serverTypes, protocols, obfs } from "../types";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import { AdaptiveAppBar } from "./Pices/AppBar";
 import { scrollBarStyle } from "../pages/styles";
@@ -93,7 +93,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
   const [values, setValues] = useState<Partial<Config>>(
     defaultValues ?? {
       timeout: 60,
-      encryptMethod: "xchacha20-ietf-poly1305"
+      encryptMethod: "none",
+      type: 'ss'
     }
   );
 
@@ -101,7 +102,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
     setValues(
       defaultValues ?? {
         timeout: 60,
-        encryptMethod: "xchacha20-ietf-poly1305"
+        encryptMethod: "none",
+        type: 'ss'
       }
     );
   }, [defaultValues]);
@@ -160,6 +162,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
     event.preventDefault();
   };
 
+  const isSSR = values.type === 'ssr';
+  const isSS = values.type === 'ss';
+
   return (
     <StyledDialog
       fullScreen={fullScreen}
@@ -182,6 +187,23 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
       </AdaptiveAppBar>
       <Container className={`${styles.container}`}>
         {fullScreen && <div className={`${styles.toolbar}`} />}
+        <InputLabel required style={{ marginBottom: 0 }}>
+          {t('server_type')}
+        </InputLabel>
+        <Select
+          required
+          label={t('server_type')}
+          displayEmpty
+          fullWidth
+          value={values.type ?? "ss"}
+          onChange={(e: any) => handleValueChange("type", e.target.value.trim())}
+        >
+          {serverTypes.map(serverType => (
+            <MenuItem key={serverType} value={serverType}>
+              {serverType}
+            </MenuItem>
+          ))}
+        </Select>
         <TextField
           fullWidth
           label={t('remark')}
@@ -230,7 +252,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           label={t('encryption')}
           displayEmpty
           fullWidth
-          value={values.encryptMethod ?? "xchacha20-ietf-poly1305"}
+          value={values.encryptMethod ?? "none"}
           onChange={(e: any) => handleValueChange("encryptMethod", e.target.value.trim())}
         >
           {encryptMethods.map(method => (
@@ -239,6 +261,64 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             </MenuItem>
           ))}
         </Select>
+        {
+          isSSR && (
+            <>
+              <InputLabel required style={{ marginBottom: 0 }}>
+                {t('protocol')}
+              </InputLabel>
+              <Select
+                required
+                label={t('protocol')}
+                displayEmpty
+                fullWidth
+                value={values.protocol ?? "origin"}
+                onChange={(e: any) => handleValueChange("protocol", e.target.value.trim())}
+              >
+                {protocols.map(protocol => (
+                  <MenuItem key={protocol} value={protocol}>
+                    {protocol}
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                fullWidth
+                label={t('protocolParam')}
+                value={values.protocolParam ?? ""}
+                onChange={e => handleValueChange("protocolParam", e.target.value.trim())}
+              />
+            </>
+          )
+        }
+        {
+          isSSR && (
+            <>
+              <InputLabel required style={{ marginBottom: 0 }}>
+                {t('obfs')}
+              </InputLabel>
+              <Select
+                required
+                label={t('obfs')}
+                displayEmpty
+                fullWidth
+                value={values.obfs ?? "plain"}
+                onChange={(e: any) => handleValueChange("obfs", e.target.value.trim())}
+              >
+                {obfs.map(value => (
+                  <MenuItem key={value} value={value}>
+                    {value}
+                  </MenuItem>
+                ))}
+              </Select>
+              <TextField
+                fullWidth
+                label={t('obfsParam')}
+                value={values.obfsParam ?? ""}
+                onChange={e => handleValueChange("obfsParam", e.target.value.trim())}
+              />
+            </>
+          )
+        }
         <TextField
           required
           fullWidth
@@ -254,7 +334,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             </ListItemSecondaryAction>
           </ListItem>
           {
-            values.type === 'ss' && (
+            isSS && (
               <ListItem>
                 <ListItemText primary="TCP No Delay" />
                 <ListItemSecondaryAction>
@@ -272,7 +352,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
         </List>
         <InputLabel style={{ marginBottom: 0 }}>{t('plugin')}</InputLabel>
         {
-          values.type === 'ss' && (
+          isSS && (
             <>
               <Select
                 label={t('plugin')}
