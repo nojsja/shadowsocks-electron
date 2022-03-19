@@ -22,6 +22,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import RemoveIcon from "@material-ui/icons/Delete";
 import { useDispatch } from "react-redux";
 import { getConnectionDelay } from "../redux/actions/status";
+import { moveDown, moveUp } from "../redux/actions/config";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -171,7 +172,17 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
           label: t('delay_test'),
           action: 'test',
           accelerator: '',
-        }
+        },
+        {
+          label: t('move_up'),
+          action: 'move_up',
+          accelerator: '',
+        },
+        {
+          label: t('move_down'),
+          action: 'move_down',
+          accelerator: '',
+        },
       ]
     })
     .then(rsp => {
@@ -188,6 +199,12 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
             break;
           case 'test':
             dispatch(getConnectionDelay(ip, port));
+            break;
+          case 'move_up':
+            dispatch(moveUp(id));
+            break;
+          case 'move_down':
+            dispatch(moveDown(id));
             break;
           default:
             break;

@@ -1,4 +1,6 @@
 {
+  "move_up": "Move Up ↑",
+  "move_down": "Move Down ↓",
   "obfs": "Obfs",
   "obfsParam":"Obfs Param",
   "protocol": "Protocol",

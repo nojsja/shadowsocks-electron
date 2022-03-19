@@ -1,4 +1,6 @@
 {
+  "move_up": "上移 ↑",
+  "move_down": "下移 ↓",
   "obfs": "混淆(obfs)",
   "obfsParam":"混淆参数",
   "protocol": "协议(protocol)",

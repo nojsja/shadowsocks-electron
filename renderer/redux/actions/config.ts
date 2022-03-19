@@ -13,6 +13,8 @@ export const REMOVE_CONFIG = "REMOVE_CONFIG";
 export const EDIT_CONFIG = "EDIT_CONFIG";
 export const WIPE_CONFIG = "WIPE_CONFIG";
 export const OVERRIDE_CONFIG = "OVERRIDE_CONFIG";
+export const MOVE_UP = "MOVE_UP";
+export const MOVE_DOWN = "MOVE_DOWN";
 
 export const addConfig = (id: string, config: Config) => {
   return {
@@ -165,6 +167,20 @@ export const wipeConfig = () => {
     type: WIPE_CONFIG
   };
 }
+
+export const moveUp = (id: string) => {
+  return {
+    type: MOVE_UP,
+    id
+  }
+};
+
+export const moveDown = (id: string) => {
+  return {
+    type: MOVE_DOWN,
+    id
+  }
+};
 
 export type AddConfigAction = ReturnType<typeof addConfig>;
 export type RemoveConfigAction = ReturnType<typeof removeConfig>;
