@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouteMatch } from 'react-router';
 import {
   Divider,
   List,
@@ -6,6 +7,7 @@ import {
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
+import clsx from "clsx";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { useTranslation } from  'react-i18next';
 import HomeIcon from "@material-ui/icons/Home";
@@ -19,6 +21,9 @@ const useStyles = makeStyles(theme => createStyles({
   text: {
     color: theme.palette.type === 'dark' ? theme.palette.text.primary : 'black',
   },
+  matchHighlight: {
+    color: theme.palette.primary.main
+  },
   banner: {
     textAlign: 'center',
     width: '100%',
@@ -29,39 +34,52 @@ const useStyles = makeStyles(theme => createStyles({
 export const drawerWidth = 200;
 export interface DrawerMenuProps {
   onClick?: () => void;
+  hideIcon?: boolean
 }
 
 const DrawerMenu: React.FC<DrawerMenuProps> = props => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const { onClick, hideIcon } = props;
+
+  const getMatchedClasses = (matched: boolean) => clsx(styles['text'], matched && styles['matchHighlight']);
+
+  const matchHomePath = getMatchedClasses(!!useRouteMatch('/home'));
+  const matchSettingsPath = getMatchedClasses(!!useRouteMatch('/settings'));
+  const matchAboutPath = getMatchedClasses(!!useRouteMatch('/about'));
 
   return (
     <>
-      <img className={styles.banner} src={banner}></img>
-      <Divider />
+      { !hideIcon && (
+        <>
+          <img className={styles.banner} src={banner}></img>
+          <Divider />
+        </>
+        )
+      }
       <List>
-        <Link to="/home" onClick={props.onClick}>
+        <Link to="/home" onClick={onClick}>
           <ListItem button>
-            <ListItemIcon className={styles['text']}>
+            <ListItemIcon className={matchHomePath}>
               <HomeIcon />
             </ListItemIcon>
-            <ListItemText primary={t('home')} className={styles['text']}/>
+            <ListItemText primary={t('home')} className={matchHomePath}/>
           </ListItem>
         </Link>
-        <Link to="/settings" onClick={props.onClick} className={styles['text']}>
+        <Link to="/settings" onClick={props.onClick}>
           <ListItem button>
-            <ListItemIcon>
-              <SettingsIcon className={styles['text']}/>
+            <ListItemIcon className={matchSettingsPath}>
+              <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary={t('settings')} className={styles['text']}/>
+            <ListItemText primary={t('settings')} className={matchSettingsPath}/>
           </ListItem>
         </Link>
-        <Link to="/about" onClick={props.onClick} className={styles['text']}>
+        <Link to="/about" onClick={props.onClick} >
           <ListItem button>
-            <ListItemIcon>
-              <InfoIcon className={styles['text']} />
+            <ListItemIcon className={matchAboutPath}>
+              <InfoIcon />
             </ListItemIcon>
-            <ListItemText primary={t('about')} className={styles['text']} />
+            <ListItemText primary={t('about')} className={matchAboutPath} />
           </ListItem>
         </Link>
       </List>

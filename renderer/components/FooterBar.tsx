@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "fixed",
       bottom: theme.spacing(2.5),
       right: 0,
-      left: theme.spacing(0),
+      left: theme.spacing(-1),
     },
     button: {
       color: theme.palette.primary.light,

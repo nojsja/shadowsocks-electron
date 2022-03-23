@@ -34,6 +34,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "clsx": "^1.1.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-is-dev": "1.1.0",
     "electron-re": "^1.1.0",

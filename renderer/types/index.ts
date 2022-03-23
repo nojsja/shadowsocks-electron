@@ -82,6 +82,7 @@ export interface Settings {
   selectedServer?: string | null;
   mode: Mode;
   verbose: boolean;
+  fixedMenu: boolean;
   darkMode: boolean;
   localPort: number;
   pacPort: number;

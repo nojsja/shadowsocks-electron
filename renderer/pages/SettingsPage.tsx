@@ -324,6 +324,18 @@ const SettingsPage: React.FC = () => {
         </ListItem>
         <ListItem>
           <ListItemText
+            primary={t('fixed_menu')}
+          />
+          <ListItemSecondaryAction>
+            <AdaptiveSwitch
+              edge="end"
+              checked={settings.fixedMenu}
+              onChange={e => handleSwitchValueChange("fixedMenu", e)}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText
             primary={t('darkMode')}
           />
           <ListItemSecondaryAction>

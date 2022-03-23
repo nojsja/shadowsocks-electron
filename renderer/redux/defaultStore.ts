@@ -8,6 +8,7 @@ const defaultStore: RootState = {
     loading: false
   },
   settings: {
+    fixedMenu: false,
     selectedServer: null,
     mode: "Manual",
     darkMode: false,

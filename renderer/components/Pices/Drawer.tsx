@@ -1,7 +1,23 @@
 import React from 'react';
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Drawer, DrawerProps }  from '@material-ui/core';
+import { withStyles, makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { Drawer, DrawerProps, Hidden }  from '@material-ui/core';
 import { drawerWidth } from '../DrawerMenu';
+
+type AdaptiveDrawerProps = DrawerProps & {
+  mode?: 'fixed' | 'absolute'
+};
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  drawerAbsolute: {
+    width: 60,
+    height: 'calc(100vh - 50px)',
+    overflow: 'hidden',
+    marginTop: 50,
+  },
+  drawerFixed: {
+    height: '100vh',
+  },
+}));
 
 const StyledDrawer = withStyles((theme: Theme) => (
   createStyles({
@@ -17,6 +33,14 @@ const StyledDrawer = withStyles((theme: Theme) => (
   })
 ))(Drawer);
 
-export const AdaptiveDrawer = (props: DrawerProps) => {
-  return <StyledDrawer {...props} />;
+export const AdaptiveDrawer = (props: AdaptiveDrawerProps) => {
+  const styles = useStyles();
+  if (props.mode === 'fixed') {
+    return <StyledDrawer {...props} className={styles[`drawerFixed`]} />;
+  }
+  return (
+    <Hidden smUp implementation="css">
+      <StyledDrawer {...props} variant="permanent" className={styles[`drawerAbsolute`]} />
+    </Hidden>
+  );
 };

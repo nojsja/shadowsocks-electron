@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Hidden,
   useTheme,
   Toolbar,
   IconButton,
@@ -16,6 +15,7 @@ import { red } from "@material-ui/core/colors";
 import DrawerMenu, { drawerWidth } from "./DrawerMenu";
 import { AdaptiveDrawer } from "./Pices/Drawer";
 import { AdaptiveAppBar } from "./Pices/AppBar";
+import { useTypedSelector } from "../redux/reducers";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -85,6 +85,7 @@ const AppNav: React.FC = () => {
   const theme = useTheme();
   const styles = useStyles();
   const { t } = useTranslation();
+  const settings = useTypedSelector(state => state.settings);
 
   const [open, setOpen] = React.useState(false);
 
@@ -136,9 +137,8 @@ const AppNav: React.FC = () => {
         </Toolbar>
       </AdaptiveAppBar>
       <nav className={styles.drawer}>
-        <Hidden smUp implementation="css">
           <AdaptiveDrawer
-            variant="temporary"
+            mode={settings.fixedMenu ? 'absolute' : 'fixed'}
             anchor={theme.direction === "rtl" ? "right" : "left"}
             open={open}
             onClose={handleDrawerToggle}
@@ -146,14 +146,8 @@ const AppNav: React.FC = () => {
               keepMounted: true
             }}
           >
-            <DrawerMenu onClick={handleDrawerToggle} />
+            <DrawerMenu hideIcon={settings.fixedMenu} onClick={handleDrawerToggle} />
           </AdaptiveDrawer>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <AdaptiveDrawer variant="permanent" open>
-            <DrawerMenu onClick={handleDrawerToggle} />
-          </AdaptiveDrawer>
-        </Hidden>
       </nav>
     </div>
   );

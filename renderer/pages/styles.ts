@@ -85,7 +85,6 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       marginRight: 'auto',
       marginBottom: '20px',
       textAlign: 'center',
-      border: 'double 4px lightgrey',
       borderRadius: '50%'
     },
     'author-info__image': {
