@@ -2,8 +2,10 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { exec, ExecOptions } from "child_process";
-import { Config } from '../types/extention';
+import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR } from '../types/extention';
 import { getPathRuntime } from '../electron';
+import { ProxyURI } from './ProxyURI';
+import { get } from './http-request';
 
 const archMap = new Map([
   ['aarch64', 'arm64'],
@@ -212,4 +214,97 @@ export function debounce<params extends any[]> (fn: (...args: params) => any, ti
       fn.apply(this, args);
     }, timeout);
   }
+}
+
+export function parseUrl(text: string) {
+  const parsedInfo = ProxyURI.parse(text);
+
+  const result: Config[] = parsedInfo.map(info => {
+    const base = {
+      remark: info.remark || info.host,
+      serverHost: info.host,
+      serverPort: info.port,
+      password: info.password || '',
+      encryptMethod: info.authscheme,
+      timeout: 60
+    };
+    if (info.type === 'ssr') {
+      return ({
+        ...base,
+        type: info.type as any,
+        protocol: info.protocol || '',
+        protocolParam: info.protocolParam || '',
+        obfs: info.obfs || '',
+        obfsParam: info.obfsParam
+      }) as SSRConfig;
+    }
+
+    return ({
+      ...base,
+      type: info.type as any,
+    }) as SSConfig
+  });
+
+  return result;
+}
+
+export function parseSubscription(text: string): Promise<{ error: string | null, result: Config[], name: string | null }> {
+  return new Promise((resolve, reject) => {
+    if (/^(http|https)/.test(text)) {
+      get(text).then(res => {
+        resolve({
+          error: null,
+          result: monoCloudSubscriptionParser(res.data),
+          name: res?.data?.name || null
+        });
+      }).catch(err => {
+        resolve({
+          error: err.message,
+          result: [],
+          name: null
+        });
+      });
+    } else {
+      return resolve({
+        error: 'invalid subscription address!',
+        result: [],
+        name: null
+      });
+    }
+  })
+}
+
+export function monoCloudSubscriptionParser (res: SubscriptionResult): Config[] {
+  const result: Config[] = [];
+
+  for (let i = 0; i < res.server.length; i++) {
+    const item = res.server[i];
+    const base = {
+      id: item.id,
+      remark: item.remarks || item.name || item.server,
+      serverHost: item.server,
+      serverPort: item.server_port,
+      password: item.password || '',
+      encryptMethod: item.method || 'none',
+      timeout: 60
+    };
+    if (item.method === 'none') {
+      result.push({
+        ...base,
+        protocol: (item as MonoSubscriptionSSR).protocol || 'origin',
+        protocolParam: (item as MonoSubscriptionSSR).protocol_param || '',
+        obfs: (item as MonoSubscriptionSSR).obfs || '',
+        obfsParam: (item as MonoSubscriptionSSR).obfs_param || '',
+        type: 'ssr'
+      });
+    } else {
+      result.push({
+        ...base,
+        type: 'ss',
+      });
+    }
+
+  }
+
+  return result;
 }

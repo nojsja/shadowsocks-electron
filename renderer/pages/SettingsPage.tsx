@@ -38,7 +38,7 @@ const SettingsPage: React.FC = () => {
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
 
   useEffect(() => {
-    dispatch(getStartupOnBoot());
+    dispatch<any>(getStartupOnBoot());
   }, [dispatch]);
 
   const backupConfiguration = () => {
@@ -49,7 +49,7 @@ const SettingsPage: React.FC = () => {
   };
 
   const restoreConfiguration = () => {
-    dispatch(restoreConfigurationFromFile((success, code) => {
+    dispatch<any>(restoreConfigurationFromFile((success, code) => {
       if (success) {
         setSnackbarMessage(t('the_recovery_is_successful'));
       } else {
@@ -128,7 +128,7 @@ const SettingsPage: React.FC = () => {
     let value: any = e.target.checked;
     switch (key) {
       case 'autoLaunch':
-        dispatch(setStartupOnBoot(value));
+        dispatch<any>(setStartupOnBoot(value));
         break;
       case 'httpProxy':
         // if (!checkPortUsed(settings.httpProxy.port, 'httpsProxy', value)) return;

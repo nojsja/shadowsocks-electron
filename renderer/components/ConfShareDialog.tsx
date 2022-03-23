@@ -22,9 +22,11 @@ import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import { DialogTitle } from './AddServerDialog';
 import { AdaptiveDialog } from "./Pices/Dialog";
 import { withStyles } from "@material-ui/styles";
+import { closeOptions } from '../types';
+
 
 export interface ConfShareDialog extends DialogProps, MediaCard {
-  onClose: (selection: "qrcode" | "url" | "manual" | "share" | '') => void
+  onClose: (selection: closeOptions) => void
 }
 
 export interface MediaCard {

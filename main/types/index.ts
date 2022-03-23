@@ -28,7 +28,7 @@ export type Plugin = typeof plugins[number];
 
 export type ACL = boolean;
 
-export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | '';
+export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
 
 export type notificationOptions = {
   title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined

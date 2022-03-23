@@ -4,13 +4,14 @@ import fs from 'fs';
 
 import {
   MainService as MainServiceType,
-  Config, Settings, ServiceResult, SSRConfig
+  Config, Settings, ServiceResult, clipboardParseType
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
 import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
 import { getPathRuntime } from '../electron';
+import { parseSubscription, parseUrl } from '../utils/utils';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -49,40 +50,42 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async parseClipboardText(params: { text: string }): Promise<ServiceResult> {
+  async parseClipboardText(params: { text: string, type: clipboardParseType }): Promise<ServiceResult> {
     const text = params.text || clipboard.readText('clipboard');
-    const parsedInfo = ProxyURI.parse(text);
+    const type = params.type || 'url';
 
-    const result: Config[] = parsedInfo.map(info => {
-      const base = {
-        remark: info.remark || info.host,
-        serverHost: info.host,
-        serverPort: info.port,
-        password: info.password || '',
-        encryptMethod: info.authscheme,
-        timeout: 60
-      };
-      if (info.type === 'ssr') {
-        return ({
-          ...base,
-          type: info.type as any,
-          protocol: info.protocol || '',
-          protocolParam: info.protocolParam || '',
-          obfs: info.obfs || '',
-          obfsParam: info.obfsParam
-        }) as SSRConfig;
-      }
-      return ({
-        ...base,
-        type: info.type as any,
-      }) as SSRConfig
+    if (type === 'url') return Promise.resolve({
+      code: 200,
+      result: parseUrl(text)
     });
 
-    console.log(result);
+    if (type === 'subscription') {
+      return parseSubscription(text).then(res => {
+        if (res.error) {
+          return {
+            code: 200,
+            result: {
+              name: '',
+              result: []
+            }
+          };
+        }
+        return {
+          code: 200,
+          result: {
+            name: res.name || '',
+            result: res.result || []
+          }
+        };
+      });
+    }
 
     return Promise.resolve({
       code: 200,
-      result
+      result: {
+        name: '',
+        result: []
+      }
     });
   }
 

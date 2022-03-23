@@ -39,7 +39,7 @@ export interface MainService extends Service {
   isConnected: () => Promise<ServiceResult>
   startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>
   stopClient: () => Promise<ServiceResult>
-  parseClipboardText: (params: { text: string }) => Promise<ServiceResult>
+  parseClipboardText: (params: { text: string, type: clipboardParseType }) => Promise<ServiceResult>
   generateUrlFromConfig: (params: SSRConfig | SSConfig) => Promise<ServiceResult>
 }
 
@@ -98,6 +98,38 @@ export type ACL = boolean;
 
 export type Config = SSConfig | SSRConfig;
 
+export type MonoSubscription = MonoSubscriptionSS | MonoSubscriptionSSR;
+
+export interface SubscriptionResult {
+  name: string,
+  server: MonoSubscription[],
+  version: number
+}
+
+export interface MonoSubscriptionSSR {
+  id: string,
+  remarks: string,
+  name: string,
+  server: string,
+  server_port: number,
+  password: string,
+  method: string,
+  protocol: string,
+  protocol_param: string,
+  obfs: string,
+  obfs_param: string,
+}
+
+export interface MonoSubscriptionSS {
+  id: string,
+  remarks: string,
+  name: string,
+  server: string,
+  server_port: number,
+  password: string,
+  method: string,
+}
+
 export interface SSConfig {
   id?: string;
   remark?: string;
@@ -117,6 +149,8 @@ export interface SSConfig {
   protocol?: string;
   protocolParam?: string;
 }
+
+export type clipboardParseType = 'url' | 'subscription';
 
 export interface SSRConfig {
   id?: string;

@@ -1,4 +1,5 @@
 import {
+  ADD_SUBSCRIPTION,
   ADD_CONFIG,
   EditConfigAction,
   REMOVE_CONFIG,
@@ -7,14 +8,23 @@ import {
   MOVE_UP,
   MOVE_DOWN
 } from "../actions/config";
-import { Config } from "../../types";
+import { Config, GroupConfig } from "../../types";
 import defaultStore from "../defaultStore";
 
 function configReducer(
-  state: Config[] = defaultStore.config,
+  state: (Config | GroupConfig)[] = defaultStore.config,
   action: EditConfigAction
-): Config[] {
+): (Config | GroupConfig)[] {
   switch (action.type) {
+    case ADD_SUBSCRIPTION:
+      return [
+        ...state,
+        {
+          ...action.config as GroupConfig,
+          id: action.id,
+          type: "group",
+        }
+      ];
     case ADD_CONFIG:
       return [
         ...state,

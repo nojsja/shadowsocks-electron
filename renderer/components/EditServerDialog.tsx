@@ -76,7 +76,7 @@ const StyledDialog = withStyles((theme: Theme) => (
 ))(Dialog);
 
 export interface EditServerDialogProps extends DialogProps {
-  defaultValues: Config | null;
+  defaultValues: Config | null | undefined;
   onValues: (values: Config | null) => void;
 }
 

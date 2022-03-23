@@ -97,6 +97,12 @@ const AddServerDialog: React.FC<AddServerDialog> = props => {
           </ListItemAvatar>
           <ListItemText primary={t('import_server_url_from_clipboard')} />
         </ListItemButton>
+        <ListItemButton button onClick={() => onClose("subscription")}>
+          <ListItemAvatar>
+            <CopyIcon />
+          </ListItemAvatar>
+          <ListItemText primary={t('import_server_subscription_from_clipboard')} />
+        </ListItemButton>
       </List>
     </AdaptiveDialog>
   );

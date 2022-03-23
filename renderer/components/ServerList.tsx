@@ -7,7 +7,7 @@ import {
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
 import ServerListItem from "./ServerListItem";
-import { Config } from "../types/";
+import { Config, GroupConfig } from "../types/";
 import { scrollBarStyle } from "../pages/styles";
 
 
@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export interface ServerListProps extends ListItemProps {
-  config: Config[]
+  config: (Config | GroupConfig)[]
   selectedServer: string | undefined | null,
   connected: boolean;
   onEdit?: (key: string) => void;
@@ -69,13 +69,8 @@ const ServerList: React.FC<ServerListProps> = props => {
         {config.map((item, index) => (
           <ServerListItem
             key={item.id}
-            id={item.id || ''}
-            remark={item.remark}
-            serverType={item.type}
-            ip={item.serverHost}
-            port={item.serverPort}
-            plugin={item.plugin}
-            selected={item.id === selectedServer}
+            item={item}
+            selectedServer={selectedServer}
             conf={JSON.stringify(item)}
             connected={connected}
             onShare={handleShareButtonClick}

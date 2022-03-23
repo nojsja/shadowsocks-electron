@@ -13,7 +13,10 @@ import { useTypedSelector } from "../redux/reducers";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import useBackDrop from '../hooks/useBackDrop';
-import { addConfigFromClipboard, generateUrlFromConfig, getQrCodeFromScreenResources } from '../redux/actions/config';
+import {
+  addConfigFromClipboard, generateUrlFromConfig, getQrCodeFromScreenResources,
+  addSubscriptionFromClipboard
+} from '../redux/actions/config';
 import {
   ADD_CONFIG,
   EDIT_CONFIG,
@@ -31,6 +34,7 @@ import EditServerDialog from "../components/EditServerDialog";
 import StatusBar from '../components/StatusBar';
 import StatusBarConnection from '../components/BarItems/StatusBarConnection';
 import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
+import { findAndCallback } from '../utils';
 
 /**
  * HomePage
@@ -108,6 +112,16 @@ const HomePage: React.FC = () => {
           }, .5e3);
         }));
         break;
+      case 'subscription':
+        setDialogOpen(false);
+        setBackDrop(true);
+        dispatch(addSubscriptionFromClipboard((added: boolean) => {
+          setTimeout(() => {
+            setBackDrop(false);
+            setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
+          }, .5e3);
+        }));
+        break;
       case 'share':
         setShareDialogOpen(false);
         break;
@@ -143,7 +157,6 @@ const HomePage: React.FC = () => {
 
   const handleServerConnect = useCallback(async (useValue?: string) => {
     const value = useValue === undefined ? selectedServer : useValue;
-    let conf: Config | undefined;
     if (value) {
       if (selectedServer) {
         if (connected) {
@@ -152,8 +165,7 @@ const HomePage: React.FC = () => {
             params: {}
           });
         } else {
-          conf = config.find(i => i.id === value);
-          if (conf) {
+          findAndCallback(config, value, (conf: Config) => {
             dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
             dispatch(
               startClientAction(
@@ -163,7 +175,7 @@ const HomePage: React.FC = () => {
                 t('the_local_port_is_occupied')
               )
             );
-          }
+          });
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
@@ -171,17 +183,17 @@ const HomePage: React.FC = () => {
   }, [selectedServer, connected, config, settings]);
 
   const handleShareButtonClick = useCallback((id: string) => {
-    const conf = config.find(item => item.id === id);
-    if (!conf) return;
-    setShareDialogOpen(true);
-    generateUrlFromConfig(conf)
-      .then(rsp => {
-        if (rsp.code === 200) {
-          setShareData({
-            url: rsp.result.url,
-            dataUrl: rsp.result.dataUrl
+      findAndCallback(config, id, (conf: Config) => {
+        setShareDialogOpen(true);
+        generateUrlFromConfig(conf)
+          .then(rsp => {
+            if (rsp.code === 200) {
+              setShareData({
+                url: rsp.result.url,
+                dataUrl: rsp.result.dataUrl
+              });
+            }
           });
-        }
       });
     },
     [config]
@@ -223,10 +235,8 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      if (!connected) {
-        let conf: Config | undefined;
-        conf = config.find(i => i.id === selectedServer);
-        if (conf) {
+      if (!connected && selectedServer) {
+         findAndCallback(config, selectedServer, (conf: Config) => {
           dispatch(
             startClientAction(
               conf,
@@ -235,7 +245,7 @@ const HomePage: React.FC = () => {
               t('the_local_port_is_occupied')
             )
           );
-        }
+        });
       }
 
       if (settings.httpProxy.enable) {
@@ -253,8 +263,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     (async () => {
       if (selectedServer && connected) {
-        let conf = config.find(i => i.id === selectedServer);
-        if (conf) {
+        findAndCallback(config, selectedServer, (conf: Config) => {
           dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
           dispatch(
             startClientAction(
@@ -264,7 +273,7 @@ const HomePage: React.FC = () => {
               t('the_local_port_is_occupied')
             )
           );
-        }
+        });
       }
     })();
   }, [config, selectedServer, settings]);
@@ -318,7 +327,7 @@ const HomePage: React.FC = () => {
       <EditServerDialog
         open={editServerDialogOpen}
         defaultValues={
-          editingServerId ? config.find(i => i.id === editingServerId)! : null
+          editingServerId ? findAndCallback(config, editingServerId) as Config : null
         }
         children={undefined}
         onClose={handleEditServerDialogClose}

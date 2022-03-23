@@ -48,11 +48,13 @@ export type ACL = {
   text: string
 };
 
-export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | '';
+export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
+
+export type clipboardParseType = 'url' | 'subscription';
 
 export type notificationOptions = {
   title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined
-}
+};
 
 export interface Config {
   id: string;
@@ -74,7 +76,14 @@ export interface Config {
   plugin?: Plugin;
   pluginOpts?: string;
   type?: string;
-}
+};
+
+export interface GroupConfig {
+  id: string,
+  name: string,
+  servers: Config[],
+  type: string
+};
 
 export type Mode = "PAC" | "Global" | "Manual";
 
@@ -103,7 +112,7 @@ export interface Status {
 }
 
 export interface RootState {
-  config: Config[];
+  config: (Config | GroupConfig)[];
   status: Status;
   settings: Settings;
 }

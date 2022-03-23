@@ -4,11 +4,12 @@ import jsqr from 'jsqr';
 import uuid from "uuid/v1";
 import { MessageChannel } from 'electron-re';
 
-import { Config, RootState } from "../../types";
+import { clipboardParseType, Config, GroupConfig, RootState } from "../../types";
 import { getScreenCapturedResources } from '../../utils';
 import { overrideSetting } from './settings';
 
 export const ADD_CONFIG = "ADD_CONFIG";
+export const ADD_SUBSCRIPTION = "ADD_SUBSCRIPTION";
 export const REMOVE_CONFIG = "REMOVE_CONFIG";
 export const EDIT_CONFIG = "EDIT_CONFIG";
 export const WIPE_CONFIG = "WIPE_CONFIG";
@@ -63,23 +64,35 @@ export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: n
   }
 }
 
-export const parseClipboardText = (text?: string | null, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const parseClipboardText = (text: string | null, type: clipboardParseType, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     MessageChannel.invoke('main', 'service:main', {
       action: 'parseClipboardText',
       params: {
-        text
+        text,
+        type
       }
     })
     .then((rsp) => {
       if (rsp.code === 200) {
-        if (rsp.result.length) {
+        if (rsp.result?.result?.length) {
           callback && callback(true);
-          dispatch({
-            type: ADD_CONFIG,
-            id: uuid(),
-            config: rsp.result[0]
-          });
+          if (type === 'subscription') {
+            dispatch({
+              type: ADD_SUBSCRIPTION,
+              id: uuid(),
+              config: {
+                name: rsp.result.name || 'new subscription',
+                servers: rsp.result.result,
+              }
+            });
+          } else {
+            dispatch({
+              type: ADD_CONFIG,
+              id: uuid(),
+              config: rsp.result[0]
+            });
+          }
         } else {
           callback && callback(false);
         }
@@ -113,7 +126,7 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
             params: qrs
           }).then(() => {
             values.forEach(value => {
-              dispatch(parseClipboardText(value));
+              dispatch(parseClipboardText(value, 'url'));
             });
           });
           callback && callback(true);
@@ -133,9 +146,16 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
 export const addConfigFromClipboard =
   (callback: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
-    dispatch(parseClipboardText(null, callback));
+    dispatch(parseClipboardText(null, 'url', callback));
   }
 };
+
+export const addSubscriptionFromClipboard =
+  (callback: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+    return (dispatch) => {
+      dispatch(parseClipboardText(null, 'subscription', callback));
+    }
+  };
 
 /* generate ss/ssr url from config */
 export const generateUrlFromConfig =
@@ -146,7 +166,7 @@ export const generateUrlFromConfig =
     });
 }
 
-export const removeConfig = (id: string, config: Config) => {
+export const removeConfig = (id: string, config: Config | GroupConfig) => {
   return {
     type: REMOVE_CONFIG,
     id,
@@ -154,7 +174,7 @@ export const removeConfig = (id: string, config: Config) => {
   };
 };
 
-export const editConfig = (id: string, config: Config) => {
+export const editConfig = (id: string, config: Config | GroupConfig) => {
   return {
     type: EDIT_CONFIG,
     id,
