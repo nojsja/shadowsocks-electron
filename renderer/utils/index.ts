@@ -50,3 +50,20 @@ export function findAndCallback(server: undefined | (Config | GroupConfig)[], id
     }
   }
 }
+
+export function findAndModify(server: undefined | (Config | GroupConfig)[], id: string, conf: (Config | GroupConfig)) : (Config | GroupConfig)[] {
+  if (!server || !server.length) {
+    return [];
+  }
+  for (let i = 0; i < server.length; i++) {
+    if (server[i].id === id) {
+      server.splice(i, 1, {...server[i], ...conf});
+      break;
+    }
+    if ('servers' in server[i]) {
+      findAndModify((server[i] as GroupConfig).servers, id, conf);
+    }
+  }
+
+  return [...server];
+}

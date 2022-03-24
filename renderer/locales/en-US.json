@@ -1,7 +1,8 @@
 {
   "fixed_menu": "Fixed Menu",
-  "move_up": "Move Up ↑",
-  "move_down": "Move Down ↓",
+  "top": "Top",
+  "move_up": "Move Up",
+  "move_down": "Move Down",
   "obfs": "Obfs",
   "obfsParam":"Obfs Param",
   "protocol": "Protocol",

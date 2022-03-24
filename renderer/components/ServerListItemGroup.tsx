@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState, memo, useEffect } from "react";
 import { MessageChannel } from 'electron-re';
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
@@ -13,7 +13,7 @@ import {
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
-import { moveDown, moveUp } from "../redux/actions/config";
+import { moveDown, moveUp, top } from "../redux/actions/config";
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig } from "../types";
 
@@ -48,9 +48,15 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
 
   const {
     item,
+    selectedServer
   } = props;
 
   const [actionHidden, setActionHidden] = useState(true);
+  const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
+
+  useEffect(() => {
+    handleChange(!!item.servers?.find(server => server.id === selectedServer));
+  }, [selectedServer]);
 
   console.log(actionHidden);
 
@@ -60,6 +66,10 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
 
   const handleActionShow = () => {
     setActionHidden(false);
+  };
+
+  const handleRemoveButtonClick = () => {
+    props.onRemove?.(item.id);
   };
 
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
@@ -73,13 +83,23 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           accelerator: '',
         },
         {
-          label: t('move_up'),
+          label: `${t('top')} ⇈`,
+          action: 'top',
+          accelerator: '',
+        },
+        {
+          label: `${t('move_up')} ↑`,
           action: 'move_up',
           accelerator: '',
         },
         {
-          label: t('move_down'),
+          label: `${t('move_down')} ↓`,
           action: 'move_down',
+          accelerator: '',
+        },
+        {
+          label: `${t('delete')} ✕`,
+          action: 'delete',
           accelerator: '',
         },
       ]
@@ -90,20 +110,23 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           case 'copy':
             clipboard.writeText(JSON.stringify(item));
             break;
+          case 'top':
+            dispatch(top(item.id));
+            break;
           case 'move_up':
             dispatch(moveUp(item.id));
             break;
           case 'move_down':
             dispatch(moveDown(item.id));
             break;
+          case 'delete':
+            handleRemoveButtonClick();
           default:
             break;
         }
       }
     });
   };
-
-  const [expanded, handleChange] = useState(false);
 
   return (
     <div
@@ -121,7 +144,15 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         <StyledAccordionDetails>
           {
             item.servers.map(server => (
-              <ServerListItemSingle key={server.id} {...props} item={server} />
+              <ServerListItemSingle
+                selected={selectedServer === server.id}
+                moveable={false}
+                deleteable={false}
+                topable={false}
+                key={server.id}
+                {...props}
+                item={server}
+              />
             ))
           }
         </StyledAccordionDetails>

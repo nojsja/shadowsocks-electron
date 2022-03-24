@@ -21,7 +21,7 @@ import ShareIcon from "@material-ui/icons/Share";
 import RemoveIcon from "@material-ui/icons/Delete";
 import { useDispatch } from "react-redux";
 import { getConnectionDelay } from "../redux/actions/status";
-import { moveDown, moveUp } from "../redux/actions/config";
+import { moveDown, moveUp, top } from "../redux/actions/config";
 import { Config } from "../types";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -68,6 +68,9 @@ const StyledBadge = withStyles((theme: Theme) =>
 
 export interface ServerListItemSingleProps extends ListItemProps {
   isLast?: boolean;
+  moveable?: boolean;
+  deleteable?: boolean;
+  topable?: boolean;
   connected: boolean;
   item: Config;
   onEdit?: (key: string) => void;
@@ -89,6 +92,9 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
     onShare,
     onRemove,
     item,
+    topable = true,
+    moveable = true,
+    deleteable = true,
     handleServerConnect,
     handleServerSelect,
   } = props;
@@ -147,6 +153,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
 
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'contextMenu',
       params: [
@@ -165,16 +172,23 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           action: 'test',
           accelerator: '',
         },
-        {
-          label: t('move_up'),
+        ...topable ? [
+          {
+            label: `${t('top')} ⇈`,
+            action: 'top',
+            accelerator: '',
+          },
+        ] : [],
+        ...moveable ? [{
+          label: `${t('move_up')} ↑`,
           action: 'move_up',
           accelerator: '',
         },
         {
-          label: t('move_down'),
+          label: `${t('move_down')} ↓`,
           action: 'move_down',
           accelerator: '',
-        },
+        }] : [],
       ]
     })
     .then(rsp => {
@@ -191,6 +205,9 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
             break;
           case 'test':
             dispatch(getConnectionDelay(serverHost, serverPort));
+            break;
+          case 'top':
+            dispatch(top(item.id));
             break;
           case 'move_up':
             dispatch(moveUp(id));
@@ -255,11 +272,15 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
               <EditIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title={(t('delete') as string)}>
-            <IconButton edge="end" onClick={handleRemoveButtonClick} size="small" className={styles.deleteButton}>
-              <RemoveIcon />
-            </IconButton>
-          </Tooltip>
+          {
+            deleteable && (
+              <Tooltip title={(t('delete') as string)}>
+                <IconButton edge="end" onClick={handleRemoveButtonClick} size="small" className={styles.deleteButton}>
+                  <RemoveIcon />
+                </IconButton>
+              </Tooltip>
+            )
+          }
         </ListItemSecondaryAction>
       </ListItem>
     </div>

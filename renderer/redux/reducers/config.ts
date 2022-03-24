@@ -6,10 +6,12 @@ import {
   EDIT_CONFIG,
   WIPE_CONFIG,
   MOVE_UP,
-  MOVE_DOWN
+  MOVE_DOWN,
+  TOP
 } from "../actions/config";
 import { Config, GroupConfig } from "../../types";
 import defaultStore from "../defaultStore";
+import { findAndModify } from "../../utils";
 
 function configReducer(
   state: (Config | GroupConfig)[] = defaultStore.config,
@@ -36,9 +38,16 @@ function configReducer(
     case REMOVE_CONFIG:
       return state.filter(i => i.id !== action.id);
     case EDIT_CONFIG:
-      return state.map(i => (i.id === action.id ? action.config : i));
+      return findAndModify(state, action.id, action.config);
     case WIPE_CONFIG:
       return [];
+    case TOP:
+      const index3 = state.findIndex((config, index) => config.id === action.id);
+      let newState3 = [...state];
+      if (index3 > 0) {
+        newState3 = [newState3.splice(index3, 1)[0], ...newState3];
+      }
+      return newState3;
     case MOVE_UP:
       const index = state.findIndex((config, index) => config.id === action.id);
       const newState = [...state];
