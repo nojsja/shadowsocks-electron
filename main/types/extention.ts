@@ -100,6 +100,13 @@ export type Config = SSConfig | SSRConfig;
 
 export type MonoSubscription = MonoSubscriptionSS | MonoSubscriptionSSR;
 
+export type SubscriptionParserStore = SubscriptionParserConfig[];
+export type SubscriptionParserConfig = {
+  name: string,
+  test: RegExp,
+  parse: (data: any) => Config[]
+}
+
 export interface SubscriptionResult {
   name: string,
   server: MonoSubscription[],

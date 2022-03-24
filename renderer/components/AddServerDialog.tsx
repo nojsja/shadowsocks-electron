@@ -9,7 +9,7 @@ import {
   ListItemProps,
   DialogTitleProps,
   Typography,
-  IconButton
+  IconButton,
 } from "@material-ui/core";
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
@@ -21,6 +21,7 @@ import CreateIcon from "@material-ui/icons/Create";
 import { AdaptiveDialog } from "./Pices/Dialog";
 
 import { closeOptions } from '../types';
+import { TextWithTooltip } from "./Pices/TextWithTooltip";
 
 export type onCloseType = (selection: closeOptions) => void;
 
@@ -95,13 +96,24 @@ const AddServerDialog: React.FC<AddServerDialog> = props => {
           <ListItemAvatar>
             <CopyIcon />
           </ListItemAvatar>
-          <ListItemText primary={t('import_server_url_from_clipboard')} />
+          <ListItemText primary={
+            <TextWithTooltip
+              text={t('import_server_url_from_clipboard')}
+              tooltip={t('import_server_url_from_clipboard_tips')}
+            />
+          } />
         </ListItemButton>
         <ListItemButton button onClick={() => onClose("subscription")}>
           <ListItemAvatar>
             <CopyIcon />
           </ListItemAvatar>
-          <ListItemText primary={t('import_server_subscription_from_clipboard')} />
+          <ListItemText primary={
+            <TextWithTooltip
+              text={t('import_server_subscription_from_clipboard')}
+              tooltip={t('import_server_subscription_from_clipboard_tips')}
+            />
+          }
+          />
         </ListItemButton>
       </List>
     </AdaptiveDialog>

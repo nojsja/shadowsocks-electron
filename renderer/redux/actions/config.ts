@@ -84,7 +84,10 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
               id: uuid(),
               config: {
                 name: rsp.result.name || 'new subscription',
-                servers: rsp.result.result,
+                servers: (rsp.result.result as Config[]).map(server => {
+                  server.id = uuid();
+                  return server;
+                }),
               }
             });
           } else {

@@ -158,34 +158,34 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
       action: 'contextMenu',
       params: [
         {
-          label: (connected && selected) ? t('disconnect') : t('connect'),
+          label: (connected && selected) ? `🔗 ${t('disconnect')}` : `🔌 ${t('connect')}`,
           action: (connected && selected) ? ('disconnect') : ('connect'),
           accelerator: '',
         },
         {
-          label: t('copy'),
+          label: `📄 ${t('copy')}`,
           action: 'copy',
           accelerator: '',
         },
         {
-          label: t('delay_test'),
+          label: `🌏 ${t('delay_test')}`,
           action: 'test',
           accelerator: '',
         },
         ...topable ? [
           {
-            label: `${t('top')} ⇈`,
+            label: `🔝 ${t('top')}`,
             action: 'top',
             accelerator: '',
           },
         ] : [],
         ...moveable ? [{
-          label: `${t('move_up')} ↑`,
+          label: `🔼 ${t('move_up')}`,
           action: 'move_up',
           accelerator: '',
         },
         {
-          label: `${t('move_down')} ↓`,
+          label: `🔽 ${t('move_down')}`,
           action: 'move_down',
           accelerator: '',
         }] : [],

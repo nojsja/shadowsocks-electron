@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: 60,
     height: 'calc(100vh - 50px)',
     overflow: 'hidden',
-    marginTop: 50,
+    marginTop: 49,
   },
   drawerFixed: {
     height: '100vh',
@@ -23,7 +23,7 @@ const StyledDrawer = withStyles((theme: Theme) => (
   createStyles({
     paper: {
       width: drawerWidth,
-      backgroundColor: theme.palette.type === "dark" ? 'rgba(255,255,255, .2)' : 'rgba(255, 255, 255, 1)',
+      backgroundColor: theme.palette.type === "dark" ? '#303030' : 'rgba(255, 255, 255, 1)',
       backdropFilter: `saturate(180%) blur(5px)`,
     },
     root: {

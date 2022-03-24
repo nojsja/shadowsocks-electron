@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { exec, ExecOptions } from "child_process";
-import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR } from '../types/extention';
+import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR, SubscriptionParserConfig } from '../types/extention';
 import { getPathRuntime } from '../electron';
 import { ProxyURI } from './ProxyURI';
 import { get } from './http-request';
@@ -13,6 +13,24 @@ const archMap = new Map([
   ['x64', 'x64'],
   ['ia32', 'ia32'],
   ['arm64', 'arm64']
+]);
+
+const subParserStore = subscriptionParserStore([
+  {
+    name: 'Paofu Cloud',
+    test: /(paofusub)\.(com|cn|org|io|net)/g,
+    parse: paofuSubscriptionParser
+  },
+  {
+    name: 'Mono Cloud',
+    test: /(mymonocloud)\.(com|cn|org|io|net)/g,
+    parse: monoCloudSubscriptionParser
+  },
+  {
+    name: '',
+    test: /^(http|https)/g,
+    parse: paofuSubscriptionParser
+  },
 ]);
 
 export const getChromeExtensionsPath = (appids: string[]): Promise<any[]> => {
@@ -250,20 +268,43 @@ export function parseUrl(text: string) {
 
 export function parseSubscription(text: string): Promise<{ error: string | null, result: Config[], name: string | null }> {
   return new Promise((resolve, reject) => {
-    if (/^(http|https)/.test(text)) {
-      get(text).then(res => {
-        resolve({
-          error: null,
-          result: monoCloudSubscriptionParser(res.data),
-          name: res?.data?.name || null
+    const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w\.]+)?\/(.*)/;
+    const httpReg = /^(http|https)/;
+    if (httpReg.test(text)) {
+      const subHandler = subParserStore(text);
+      if (subHandler) {
+        get(text).then(res => {
+          let data: Config[] = [];
+          try {
+            data = subHandler.parse(res.data);
+          } catch (error) {
+            console.log(error);
+            data = [];
+          } finally {
+            resolve({
+              error: null,
+              result: data,
+              name:
+                res?.data?.name ||
+                subHandler.name ||
+                (hostnameReg.exec(text) || [])[1]
+                || 'Unknown subscription'
+            });
+          }
+        }).catch(err => {
+          resolve({
+            error: err.message,
+            result: [],
+            name: null
+          });
         });
-      }).catch(err => {
-        resolve({
-          error: err.message,
+      } else {
+        return resolve({
+          error: 'invalid subscription address!',
           result: [],
           name: null
         });
-      });
+      }
     } else {
       return resolve({
         error: 'invalid subscription address!',
@@ -274,6 +315,30 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
   })
 }
 
+export function subscriptionParserStore(parsers: SubscriptionParserConfig[]): (link: string) => SubscriptionParserConfig | null {
+  const map: any = {};
+
+  return (link: string) => {
+    const parser = parsers.find(parser => parser.test.test(link)) || null;
+    if (!parser) return null;
+    const serviceName = (link.match(parser.test) || [])[0];
+    if (!serviceName) return null;
+    if (map[serviceName]) return map[serviceName];
+    map[serviceName] = parser;
+    return parser;
+  }
+};
+
+/* 泡芙云 paofusub 订阅解析 */
+export function paofuSubscriptionParser(res: { result: string }): Config[] {
+  if (!((typeof res.result) === 'string')) return [];
+
+  const serversBase64 = Buffer.from(res.result, 'base64').toString();
+
+  return parseUrl(serversBase64);
+};
+
+/* mono cloud 订阅解析 */
 export function monoCloudSubscriptionParser (res: SubscriptionResult): Config[] {
   const result: Config[] = [];
 

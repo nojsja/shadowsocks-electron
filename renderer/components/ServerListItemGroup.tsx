@@ -24,10 +24,20 @@ const StyledAccordionDetails = withStyles((theme: Theme) =>
       flexDirection: 'column',
       paddingLeft: 0,
       paddingRight: 0,
-      margin: 'auto'
+      margin: 'auto',
+      backgroundColor: theme.palette.type === "dark" ? '#383838' : '#fdfdfd',
     }
   }),
 )(AccordionDetails);
+
+const StyledAccordionSummary = withStyles((theme: Theme) => (
+  createStyles({
+    root: {
+      backgroundColor: theme.palette.type === "dark" ? '#525252' : 'rgba(255, 255, 255, 1)',
+    }
+  })
+))(AccordionSummary);
+
 
 export interface ServerListItemGroupProps extends ListItemProps {
   isLast?: boolean;
@@ -78,27 +88,27 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
       action: 'contextMenu',
       params: [
         {
-          label: t('copy'),
+          label: `📄 ${t('copy')}`,
           action: 'copy',
           accelerator: '',
         },
         {
-          label: `${t('top')} ⇈`,
+          label: `🔝 ${t('top')}`,
           action: 'top',
           accelerator: '',
         },
         {
-          label: `${t('move_up')} ↑`,
+          label: `🔼 ${t('move_up')}`,
           action: 'move_up',
           accelerator: '',
         },
         {
-          label: `${t('move_down')} ↓`,
+          label: `🔽 ${t('move_down')}`,
           action: 'move_down',
           accelerator: '',
         },
         {
-          label: `${t('delete')} ✕`,
+          label: `🗑 ${t('delete')}`,
           action: 'delete',
           accelerator: '',
         },
@@ -135,12 +145,12 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
       onContextMenu={onContextMenu}
     >
       <Accordion expanded={expanded} onChange={() => handleChange(!expanded)}>
-        <AccordionSummary
+        <StyledAccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1bh-content"
         >
           { item.name }
-        </AccordionSummary>
+        </StyledAccordionSummary>
         <StyledAccordionDetails>
           {
             item.servers.map(server => (
