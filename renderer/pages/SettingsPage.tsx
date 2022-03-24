@@ -202,6 +202,10 @@ const SettingsPage: React.FC = () => {
       action: 'reloadMainWindow',
       params: {}
     });
+    MessageChannel.invoke('main', 'service:desktop', {
+      action: 'setLocale',
+      params: e.target.value as string
+    });
   }
 
   return (

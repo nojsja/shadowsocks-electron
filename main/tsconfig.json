@@ -6,7 +6,9 @@
     "noEmit": false,
     "isolatedModules": false,
     "outDir": "../public",
+    "resolveJsonModule": true,
     "typeRoots": ["../node_modules/@types/", "./types/"],
+
   },
-  "include": ["**/*"]
+  "include": ["**/*", "locales/**/*.json"]
 }

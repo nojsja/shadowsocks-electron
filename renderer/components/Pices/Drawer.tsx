@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: 60,
     height: 'calc(100vh - 50px)',
     overflow: 'hidden',
-    marginTop: 49,
+    marginTop: 48,
   },
   drawerFixed: {
     height: '100vh',

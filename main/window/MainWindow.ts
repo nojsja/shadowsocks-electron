@@ -6,6 +6,7 @@ import windowStateKeeper from 'electron-window-state';
 
 import { IpcMainWindowType, TrayMenu } from '../types/extention';
 import { getBestWindowPosition } from "../helpers";
+import { i18n } from "../electron";
 
 const platform = os.platform();
 
@@ -31,21 +32,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
     this.resizable = args?.resizable ?? this.resizable;
     this.win = null;
     this.tray = null;
-    this.trayMenu = [
-      {
-        label: "Show UI",
-        click: this.show.bind(this)
-      },
-      {
-        label: "Hide UI",
-        click: this.hide.bind(this)
-      },
-      { type: "separator" },
-      {
-        label: "Quit",
-        click: this.quit.bind(this)
-      }
-    ];
+    this.trayMenu = [];
     this.url = isDev
     ? "http://localhost:3001"
     : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
@@ -98,6 +85,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
       this.win.on("minimize", (e: Electron.Event) => {
         e.preventDefault();
+        mainWindowState.saveState(this.win as BrowserWindow);
         this.hide();
       });
 
@@ -133,8 +121,28 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
   createTray () {
     return new Promise((resolve, reject) => {
-      this.tray = new Tray(this.trayIcon);
+      this.trayMenu = [
+        {
+          label: i18n.__('show_ui'),
+          click: this.show.bind(this)
+        },
+        {
+          label: i18n.__('hide_ui'),
+          click: this.hide.bind(this)
+        },
+        { type: "separator" },
+        {
+          label: i18n.__('quit'),
+          click: this.quit.bind(this)
+        }
+      ];
       const menu: Menu = Menu.buildFromTemplate(this.trayMenu);
+
+      if (this.tray) {
+        return this.tray.setContextMenu(menu);
+      }
+
+      this.tray = new Tray(this.trayIcon);
 
       if (platform !== "linux") {
         this.tray.on("click", e => {

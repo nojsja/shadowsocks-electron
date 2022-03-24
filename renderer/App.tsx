@@ -17,6 +17,7 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { ipcRenderer } from "electron";
 import { grey, indigo } from "@material-ui/core/colors";
+import { MessageChannel } from "electron-re";
 
 import AppNav from "./components/AppNav";
 import HomePage from "./pages/HomePage";
@@ -97,6 +98,11 @@ const App: React.FC = () => {
         key: "connected",
         value: status
       });
+    });
+
+    MessageChannel.invoke('main', 'service:desktop', {
+      action: 'setLocale',
+      params: localStorage.getItem('lang') || 'en-US'
     });
   }, []);
 

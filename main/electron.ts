@@ -4,6 +4,7 @@ import os from "os";
 import isDev from "electron-is-dev";
 import { initRenderer } from 'electron-store';
 import { autoUpdater } from'electron-updater';
+import { I18n } from 'i18n';
 
 import { stopClient } from "./proxy";
 import { setMainWindow } from "./proxy/client";
@@ -29,6 +30,8 @@ const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'
 
 export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
+
+export const i18n = new I18n();
 
 logger.info(`appDataPath: ${appDataPath}`);
 logger.info(`pathRuntime: ${pathRuntime}`);
@@ -80,6 +83,13 @@ app.on("ready", async () => {
     }
     setMainWindow(win);
   });
+
+  i18n.configure({
+    locales: ['en-US', 'zh-CN'],
+    defaultLocale: 'en-US',
+    directory: path.join(__dirname, 'locales')
+  });
+
   ipcMainWindow.createTray();
 
   !isDev && autoUpdater.checkForUpdatesAndNotify();

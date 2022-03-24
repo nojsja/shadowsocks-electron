@@ -34,6 +34,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@types/i18n": "^0.13.2",
     "clsx": "^1.1.1",
     "electron-devtools-installer": "^3.2.0",
     "electron-is-dev": "1.1.0",
@@ -42,6 +43,7 @@
     "electron-updater": "^4.6.5",
     "electron-window-state": "^5.0.3",
     "fs-extra": "9.0.0",
+    "i18n": "^0.14.2",
     "i18next": "^20.6.1",
     "ipv6": "*",
     "js-base64": "^2.4.0",
