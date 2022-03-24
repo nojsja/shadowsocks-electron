@@ -71,7 +71,6 @@ const ServerList: React.FC<ServerListProps> = props => {
             key={item.id}
             item={item}
             selectedServer={selectedServer}
-            conf={JSON.stringify(item)}
             connected={connected}
             onShare={handleShareButtonClick}
             onEdit={handleEditButtonClick}

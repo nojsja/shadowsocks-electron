@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     toolbar: theme.mixins.toolbar,
     content: {
-      flexGrow: 1
+      flex: 1
     }
   })
 );

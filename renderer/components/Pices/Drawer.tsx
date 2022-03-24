@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles, makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { Drawer, DrawerProps, Hidden }  from '@material-ui/core';
+import { Drawer, DrawerProps }  from '@material-ui/core';
 import { drawerWidth } from '../DrawerMenu';
 
 type AdaptiveDrawerProps = DrawerProps & {
@@ -39,8 +39,6 @@ export const AdaptiveDrawer = (props: AdaptiveDrawerProps) => {
     return <StyledDrawer {...props} className={styles[`drawerFixed`]} />;
   }
   return (
-    <Hidden smUp implementation="css">
       <StyledDrawer {...props} variant="permanent" className={styles[`drawerAbsolute`]} />
-    </Hidden>
   );
 };

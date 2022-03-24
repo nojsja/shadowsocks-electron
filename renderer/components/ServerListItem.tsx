@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export interface ServerListItemProps extends ListItemProps {
   isLast?: boolean;
-  conf: string;
   connected: boolean;
   selectedServer: string | undefined | null;
   item: GroupConfig | Config

@@ -44,7 +44,10 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       alignItems: "center",
       height: `calc(100vh - 56px)`,
       padding: theme.spacing(1),
-      paddingTop: 0
+      paddingTop: 0,
+      [theme.breakpoints.up('sm')]: {
+        height: `calc(100vh - 64px)`,
+      }
     },
     list: {
       width: "100%",
@@ -69,8 +72,11 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
     container: {
       display: "flex",
       flexDirection: "column",
-      height: `calc(100vh - 64px)`,
-      padding: theme.spacing(2)
+      height: `calc(100vh - 56px)`,
+      padding: theme.spacing(2),
+      [theme.breakpoints.up('sm')]: {
+        height: `calc(100vh - 64px)`,
+      }
     },
     'text-center': {
       textAlign: 'center'

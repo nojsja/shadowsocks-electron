@@ -31,7 +31,6 @@ const StyledAccordionDetails = withStyles((theme: Theme) =>
 
 export interface ServerListItemGroupProps extends ListItemProps {
   isLast?: boolean;
-  conf: string;
   connected: boolean;
   item: GroupConfig;
   selectedServer: string | null | undefined;
@@ -49,7 +48,6 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
 
   const {
     item,
-    conf,
   } = props;
 
   const [actionHidden, setActionHidden] = useState(true);
@@ -90,7 +88,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
       if (rsp.code === 200) {
         switch (rsp.result) {
           case 'copy':
-            clipboard.writeText(conf);
+            clipboard.writeText(JSON.stringify(item));
             break;
           case 'move_up':
             dispatch(moveUp(item.id));

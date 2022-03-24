@@ -69,8 +69,8 @@ app.on("ready", async () => {
   await setupAfterInstall(true);
 
   ipcMainWindow = new IpcMainWindow({
-    width: 420,
-    height: 480
+    width: 460,
+    height: 540
   });
   ipcMainWindow.create().then((win: BrowserWindow) => {
     (global as any).win = win;

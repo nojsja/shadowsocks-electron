@@ -68,7 +68,6 @@ const StyledBadge = withStyles((theme: Theme) =>
 
 export interface ServerListItemSingleProps extends ListItemProps {
   isLast?: boolean;
-  conf: string;
   connected: boolean;
   item: Config;
   onEdit?: (key: string) => void;
@@ -89,7 +88,6 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
     onEdit,
     onShare,
     onRemove,
-    conf,
     item,
     handleServerConnect,
     handleServerSelect,
@@ -189,7 +187,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
             handleChooseButtonClick();
             break;
           case 'copy':
-            clipboard.writeText(conf);
+            clipboard.writeText(JSON.stringify(item));
             break;
           case 'test':
             dispatch(getConnectionDelay(serverHost, serverPort));

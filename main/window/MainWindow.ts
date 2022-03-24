@@ -2,6 +2,7 @@ import { app, BrowserWindow, Tray, Menu, shell } from "electron";
 import isDev from "electron-is-dev";
 import path from "path";
 import os from "os";
+import windowStateKeeper from 'electron-window-state';
 
 import { IpcMainWindowType, TrayMenu } from '../types/extention';
 import { getBestWindowPosition } from "../helpers";
@@ -15,16 +16,19 @@ export default class IpcMainWindow implements IpcMainWindowType {
   trayIcon: string
   trayMenu: TrayMenu
   url: string
-  quitting = false
-  width = 420
-  height = 480
+  quitting = false;
+  resizable = true;
+  width = 460;
+  height = 540;
+  minHeight = 480;
+  minWidth = 420;
+  maxHeight = 980;
+  maxWidth = 800;
 
-  constructor(args?: {
-    width: number,
-    height: number
-  }) {
+  constructor(args?: Electron.BrowserWindowConstructorOptions) {
     this.width = args?.width ?? this.width;
     this.height = args?.height ?? this.height;
+    this.resizable = args?.resizable ?? this.resizable;
     this.win = null;
     this.tray = null;
     this.trayMenu = [
@@ -54,10 +58,26 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
   create() {
     return new Promise((resolve, reject) => {
+      const mainWindowState = windowStateKeeper({
+        defaultWidth: this.width,
+        defaultHeight: this.height,
+        fullScreen: false,
+        maximize: false,
+        file: "mainWindowState.json",
+        path: app.getPath("userData"),
+      });
+
       this.win = new BrowserWindow({
-        width: this.width,
-        height: this.height,
-        resizable: false,
+        x: mainWindowState.x,
+        y: mainWindowState.y,
+        minHeight: this.minHeight,
+        minWidth: this.minWidth,
+        maxHeight: this.maxHeight,
+        maxWidth: this.maxWidth,
+        maximizable: false,
+        width: mainWindowState.width,
+        height: mainWindowState.height,
+        resizable: this.resizable,
         frame: false,
         fullscreenable: false,
         fullscreen: false,
@@ -68,6 +88,8 @@ export default class IpcMainWindow implements IpcMainWindowType {
         }
       });
 
+      mainWindowState.manage(this.win);
+
       if (platform === "darwin") {
         this.win.hide();
       }
@@ -77,6 +99,10 @@ export default class IpcMainWindow implements IpcMainWindowType {
       this.win.on("minimize", (e: Electron.Event) => {
         e.preventDefault();
         this.hide();
+      });
+
+      this.win.on("maximize", (e: Electron.Event) => {
+        e.preventDefault();
       });
 
       this.win.on("close", e => {
