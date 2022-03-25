@@ -1,4 +1,4 @@
-name: Build Release
+name: Build & Release
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
 
 jobs:
   publish:
-    name: Release Mac/Linux App
+    name: Release Windows/Linux App
     runs-on: ${{ matrix.os }}   #流水线会跑在哪些操作系统中
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]  # 流水线将分别触发在 macos、ubuntu 系统中
+        os: [ubuntu-20.04, windows-latest]  # 流水线将分别触发在 macos、ubuntu 系统中
 
     steps:
       - uses: actions/checkout@v2
@@ -22,14 +22,18 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 14.17.6
 
       - name: Install Yarn
         run: npm i -g yarn@latest
 
-      - name: Install Snapcraft (ubuntu)
+      # - name: Install Snapcraft (ubuntu)
+      #   if: matrix.os == 'ubuntu-20.04'
+      #   run: sudo apt install snapd snap snapcraft && sudo snap install multipass && sudo snap install review-tools
+
+      - name: Install Dependencies (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
-        run: sudo apt install snapd snap snapcraft wine && sudo snap install multipass && sudo snap install review-tools
+        run: sudo apt install build-essential
 
       - name: Cache Desktop node_modules
         id: cache-desktop-modules
@@ -59,4 +63,11 @@ jobs:
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           CI: false
-        run:  yarn publish:linux:win
+        run:  yarn publish:linux
+
+      - name: Publish Zip/Exe (windows)
+        if: matrix.os == 'windows-latest'
+        env:
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
+          CI: false
+        run:  yarn publish:win
