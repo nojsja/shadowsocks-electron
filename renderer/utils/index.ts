@@ -1,6 +1,8 @@
 import { desktopCapturer } from 'electron';
 import { Config, GroupConfig, notificationOptions } from '../types';
 import { MessageChannel } from 'electron-re';
+import { persistStore } from '../App';
+import { getFirstLanguage } from '../i18n';
 
 export function saveDataURLAsFile(dataUrl: string, fileName: string) {
   var link = document.createElement("a");
@@ -13,7 +15,7 @@ export function saveDataURLAsFile(dataUrl: string, fileName: string) {
 }
 
 export function getDefaultLang(): string {
-  return localStorage.getItem('lang') || navigator.language || 'zh-CN';
+  return getFirstLanguage(persistStore.get('lang') as string);
 }
 
 export function getScreenCapturedResources(): Promise<Electron.DesktopCapturerSource[]> {

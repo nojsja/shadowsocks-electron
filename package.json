@@ -12,12 +12,12 @@
   "main": "public/electron.js",
   "private": true,
   "scripts": {
-    "start:main": "nodemon --config nodemon.json",
     "start:renderer": "cross-env PORT=3001 cross-env BROWSER=none react-app-rewired start",
+    "start:main": "nodemon --config nodemon.json",
+    "start:main:inspect": "yarn build:main && cross-env INSPECT=1 electron . --inspect=5222",
     "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3001 && yarn start:main\"",
-    "start:inspector": "yarn build:main && electron --inspect=5858 .",
-    "build:main": "yarn tsc -p main/tsconfig.json",
     "build:renderer": "react-app-rewired build",
+    "build:main": "yarn tsc -p main/tsconfig.json",
     "build": "yarn build:main && yarn build:renderer",
     "pack:linux": "electron-builder --linux",
     "pack:mac": "electron-builder --mac",
@@ -39,7 +39,7 @@
     "electron-devtools-installer": "^3.2.0",
     "electron-is-dev": "1.1.0",
     "electron-re": "^1.1.0",
-    "electron-store": "^8.0.0",
+    "electron-store": "^8.0.1",
     "electron-updater": "^4.6.5",
     "electron-window-state": "^5.0.3",
     "fs-extra": "9.0.0",
@@ -53,6 +53,7 @@
     "qrcode": "^1.4.4",
     "react-i18next": "^11.12.0",
     "socks": "1.x",
+    "v8-compile-cache": "^2.3.0",
     "winston": "3.2.1",
     "winston-daily-rotate-file": "^4.5.5"
   },
@@ -99,6 +100,7 @@
     "typeface-roboto": "0.0.75",
     "typescript": "3.8.3",
     "uuid": "7.0.2",
+    "v8-inspect-profiler": "^0.1.0",
     "wait-on": "4.0.1"
   },
   "husky": {

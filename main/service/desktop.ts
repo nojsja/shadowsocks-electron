@@ -302,9 +302,9 @@ export class DesktopService implements DesktopServiceType {
   }
 
   async setLocale(lang: 'en-US' | 'zh-CN'): Promise<void> {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       i18n.setLocale(lang);
-      await ipcMainWindow.createTray();
+      ipcMainWindow.setLocaleTrayMenu();
       resolve();
     });
   }

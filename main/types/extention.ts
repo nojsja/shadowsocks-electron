@@ -1,5 +1,5 @@
 import { MenuItemConstructorOptions } from "electron/main";
-import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem } from 'electron';
+import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem, Menu } from 'electron';
 
 export interface Service {
   ipc: IpcMain
@@ -22,12 +22,16 @@ export interface IpcMainWindowType {
   tray: null | Tray
   icon: string
   trayIcon: string
-  trayMenu: TrayMenu
+  trayMenu: Menu | null
+  menus: TrayMenu
   width: number
   height: number
-  quitting: boolean
+  url: string;
+  quitting: boolean;
+  resizable: boolean;
   create: () => Promise<any>
   createTray: () => Promise<any>
+  setLocaleTrayMenu: () => void
   show: () => void
   quit: () => void
   hide: () => void

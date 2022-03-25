@@ -15,8 +15,9 @@ export default class IpcMainWindow implements IpcMainWindowType {
   tray: Tray | null
   icon: string
   trayIcon: string
-  trayMenu: TrayMenu
-  url: string
+  trayMenu: Menu | null;
+  menus: TrayMenu;
+  url: string;
   quitting = false;
   resizable = true;
   width = 460;
@@ -32,15 +33,13 @@ export default class IpcMainWindow implements IpcMainWindowType {
     this.resizable = args?.resizable ?? this.resizable;
     this.win = null;
     this.tray = null;
-    this.trayMenu = [];
+    this.trayMenu = null;
+    this.menus = [];
     this.url = isDev
     ? "http://localhost:3001"
     : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
     this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
-    this.trayIcon = path.resolve(
-      app.getAppPath(),
-      "assets/icons/16x16.png"
-    );
+    this.trayIcon = path.resolve(app.getAppPath(), "assets/icons/16x16.png");
   }
 
   create() {
@@ -55,13 +54,13 @@ export default class IpcMainWindow implements IpcMainWindowType {
       });
 
       this.win = new BrowserWindow({
-        x: mainWindowState.x,
-        y: mainWindowState.y,
         minHeight: this.minHeight,
         minWidth: this.minWidth,
         maxHeight: this.maxHeight,
         maxWidth: this.maxWidth,
         maximizable: false,
+        x: mainWindowState.x,
+        y: mainWindowState.y,
         width: mainWindowState.width,
         height: mainWindowState.height,
         resizable: this.resizable,
@@ -77,11 +76,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
       mainWindowState.manage(this.win);
 
-      if (platform === "darwin") {
-        this.win.hide();
-      }
-
-      // this.win.setVisibleOnAllWorkspaces(true);
+      if (platform === "darwin") this.win.hide();
 
       this.win.on("minimize", (e: Electron.Event) => {
         e.preventDefault();
@@ -119,30 +114,33 @@ export default class IpcMainWindow implements IpcMainWindowType {
     });
   }
 
+  setLocaleTrayMenu() {
+    this.menus = [
+      {
+        label: i18n.__('show_ui'),
+        click: this.show.bind(this)
+      },
+      {
+        label: i18n.__('hide_ui'),
+        click: this.hide.bind(this)
+      },
+      { type: "separator" },
+      {
+        label: i18n.__('quit'),
+        click: this.quit.bind(this)
+      }
+    ];
+
+    this.trayMenu = Menu.buildFromTemplate(this.menus);
+    this.tray?.setContextMenu(this.trayMenu);
+  }
+
   createTray () {
     return new Promise((resolve, reject) => {
-      this.trayMenu = [
-        {
-          label: i18n.__('show_ui'),
-          click: this.show.bind(this)
-        },
-        {
-          label: i18n.__('hide_ui'),
-          click: this.hide.bind(this)
-        },
-        { type: "separator" },
-        {
-          label: i18n.__('quit'),
-          click: this.quit.bind(this)
-        }
-      ];
-      const menu: Menu = Menu.buildFromTemplate(this.trayMenu);
-
-      if (this.tray) {
-        return this.tray.setContextMenu(menu);
-      }
+      if (this.tray && !this.tray.isDestroyed()) return;
 
       this.tray = new Tray(this.trayIcon);
+      this.setLocaleTrayMenu();
 
       if (platform !== "linux") {
         this.tray.on("click", e => {
@@ -153,10 +151,10 @@ export default class IpcMainWindow implements IpcMainWindowType {
           }
         });
         this.tray.on("right-click", () => {
-          this.tray?.popUpContextMenu(menu);
+          this.tray?.popUpContextMenu(this.trayMenu ?? undefined);
         });
       } else {
-        this.tray?.setContextMenu(menu);
+        this.tray?.setContextMenu(this.trayMenu);
       }
 
       resolve(this.tray);

@@ -18,6 +18,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ipcRenderer } from "electron";
 import { grey, indigo } from "@material-ui/core/colors";
 import { MessageChannel } from "electron-re";
+import ElectronStore from 'electron-store';
 
 import AppNav from "./components/AppNav";
 import HomePage from "./pages/HomePage";
@@ -26,8 +27,10 @@ import AboutPage from "./pages/AboutPage";
 import { store, persistor } from "./redux/store";
 import Loading from "./components/Loading";
 import { getConnectionStatus, SET_STATUS } from "./redux/actions/status";
-import prepareForLanguage from './i18n';
+import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from "./utils";
+
+export const persistStore = new ElectronStore();
 
 const mainTheme = createMuiTheme({
   spacing: 8,
@@ -89,7 +92,7 @@ prepareForLanguage(getDefaultLang());
 
 const App: React.FC = () => {
   const styles = useStyles();
-  const darkMode = window.localStorage.getItem('darkMode') === 'true' || false;
+  const darkMode = persistStore.get('darkMode') === 'true' || false;
 
   useEffect(() => {
     getConnectionStatus((status) => {
@@ -102,7 +105,7 @@ const App: React.FC = () => {
 
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'setLocale',
-      params: localStorage.getItem('lang') || 'en-US'
+      params: getFirstLanguage(persistStore.get('lang') as string)
     });
   }, []);
 
