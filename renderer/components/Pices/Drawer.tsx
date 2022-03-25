@@ -1,13 +1,29 @@
 import React from 'react';
-import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { withStyles, makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import { Drawer, DrawerProps }  from '@material-ui/core';
 import { drawerWidth } from '../DrawerMenu';
+
+type AdaptiveDrawerProps = DrawerProps & {
+  mode?: 'fixed' | 'absolute'
+};
+
+const useStyles = makeStyles((theme: Theme) => createStyles({
+  drawerAbsolute: {
+    width: 60,
+    height: 'calc(100vh - 50px)',
+    overflow: 'hidden',
+    marginTop: 48,
+  },
+  drawerFixed: {
+    height: '100vh',
+  },
+}));
 
 const StyledDrawer = withStyles((theme: Theme) => (
   createStyles({
     paper: {
       width: drawerWidth,
-      backgroundColor: theme.palette.type === "dark" ? 'rgba(255,255,255, .2)' : 'rgba(255, 255, 255, 1)',
+      backgroundColor: theme.palette.type === "dark" ? '#303030' : 'rgba(255, 255, 255, 1)',
       backdropFilter: `saturate(180%) blur(5px)`,
     },
     root: {
@@ -17,6 +33,12 @@ const StyledDrawer = withStyles((theme: Theme) => (
   })
 ))(Drawer);
 
-export const AdaptiveDrawer = (props: DrawerProps) => {
-  return <StyledDrawer {...props} />;
+export const AdaptiveDrawer = (props: AdaptiveDrawerProps) => {
+  const styles = useStyles();
+  if (props.mode === 'fixed') {
+    return <StyledDrawer {...props} className={styles[`drawerFixed`]} />;
+  }
+  return (
+      <StyledDrawer {...props} variant="permanent" className={styles[`drawerAbsolute`]} />
+  );
 };

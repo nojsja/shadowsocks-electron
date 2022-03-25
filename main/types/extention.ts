@@ -1,5 +1,5 @@
 import { MenuItemConstructorOptions } from "electron/main";
-import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem } from 'electron';
+import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem, Menu } from 'electron';
 
 export interface Service {
   ipc: IpcMain
@@ -22,12 +22,16 @@ export interface IpcMainWindowType {
   tray: null | Tray
   icon: string
   trayIcon: string
-  trayMenu: TrayMenu
+  trayMenu: Menu | null
+  menus: TrayMenu
   width: number
   height: number
-  quitting: boolean
+  url: string;
+  quitting: boolean;
+  resizable: boolean;
   create: () => Promise<any>
   createTray: () => Promise<any>
+  setLocaleTrayMenu: () => void
   show: () => void
   quit: () => void
   hide: () => void
@@ -39,7 +43,7 @@ export interface MainService extends Service {
   isConnected: () => Promise<ServiceResult>
   startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>
   stopClient: () => Promise<ServiceResult>
-  parseClipboardText: (params: { text: string }) => Promise<ServiceResult>
+  parseClipboardText: (params: { text: string, type: clipboardParseType }) => Promise<ServiceResult>
   generateUrlFromConfig: (params: SSRConfig | SSConfig) => Promise<ServiceResult>
 }
 
@@ -98,6 +102,45 @@ export type ACL = boolean;
 
 export type Config = SSConfig | SSRConfig;
 
+export type MonoSubscription = MonoSubscriptionSS | MonoSubscriptionSSR;
+
+export type SubscriptionParserStore = SubscriptionParserConfig[];
+export type SubscriptionParserConfig = {
+  name: string,
+  test: RegExp,
+  parse: (data: any) => Config[]
+}
+
+export interface SubscriptionResult {
+  name: string,
+  server: MonoSubscription[],
+  version: number
+}
+
+export interface MonoSubscriptionSSR {
+  id: string,
+  remarks: string,
+  name: string,
+  server: string,
+  server_port: number,
+  password: string,
+  method: string,
+  protocol: string,
+  protocol_param: string,
+  obfs: string,
+  obfs_param: string,
+}
+
+export interface MonoSubscriptionSS {
+  id: string,
+  remarks: string,
+  name: string,
+  server: string,
+  server_port: number,
+  password: string,
+  method: string,
+}
+
 export interface SSConfig {
   id?: string;
   remark?: string;
@@ -117,6 +160,8 @@ export interface SSConfig {
   protocol?: string;
   protocolParam?: string;
 }
+
+export type clipboardParseType = 'url' | 'subscription';
 
 export interface SSRConfig {
   id?: string;

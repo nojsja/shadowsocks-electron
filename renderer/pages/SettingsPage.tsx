@@ -25,6 +25,8 @@ import useSnackbarAlert from "../hooks/useSnackbarAlert";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
 import EditAclDialog from "../components/EditAclDialog";
+import { getFirstLanguage } from "../i18n";
+import { persistStore } from "../App";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -38,7 +40,7 @@ const SettingsPage: React.FC = () => {
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
 
   useEffect(() => {
-    dispatch(getStartupOnBoot());
+    dispatch<any>(getStartupOnBoot());
   }, [dispatch]);
 
   const backupConfiguration = () => {
@@ -49,7 +51,7 @@ const SettingsPage: React.FC = () => {
   };
 
   const restoreConfiguration = () => {
-    dispatch(restoreConfigurationFromFile((success, code) => {
+    dispatch<any>(restoreConfigurationFromFile((success, code) => {
       if (success) {
         setSnackbarMessage(t('the_recovery_is_successful'));
       } else {
@@ -128,7 +130,7 @@ const SettingsPage: React.FC = () => {
     let value: any = e.target.checked;
     switch (key) {
       case 'autoLaunch':
-        dispatch(setStartupOnBoot(value));
+        dispatch<any>(setStartupOnBoot(value));
         break;
       case 'httpProxy':
         // if (!checkPortUsed(settings.httpProxy.port, 'httpsProxy', value)) return;
@@ -146,7 +148,7 @@ const SettingsPage: React.FC = () => {
         // setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
         break;
       case 'darkMode':
-        window.localStorage.setItem('darkMode', value ? 'true' : 'false');
+        persistStore.set('darkMode', value ? 'true' : 'false');
         MessageChannel.invoke('main', 'service:desktop', {
           action: 'reloadMainWindow',
           params: {}
@@ -196,11 +198,15 @@ const SettingsPage: React.FC = () => {
   };
 
   const onLangChange = (e: React.ChangeEvent<{ name?: string | undefined, value: unknown; }>) => {
-    if (localStorage.getItem('lang') === e.target.value) return;
-    localStorage.setItem('lang', e.target.value as string);
+    if (persistStore.get('lang') === e.target.value) return;
+    persistStore.set('lang', e.target.value as string);
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'reloadMainWindow',
       params: {}
+    });
+    MessageChannel.invoke('main', 'service:desktop', {
+      action: 'setLocale',
+      params: getFirstLanguage(e.target.value as string)
     });
   }
 
@@ -319,6 +325,18 @@ const SettingsPage: React.FC = () => {
               edge="end"
               checked={settings.autoLaunch}
               onChange={e => handleSwitchValueChange("autoLaunch", e)}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary={t('fixed_menu')}
+          />
+          <ListItemSecondaryAction>
+            <AdaptiveSwitch
+              edge="end"
+              checked={settings.fixedMenu}
+              onChange={e => handleSwitchValueChange("fixedMenu", e)}
             />
           </ListItemSecondaryAction>
         </ListItem>

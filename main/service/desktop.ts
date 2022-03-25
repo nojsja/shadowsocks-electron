@@ -15,7 +15,7 @@ import {
   getStartupOnBoot_linux, setStartupOnBoot_linux,
   getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '../helpers';
-import { ipcMainWindow } from '../electron';
+import { i18n, ipcMainWindow } from '../electron';
 
 /* main service handler */
 export class DesktopService implements DesktopServiceType {
@@ -297,6 +297,14 @@ export class DesktopService implements DesktopServiceType {
   async minimumApp(actions: contextAction[]): Promise<void> {
     return new Promise(resolve => {
       ipcMainWindow?.hide();
+      resolve();
+    });
+  }
+
+  async setLocale(lang: 'en-US' | 'zh-CN'): Promise<void> {
+    return new Promise((resolve) => {
+      i18n.setLocale(lang);
+      ipcMainWindow.setLocaleTrayMenu();
       resolve();
     });
   }

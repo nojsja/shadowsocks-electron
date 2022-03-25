@@ -7,6 +7,15 @@ import zh_CN from './locales/zh-CN.json'
 // have a look at the Quick start guide
 // for passing in lng and translations on init
 
+export const getFirstLanguage = (lang?: string | null) => {
+  const supported = ['en-US', 'zh-CN'];
+  if (lang && supported.includes(lang))
+    return lang;
+  if (navigator.language && supported.includes(navigator.language))
+    return navigator.language;
+  return 'en-US';
+}
+
 export default (lang?: string | null) => {
   i18n
     // pass the i18n instance to react-i18next.
@@ -15,7 +24,7 @@ export default (lang?: string | null) => {
     // for all options read: https://www.i18next.com/overview/configuration-options
     .init({
       fallbackLng: 'en-US',
-      lng: lang || navigator.language,
+      lng: getFirstLanguage(lang),
       debug: true,
       resources: {
         'en-US': { translation: en_US },

@@ -1,41 +1,10 @@
 [![shadowsocks-electron](https://snapcraft.io/shadowsocks-electron/badge.svg)](https://snapcraft.io/shadowsocks-electron)
 
-# Shadowsocks Electron
+## Shadowsocks Electron
 
-> Test on Ubuntu20.4.3 (amd64) / MacOS catalina (x64) / Windows 10 (x64)
+> Test on Ubuntu20.4.3 (amd64) ● MacOS catalina (x64) ● Windows 10 (x64) ● Windows 11 (x64)
 
-Shadowsocks GUI application with cross-platform desktop support based on Electron⚛️, made specially for Ubuntu / Mac(intel) / Windows users.
-
-## Screenshots
-
-![screenshot](./assets/main.png)
-
-![screenshot](./assets/right.png)
-
-![screenshot](./assets/add.png)
-
-![screenshot](./assets/edit.png)
-
-![screenshot](./assets/share.png)
-
-![screenshot](./assets/settings.png)
-
-![screenshot](./assets/dark.png)
-
-## Downloads
-
-- GitHub Releases
-
-  [download](https://github.com/nojsja/shadowsocks-electron/releases/latest)
-
-## Why?
-
-- The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.
-- Only [`Shadowsocks-libev`](https://github.com/shadowsocks/shadowsocks-libev) and [`Shadowsocks for Android`](https://github.com/shadowsocks/shadowsocks-android) support ACL (bypass China IPs, etc.)
-
- This project was heavily inspired by [shadowsocks/ShadowsocksX-NG](https://github.com/shadowsocks/ShadowsocksX-NG), which uses local Shadowsocks-libev binary to avoid complex integration with native C code. This means it can always use the latest Shadowsocks-libev version.
-
-It also uses Electron to bring the most powerful cross-platform desktop support with great developing experience.
+Shadowsocks GUI application with cross-platform desktop support based on Electron⚛️, made specially for Linux / Windows users.
 
 ## Features
 
@@ -45,10 +14,12 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
 - __PAC__ Mode (GFWList)
 - __Global__ Mode (socks proxy)
 - __Manual__ Mode (no system-wide proxy set)
-- HTTP(S) Proxy
+- __HTTP(S)__ Proxy
 - Clipboard / QR-code Import
-- Language Detecting / Switching (zh-CN / en-US)
+- Subscription Import
+- Language Detecting And Switching (zh-CN / en-US)
 - Configuration Backup / Recovery
+- Dark / Light Mode
 - Auto Start
 - Server Share
 - Activity Logs
@@ -72,9 +43,59 @@ It also uses Electron to bring the most powerful cross-platform desktop support 
   - AppImage `x64/x86/arm64`
   - snap `x64`
 - MacOS
-  - dmg `x64`
+  - Dmg `x64`
 - Windows
-  - exe `x64/x86`
+  - Exe `x64`
+  - Zip `x64/x86`
+
+
+## Screenshots
+
+### Main Page
+
+![screenshot](./assets/main.png)
+
+### Dark Mode
+
+![screenshot](./assets/dark.png)
+
+### Fixed Menu
+
+![screenshot](./assets/fixed_menu.png)
+
+### Server Add
+
+![screenshot](./assets/add.png)
+
+### Server Subscription
+
+![screenshot](./assets/subscription.png)
+
+### Context Menu
+
+![screenshot](./assets/context_menu.png)
+### Server Edit
+
+![screenshot](./assets/edit.png)
+
+### Server Share
+
+![screenshot](./assets/share.png)
+
+## Downloads
+
+- GitHub Releases
+
+  [download](https://github.com/nojsja/shadowsocks-electron/releases/latest)
+
+## Why?
+
+- The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.
+- Only [`Shadowsocks-libev`](https://github.com/shadowsocks/shadowsocks-libev) and [`Shadowsocks for Android`](https://github.com/shadowsocks/shadowsocks-android) support ACL (bypass China IPs, etc.)
+
+ This project was heavily inspired by [shadowsocks/ShadowsocksX-NG](https://github.com/shadowsocks/ShadowsocksX-NG), which uses local Shadowsocks-libev binary to avoid complex integration with native C code. This means it can always use the latest Shadowsocks-libev version.
+
+It also uses Electron to bring the most powerful cross-platform desktop support with great developing experience.
 
 ## Development
 

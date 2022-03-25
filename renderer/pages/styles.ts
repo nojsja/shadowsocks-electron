@@ -44,7 +44,10 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       alignItems: "center",
       height: `calc(100vh - 56px)`,
       padding: theme.spacing(1),
-      paddingTop: 0
+      paddingTop: 0,
+      [theme.breakpoints.up('sm')]: {
+        height: `calc(100vh - 64px)`,
+      }
     },
     list: {
       width: "100%",
@@ -69,23 +72,26 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
     container: {
       display: "flex",
       flexDirection: "column",
-      height: `calc(100vh - 64px)`,
-      padding: theme.spacing(2)
+      alignItems: "center",
+      height: `calc(100vh - 56px)`,
+      padding: theme.spacing(2),
+      [theme.breakpoints.up('sm')]: {
+        height: `calc(100vh - 64px)`,
+      }
     },
     'text-center': {
       textAlign: 'center'
     },
     'author-info__wrapper': {
+      display: 'inline-flex',
       width: '40%',
       height: '40%',
-      display: 'inline-flex',
       justifyContent: 'center',
       alignItems: 'center',
       marginLeft: 'auto',
       marginRight: 'auto',
-      marginBottom: '20px',
+      marginBottom: '0',
       textAlign: 'center',
-      border: 'double 4px lightgrey',
       borderRadius: '50%'
     },
     'author-info__image': {
@@ -93,8 +99,10 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       height: 'auto'
     },
     'author-info__others': {
+      display: 'inline-block',
+      textAlign: 'left',
       margin: '10px auto',
-      maxWidth: '70%'
+      color: 'grey'
     },
     'link-color__light': {
       color: theme.palette.primary.light,
