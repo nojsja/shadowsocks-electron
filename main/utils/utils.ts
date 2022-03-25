@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import { exec, ExecOptions } from "child_process";
 import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR, SubscriptionParserConfig } from '../types/extention';
-import { getPathRuntime } from '../electron';
+import { getPathRuntime, i18n } from '../electron';
 import { ProxyURI } from './ProxyURI';
 import { get } from './http-request';
 
@@ -288,7 +288,7 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
                 res?.data?.name ||
                 subHandler.name ||
                 (hostnameReg.exec(text) || [])[1]
-                || 'Unknown subscription'
+                || i18n.__('unknown_subscription')
             });
           }
         }).catch(err => {
@@ -300,14 +300,14 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
         });
       } else {
         return resolve({
-          error: 'invalid subscription address!',
+          error: i18n.__('invalid_subscription'),
           result: [],
           name: null
         });
       }
     } else {
       return resolve({
-        error: 'invalid subscription address!',
+        error: i18n.__('invalid_subscription'),
         result: [],
         name: null
       });

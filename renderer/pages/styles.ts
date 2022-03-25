@@ -72,6 +72,7 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
     container: {
       display: "flex",
       flexDirection: "column",
+      alignItems: "center",
       height: `calc(100vh - 56px)`,
       padding: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
@@ -82,14 +83,14 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       textAlign: 'center'
     },
     'author-info__wrapper': {
+      display: 'inline-flex',
       width: '40%',
       height: '40%',
-      display: 'inline-flex',
       justifyContent: 'center',
       alignItems: 'center',
       marginLeft: 'auto',
       marginRight: 'auto',
-      marginBottom: '20px',
+      marginBottom: '0',
       textAlign: 'center',
       borderRadius: '50%'
     },
@@ -98,8 +99,10 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       height: 'auto'
     },
     'author-info__others': {
+      display: 'inline-block',
+      textAlign: 'left',
       margin: '10px auto',
-      maxWidth: '70%'
+      color: 'grey'
     },
     'link-color__light': {
       color: theme.palette.primary.light,
