@@ -76,9 +76,9 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
     })
     .then((rsp) => {
       if (rsp.code === 200) {
-        if (rsp.result?.result?.length) {
-          callback && callback(true);
-          if (type === 'subscription') {
+        if (type === 'subscription') {
+          if (rsp.result?.result?.length) {
+            callback && callback(true);
             dispatch({
               type: ADD_SUBSCRIPTION,
               id: uuid(),
@@ -91,15 +91,13 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
               }
             });
           } else {
-            dispatch({
-              type: ADD_CONFIG,
-              id: uuid(),
-              config: rsp.result[0]
-            });
+            callback && callback(false);
           }
         } else {
-          callback && callback(false);
+          dispatch(addConfig(uuid(), rsp.result[0]));
         }
+      } else {
+        callback && callback(false);
       }
     });
   }
