@@ -10,17 +10,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function useBackdrop(): [React.FC, (v: boolean) => void] {
+export default function useBackdrop(): [React.FC, React.MutableRefObject<any>] {
   const classes = useStyles();
+  const ref = React.useRef<any>(null);
   const [open, setOpen] = React.useState(false);
 
+  ref.current = setOpen;
+
   return [
-    (
-      () =>
-        <Backdrop className={classes.backdrop} open={open}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+    () => (
+      <Backdrop className={classes.backdrop} open={open}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     ),
-    setOpen
+    ref
   ];
 }

@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import SyncIcon from '@material-ui/icons/Sync';
 import uuid from "uuid/v1";
 
-import { Config, closeOptions } from "../types";
+import { Config, closeOptions, GroupConfig } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import useDialogConfirm from '../hooks/useDialogConfirm';
@@ -85,10 +85,10 @@ const HomePage: React.FC = () => {
         setEditServerDialogOpen(true);
         break;
       case 'qrcode':
-        setBackDrop(true);
+        setBackDrop.current(true);
         dispatch(getQrCodeFromScreenResources((added: boolean, reason?: string) => {
           setTimeout(() => {
-            setBackDrop(false);
+            setBackDrop.current(false);
             if (added) {
               setSnackbarMessage(t('added_a_server'));
             } else {
@@ -104,20 +104,20 @@ const HomePage: React.FC = () => {
         break;
       case 'url':
         setDialogOpen(false);
-        setBackDrop(true);
+        setBackDrop.current(true);
         dispatch(addConfigFromClipboard((added: boolean) => {
           setTimeout(() => {
-            setBackDrop(false);
+            setBackDrop.current(false);
             setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
           }, .5e3);
         }));
         break;
       case 'subscription':
         setDialogOpen(false);
-        setBackDrop(true);
+        setBackDrop.current(true);
         dispatch(addSubscriptionFromClipboard((added: boolean) => {
           setTimeout(() => {
-            setBackDrop(false);
+            setBackDrop.current(false);
             setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
           }, .5e3);
         }));
@@ -135,7 +135,9 @@ const HomePage: React.FC = () => {
     setEditServerDialogOpen(false);
     if (values) {
       if (!editingServerId) {
-        dispatch({ type: ADD_CONFIG, config: values, id: uuid() });
+        const id = uuid();
+        dispatch({ type: ADD_CONFIG, config: values, id });
+        selectedServer === id && connectedToServer(config, id, values);
         setSnackbarMessage(t("added_a_server"));
       } else {
         dispatch({
@@ -143,6 +145,7 @@ const HomePage: React.FC = () => {
           config: values,
           id: values.id
         });
+        selectedServer === values.id && connectedToServer(config, values.id, values);
         setSnackbarMessage(t("edited_a_server"));
       }
     }
@@ -231,21 +234,26 @@ const HomePage: React.FC = () => {
     setRemovingServerId(null);
   };
 
+  const connectedToServer = (config: (Config | GroupConfig)[], selectedServer: string, useConfig?: Config) => {
+    findAndCallback(config, selectedServer, (c: Config) => {
+      const conf = useConfig || c;
+      dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
+      dispatch(
+        startClientAction(
+          conf,
+          settings,
+          t('warning'),
+          t('the_local_port_is_occupied')
+        )
+      )});
+  }
+
   {/* -------- hooks ------- */}
 
   useEffect(() => {
     setTimeout(() => {
       if (!connected && selectedServer) {
-         findAndCallback(config, selectedServer, (conf: Config) => {
-          dispatch(
-            startClientAction(
-              conf,
-              settings,
-              t('warning'),
-              t('the_local_port_is_occupied')
-            )
-          );
-        });
+        connectedToServer(config, selectedServer);
       }
 
       if (settings.httpProxy.enable) {
@@ -261,22 +269,10 @@ const HomePage: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    (async () => {
-      if (selectedServer && connected) {
-        findAndCallback(config, selectedServer, (conf: Config) => {
-          dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
-          dispatch(
-            startClientAction(
-              conf,
-              settings,
-              t('warning'),
-              t('the_local_port_is_occupied')
-            )
-          );
-        });
-      }
-    })();
-  }, [config, selectedServer, settings]);
+    if (selectedServer && connected) {
+      connectedToServer(config, selectedServer);
+    }
+  }, [selectedServer, settings]);
 
   return (
     <Container className={styles.container}>
