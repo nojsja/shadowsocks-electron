@@ -24,10 +24,18 @@ export const isInspect = process.env.INSPECT;
 export let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
 export const msgc = MessageChannel;
+export const isMacOS = platform === 'darwin';
 
 export const appDataPath = path.join(app.getPath('appData'), packageName);
 export const pathRuntime = path.join(appDataPath, 'runtime/');
-export const pathExecutable = isDev ? app.getAppPath() : path.dirname(app.getPath('exe'));
+export const pathExecutable =
+  isDev ?
+    app.getAppPath() :
+    (
+      isMacOS ?
+        path.join(path.dirname(app.getPath('exe')), '..') :
+        path.dirname(app.getPath('exe'))
+    );
 
 export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
@@ -36,6 +44,7 @@ export const i18n = new I18n();
 
 logger.info(`appDataPath: ${appDataPath}`);
 logger.info(`pathRuntime: ${pathRuntime}`);
+logger.info(`pathExecutable: ${pathExecutable}`);
 
 /* -------------- pre work -------------- */
 
