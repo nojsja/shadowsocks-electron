@@ -54,6 +54,7 @@
     "qrcode": "^1.4.4",
     "react-i18next": "^11.12.0",
     "socks": "1.x",
+    "tapable": "^2.2.1",
     "v8-compile-cache": "^2.3.0",
     "winston": "3.2.1",
     "winston-daily-rotate-file": "^4.5.5"

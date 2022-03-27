@@ -68,6 +68,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
         fullscreenable: false,
         fullscreen: false,
         icon: this.icon,
+        titleBarStyle: "hidden",
         webPreferences: {
           nodeIntegration: true,
           contextIsolation: false

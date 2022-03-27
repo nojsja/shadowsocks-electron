@@ -111,14 +111,20 @@ export const getEncryptMethod = (config: Config): string => {
   * @author nojsja
   * @return {[type]} param [desc]
   */
- export const checkEnvFiles = (args: {_path: string, isDir: boolean, exec?: () => void}[]): void => {
-  const check = function (params: {_path: string, isDir: boolean, exec?: () => void}) {
+ export const checkEnvFiles = (args: {_path: string, isDir: boolean, checkEmpty?: boolean, exec?: () => void}[]): void => {
+  const check = function (params: {_path: string, isDir: boolean, checkEmpty?: boolean, exec?: () => void}) {
     if (!fs.existsSync(params._path)) {
       if (params.isDir) {
         fs.mkdirSync(params._path);
         params.exec && params.exec();
       } else {
         fs.closeSync(fs.openSync(params._path, 'w'));
+      }
+    } else {
+      if (params?.checkEmpty) {
+        if (fs.readdirSync(params._path).length === 0) {
+          params.exec && params.exec();
+        }
       }
     }
   };
