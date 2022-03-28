@@ -1,5 +1,6 @@
 import path from 'path';
 import os from 'os';
+import * as Sentry from "@sentry/electron";
 
 import { ElectronApp } from "../app";
 import { appDataPath, platform, pathRuntime, pathExecutable } from "../electron";
@@ -10,6 +11,7 @@ export default (electronApp: ElectronApp) => {
   checkEnvFiles(electronApp);
   chmodFiles(electronApp);
   checkPlatform(electronApp);
+  injectSentryMonitor(electronApp);
 };
 
 export const checkEnvFiles = (electronApp: ElectronApp) => {
@@ -47,5 +49,20 @@ export const checkPlatform = (electronApp: ElectronApp) => {
         console.log(error);
       }
     }
+  });
+};
+
+export const injectSentryMonitor = (electronApp: ElectronApp) => {
+  electronApp.registryHooksSync('beforeReady', 'injectSentryMonitor', (app: Electron.App) => {
+    console.log('hooks: >> injectSentryMonitor');
+    Sentry.init({ dsn: "https://56c8722111c2420e9758a85cd0138c95@o1179966.ingest.sentry.io/6292380" });
+    // 未捕获的全局错误 //
+    // process.on('uncaughtException', (err) => {
+    //   console.error('<---------------');
+
+    //   console.log(err);
+
+    //   console.error('--------------->');
+    // });
   });
 };
