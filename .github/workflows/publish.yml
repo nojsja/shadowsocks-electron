@@ -42,7 +42,7 @@ jobs:
 
       - name: Install Dependencies (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
-        run: sudo apt install build-essential
+        run: sudo apt update && sudo apt upgrade && sudo apt install build-essential
 
       - name: Cache Desktop node_modules
         id: cache-desktop-modules
