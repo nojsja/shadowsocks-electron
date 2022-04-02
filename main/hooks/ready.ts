@@ -8,7 +8,7 @@ export default (electronApp: ElectronApp) => {
 };
 
 export const configureLanguage = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'configureLanguage', (app: Electron.App) => {
+  electronApp.registryHooksSync('ready', 'configureLanguage', (app: Electron.App) => {
     console.log('hooks: >> configureLanguage');
     i18n.configure({
       locales: ['en-US', 'zh-CN'],
