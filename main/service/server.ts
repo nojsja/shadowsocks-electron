@@ -10,7 +10,7 @@ import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
 import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
-import { getPathRuntime } from '../electron';
+import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
 
 /* main service handler */

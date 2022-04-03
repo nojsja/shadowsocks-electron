@@ -3,10 +3,12 @@ import os from 'os';
 import * as Sentry from "@sentry/electron";
 import isDev from "electron-is-dev";
 
+import logger from '../logs';
 import { ElectronApp } from "../app";
-import { appDataPath, platform, pathRuntime, pathExecutable } from "../electron";
+import { appDataPath, platform, pathRuntime, pathExecutable } from "../config";
 import { checkEnvFiles as check, copyDir } from "../utils/utils";
 import chmod from '../utils/fsChmod';
+import { pacDir, binDir } from '../install';
 
 export default (electronApp: ElectronApp) => {
   checkEnvFiles(electronApp);
@@ -23,9 +25,17 @@ export const checkEnvFiles = (electronApp: ElectronApp) => {
         { _path: appDataPath, isDir: true },
         ...(platform === 'linux' ? [{ _path: `${os.homedir}/.config/autostart`, isDir: true }] : []),
         { _path: pathRuntime, isDir: true },
-        { _path: path.join(pathRuntime, 'bin'), isDir: true, checkEmpty: true,
+        { _path: binDir, isDir: true, checkEmpty: true,
           exec: () => {
-            copyDir(path.join(pathExecutable, 'bin'), path.join(pathRuntime, 'bin'));
+
+            logger.info(`copyDir: ${path.join(pathExecutable, 'bin')} -> ${binDir}`);
+            copyDir(path.join(pathExecutable, 'bin'), binDir);
+          }
+        },
+        { _path: pacDir, isDir: true, checkEmpty: true,
+          exec: () => {
+            logger.info(`copyDir: ${path.join(pathExecutable, 'pac')} -> ${pacDir}`);
+            copyDir(path.join(pathExecutable, 'pac'), pacDir);
           }
         }
       ]
