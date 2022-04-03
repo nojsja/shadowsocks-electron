@@ -10,6 +10,7 @@ import { HelpOutline } from '@material-ui/icons';
 export type TextWithTooltipProps = {
   text: string | React.ReactElement,
   tooltip: string | React.ReactElement,
+  icon?: React.ReactElement,
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -26,6 +27,7 @@ export function TextWithTooltip(props: TextWithTooltipProps) {
   const {
     text,
     tooltip,
+    icon
   } = props;
   const styles = useStyles();
 
@@ -33,7 +35,7 @@ export function TextWithTooltip(props: TextWithTooltipProps) {
     <div className={styles.root}>
       <span>{text}</span>
       <Tooltip arrow placement="top" title={<span>{tooltip}</span>}>
-        <HelpOutline fontSize="small" />
+        { icon ? icon : <HelpOutline fontSize="small" /> }
       </Tooltip>
     </div>
   );

@@ -12,6 +12,7 @@ import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
+import { downloadAndGeneratePac } from '../proxy/pac';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -141,6 +142,23 @@ export class MainService implements MainServiceType {
         result.result.msg = `Invalid Conf: ${JSON.stringify(params)}`;
         resolve(result);
       }
+    });
+  }
+
+  async reGeneratePacFile(params: { url: string }) {
+    return new Promise(resolve => {
+      return downloadAndGeneratePac(params.url).then(() => {
+        resolve({
+          code: 200,
+          result: params.url
+        });
+      })
+      .catch((err) => {
+        resolve({
+          code: 500,
+          result: err?.toString()
+        });
+      });
     });
   }
 

@@ -12,6 +12,7 @@ import {
   Select,
   MenuItem
 } from "@material-ui/core";
+import { Refresh } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 
 import { useTypedDispatch } from "../redux/actions";
@@ -27,6 +28,7 @@ import { AdaptiveSwitch } from "../components/Pices/Switch";
 import EditAclDialog from "../components/EditAclDialog";
 import { getFirstLanguage } from "../i18n";
 import { persistStore } from "../App";
+import { TextWithTooltip } from "../components/Pices/TextWithTooltip";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -36,7 +38,7 @@ const SettingsPage: React.FC = () => {
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
   const [aclVisible, setAclVisible] = useState(false);
-  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 1.5e3 });
+  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 2e3 });
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
 
   useEffect(() => {
@@ -197,6 +199,21 @@ const SettingsPage: React.FC = () => {
     closeDialog();
   };
 
+  const reGeneratePacFile = () => {
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'reGeneratePacFile',
+      params: {
+        url: settings.gfwListUrl
+      }
+    }).then((rsp) => {
+      if (rsp.code === 200) {
+        setSnackbarMessage(t('successful_operation'));
+      } else {
+        setSnackbarMessage(t('failed_to_download_file'));
+      }
+    });
+  }
+
   const onLangChange = (e: React.ChangeEvent<{ name?: string | undefined, value: unknown; }>) => {
     if (persistStore.get('lang') === e.target.value) return;
     persistStore.set('lang', e.target.value as string);
@@ -240,7 +257,7 @@ const SettingsPage: React.FC = () => {
         fullWidth
         type="url"
         size="small"
-        label={t('gfwlist_url')}
+        label={ <TextWithTooltip text={t('gfwlist_url')} tooltip={t('restart_pac_server')} icon={<Refresh onClick={reGeneratePacFile} />} /> }
         placeholder={t('gfwlist_url_tips')}
         value={settings.gfwListUrl}
         onChange={e => handleValueChange("gfwListUrl", e)}

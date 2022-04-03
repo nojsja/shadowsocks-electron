@@ -86,5 +86,6 @@ export const downloadAndGeneratePac = async (url: string) => {
     logger.info("Downloaded GFWList and generated PAC file without port");
   } catch (err) {
     logger.error(err);
+    return Promise.reject(err);
   }
 };

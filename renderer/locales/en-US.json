@@ -1,4 +1,7 @@
 {
+  "failed_to_download_file": "Failed to download file",
+  "successful_operation": "Successful Operation",
+  "restart_pac_server": "Recover the pac file using the gfw list link",
   "fixed_menu": "Fixed Menu",
   "top": "Top",
   "move_up": "Move Up",

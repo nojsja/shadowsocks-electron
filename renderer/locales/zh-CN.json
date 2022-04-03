@@ -1,4 +1,7 @@
 {
+  "failed_to_download_file": "文件下载失败",
+  "successful_operation": "操作成功",
+  "restart_pac_server": "使用 GFWList 链接重新生成 PAC 文件",
   "fixed_menu": "固定菜单",
   "top": "置顶",
   "move_up": "上移",
