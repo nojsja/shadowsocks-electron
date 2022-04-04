@@ -1,4 +1,5 @@
 {
+  "not_applicable_to_linux_snap_application": "not applicable to linux snap version",
   "failed_to_download_file": "Failed to download file",
   "successful_operation": "Successful Operation",
   "restart_pac_server": "Recover the pac file using the gfw list link",

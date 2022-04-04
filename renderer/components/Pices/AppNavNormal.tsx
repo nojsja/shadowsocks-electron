@@ -1,9 +1,11 @@
 import React from "react";
+import clsx from 'clsx';
 import {
   useTheme,
   Toolbar,
   IconButton,
-  Theme
+  Theme,
+  LinearProgress
 } from "@material-ui/core";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Menu as MenuIcon, Close as CloseIcon, Remove as MinimizeIcon } from "@material-ui/icons";
@@ -30,12 +32,15 @@ const useStyles = makeStyles((theme: Theme) =>
       //   flexShrink: 0
       // }
     },
+    visibilityHidden: {
+      visibility: "hidden"
+    },
     icons: {
       transition: 'all .2s',
       '&.minimum': {
         backgroundColor: 'rgba(255, 255, 255, .2)',
         '&:hover': {
-          transform: 'scale(.8)',
+          transform: 'scale(1.1)',
         }
       },
       '&.close': {
@@ -91,6 +96,7 @@ const AppNavNormal: React.FC<AppNavNormalProps> = (props) => {
   const styles = useStyles();
   const { title } = props;
   const settings = useTypedSelector(state => state.settings);
+  const status = useTypedSelector(state => state.status);
 
   const [open, setOpen] = React.useState(false);
 
@@ -135,6 +141,7 @@ const AppNavNormal: React.FC<AppNavNormalProps> = (props) => {
             </IconButton>
           </span>
         </Toolbar>
+        <LinearProgress className={clsx(!status.waiting ? styles.visibilityHidden : '')} />
       </AdaptiveAppBar>
       <nav className={styles.drawer}>
           <AdaptiveDrawer

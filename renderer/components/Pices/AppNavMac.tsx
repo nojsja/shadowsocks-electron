@@ -1,9 +1,11 @@
 import React from "react";
+import clsx from 'clsx';
 import {
   useTheme,
   Toolbar,
   IconButton,
-  Theme
+  Theme,
+  LinearProgress
 } from "@material-ui/core";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Menu as MenuIcon } from "@material-ui/icons";
@@ -20,8 +22,9 @@ export type AppNavMacProps = {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    appNavWrapper: {
-
+    appNavWrapper: {},
+    visibilityHidden: {
+      visibility: "hidden"
     },
     drawer: {
       // [theme.breakpoints.up("sm")]: {
@@ -76,6 +79,7 @@ const AppNavMac: React.FC<AppNavMacProps> = (props) => {
   const styles = useStyles();
   const { title } = props;
   const settings = useTypedSelector(state => state.settings);
+  const status = useTypedSelector(state => state.status);
 
   const [open, setOpen] = React.useState(false);
 
@@ -102,6 +106,7 @@ const AppNavMac: React.FC<AppNavMacProps> = (props) => {
               <span className={styles.title}>{title}</span>
           </div>
         </Toolbar>
+        <LinearProgress className={clsx(!status.waiting ? styles.visibilityHidden : '')} />
       </AdaptiveAppBar>
       <nav className={styles.drawer}>
           <AdaptiveDrawer

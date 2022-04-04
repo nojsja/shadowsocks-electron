@@ -12,7 +12,7 @@ import {
   Select,
   MenuItem
 } from "@material-ui/core";
-import { Refresh } from '@material-ui/icons';
+import { RestorePage } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 
 import { useTypedDispatch } from "../redux/actions";
@@ -29,6 +29,7 @@ import EditAclDialog from "../components/EditAclDialog";
 import { getFirstLanguage } from "../i18n";
 import { persistStore } from "../App";
 import { TextWithTooltip } from "../components/Pices/TextWithTooltip";
+import { setStatus } from "../redux/actions/status";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -44,6 +45,20 @@ const SettingsPage: React.FC = () => {
   useEffect(() => {
     dispatch<any>(getStartupOnBoot());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (
+      (persistStore.get('darkMode') === 'true' && !settings.darkMode) ||
+      (persistStore.get('darkMode') === 'false' && !!settings.darkMode) ||
+      (persistStore.get('darkMode') === undefined && !!settings.darkMode)
+    ) {
+      persistStore.set('darkMode', !!settings.darkMode ? 'true' : 'false');
+        MessageChannel.invoke('main', 'service:desktop', {
+          action: 'reloadMainWindow',
+          params: {}
+        });
+    }
+  }, [settings.darkMode]);
 
   const backupConfiguration = () => {
     return backupConfigurationToFile({
@@ -200,12 +215,16 @@ const SettingsPage: React.FC = () => {
   };
 
   const reGeneratePacFile = () => {
+    dispatch<any>(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
       action: 'reGeneratePacFile',
       params: {
         url: settings.gfwListUrl
       }
     }).then((rsp) => {
+      setTimeout(() => {
+        dispatch<any>(setStatus('waiting', false));
+      }, 1e3);
       if (rsp.code === 200) {
         setSnackbarMessage(t('successful_operation'));
       } else {
@@ -257,7 +276,15 @@ const SettingsPage: React.FC = () => {
         fullWidth
         type="url"
         size="small"
-        label={ <TextWithTooltip text={t('gfwlist_url')} tooltip={t('restart_pac_server')} icon={<Refresh onClick={reGeneratePacFile} />} /> }
+        label={
+          <TextWithTooltip
+            text={t('gfwlist_url')}
+            tooltip={t('restart_pac_server')}
+            icon={
+              <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFile} />
+            }
+          />
+        }
         placeholder={t('gfwlist_url_tips')}
         value={settings.gfwListUrl}
         onChange={e => handleValueChange("gfwListUrl", e)}
@@ -286,10 +313,11 @@ const SettingsPage: React.FC = () => {
               <ListItemSecondaryAction>
                 <TextField
                   className={`${styles.textField} ${styles.indentInput}`}
-                  style={{ width: '120px', textAlign: 'right' }}
+                  // style={{ width: '120px', textAlign: 'right' }}
                   required
                   size="small"
                   type="number"
+                  // variant="filled"
                   placeholder={t('http_proxy_port')}
                   value={settings.httpProxy.port}
                   onChange={e => handleValueChange("httpProxy", e)}
@@ -335,7 +363,7 @@ const SettingsPage: React.FC = () => {
         <ListItem>
           <ListItemText
             primary={t('launch_on_boot')}
-            // secondary="Not applicable to Linux"
+            secondary={t('not_applicable_to_linux_snap_application')}
           />
           <ListItemSecondaryAction>
             <AdaptiveSwitch
@@ -375,10 +403,8 @@ const SettingsPage: React.FC = () => {
           />
           <ListItemSecondaryAction>
             <Select
-              className={styles.formControl}
               value={getDefaultLang()}
               onChange={onLangChange}
-              // variant="outlined"
             >
             <MenuItem value={'en-US'}>English</MenuItem>
             <MenuItem value={'zh-CN'}>中文简体</MenuItem>

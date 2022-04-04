@@ -1,4 +1,5 @@
 {
+  "not_applicable_to_linux_snap_application": "linux snap 版本暂未支持",
   "failed_to_download_file": "文件下载失败",
   "successful_operation": "操作成功",
   "restart_pac_server": "使用 GFWList 链接重新生成 PAC 文件",

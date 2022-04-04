@@ -108,6 +108,7 @@ export interface Settings {
 export interface Status {
   connected: boolean;
   loading: boolean;
+  waiting: boolean;
   delay: number | null | '';
 }
 

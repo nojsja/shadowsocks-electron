@@ -5,7 +5,8 @@ const defaultStore: RootState = {
   status: {
     connected: false,
     delay: 0,
-    loading: false
+    loading: false,
+    waiting: false,
   },
   settings: {
     fixedMenu: false,
