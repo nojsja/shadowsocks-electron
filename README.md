@@ -32,7 +32,7 @@ Shadowsocks GUI application with cross-platform desktop support based on Electro
 ### ➣ Comming Soon
 
 - ACL
-- VMess Protocol (v2ray)
+- v2ray-plugin
 
 ## Supported Platforms & Arch
 
@@ -43,10 +43,10 @@ Shadowsocks GUI application with cross-platform desktop support based on Electro
   - AppImage `x64/x86/arm64`
   - snap `x64`
 - MacOS
-  - Dmg `x64`
+  - dmg `x64`
 - Windows
-  - Exe `x64`
-  - Zip `x64/x86`
+  - exe `x64`
+  - zip `x64/x86`
 
 
 ## Screenshots
