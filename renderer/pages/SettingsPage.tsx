@@ -10,9 +10,10 @@ import {
   TextField,
   Divider,
   Select,
-  MenuItem
+  MenuItem,
+  Tooltip
 } from "@material-ui/core";
-import { RestorePage } from '@material-ui/icons';
+import { RestorePage, NoteAdd } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 
 import { useTypedDispatch } from "../redux/actions";
@@ -39,6 +40,7 @@ const SettingsPage: React.FC = () => {
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
   const [aclVisible, setAclVisible] = useState(false);
+  const inputFileRef = React.useRef<HTMLInputElement>(null);
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 2e3 });
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
 
@@ -214,17 +216,39 @@ const SettingsPage: React.FC = () => {
     closeDialog();
   };
 
-  const reGeneratePacFile = () => {
+  const reGeneratePacFileWithFile = () => {
+    inputFileRef.current?.click();
+  }
+
+  const reGeneratePacFileWithUrl = () => {
+    reGeneratePacFile({
+      url: settings.gfwListUrl
+    });
+  }
+
+  const onGFWListFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const text = e.target.result;
+        if (text) {
+          reGeneratePacFile({
+            text: text
+          });
+        }
+      };
+      reader.readAsText(file);
+    }
+  }
+
+  const reGeneratePacFile = (params: { url?: string, text?: string }) => {
     dispatch<any>(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
       action: 'reGeneratePacFile',
-      params: {
-        url: settings.gfwListUrl
-      }
+      params
     }).then((rsp) => {
-      setTimeout(() => {
-        dispatch<any>(setStatus('waiting', false));
-      }, 1e3);
+      setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
       if (rsp.code === 200) {
         setSnackbarMessage(t('successful_operation'));
       } else {
@@ -270,6 +294,7 @@ const SettingsPage: React.FC = () => {
         value={settings.pacPort}
         onChange={e => handleValueChange("pacPort", e)}
       />
+      <input onChange={onGFWListFileChange} ref={inputFileRef} type={'file'} multiple={false} style={{ display: 'none' }}></input>
       <TextField
         className={styles.textField}
         required
@@ -279,9 +304,15 @@ const SettingsPage: React.FC = () => {
         label={
           <TextWithTooltip
             text={t('gfwlist_url')}
-            tooltip={t('restart_pac_server')}
             icon={
-              <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFile} />
+              <span>
+                <Tooltip arrow placement="top" title={t('recover_pac_file_with_link') as string}>
+                  <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFileWithUrl} />
+                </Tooltip>
+                <Tooltip arrow placement="top" title={t('recover_pac_file_with_file') as string}>
+                  <NoteAdd className={styles.cursorPointer} onClick={reGeneratePacFileWithFile}/>
+                </Tooltip>
+              </span>
             }
           />
         }

@@ -7,6 +7,7 @@ import { MessageChannel } from 'electron-re';
 import { clipboardParseType, Config, GroupConfig, RootState } from "../../types";
 import { getScreenCapturedResources } from '../../utils';
 import { overrideSetting } from './settings';
+import { setStatus } from './status';
 
 export const ADD_CONFIG = "ADD_CONFIG";
 export const ADD_SUBSCRIPTION = "ADD_SUBSCRIPTION";
@@ -67,6 +68,7 @@ export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: n
 
 export const parseClipboardText = (text: string | null, type: clipboardParseType, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
+    dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
       action: 'parseClipboardText',
       params: {
@@ -75,6 +77,7 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
       }
     })
     .then((rsp) => {
+      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
       if (rsp.code === 200) {
         if (type === 'subscription') {
           if (rsp.result?.result?.length) {
@@ -92,8 +95,10 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
             return callback && callback(true);
           }
         } else {
-          dispatch(addConfig(uuid(), rsp.result[0]));
-          return callback && callback(true);
+          if (rsp.result?.result?.length) {
+            dispatch(addConfig(uuid(), rsp.result[0]));
+            return callback && callback(true);
+          }
         }
       }
       callback && callback(false);
@@ -103,6 +108,7 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
 
 export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?: string) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
+    dispatch(setStatus('waiting', true))
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
       if (resources && resources.length) {
         const qrs: {x: number, y: number, width: number, height: number}[] = [];
@@ -138,6 +144,8 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
       }
     }).catch(error => {
       callback && callback(false, error && error.toString());
+    }).finally(() => {
+      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
     });
   }
 };
