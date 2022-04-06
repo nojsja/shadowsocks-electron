@@ -42,7 +42,6 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 > More architecture will be supported if necessary, just give me an issue.
 
-
 - Ubuntu
   - deb `x64/x86/arm64`
   - AppImage `x64/x86/arm64`
@@ -52,7 +51,6 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 - Windows
   - exe `x64`
   - zip `x64/x86`
-
 
 ## Screenshots
 
@@ -100,6 +98,18 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
   - [![shadowsocks-electron](https://snapcraft.io/shadowsocks-electron/badge.svg)](https://snapcraft.io/shadowsocks-electron)
   - [â†ª main page ](https://snapcraft.io/shadowsocks-electron)
 
+## Plugins Downloads
+> not necessary, just for some advanced users.
+
+- __kcptun__
+  - effect: Use the plugin for ss server speed up. You must install it on you system first and enable it on ss server configuration.
+  - [â†ª kcptun repo releases](https://github.com/shadowsocks/kcptun/releases/)
+  - install: Download the correct version, unpack and rename it to `kcptun`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR you may need to configure `system variables` on windows.
+
+- __v2ray-plugin__
+  - effect: Use the plugin for traffic obfuscation. You must install it on you system first and enable it on ss server configuration.
+  - [â†ª v2ray-plugin repo releases](https://github.com/shadowsocks/v2ray-plugin/releases)
+  - install: Download the correct version, unpack and rename it to  `v2ray-plugin`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR You may need to configure `system variables` on windows.
 ## Why?
 
 - The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.
