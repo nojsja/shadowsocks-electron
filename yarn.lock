@@ -5438,7 +5438,7 @@ electron-publish@22.14.13:
     lazy-val "^1.0.5"
     mime "^2.5.2"
 
-electron-re@^1.1.0:
+electron-re@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.1.1.tgz#135272bd4069acebf955d7e9d989c06a29e91117"
   integrity sha512-8KdhFxxhh/jXQgkDceVx3HqIF9AThErJr9Gptr3vfNlFZi8sXeHtR61hsNb2dMs33kVUSJXWbCANjyw+iGvKag==
