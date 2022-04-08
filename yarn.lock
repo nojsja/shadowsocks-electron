@@ -1246,6 +1246,11 @@
     global-agent "^3.0.0"
     global-tunnel-ng "^2.7.1"
 
+"@electron/remote@^2.0.1":
+  version "2.0.8"
+  resolved "https://registry.npmmirror.com/@electron/remote/-/remote-2.0.8.tgz#85ff321f0490222993207106e2f720273bb1a5c3"
+  integrity sha512-P10v3+iFCIvEPeYzTWWGwwHmqWnjoh8RYnbtZAb3RlQefy4guagzIwcWtfftABIfm6JJTNQf4WPSKWZOpLmHXw==
+
 "@electron/universal@1.0.5":
   version "1.0.5"
   resolved "https://registry.npmmirror.com/@electron/universal/-/universal-1.0.5.tgz#b812340e4ef21da2b3ee77b2b4d35c9b86defe37"
@@ -5438,12 +5443,13 @@ electron-publish@22.14.13:
     lazy-val "^1.0.5"
     mime "^2.5.2"
 
-electron-re@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.1.1.tgz#135272bd4069acebf955d7e9d989c06a29e91117"
-  integrity sha512-8KdhFxxhh/jXQgkDceVx3HqIF9AThErJr9Gptr3vfNlFZi8sXeHtR61hsNb2dMs33kVUSJXWbCANjyw+iGvKag==
+electron-re@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.2.0.tgz#9281ce74e68a447e2d7ce4eb0d2b88f69d347ce5"
+  integrity sha512-OGqs/MRky2wZynrKC+5R9eriisMp7pt7c2zby56AG45F6wrzds+kkwkBFdX9/bG0xQ3K321wx/kJPinlVQyS6w==
   dependencies:
     "@babel/runtime" "^7.12.5"
+    "@electron/remote" "^2.0.1"
     pidusage "^2.0.21"
 
 electron-store@^8.0.1:
