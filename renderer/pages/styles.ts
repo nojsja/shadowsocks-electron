@@ -127,15 +127,16 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
         textAlign: 'right'
       }
     },
+    cursorPointer: {
+      position: 'relative',
+      cursor: 'pointer',
+      top: '-2px'
+    },
     list: {
       width: "100%"
     },
     textField: {
       marginBottom: `${theme.spacing(2)}px !important`
-    },
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
     },
     'switch-button__color': {
       color: theme.palette.primary.light,

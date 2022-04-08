@@ -7,6 +7,7 @@ import logger from "../logs";
 import fsExtra from "fs-extra";
 import fetch from "node-fetch";
 import { pacDir } from "../install";
+import { i18n } from "../electron";
 
 let server: http.Server;
 const platform = os.platform();
@@ -73,18 +74,28 @@ export const generateFullPac = async (localPort: number) => {
   }
 };
 
-export const downloadAndGeneratePac = async (url: string) => {
+export const downloadAndGeneratePac = async (url: string, text: string) => {
   logger.info(`Downloading GFWList from ${url}...`);
 
+  let base64 = "";
+
   try {
-    const response = await fetch(url);
-    const base64 = await response.text();
-    const text = Buffer.from(base64, "base64").toString("ascii");
+    if (url) {
+      logger.info("Downloaded GFWList and generated PAC file without port");
+      const response = await fetch(url);
+      base64 = await response.text();
+    } else if (text) {
+      logger.info("Parse GFWList base64 text and generated PAC file without port");
+      base64 = text;
+    } else {
+      throw new Error(i18n.__('invalid_parameter'));
+    }
 
-    await generatePacWithoutPort(text);
+    const base64Text = Buffer.from(base64, "base64").toString("ascii");
+    await generatePacWithoutPort(base64Text);
 
-    logger.info("Downloaded GFWList and generated PAC file without port");
   } catch (err) {
     logger.error(err);
+    return Promise.reject(err);
   }
 };

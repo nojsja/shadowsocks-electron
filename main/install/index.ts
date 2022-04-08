@@ -1,20 +1,15 @@
 import fs from "fs-extra";
 import path from "path";
-import { app, session } from "electron";
+import { session } from "electron";
 import isDev from "electron-is-dev";
-import installExtension, { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 import logger from "../logs";
 import { generatePacWithoutPort } from "../proxy/pac";
 import { getChromeExtensionsPath } from '../utils/utils';
+import { getPathRuntime } from "../config";
 
-export const appDir = isDev
-  ? path.resolve(__dirname, "../../")
-  : path.resolve(__dirname, "../../../../");
-export const appDataDir = app.getPath("userData");
-
-export const binDir = path.resolve(appDataDir, "bin");
-export const pacDir = path.resolve(appDataDir, "pac");
+export const pacDir = getPathRuntime('pac');
+export const binDir = getPathRuntime('bin');
 
 const loadExtensionsManually = (paths: string[]) => {
   paths.forEach(async (_path) => {
@@ -25,32 +20,15 @@ const loadExtensionsManually = (paths: string[]) => {
 }
 
 const loadExtensionsWithInstaller = async () => {
+  const installExtension = require('electron-devtools-installer');
+  const { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } = installExtension;
+
   installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS])
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
+    .then((name: string) => console.log(`Added Extension:  ${name}`))
+    .catch((err: Error) => console.log('An error occurred: ', err));
 }
 
 export const setupAfterInstall = async (manually?: boolean) => {
-  // paths
-  try {
-    const newInstall = !(
-      (await fs.pathExists(binDir)) && (await fs.pathExists(pacDir))
-    );
-
-    if (newInstall) {
-      logger.info("New install detected");
-      logger.info("Copying bin & pac to APPDATA...");
-
-      await fs.copy(path.resolve(appDir, "bin"), binDir);
-      await fs.copy(path.resolve(appDir, "pac"), pacDir);
-
-      logger.info("Copied bin & pac");
-    }
-
-  } catch (err) {
-    logger.error(err as object);
-  }
-
   if (manually && isDev) {
     // react / redux devtool
     getChromeExtensionsPath([

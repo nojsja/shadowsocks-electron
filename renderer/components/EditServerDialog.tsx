@@ -37,6 +37,7 @@ import { Config, encryptMethods, plugins, serverTypes, protocols, obfs } from ".
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import { AdaptiveAppBar } from "./Pices/AppBar";
 import { scrollBarStyle } from "../pages/styles";
+import { TextWithTooltip } from "./Pices/TextWithTooltip";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -350,7 +351,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             </ListItemSecondaryAction>
           </ListItem>
         </List>
-        <InputLabel style={{ marginBottom: 0 }}>{t('plugin')}</InputLabel>
+        <InputLabel style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
         {
           isSS && (
             <>
@@ -365,8 +366,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                   <em>{t('none')}</em>
                 </MenuItem>
                 {plugins.map(plugin => (
-                  <MenuItem key={plugin} value={plugin}>
-                    {plugin}
+                  <MenuItem key={plugin.name} value={plugin.name}>
+                    {plugin.name} {plugin.tips ? `(${t(plugin.tips)})` : ""}
                   </MenuItem>
                 ))}
               </Select>

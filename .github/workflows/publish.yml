@@ -1,10 +1,19 @@
 name: Build & Release
 
 on:
-  push:
+  workflow_dispatch:
+  label:
+    types: [created]
     branches:
       - master
+  push:
+    branches:
       - development
+    paths:
+      - 'main/**'
+      - 'renderer/**'
+      - 'bin/**'
+      - 'electron-builder.json'
 
 jobs:
   publish:
@@ -34,7 +43,7 @@ jobs:
 
       - name: Install Dependencies (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
-        run: sudo apt install build-essential
+        run: sudo apt update && sudo apt upgrade && sudo apt install build-essential
 
       - name: Cache Desktop node_modules
         id: cache-desktop-modules
@@ -45,7 +54,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-        run: rm yarn.lock && yarn install
+        run: yarn install
 
       - name: Build App
         env:

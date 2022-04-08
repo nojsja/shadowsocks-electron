@@ -1,7 +1,7 @@
 {
   "appId": "io.nojsja.shadowsocks-electron",
   "productName": "Shadowsocks Electron",
-  "asar": true,
+  "asar": false,
   "copyright": "© 2020 nojsja",
   "files": [
     "assets/**/*",
@@ -99,11 +99,7 @@
     "target": [
       {
         "target": "deb",
-        "arch": ["x64", "ia32", "arm64"]
-      },
-      {
-        "target": "AppImage",
-        "arch": ["x64", "ia32", "arm64"]
+        "arch": ["x64"]
       },
       {
         "target": "snap",

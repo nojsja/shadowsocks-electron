@@ -10,8 +10,9 @@ import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
 import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
-import { getPathRuntime } from '../electron';
+import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
+import { downloadAndGeneratePac } from '../proxy/pac';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -141,6 +142,23 @@ export class MainService implements MainServiceType {
         result.result.msg = `Invalid Conf: ${JSON.stringify(params)}`;
         resolve(result);
       }
+    });
+  }
+
+  async reGeneratePacFile(params: { url?: string, text?: string }) {
+    return new Promise(resolve => {
+      return downloadAndGeneratePac(params.url ?? '', params.text ?? '').then(() => {
+        resolve({
+          code: 200,
+          result: params.url
+        });
+      })
+      .catch((err) => {
+        resolve({
+          code: 500,
+          result: err?.toString()
+        });
+      });
     });
   }
 

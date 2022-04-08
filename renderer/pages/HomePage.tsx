@@ -12,7 +12,7 @@ import { Config, closeOptions, GroupConfig } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import useDialogConfirm from '../hooks/useDialogConfirm';
-import useBackDrop from '../hooks/useBackDrop';
+// import useBackDrop from '../hooks/useBackDrop';
 import {
   addConfigFromClipboard, generateUrlFromConfig, getQrCodeFromScreenResources,
   addSubscriptionFromClipboard
@@ -55,9 +55,9 @@ const HomePage: React.FC = () => {
   const delay = useTypedSelector(state => state.status.delay);
   const loading = useTypedSelector(state => state.status.loading);
 
-  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
+  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 1.5e3 });
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
-  const [BackDrop, setBackDrop] = useBackDrop();
+  // const [BackDrop, setBackDrop] = useBackDrop();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [shareData, setShareData] = useState({
@@ -85,10 +85,10 @@ const HomePage: React.FC = () => {
         setEditServerDialogOpen(true);
         break;
       case 'qrcode':
-        setBackDrop.current(true);
+        // setBackDrop.current(true);
         dispatch(getQrCodeFromScreenResources((added: boolean, reason?: string) => {
           setTimeout(() => {
-            setBackDrop.current(false);
+            // setBackDrop.current(false);
             if (added) {
               setSnackbarMessage(t('added_a_server'));
             } else {
@@ -104,20 +104,20 @@ const HomePage: React.FC = () => {
         break;
       case 'url':
         setDialogOpen(false);
-        setBackDrop.current(true);
+        // setBackDrop.current(true);
         dispatch(addConfigFromClipboard((added: boolean) => {
           setTimeout(() => {
-            setBackDrop.current(false);
+            // setBackDrop.current(false);
             setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
           }, .5e3);
         }));
         break;
       case 'subscription':
         setDialogOpen(false);
-        setBackDrop.current(true);
+        // setBackDrop.current(true);
         dispatch(addSubscriptionFromClipboard((added: boolean) => {
           setTimeout(() => {
-            setBackDrop.current(false);
+            // setBackDrop.current(false);
             setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
           }, .5e3);
         }));
@@ -331,7 +331,7 @@ const HomePage: React.FC = () => {
       />
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleServerRemove} />
       { SnackbarAlert }
-      <BackDrop />
+      {/* <BackDrop /> */}
     </Container>
   );
 };

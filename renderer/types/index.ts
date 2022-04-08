@@ -39,7 +39,15 @@ export const protocols = [
 
 export type Encryption = typeof encryptMethods[number];
 
-export const plugins = ["v2ray-plugin", "kcptun"] as const;
+export const plugins = [
+  {
+    name: "v2ray-plugin",
+    tips: "please_confirm_v2ray-plugin_installed_on_your_system"
+  },
+  {
+    name: "kcptun",
+    tips: "please_confirm_kcptun_installed_on_your_system"
+  }] as const;
 
 export type Plugin = typeof plugins[number];
 
@@ -108,6 +116,7 @@ export interface Settings {
 export interface Status {
   connected: boolean;
   loading: boolean;
+  waiting: boolean;
   delay: number | null | '';
 }
 

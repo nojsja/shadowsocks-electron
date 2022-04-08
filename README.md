@@ -1,10 +1,12 @@
-[![shadowsocks-electron](https://snapcraft.io/shadowsocks-electron/badge.svg)](https://snapcraft.io/shadowsocks-electron)
+![GitHub repo size](https://img.shields.io/github/repo-size/nojsja/shadowsocks-electron) ![Lines of code](https://img.shields.io/tokei/lines/github/nojsja/shadowsocks-electron) ![GitHub](https://img.shields.io/github/license/nojsja/shadowsocks-electron)
+
+![GitHub issues](https://img.shields.io/github/issues/nojsja/shadowsocks-electron) ![GitHub contributors](https://img.shields.io/github/contributors-anon/nojsja/shadowsocks-electron)
 
 ## Shadowsocks Electron
 
 > Test on Ubuntu20.4.3 (amd64) ● MacOS catalina (x64) ● Windows 10 (x64) ● Windows 11 (x64)
 
-Shadowsocks GUI application with cross-platform desktop support based on Electron⚛️, made specially for Linux / Windows users.
+Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
 
 ## Features
 
@@ -36,6 +38,8 @@ Shadowsocks GUI application with cross-platform desktop support based on Electro
 
 ## Supported Platforms & Arch
 
+![system](https://img.shields.io/badge/system-win%20%7C%20mac%20%7C%20linux-green)
+
 > More architecture will be supported if necessary, just give me an issue.
 
 - Ubuntu
@@ -48,46 +52,64 @@ Shadowsocks GUI application with cross-platform desktop support based on Electro
   - exe `x64`
   - zip `x64/x86`
 
-
 ## Screenshots
 
 ### Main Page
 
-![screenshot](./assets/main.png)
+![main.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/main.png)
 
 ### Dark Mode
 
-![screenshot](./assets/dark.png)
+![dark.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/dark.png)
 
 ### Fixed Menu
 
-![screenshot](./assets/fixed_menu.png)
+![fixed_menu.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/fixed_menu.png)
 
 ### Server Add
 
-![screenshot](./assets/add.png)
+![add.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/add.png)
 
 ### Server Subscription
 
-![screenshot](./assets/subscription.png)
+![subscription.png](https://github.com/nojsja/shadowsocks-electron/raw/77d801795347d56e17b7c2611c5f963c6196f026/assets/subscription.png)
 
 ### Context Menu
 
-![screenshot](./assets/context_menu.png)
+![context_menu.png](https://github.com/nojsja/shadowsocks-electron/raw/77d801795347d56e17b7c2611c5f963c6196f026/assets/context_menu.png)
 ### Server Edit
 
-![screenshot](./assets/edit.png)
+![edit.png](https://github.com/nojsja/shadowsocks-electron/raw/77d801795347d56e17b7c2611c5f963c6196f026/assets/edit.png)
 
 ### Server Share
 
-![screenshot](./assets/share.png)
+![share.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/share.png)
 
 ## Downloads
 
 - GitHub Releases
+  - ![statistics](https://img.shields.io/github/downloads/nojsja/shadowsocks-electron/total?style=plastic)
+  - [↪ releases page ](https://github.com/nojsja/shadowsocks-electron/releases/latest)
 
-  [download](https://github.com/nojsja/shadowsocks-electron/releases/latest)
+- ElectronJs Website
+  - [↪ main page ](https://www.electronjs.org/apps/shadowsocks-electron)
 
+- Snapcraft Store (linux)
+  - [![shadowsocks-electron](https://snapcraft.io/shadowsocks-electron/badge.svg)](https://snapcraft.io/shadowsocks-electron)
+  - [↪ main page ](https://snapcraft.io/shadowsocks-electron)
+
+## Plugins Downloads
+> not necessary, just for some advanced users.
+
+- __kcptun__
+  - effect: Use the plugin for ss server speed up. You must install it on you system first and enable it on ss server configuration.
+  - [↪ kcptun repo releases](https://github.com/shadowsocks/kcptun/releases/)
+  - install: Download the correct version, unpack and rename it to `kcptun`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR you may need to configure `system variables` on windows.
+
+- __v2ray-plugin__
+  - effect: Use the plugin for traffic obfuscation. You must install it on you system first and enable it on ss server configuration.
+  - [↪ v2ray-plugin repo releases](https://github.com/shadowsocks/v2ray-plugin/releases)
+  - install: Download the correct version, unpack and rename it to  `v2ray-plugin`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR You may need to configure `system variables` on windows.
 ## Why?
 
 - The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.

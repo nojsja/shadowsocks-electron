@@ -1,6 +1,4 @@
 import { app, BrowserWindow, ipcMain } from "electron";
-import path from "path";
-import os from "os";
 import isDev from "electron-is-dev";
 import { initRenderer } from 'electron-store';
 import { autoUpdater } from'electron-updater';
@@ -18,27 +16,11 @@ import { MessageChannel, ProcessManager } from 'electron-re';
 import { startProfiler } from "./performance/v8-inspect-profiler";
 import registryHooks from './hooks';
 
-export const packageName = 'shadowsocks-electron';
-export const platform = os.platform();
-export const isInspect = process.env.INSPECT;
+import { packageName, platform, isInspect, appDataPath, pathRuntime, pathExecutable } from './config';
+
 export let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
 export const msgc = MessageChannel;
-export const isMacOS = platform === 'darwin';
-
-export const appDataPath = path.join(app.getPath('appData'), packageName);
-export const pathRuntime = path.join(appDataPath, 'runtime/');
-export const pathExecutable =
-  isDev ?
-    app.getAppPath() :
-    (
-      isMacOS ?
-        path.join(path.dirname(app.getPath('exe')), '..') :
-        path.dirname(app.getPath('exe'))
-    );
-
-export const getPathRoot = (p: string) => path.join(appDataPath, p);
-export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
 
 export const i18n = new I18n();
 

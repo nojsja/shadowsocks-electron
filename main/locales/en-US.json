@@ -1,4 +1,5 @@
 {
+  "invalid_parameter": "Invalid parameter",
   "unknown_subscription": "Unknown subscription",
   "invalid_subscription": "Invalid subscription address",
   "show_ui": "Show UI",

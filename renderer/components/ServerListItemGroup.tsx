@@ -33,7 +33,17 @@ const StyledAccordionDetails = withStyles((theme: Theme) =>
 const StyledAccordionSummary = withStyles((theme: Theme) => (
   createStyles({
     root: {
+      minHeight: '36px',
       backgroundColor: theme.palette.type === "dark" ? '#525252' : 'rgba(255, 255, 255, 1)',
+      '&.Mui-expanded': {
+        minHeight: '56px',
+      },
+      '& .MuiAccordionSummary-content': {
+        margin: '8px 0'
+      },
+      '& .MuiIconButton-root': {
+        padding: '8px 12px',
+      },
     }
   })
 ))(AccordionSummary);
@@ -61,22 +71,11 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     selectedServer
   } = props;
 
-  const [actionHidden, setActionHidden] = useState(true);
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
 
   useEffect(() => {
     handleChange(!!item.servers?.find(server => server.id === selectedServer));
   }, [selectedServer]);
-
-  console.log(actionHidden);
-
-  const handleActionHide = () => {
-    setActionHidden(true);
-  };
-
-  const handleActionShow = () => {
-    setActionHidden(false);
-  };
 
   const handleRemoveButtonClick = () => {
     props.onRemove?.(item.id);
@@ -140,8 +139,6 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
 
   return (
     <div
-      onMouseEnter={handleActionShow}
-      onMouseLeave={handleActionHide}
       onContextMenu={onContextMenu}
     >
       <Accordion expanded={expanded} onChange={() => handleChange(!expanded)}>

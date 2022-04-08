@@ -22,12 +22,3 @@ export class IpcMainProcess implements IpcMainProcessType {
     this.desktopService = ipcBridge<DesktopServiceType>(this.ipc, 'service:desktop', new DesktopService(ipc));
   }
 }
-
-// 未捕获的全局错误 //
-process.on('uncaughtException', (err) => {
-  console.error('<---------------');
-
-  console.log(err);
-
-  console.error('--------------->');
-});
