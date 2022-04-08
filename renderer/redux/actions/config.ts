@@ -95,7 +95,7 @@ export const parseClipboardText = (text: string | null, type: clipboardParseType
             return callback && callback(true);
           }
         } else {
-          if (rsp.result?.result?.length) {
+          if (rsp.result?.length) {
             dispatch(addConfig(uuid(), rsp.result[0]));
             return callback && callback(true);
           }
@@ -116,7 +116,7 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
         resources.forEach(resource => {
           const size = resource.thumbnail.getSize();
           const capturedData = jsqr(resource.thumbnail.getBitmap() as any, size.width, size.height);
-          if (capturedData && capturedData.data) {
+          if (capturedData?.data) {
             values.push(capturedData.data);
             qrs.push({
               x: capturedData.location.topLeftCorner.x,
