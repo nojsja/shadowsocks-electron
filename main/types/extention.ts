@@ -207,6 +207,13 @@ export interface Settings {
 
 export type rectPoint = { x: number, y: number, width: number, height: number };
 
+export type windowInfo = {
+  devicePixelRatio: number,
+  width: number,
+  height: number,
+  types: string[]
+};
+
 export type InnerCallback = (params: Error | null) => void;
 
 export type contextAction = {

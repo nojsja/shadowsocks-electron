@@ -171,7 +171,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
       fullScreen={fullScreen}
       open={open}
       onClose={onClose}
-      disableBackdropClick
     >
       <AdaptiveAppBar className={fullScreen ? styles.appBar : styles.appBarRelative}>
         <Toolbar>

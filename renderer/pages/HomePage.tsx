@@ -153,9 +153,11 @@ const HomePage: React.FC = () => {
     setEditingServerId(null);
   };
 
-  const handleEditServerDialogClose = () => {
-    setEditServerDialogOpen(false);
-    setEditingServerId(null);
+  const handleEditServerDialogClose = (event: {}, reason: "backdropClick" | "escapeKeyDown") => {
+    if (reason !== 'backdropClick') {
+      setEditServerDialogOpen(false);
+      setEditingServerId(null);
+    }
   };
 
   const handleServerConnect = useCallback(async (useValue?: string) => {

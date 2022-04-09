@@ -3,7 +3,7 @@ import { CssBaseline } from "@material-ui/core";
 import {
   makeStyles,
   createStyles,
-  createMuiTheme,
+  createTheme,
   Theme,
   ThemeProvider
 } from "@material-ui/core/styles";
@@ -32,7 +32,7 @@ import { getDefaultLang } from "./utils";
 
 export const persistStore = new ElectronStore();
 
-const mainTheme = createMuiTheme({
+const mainTheme = createTheme({
   spacing: 8,
   palette: {
     primary: {
@@ -49,7 +49,7 @@ const mainTheme = createMuiTheme({
   }
 });
 
-const darkTheme = createMuiTheme({
+const darkTheme = createTheme({
   spacing: 8,
   palette: {
     type: "dark",

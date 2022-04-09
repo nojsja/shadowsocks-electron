@@ -74,7 +74,7 @@
   "delete": "Delete",
   "darkMode": "Dark Mode",
   "remove_this_server?": "Remove this server?",
-  "this_action_cannot_be_undone": "Please note: this action cannot be undone.",
+  "this_action_cannot_be_undone": "This action cannot be undone!",
   "copied": "copied",
   "copy": "Copy",
   "edit_server": "Edit Server",

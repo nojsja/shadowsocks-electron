@@ -110,7 +110,7 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
   return (dispatch) => {
     dispatch(setStatus('waiting', true))
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
-      if (resources && resources.length) {
+      if (resources?.length) {
         const qrs: {x: number, y: number, width: number, height: number}[] = [];
         const values: string[] = [];
         resources.forEach(resource => {
