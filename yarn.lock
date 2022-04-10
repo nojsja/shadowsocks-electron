@@ -5443,10 +5443,10 @@ electron-publish@22.14.13:
     lazy-val "^1.0.5"
     mime "^2.5.2"
 
-electron-re@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.2.0.tgz#9281ce74e68a447e2d7ce4eb0d2b88f69d347ce5"
-  integrity sha512-OGqs/MRky2wZynrKC+5R9eriisMp7pt7c2zby56AG45F6wrzds+kkwkBFdX9/bG0xQ3K321wx/kJPinlVQyS6w==
+electron-re@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.2.1.tgz#16d636e1d8203a948fece820689d162adbb9d6bb"
+  integrity sha512-ecBTwuJQPnXP+BIJWJzKFSSBIxTtQr943HONvVfkXt2H53WiVIoR6nt/p/2Dz4UhM6ew27U3xDkyqLJn0fWkKA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@electron/remote" "^2.0.1"
