@@ -42,7 +42,7 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      height: `calc(100vh - 56px)`,
+      height: `calc(100vh - 62px)`,
       padding: theme.spacing(1),
       paddingTop: 0,
       [theme.breakpoints.up('sm')]: {

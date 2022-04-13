@@ -73,7 +73,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       display: "flex"
     },
-    toolbar: theme.mixins.toolbar,
+    toolbar: {
+      minHeight: '42px'
+    },
     content: {
       flex: 1
     }

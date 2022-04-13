@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import {
   Dialog,
   TextField,
@@ -99,7 +99,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
     }
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setValues(
       defaultValues ?? {
         timeout: 60,
