@@ -85,7 +85,6 @@ const SettingsPage: React.FC = () => {
   const checkPortValid = (value: string) => {
     const parsedValue = parseInt(value.trim(), 10);
     if (!(parsedValue && parsedValue > 1024 && parsedValue <= 65535)) {
-          setSnackbarMessage(t("invalid_port_range"));
           return false;
     }
     return true;
@@ -204,51 +203,52 @@ const SettingsPage: React.FC = () => {
     });
   };
 
-  const onFieldChange = (changedFields: FieldData[], allFields: FieldData[]) => {
-    console.log(changedFields, allFields);
-    changedFields.forEach((field) => {
-      if (field.errors?.length) return;
-      console.log(field.errors?.length)
-      let value = field.value;
-      const name = field.name instanceof Array ? field.name[0] : field.name;
-      switch (name) {
-        case 'httpProxy':
-          value = {
-            ...settings.httpProxy,
-            enable: value
-          };
-          dispatch({ type: SET_SETTING, key: 'httpProxy', value });
-          setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
-          return;
-        case 'httpProxyPort':
-          value = {
-            ...settings.httpProxy,
-            port: value
-          };
-          checkPortUsed(value.port, 'httpProxy');
-          dispatch({ type: SET_SETTING, key: 'httpProxy', value });
-          setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
-          return;
-        case 'acl':
-          dispatch({ type: SET_SETTING, key: name, value: {
-            ...settings.acl,
-            text: value
-          } });
-          return;
-        case 'autoLaunch':
-          dispatch<any>(setStartupOnBoot(value));
-          return;
-        case 'darkMode':
-          persistStore.set('darkMode', value ? 'true' : 'false');
-          MessageChannel.invoke('main', 'service:desktop', {
-            action: 'reloadMainWindow',
-            params: {}
-          });
-          break;
-        default:
-          break;
-      }
-      dispatch({ type: SET_SETTING, key: name, value: value });
+  const onFieldChange = (changedFields: { [key: string]: any }, allFields: FieldData[]) => {
+    const keys = Object.keys(changedFields);
+    form.validateFields(keys).then(value => {
+      keys.forEach((name) => {
+        let value = changedFields[name];
+        switch (name) {
+          case 'httpProxy':
+            value = {
+              ...settings.httpProxy,
+              enable: value
+            };
+            dispatch({ type: SET_SETTING, key: 'httpProxy', value });
+            setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
+            return;
+          case 'httpProxyPort':
+            value = {
+              ...settings.httpProxy,
+              port: value
+            };
+            checkPortUsed(value.port, 'httpProxy');
+            dispatch({ type: SET_SETTING, key: 'httpProxy', value });
+            setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
+            return;
+          case 'acl':
+            dispatch({ type: SET_SETTING, key: name, value: {
+              ...settings.acl,
+              text: value
+            } });
+            return;
+          case 'autoLaunch':
+            dispatch<any>(setStartupOnBoot(value));
+            return;
+          case 'darkMode':
+            persistStore.set('darkMode', value ? 'true' : 'false');
+            MessageChannel.invoke('main', 'service:desktop', {
+              action: 'reloadMainWindow',
+              params: {}
+            });
+            break;
+          default:
+            break;
+        }
+        dispatch({ type: SET_SETTING, key: name, value: value });
+      });
+    }).catch((reason: { errorFields: { errors: string[] }[] }) => {
+      setSnackbarMessage(reason?.errorFields?.map(item => item.errors.join()).join())
     });
   }
 
@@ -269,7 +269,7 @@ const SettingsPage: React.FC = () => {
             verbose: settings.verbose
           }
         }
-        onFieldsChange={onFieldChange}
+        onValuesChange={onFieldChange}
       >
         <Field
           name="localPort"
@@ -277,6 +277,7 @@ const SettingsPage: React.FC = () => {
             { required: true, message: t('invalid_value') },
             { validator: checkPortField }
           ]}
+          validateTrigger={false}
         >
           <TextField
             className={styles.textField}
@@ -294,6 +295,7 @@ const SettingsPage: React.FC = () => {
             { required: true, message: t('invalid_value') },
             { validator: checkPortField }
           ]}
+          validateTrigger={false}
         >
           <TextField
             className={styles.textField}
@@ -307,6 +309,7 @@ const SettingsPage: React.FC = () => {
         </Field>
         <Field
           name="gfwListUrl"
+          validateTrigger={false}
         >
           <TextField
           className={styles.textField}
@@ -359,6 +362,7 @@ const SettingsPage: React.FC = () => {
                       { required: true, message: t('invalid_value') },
                       { validator: checkPortField }
                     ]}
+                    validateTrigger={false}
                   >
                     <TextField
                       className={`${styles.textField} ${styles.indentInput}`}

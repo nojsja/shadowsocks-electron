@@ -116,17 +116,18 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
 
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
+    e.stopPropagation();
     handleMenuOpen(e);
   };
 
   return (
     <div
-      onContextMenu={onContextMenu}
     >
       <Accordion expanded={expanded} onChange={() => handleChange(!expanded)}>
         <StyledAccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1bh-content"
+          onContextMenu={onContextMenu}
         >
           { item.name }
         </StyledAccordionSummary>
