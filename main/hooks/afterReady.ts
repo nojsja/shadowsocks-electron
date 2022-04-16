@@ -22,7 +22,7 @@ export const electronReServiceTest = (electronApp: ElectronApp) => {
         }
       });
       await testService.connected();
-      testService.openDevTools();
+      // testService.openDevTools();
 
       const pool = new ChildProcessPool({
         path: path.join(__dirname, '../test/test.child.js'),

@@ -1,4 +1,5 @@
 {
+  "invalid_value": "非法值",
   "readme": "请查看 Github 页面中的 - 插件安装说明",
   "please_confirm_v2ray-plugin_installed_on_your_system": "需要先安装 v2ray-plugin",
   "please_confirm_kcptun_installed_on_your_system": "需要先安装 kcptun",
@@ -92,6 +93,7 @@
   "invalid_server_address": "服务器地址不合法",
   "invalid_server_port": "服务器端口不合法",
   "invalid_port": "本地端口不合法",
+  "invalid_port_range": "端口号范围不合法：(1024 - 65535]",
   "invalid_password": "密码不合法",
   "invalid_timeout": "超时时间不合法",
   "reset_all_data": "重置所有数据？",
