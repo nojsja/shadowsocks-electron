@@ -16,7 +16,6 @@ import {
 } from "@material-ui/core";
 import { RestorePage, NoteAdd } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { FieldData } from "rc-field-form/es/interface";
 
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
@@ -82,30 +81,22 @@ const SettingsPage: React.FC = () => {
     }));
   }
 
-  const checkPortValid = (value: string) => {
-    const parsedValue = parseInt(value.trim(), 10);
+  const checkPortValid = (parsedValue: number) => {
     if (!(parsedValue && parsedValue > 1024 && parsedValue <= 65535)) {
-          return false;
+          return Promise.reject(t("invalid_port_range"));
     }
-    return true;
-  }
+    return Promise.resolve();
+  };
 
-  const checkPortUsed = (value: number, target: 'httpProxy', useValue?: boolean) => {
-    if (
-      useValue === undefined ?
-      (value == settings[target].port &&
-      settings.httpProxy.enable)
-      :
-      (value == settings[target].port &&
-      settings[target].enable &&
-      useValue)
-    ) {
-      setTimeout(() => {
-        setSnackbarMessage(t("https_http_proxy_port_not_same"));
-      }, 200);
-      return false;
+  const checkPortSame = () => {
+    const localPort = +form.getFieldValue('localPort');
+    const pacPort = +form.getFieldValue('pacPort');
+    const httpPort = +form.getFieldValue('httpProxyPort');
+    const num = localPort ^ pacPort ^ httpPort;
+    if (num === localPort || num === pacPort || num === httpPort) {
+      return Promise.reject(t("the_same_port_is_not_allowed"));
     }
-    return true;
+    return Promise.resolve();
   };
 
   const handleOpenLog = async () => {
@@ -197,18 +188,15 @@ const SettingsPage: React.FC = () => {
   }
 
   const checkPortField = (rule: any, value: any) => {
-    return new Promise((resolve, reject) => {
-      if (!checkPortValid(value)) reject(t("invalid_port"));
-      resolve(value);
-    });
+    return Promise.all([checkPortSame(), checkPortValid(value)]);
   };
 
-  const onFieldChange = (changedFields: { [key: string]: any }, allFields: FieldData[]) => {
+  const onFieldChange = (changedFields: { [key: string]: any }, allFields: { [key: string]: any }) => {
     const keys = Object.keys(changedFields);
-    form.validateFields(keys).then(value => {
-      keys.forEach((name) => {
-        let value = changedFields[name];
-        switch (name) {
+    keys.forEach((key) => {
+      let value = changedFields[key];
+      form.validateFields([key]).then(() => {
+        switch (key) {
           case 'httpProxy':
             value = {
               ...settings.httpProxy,
@@ -222,12 +210,11 @@ const SettingsPage: React.FC = () => {
               ...settings.httpProxy,
               port: value
             };
-            checkPortUsed(value.port, 'httpProxy');
             dispatch({ type: SET_SETTING, key: 'httpProxy', value });
             setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
             return;
           case 'acl':
-            dispatch({ type: SET_SETTING, key: name, value: {
+            dispatch({ type: SET_SETTING, key, value: {
               ...settings.acl,
               text: value
             } });
@@ -245,10 +232,11 @@ const SettingsPage: React.FC = () => {
           default:
             break;
         }
-        dispatch({ type: SET_SETTING, key: name, value: value });
+
+        dispatch({ type: SET_SETTING, key, value });
+      }).catch((reason: { errorFields: { errors: string[] }[] }) => {
+        setSnackbarMessage(reason?.errorFields?.map(item => item.errors.join()).join())
       });
-    }).catch((reason: { errorFields: { errors: string[] }[] }) => {
-      setSnackbarMessage(reason?.errorFields?.map(item => item.errors.join()).join())
     });
   }
 
@@ -275,8 +263,9 @@ const SettingsPage: React.FC = () => {
           name="localPort"
           rules={[
             { required: true, message: t('invalid_value') },
-            { validator: checkPortField }
+            { validator: checkPortField },
           ]}
+          normalize={(value: string) => +(value.trim())}
           validateTrigger={false}
         >
           <TextField
@@ -295,6 +284,7 @@ const SettingsPage: React.FC = () => {
             { required: true, message: t('invalid_value') },
             { validator: checkPortField }
           ]}
+          normalize={(value: string) => +(value.trim())}
           validateTrigger={false}
         >
           <TextField
@@ -362,6 +352,7 @@ const SettingsPage: React.FC = () => {
                       { required: true, message: t('invalid_value') },
                       { validator: checkPortField }
                     ]}
+                    normalize={(value: string) => +(value.trim())}
                     validateTrigger={false}
                   >
                     <TextField
@@ -509,7 +500,7 @@ const SettingsPage: React.FC = () => {
       /> */}
 
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
-      {SnackbarAlert}
+      <SnackbarAlert />
     </Container>
   );
 };

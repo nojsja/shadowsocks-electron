@@ -37,7 +37,7 @@
   "https_proxy": "Https Proxy",
   "http_proxy_port": "Http Proxy Port",
   "https_proxy_port": "Https Proxy Port",
-  "https_http_proxy_port_not_same": "Https/Http proxy port cannot be the same!",
+  "the_same_port_is_not_allowed": "Port number conflict",
   "gfwlist_url": "GFWList URL",
   "gfwlist_url_tips": "GFWList file used to generate PAC",
   "launch_on_boot": "Launch on Boot",

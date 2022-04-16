@@ -87,18 +87,15 @@ const HomePage: React.FC = () => {
       case 'qrcode':
         // setBackDrop.current(true);
         dispatch(getQrCodeFromScreenResources((added: boolean, reason?: string) => {
-          setTimeout(() => {
-            // setBackDrop.current(false);
-            if (added) {
-              setSnackbarMessage(t('added_a_server'));
+          if (added) {
+            setSnackbarMessage(t('added_a_server'));
+          } else {
+            if (reason) {
+              setSnackbarMessage(reason)
             } else {
-              if (reason) {
-                setSnackbarMessage(reason)
-              } else {
-                setSnackbarMessage(t('no_qr_code_is_detected'));
-              }
+              setSnackbarMessage(t('no_qr_code_is_detected'));
             }
-          }, .5e3);
+          }
         }));
         setDialogOpen(false);
         break;
@@ -106,20 +103,14 @@ const HomePage: React.FC = () => {
         setDialogOpen(false);
         // setBackDrop.current(true);
         dispatch(addConfigFromClipboard((added: boolean) => {
-          setTimeout(() => {
-            // setBackDrop.current(false);
-            setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
-          }, .5e3);
+          setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
         }));
         break;
       case 'subscription':
         setDialogOpen(false);
         // setBackDrop.current(true);
         dispatch(addSubscriptionFromClipboard((added: boolean) => {
-          setTimeout(() => {
-            // setBackDrop.current(false);
-            setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
-          }, .5e3);
+          setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
         }));
         break;
       case 'share':
@@ -332,8 +323,7 @@ const HomePage: React.FC = () => {
         onValues={handleEditServer}
       />
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleServerRemove} />
-      { SnackbarAlert }
-      {/* <BackDrop /> */}
+      <SnackbarAlert />
     </Container>
   );
 };

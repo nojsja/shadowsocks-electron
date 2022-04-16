@@ -2,7 +2,7 @@
   * @name nojsja
   * @description alert component based on snackbar
   */
-import React, { useState, useMemo, ReactElement } from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import {
   Theme,
@@ -40,12 +40,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const transition = (props: TransitionProps) => <Slide {...props} direction="down" />;
 
-const useSnackbarAlert = (props?: SnackbarAlertProps): [ReactElement, SetMessage] => {
+const useSnackbarAlert = (props?: SnackbarAlertProps): [React.FunctionComponent, SetMessage] => {
   const styles = useStyles();
   const [message, setMessage] = useState('');
   return [
     (
-      useMemo((() =>
+      React.memo((() =>
         <Snackbar
           className={styles.snackbar}
           anchorOrigin={{
@@ -57,9 +57,9 @@ const useSnackbarAlert = (props?: SnackbarAlertProps): [ReactElement, SetMessage
           autoHideDuration={props?.duration || 1e3}
           onClose={() => setMessage('')}
           message={message}
-        />), [message])
+        />))
     ),
-    (msg: string) => setMessage(msg)
+    (msg: string) => setTimeout(() => setMessage(msg), .5e3)
   ];
 };
 

@@ -381,7 +381,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           )
         }
       </Container>
-      { SnackbarAlert }
+      <SnackbarAlert />
     </StyledDialog>
   );
 };
