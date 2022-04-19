@@ -2,11 +2,13 @@ import {
   ADD_SUBSCRIPTION,
   ADD_CONFIG,
   EditConfigAction,
+  MoveConfigAction,
   REMOVE_CONFIG,
   EDIT_CONFIG,
   WIPE_CONFIG,
   MOVE_UP,
   MOVE_DOWN,
+  MOVE_TO,
   TOP
 } from "../actions/config";
 import { Config, GroupConfig } from "../../types";
@@ -15,14 +17,16 @@ import { findAndModify } from "../../utils";
 
 function configReducer(
   state: (Config | GroupConfig)[] = defaultStore.config,
-  action: EditConfigAction
+  action: EditConfigAction | MoveConfigAction
 ): (Config | GroupConfig)[] {
+  let sourceIndex: number, targetIndex: number, newState: (Config | GroupConfig)[];
+
   switch (action.type) {
     case ADD_SUBSCRIPTION:
       return [
         ...state,
         {
-          ...action.config as GroupConfig,
+          ...(action as EditConfigAction).config as GroupConfig,
           id: action.id,
           type: "group",
         }
@@ -31,37 +35,51 @@ function configReducer(
       return [
         ...state,
         {
-          ...action.config,
+          ...(action as EditConfigAction).config,
           id: action.id
         }
       ];
     case REMOVE_CONFIG:
       return state.filter(i => i.id !== action.id);
     case EDIT_CONFIG:
-      return findAndModify(state, action.id, action.config);
+      return findAndModify(state, action.id, (action as EditConfigAction).config);
     case WIPE_CONFIG:
       return [];
     case TOP:
-      const index3 = state.findIndex((config, index) => config.id === action.id);
-      let newState3 = [...state];
-      if (index3 > 0) {
-        newState3 = [newState3.splice(index3, 1)[0], ...newState3];
+      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      newState = [...state];
+      if (sourceIndex > 0) {
+        newState = [newState.splice(sourceIndex, 1)[0], ...newState];
       }
-      return newState3;
+      return newState;
+    case MOVE_TO:
+      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      targetIndex  = state.findIndex((config, index) => config.id === (action as MoveConfigAction).target);
+      newState = [...state];
+      if (sourceIndex !== -1 && targetIndex !== -1) {
+        const newConfig = {...newState[sourceIndex]};
+        newState.splice(targetIndex, 0, newConfig);
+        if (sourceIndex > targetIndex) {
+          newState.splice(sourceIndex + 1, 1);
+        } else {
+          newState.splice(sourceIndex, 1);
+        }
+      }
+      return newState;
     case MOVE_UP:
-      const index = state.findIndex((config, index) => config.id === action.id);
-      const newState = [...state];
-      if (index >= 0) {
-        newState.splice((index === 0) ? 0 : (index - 1), 0, newState.splice(index, 1)[0]);
+      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      newState = [...state];
+      if (sourceIndex >= 0) {
+        newState.splice((sourceIndex === 0) ? 0 : (sourceIndex - 1), 0, newState.splice(sourceIndex, 1)[0]);
       }
       return newState;
     case MOVE_DOWN:
-      const index2 = state.findIndex((config, index) => config.id === action.id);
-      const newState2 = [...state];
-      if (index2 >= 0) {
-        newState2.splice(index2 + 1, 0, newState2.splice(index2, 1)[0]);
+      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      newState = [...state];
+      if (sourceIndex >= 0) {
+        newState.splice(sourceIndex + 1, 0, newState.splice(sourceIndex, 1)[0]);
       }
-      return newState2;
+      return newState;
     default:
       return state;
   }

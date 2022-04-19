@@ -9,6 +9,8 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import ServerListItem from "./ServerListItem";
 import { Config, GroupConfig } from "../types/";
 import { scrollBarStyle } from "../pages/styles";
+import { useDispatch } from "react-redux";
+import { moveConfig } from "../redux/actions/config";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -50,7 +52,18 @@ export interface ServerListProps extends ListItemProps {
 
 const ServerList: React.FC<ServerListProps> = props => {
 
+  const dispatch = useDispatch();
   const styles = useStyles();
+  const [dragTarget, setDragTarget] = React.useState<string | null>(null);
+  const [dragSource, setDragSource] = React.useState<string | null>(null);
+
+  const dragSort = () => {
+    console.log(dragSource, '->', dragTarget);
+    setDragSource(null);
+    setDragTarget(null);
+    if (dragTarget === dragSource || !dragSource || !dragTarget) return;
+    dispatch(moveConfig(dragSource, dragTarget));
+  }
 
   const {
     config,
@@ -70,6 +83,11 @@ const ServerList: React.FC<ServerListProps> = props => {
           <ServerListItem
             key={item.id}
             item={item}
+            dragTarget={dragTarget}
+            dragSort={dragSort}
+            dragSource={dragSource}
+            setDragSource={setDragSource}
+            setDragTarget={setDragTarget}
             selectedServer={selectedServer}
             connected={connected}
             onShare={handleShareButtonClick}
