@@ -56,15 +56,26 @@ const ServerList: React.FC<ServerListProps> = props => {
 
   const dispatch = useDispatch();
   const styles = useStyles();
-  const [dragTarget, setDragTarget] = React.useState<string | null>(null);
-  const [dragSource, setDragSource] = React.useState<string | null>(null);
+  const dragTarget = React.useRef<string | null>(null);
+  const dragSource = React.useRef<string | null>(null);
+
+  const setDragTarget = (id: string | null) => {
+    dragTarget.current = id;
+  };
+
+  const setDragSource = (id: string | null) => {
+    dragSource.current = id;
+  };
 
   const dragSort = () => {
-    console.log(dragSource, '->', dragTarget);
+    if (
+      dragTarget.current === dragSource.current ||
+      !dragSource.current||
+      !dragTarget.current
+    ) return;
+    dispatch(moveConfig(dragSource.current, dragTarget.current));
     setDragSource(null);
     setDragTarget(null);
-    if (dragTarget === dragSource || !dragSource || !dragTarget) return;
-    dispatch(moveConfig(dragSource, dragTarget));
   }
 
   const {

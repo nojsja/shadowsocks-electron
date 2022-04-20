@@ -19,8 +19,8 @@ export interface ServerListItemProps extends ListItemProps {
   connected: boolean;
   selectedServer: string | undefined | null;
   item: GroupConfig | Config
-  dragTarget: string | null;
-  dragSource: string | null;
+  dragTarget: React.MutableRefObject<string | null>;
+  dragSource: React.MutableRefObject<string | null>;
   onEdit?: (key: string) => void;
   onShare?: (key: string) => void;
   onRemove?: (key: string) => void;
@@ -38,11 +38,8 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   highlight: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
-  },
-  transparent: {
-    opacity: .2
   }
-}))
+}));
 
 const ServerListItem: React.FC<ServerListItemProps> = props => {
   const {
@@ -50,7 +47,6 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
     selectedServer,
     isLast,
     dragTarget,
-    dragSource,
     dragSort,
     setDragTarget,
     setDragSource
@@ -62,11 +58,13 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
 
   const onDragStart = (e: DragEvent<HTMLDivElement>) => {
     setCloneElement((e.target as HTMLDivElement).cloneNode(true) as HTMLDivElement);
+    (e.target as HTMLDivElement).style.opacity = "0.2";
     setDragSource(item.id);
     e.dataTransfer.setDragImage(img, 0, 0);
   };
 
-  const onDragEnd = () => {
+  const onDragEnd = (e: DragEvent<HTMLDivElement>) => {
+    (e.target as HTMLDivElement).style.opacity = "1";
     dragSort();
     if (cloneElement) {
       cloneElement.remove();
@@ -83,8 +81,7 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
     }
   };
 
-  const isInDraging = dragSource === item.id;
-  const isInOver = dragTarget === item.id;
+  const isInOver = dragTarget.current === item.id;
 
   return (
     <>
@@ -94,7 +91,7 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragEnter={onDragEnter}
-        className={clsx(styles.wrapper, isInOver && styles.highlight, isInDraging && styles.transparent)}
+        className={clsx(styles.wrapper, isInOver && styles.highlight)}
       >
       {
         item.type === 'group' ?
