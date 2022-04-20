@@ -1,14 +1,18 @@
-import React, { memo } from "react";
+import React, { DragEvent, memo, useRef } from "react";
 import {
   ListItemProps,
   Theme
 } from "@material-ui/core";
-import { makeStyles, createStyles } from "@material-ui/styles";
+import { makeStyles, createStyles, useTheme } from "@material-ui/styles";
 import { Config, GroupConfig } from "../types";
 import ServerListItemGroup from "./ServerListItemGroup";
 import ServerListItemSingle from "./ServerListItemSingle";
 import GradientDivider from "./Pices/GradientDivider";
 import clsx from "clsx";
+import { cloneElement, setCloneElement } from "./ServerList";
+
+const img = new Image();
+img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII= ';
 
 export interface ServerListItemProps extends ListItemProps {
   isLast?: boolean;
@@ -28,8 +32,15 @@ export interface ServerListItemProps extends ListItemProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
+  wrapper: {
+    transition: "all 0.3s linear",
+  },
   highlight: {
-    borderTop: `solid 2px ${theme.palette.primary.main}`,
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  transparent: {
+    opacity: .2
   }
 }))
 
@@ -39,40 +50,60 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
     selectedServer,
     isLast,
     dragTarget,
+    dragSource,
     dragSort,
     setDragTarget,
     setDragSource
   } = props;
 
   const styles = useStyles();
+  const ref = useRef<HTMLDivElement>(null);
+  const theme: Theme = useTheme();
 
-  const onDragStart = () => {
+  const onDragStart = (e: DragEvent<HTMLDivElement>) => {
+    setCloneElement((e.target as HTMLDivElement).cloneNode(true) as HTMLDivElement);
     setDragSource(item.id);
+    e.dataTransfer.setDragImage(img, 0, 0);
   };
 
   const onDragEnd = () => {
     dragSort();
+    if (cloneElement) {
+      cloneElement.remove();
+    }
   }
 
   const onDragEnter = () => {
     setDragTarget(item.id);
+    if (cloneElement) {
+      cloneElement.remove();
+      cloneElement.style.transition = 'all 0.3s linear';
+      cloneElement.style.border = `dashed 2px ${theme.palette.primary.main}`;
+      ref.current?.prepend(cloneElement);
+    }
   };
 
+  const isInDraging = dragSource === item.id;
+  const isInOver = dragTarget === item.id;
+
   return (
-    <div
-      draggable={true}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragEnter={onDragEnter}
-      className={clsx(dragTarget === item.id && styles.highlight)}
-    >
-    {
-      item.type === 'group' ?
-        <ServerListItemGroup {...props} item={(props.item as GroupConfig)} selectedServer={selectedServer} /> :
-        <ServerListItemSingle {...props} item={(props.item as Config)} selected={selectedServer === item.id} />
-    }
-    {!isLast && <GradientDivider />}
-    </div>
+    <>
+      <div
+        ref={ref}
+        draggable={true}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragEnter={onDragEnter}
+        className={clsx(styles.wrapper, isInOver && styles.highlight, isInDraging && styles.transparent)}
+      >
+      {
+        item.type === 'group' ?
+          <ServerListItemGroup {...props} item={(props.item as GroupConfig)} selectedServer={selectedServer} /> :
+          <ServerListItemSingle {...props} item={(props.item as Config)} selected={selectedServer === item.id} />
+      }
+      </div>
+      {!isLast && <GradientDivider />}
+    </>
   );
 };
 
