@@ -4,12 +4,14 @@ import {
   Theme
 } from "@material-ui/core";
 import { makeStyles, createStyles, useTheme } from "@material-ui/styles";
+import clsx from "clsx";
+
+import { cloneElement, setCloneElement } from "./ServerList";
 import { Config, GroupConfig } from "../types";
 import ServerListItemGroup from "./ServerListItemGroup";
 import ServerListItemSingle from "./ServerListItemSingle";
 import GradientDivider from "./Pices/GradientDivider";
-import clsx from "clsx";
-import { cloneElement, setCloneElement } from "./ServerList";
+import If from "./HOC/IF";
 
 const img = new Image();
 img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII= ';
@@ -64,16 +66,17 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
   };
 
   const onDragEnd = (e: DragEvent<HTMLDivElement>) => {
-    (e.target as HTMLDivElement).style.opacity = "1";
-    dragSort();
     if (cloneElement) {
+      (e.target as HTMLDivElement).style.opacity = "1";
+      dragSort();
       cloneElement.remove();
+      setCloneElement(null);
     }
   }
 
   const onDragEnter = () => {
-    setDragTarget(item.id);
     if (cloneElement) {
+      setDragTarget(item.id);
       cloneElement.remove();
       cloneElement.style.transition = 'all 0.3s linear';
       cloneElement.style.border = `dashed 2px ${theme.palette.primary.main}`;
@@ -93,11 +96,11 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
         onDragEnter={onDragEnter}
         className={clsx(styles.wrapper, isInOver && styles.highlight)}
       >
-      {
-        item.type === 'group' ?
-          <ServerListItemGroup {...props} item={(props.item as GroupConfig)} selectedServer={selectedServer} /> :
-          <ServerListItemSingle {...props} item={(props.item as Config)} selected={selectedServer === item.id} />
-      }
+        <If
+          condition={item.type === 'group'}
+          then={<ServerListItemGroup {...props} item={(props.item as GroupConfig)} selectedServer={selectedServer} />}
+          else={<ServerListItemSingle {...props} item={(props.item as Config)} selected={selectedServer === item.id} />}
+        />
       </div>
       {!isLast && <GradientDivider />}
     </>

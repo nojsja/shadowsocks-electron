@@ -269,7 +269,6 @@ const HomePage: React.FC = () => {
 
   return (
     <Container className={styles.container}>
-
       {/* -------- main ------- */}
 
       <ServerList
@@ -282,7 +281,6 @@ const HomePage: React.FC = () => {
         handleServerSelect={handleServerSelect}
         handleServerConnect={handleServerConnect}
       />
-
       <FooterBar mode={mode} setDialogOpen={setDialogOpen} />
 
       <StatusBar

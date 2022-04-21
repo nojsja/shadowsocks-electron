@@ -12,8 +12,8 @@ import { scrollBarStyle } from "../pages/styles";
 import { useDispatch } from "react-redux";
 import { moveConfig } from "../redux/actions/config";
 
-export let cloneElement: HTMLDivElement;
-export const setCloneElement = (div: HTMLDivElement) => cloneElement = div;
+export let cloneElement: HTMLDivElement | null;
+export const setCloneElement = (div: HTMLDivElement | null) => cloneElement = div;
 
 const useStyles = makeStyles((theme: Theme) =>
 
