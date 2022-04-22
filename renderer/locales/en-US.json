@@ -46,6 +46,7 @@
   "open_process_manager": "Open Process Manager",
   "reset_data": "Reset Data",
   "offline": "Offline",
+  "online": "Online",
   "ok": "OK",
   "cancel": "Cancel",
   "add_server": "Add Server",

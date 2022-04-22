@@ -56,34 +56,30 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 ### Main Page
 
-![main.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/main.png)
+![main.png](./assets/main.png)
 
 ### Dark Mode
 
-![dark.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/dark.png)
+![dark.png](./assets/dark.png)
 
 ### Fixed Menu
 
-![fixed_menu.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/fixed_menu.png)
+![fixed_menu.png](./assets/fixed_menu.png)
 
 ### Server Add
 
-![add.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/add.png)
-
-### Server Subscription
-
-![subscription.png](https://github.com/nojsja/shadowsocks-electron/raw/77d801795347d56e17b7c2611c5f963c6196f026/assets/subscription.png)
+![add.png](./assets/add.png)
 
 ### Context Menu
 
-![context_menu.png](https://github.com/nojsja/shadowsocks-electron/raw/77d801795347d56e17b7c2611c5f963c6196f026/assets/context_menu.png)
+![context_menu.png](./assets/context_menu.png)
 ### Server Edit
 
-![edit.png](https://github.com/nojsja/shadowsocks-electron/raw/77d801795347d56e17b7c2611c5f963c6196f026/assets/edit.png)
+![edit.png](./assets/edit.png)
 
 ### Server Share
 
-![share.png](https://raw.githubusercontent.com/nojsja/shadowsocks-electron/77d801795347d56e17b7c2611c5f963c6196f026/assets/share.png)
+![share.png](./assets/share.png)
 
 ## Downloads
 

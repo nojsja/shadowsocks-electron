@@ -2,7 +2,7 @@ import React from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles, createStyles } from '@material-ui/styles';
-import { makeStyles } from '@material-ui/core';
+import { ListItemIcon, Typography } from '@material-ui/core';
 
 const initialState = {
   mouseX: null,
@@ -20,20 +20,13 @@ interface ContextMenuProps {
   contents?: MenuContent[];
 }
 
-const useStyles = makeStyles((theme) => createStyles({
-  label: {
-    marginLeft: theme.spacing(1),
-  }
-}));
-
 const StyledMenuItem = withStyles((theme) => createStyles({
   root: {
-    minWidth: 150
+    // minWidth: 150
   }
 }))(MenuItem);
 
 export default function ContextMenu(contents: MenuContent[]): [React.ElementType, (event: React.MouseEvent<HTMLElement>) => void, () => void] {
-  const styles = useStyles();
   const [state, setState] = React.useState<{
     mouseX: null | number;
     mouseY: null | number;
@@ -76,7 +69,10 @@ export default function ContextMenu(contents: MenuContent[]): [React.ElementType
               key={content.action}
               onClick={() => handleMenuClick(content.action, innerProps.onItemClick)}
             >
-              { content.icon } {<span className={styles.label}>{content.label}</span>}
+              <ListItemIcon>
+                { content.icon }
+              </ListItemIcon>
+              <Typography variant="inherit">{content.label}</Typography>
             </StyledMenuItem>
           ))
         }

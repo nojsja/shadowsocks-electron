@@ -129,16 +129,16 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
       {
         label: (connected && selected) ? t('disconnect') : t('connect'),
         action: (connected && selected) ? ('disconnect') : ('connect'),
-        icon: (connected && selected) ? <WifiOffIcon /> : <WifiIcon />
+        icon: (connected && selected) ? <WifiOffIcon fontSize="small" /> : <WifiIcon fontSize="small" />
       },
-      { label: t('copy'), action: 'copy', icon: <CopyIcon/> },
-      { label: t('delay_test'), action: 'test', icon: <SettingsEthernetIcon />},
+      { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
+      { label: t('delay_test'), action: 'test', icon: <SettingsEthernetIcon fontSize="small"  />},
       ...topable ? [
-        { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon />},
+        { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
       ] : [],
       ...moveable ? [{
-        label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon />},
-      { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon /> }] : [],
+        label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" />},
+      { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> }] : [],
     ];
   }
 

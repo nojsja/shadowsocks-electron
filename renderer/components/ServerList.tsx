@@ -11,6 +11,7 @@ import { Config, GroupConfig } from "../types/";
 import { scrollBarStyle } from "../pages/styles";
 import { useDispatch } from "react-redux";
 import { moveConfig } from "../redux/actions/config";
+import GradientDivider from "./Pices/GradientDivider";
 
 export let cloneElement: HTMLDivElement | null;
 export const setCloneElement = (div: HTMLDivElement | null) => cloneElement = div;
@@ -23,8 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       overflowY: "auto",
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-      borderBottom: `solid 1px ${theme.palette.secondary.main}`
     },
     scrollbar: scrollBarStyle(6, 0, theme),
     empty: {
@@ -91,27 +90,32 @@ const ServerList: React.FC<ServerListProps> = props => {
 
   return (
     !!config.length ? (
-      <List className={`${styles.list} ${styles.scrollbar}`}>
-        {config.map((item, index) => (
-          <ServerListItem
-            key={item.id}
-            item={item}
-            dragTarget={dragTarget}
-            dragSort={dragSort}
-            dragSource={dragSource}
-            setDragSource={setDragSource}
-            setDragTarget={setDragTarget}
-            selectedServer={selectedServer}
-            connected={connected}
-            onShare={handleShareButtonClick}
-            onEdit={handleEditButtonClick}
-            onRemove={handleRemoveButtonClick}
-            handleServerSelect={handleServerSelect}
-            handleServerConnect={handleServerConnect}
-            isLast={index === config.length - 1}
-          />
-        ))}
-      </List>
+      (
+      <>
+        <List className={`${styles.list} ${styles.scrollbar}`}>
+          {config.map((item, index) => (
+            <ServerListItem
+              key={item.id}
+              item={item}
+              dragTarget={dragTarget}
+              dragSort={dragSort}
+              dragSource={dragSource}
+              setDragSource={setDragSource}
+              setDragTarget={setDragTarget}
+              selectedServer={selectedServer}
+              connected={connected}
+              onShare={handleShareButtonClick}
+              onEdit={handleEditButtonClick}
+              onRemove={handleRemoveButtonClick}
+              handleServerSelect={handleServerSelect}
+              handleServerConnect={handleServerConnect}
+              isLast={index === config.length - 1}
+            />
+          ))}
+        </List>
+        <GradientDivider />
+      </>
+      )
     )
     : (
     <div className={styles.empty}>

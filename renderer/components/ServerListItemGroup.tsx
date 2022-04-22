@@ -78,11 +78,11 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
 
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
   const [ContextMenu, handleMenuOpen] = useContextMenu([
-    { label: t('copy'), action: 'copy', icon: <CopyIcon/> },
-    { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon />},
-    { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon /> },
-    { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon /> },
-    { label: t('delete'), action: 'delete', icon: <DeleteIcon />}
+    { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
+    { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
+    { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
+    { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
+    { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />}
   ]);
 
   useEffect(() => {
