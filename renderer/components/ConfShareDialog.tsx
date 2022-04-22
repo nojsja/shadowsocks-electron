@@ -128,7 +128,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
           {t('save')}
         </Button>
       </CardActions>
-      { SnackbarAlert }
+      <SnackbarAlert />
     </StyledCard>
   );
 }

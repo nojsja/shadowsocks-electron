@@ -61,7 +61,8 @@ const useStyles = makeStyles((theme: Theme) =>
     toolBar: {
       display: 'flex',
       justifyContent: 'flex-end',
-      alignItems: 'center'
+      alignItems: 'center',
+      minHeight: '36px'
     },
     menuButton: {
       //   [theme.breakpoints.up("sm")]: {

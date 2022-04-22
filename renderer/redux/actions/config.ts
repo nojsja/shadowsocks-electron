@@ -18,6 +18,7 @@ export const OVERRIDE_CONFIG = "OVERRIDE_CONFIG";
 export const TOP = "TOP";
 export const MOVE_UP = "MOVE_UP";
 export const MOVE_DOWN = "MOVE_DOWN";
+export const MOVE_TO = "MOVE_TO";
 
 export const addConfig = (id: string, config: Config) => {
   return {
@@ -110,7 +111,7 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
   return (dispatch) => {
     dispatch(setStatus('waiting', true))
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
-      if (resources && resources.length) {
+      if (resources?.length) {
         const qrs: {x: number, y: number, width: number, height: number}[] = [];
         const values: string[] = [];
         resources.forEach(resource => {
@@ -190,6 +191,14 @@ export const editConfig = (id: string, config: Config | GroupConfig) => {
   };
 };
 
+export const moveConfig = (id: string, target: string) => {
+  return {
+    type: MOVE_TO,
+    id,
+    target,
+  };
+};
+
 export const wipeConfig = () => {
   return {
     type: WIPE_CONFIG
@@ -220,3 +229,4 @@ export const moveDown = (id: string) => {
 export type AddConfigAction = ReturnType<typeof addConfig>;
 export type RemoveConfigAction = ReturnType<typeof removeConfig>;
 export type EditConfigAction = ReturnType<typeof editConfig>;
+export type MoveConfigAction = ReturnType<typeof moveConfig>;

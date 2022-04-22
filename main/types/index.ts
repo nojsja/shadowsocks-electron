@@ -65,10 +65,6 @@ export interface Settings {
     enable: boolean,
     port: number
   },
-  httpsProxy: {
-    enable: boolean,
-    port: number
-  },
   gfwListUrl: string;
   autoLaunch: boolean;
   lang: string;

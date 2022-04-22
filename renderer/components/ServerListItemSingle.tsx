@@ -1,5 +1,4 @@
 import React, { useState, memo } from "react";
-import { MessageChannel } from 'electron-re';
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
 import {
@@ -12,14 +11,27 @@ import {
   Badge,
   Tooltip
 } from "@material-ui/core";
+import { useDispatch } from "react-redux";
 import { makeStyles, createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { red } from '@material-ui/core/colors';
-import EditIcon from "@material-ui/icons/Edit";
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import ShareIcon from "@material-ui/icons/Share";
-import RemoveIcon from "@material-ui/icons/Delete";
-import { useDispatch } from "react-redux";
+
+import {
+  Delete as RemoveIcon,
+  Share as ShareIcon,
+  CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon,
+  CheckBox as CheckBoxIcon,
+  Edit as EditIcon,
+  FileCopy as CopyIcon,
+  SettingsEthernet as SettingsEthernetIcon,
+  VerticalAlignTop as VerticalAlignTopIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  Wifi as WifiIcon,
+  WifiOff as WifiOffIcon,
+} from "@material-ui/icons";
+
+import useContextMenu from "../hooks/useContextMenu";
+
 import { getConnectionDelay } from "../redux/actions/status";
 import { moveDown, moveUp, top } from "../redux/actions/config";
 import { Config } from "../types";
@@ -109,8 +121,26 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
   } = item;
 
   const origin = `${serverHost}:${serverPort}`;
-
   const [actionHidden, setActionHidden] = useState(true);
+  const [ContextMenu, handleMenuOpen] = useContextMenu(getMenuContents());
+
+  function getMenuContents () {
+    return [
+      {
+        label: (connected && selected) ? t('disconnect') : t('connect'),
+        action: (connected && selected) ? ('disconnect') : ('connect'),
+        icon: (connected && selected) ? <WifiOffIcon fontSize="small" /> : <WifiIcon fontSize="small" />
+      },
+      { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
+      { label: t('delay_test'), action: 'test', icon: <SettingsEthernetIcon fontSize="small"  />},
+      ...topable ? [
+        { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
+      ] : [],
+      ...moveable ? [{
+        label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" />},
+      { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> }] : [],
+    ];
+  }
 
   const handleActionHide = () => {
     setActionHidden(true);
@@ -151,75 +181,38 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
     }
   }
 
+  const handleContextMenuClick = (action: string) => {
+    switch (action) {
+      case 'connect':
+        handleChooseButtonClick();
+        break;
+      case 'disconnect':
+        handleChooseButtonClick();
+        break;
+      case 'copy':
+        clipboard.writeText(JSON.stringify(item));
+        break;
+      case 'test':
+        dispatch(getConnectionDelay(serverHost, serverPort));
+        break;
+      case 'top':
+        dispatch(top(item.id));
+        break;
+      case 'move_up':
+        dispatch(moveUp(id));
+        break;
+      case 'move_down':
+        dispatch(moveDown(id));
+        break;
+      default:
+        break;
+    }
+  }
+
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    MessageChannel.invoke('main', 'service:desktop', {
-      action: 'contextMenu',
-      params: [
-        {
-          label: (connected && selected) ? `🔗 ${t('disconnect')}` : `🔌 ${t('connect')}`,
-          action: (connected && selected) ? ('disconnect') : ('connect'),
-          accelerator: '',
-        },
-        {
-          label: `📄 ${t('copy')}`,
-          action: 'copy',
-          accelerator: '',
-        },
-        {
-          label: `🌏 ${t('delay_test')}`,
-          action: 'test',
-          accelerator: '',
-        },
-        ...topable ? [
-          {
-            label: `🔝 ${t('top')}`,
-            action: 'top',
-            accelerator: '',
-          },
-        ] : [],
-        ...moveable ? [{
-          label: `🔼 ${t('move_up')}`,
-          action: 'move_up',
-          accelerator: '',
-        },
-        {
-          label: `🔽 ${t('move_down')}`,
-          action: 'move_down',
-          accelerator: '',
-        }] : [],
-      ]
-    })
-    .then(rsp => {
-      if (rsp.code === 200) {
-        switch (rsp.result) {
-          case 'connect':
-            handleChooseButtonClick();
-            break;
-          case 'disconnect':
-            handleChooseButtonClick();
-            break;
-          case 'copy':
-            clipboard.writeText(JSON.stringify(item));
-            break;
-          case 'test':
-            dispatch(getConnectionDelay(serverHost, serverPort));
-            break;
-          case 'top':
-            dispatch(top(item.id));
-            break;
-          case 'move_up':
-            dispatch(moveUp(id));
-            break;
-          case 'move_down':
-            dispatch(moveDown(id));
-            break;
-          default:
-            break;
-        }
-      }
-    });
+    handleMenuOpen(e);
   };
 
   return (
@@ -283,6 +276,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           }
         </ListItemSecondaryAction>
       </ListItem>
+      <ContextMenu onItemClick={handleContextMenuClick} />
     </div>
   );
 };

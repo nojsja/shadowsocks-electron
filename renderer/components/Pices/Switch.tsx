@@ -18,3 +18,5 @@ export const AdaptiveSwitch = withStyles((theme: Theme) => (
     },
   })
 ))(Switch);
+
+export default AdaptiveSwitch;

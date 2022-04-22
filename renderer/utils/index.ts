@@ -1,4 +1,3 @@
-import { desktopCapturer } from 'electron';
 import { Config, GroupConfig, notificationOptions } from '../types';
 import { MessageChannel } from 'electron-re';
 import { persistStore } from '../App';
@@ -19,12 +18,19 @@ export function getDefaultLang(): string {
 }
 
 export function getScreenCapturedResources(): Promise<Electron.DesktopCapturerSource[]> {
-  return desktopCapturer.getSources({
-    types: ['screen'],
-    thumbnailSize: {
-      width: window.screen.width * window.devicePixelRatio,
-      height: window.screen.height * window.devicePixelRatio
+  return MessageChannel.invoke('main', 'service:desktop', {
+    action: 'getScreenCapturedResources',
+    params: {
+      types: ['screen'],
+      width: window.screen.width,
+      height: window.screen.height,
+      devicePixelRatio: window.devicePixelRatio
     }
+  }).then(res => {
+    if (res.code === 200) {
+      return res.result;
+    }
+    return [];
   });
 }
 

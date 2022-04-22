@@ -9,7 +9,12 @@ import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import ServerListItem from "./ServerListItem";
 import { Config, GroupConfig } from "../types/";
 import { scrollBarStyle } from "../pages/styles";
+import { useDispatch } from "react-redux";
+import { moveConfig } from "../redux/actions/config";
+import GradientDivider from "./Pices/GradientDivider";
 
+export let cloneElement: HTMLDivElement | null;
+export const setCloneElement = (div: HTMLDivElement | null) => cloneElement = div;
 
 const useStyles = makeStyles((theme: Theme) =>
 
@@ -19,8 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       overflowY: "auto",
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
-      borderBottom: `solid 1px ${theme.palette.secondary.main}`
     },
     scrollbar: scrollBarStyle(6, 0, theme),
     empty: {
@@ -50,7 +53,29 @@ export interface ServerListProps extends ListItemProps {
 
 const ServerList: React.FC<ServerListProps> = props => {
 
+  const dispatch = useDispatch();
   const styles = useStyles();
+  const dragTarget = React.useRef<string | null>(null);
+  const dragSource = React.useRef<string | null>(null);
+
+  const setDragTarget = (id: string | null) => {
+    dragTarget.current = id;
+  };
+
+  const setDragSource = (id: string | null) => {
+    dragSource.current = id;
+  };
+
+  const dragSort = () => {
+    if (
+      dragTarget.current === dragSource.current ||
+      !dragSource.current||
+      !dragTarget.current
+    ) return;
+    dispatch(moveConfig(dragSource.current, dragTarget.current));
+    setDragSource(null);
+    setDragTarget(null);
+  }
 
   const {
     config,
@@ -65,22 +90,32 @@ const ServerList: React.FC<ServerListProps> = props => {
 
   return (
     !!config.length ? (
-      <List className={`${styles.list} ${styles.scrollbar}`}>
-        {config.map((item, index) => (
-          <ServerListItem
-            key={item.id}
-            item={item}
-            selectedServer={selectedServer}
-            connected={connected}
-            onShare={handleShareButtonClick}
-            onEdit={handleEditButtonClick}
-            onRemove={handleRemoveButtonClick}
-            handleServerSelect={handleServerSelect}
-            handleServerConnect={handleServerConnect}
-            isLast={index === config.length - 1}
-          />
-        ))}
-      </List>
+      (
+      <>
+        <List className={`${styles.list} ${styles.scrollbar}`}>
+          {config.map((item, index) => (
+            <ServerListItem
+              key={item.id}
+              item={item}
+              dragTarget={dragTarget}
+              dragSort={dragSort}
+              dragSource={dragSource}
+              setDragSource={setDragSource}
+              setDragTarget={setDragTarget}
+              selectedServer={selectedServer}
+              connected={connected}
+              onShare={handleShareButtonClick}
+              onEdit={handleEditButtonClick}
+              onRemove={handleRemoveButtonClick}
+              handleServerSelect={handleServerSelect}
+              handleServerConnect={handleServerConnect}
+              isLast={index === config.length - 1}
+            />
+          ))}
+        </List>
+        <GradientDivider />
+      </>
+      )
     )
     : (
     <div className={styles.empty}>

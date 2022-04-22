@@ -1,4 +1,4 @@
-import { IpcMain, app, dialog, Notification, Menu } from 'electron';
+import { IpcMain, app, dialog, Notification, Menu, desktopCapturer } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import { ProcessManager } from 'electron-re';
@@ -6,7 +6,8 @@ import { ProcessManager } from 'electron-re';
 import {
   contextAction,
   DesktopService as DesktopServiceType,
-  rectPoint, ServiceResult
+  rectPoint, ServiceResult,
+  windowInfo
 } from '../types/extention';
 import { openLogDir } from '../logs';
 import TransparentWindow from '../window/TransparentWindow';
@@ -232,6 +233,31 @@ export class DesktopService implements DesktopServiceType {
         });
       });
     })
+  }
+
+  async getScreenCapturedResources(params: windowInfo): Promise<ServiceResult> {
+
+    const { devicePixelRatio, width, height, types } = params;
+
+    return new Promise(resolve => {
+      desktopCapturer.getSources({
+        types: types,
+        thumbnailSize: {
+          width: width * devicePixelRatio,
+          height: height * devicePixelRatio
+        }
+      }).then((sources) => {
+        resolve({
+          code: 200,
+          result: sources
+        });
+      }).catch(err => {
+        resolve({
+          code: 500,
+          result: err.toString
+        });
+      });
+    });
   }
 
   async reloadMainWindow(params: any): Promise<ServiceResult> {

@@ -2,7 +2,7 @@
   "appId": "io.nojsja.shadowsocks-electron",
   "productName": "Shadowsocks Electron",
   "asar": true,
-  "copyright": "© 2020 nojsja",
+  "copyright": "© 2021 nojsja",
   "files": [
     "assets/**/*",
     "!bin/**/*",
@@ -11,7 +11,10 @@
     "!assets/main.png",
     "!assets/right.png",
     "!assets/settings.png",
-    "!assets/share.png"
+    "!assets/share.png",
+    "!assets/dark.png",
+    "!assets/context_menu.png",
+    "!assets/subscription.png"
   ],
   "extraFiles": [
     {

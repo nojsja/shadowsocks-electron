@@ -9,10 +9,10 @@ type AdaptiveDrawerProps = DrawerProps & {
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
   drawerAbsolute: {
-    width: 60,
-    height: 'calc(100vh - 50px)',
+    width: 58,
+    height: 'calc(100vh - 38px)',
     overflow: 'hidden',
-    marginTop: 48,
+    marginTop: 38,
   },
   drawerFixed: {
     height: '100vh',

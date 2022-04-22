@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useLayoutEffect } from "react";
 import {
   Dialog,
   TextField,
@@ -99,7 +99,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
     }
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setValues(
       defaultValues ?? {
         timeout: 60,
@@ -171,7 +171,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
       fullScreen={fullScreen}
       open={open}
       onClose={onClose}
-      disableBackdropClick
     >
       <AdaptiveAppBar className={fullScreen ? styles.appBar : styles.appBarRelative}>
         <Toolbar>
@@ -382,7 +381,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           )
         }
       </Container>
-      { SnackbarAlert }
+      <SnackbarAlert />
     </StyledDialog>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useState, memo, useEffect } from "react";
-import { MessageChannel } from 'electron-re';
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
 import {
@@ -9,13 +8,19 @@ import {
   AccordionSummary,
 } from "@material-ui/core";
 import {
-  ExpandMore
+  ExpandMore,
+  FileCopy as CopyIcon,
+  VerticalAlignTop as VerticalAlignTopIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  Delete as DeleteIcon,
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { moveDown, moveUp, top } from "../redux/actions/config";
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig } from "../types";
+import useContextMenu from "../hooks/useContextMenu";
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
   createStyles({
@@ -72,6 +77,13 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   } = props;
 
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
+  const [ContextMenu, handleMenuOpen] = useContextMenu([
+    { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
+    { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
+    { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
+    { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
+    { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />}
+  ]);
 
   useEffect(() => {
     handleChange(!!item.servers?.find(server => server.id === selectedServer));
@@ -81,70 +93,41 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     props.onRemove?.(item.id);
   };
 
+  function onContextMenuClick (action: string) {
+    switch (action) {
+      case 'copy':
+        clipboard.writeText(JSON.stringify(item));
+        break;
+      case 'top':
+        dispatch(top(item.id));
+        break;
+      case 'move_up':
+        dispatch(moveUp(item.id));
+        break;
+      case 'move_down':
+        dispatch(moveDown(item.id));
+        break;
+      case 'delete':
+        handleRemoveButtonClick();
+      default:
+        break;
+    }
+  }
+
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
-    MessageChannel.invoke('main', 'service:desktop', {
-      action: 'contextMenu',
-      params: [
-        {
-          label: `📄 ${t('copy')}`,
-          action: 'copy',
-          accelerator: '',
-        },
-        {
-          label: `🔝 ${t('top')}`,
-          action: 'top',
-          accelerator: '',
-        },
-        {
-          label: `🔼 ${t('move_up')}`,
-          action: 'move_up',
-          accelerator: '',
-        },
-        {
-          label: `🔽 ${t('move_down')}`,
-          action: 'move_down',
-          accelerator: '',
-        },
-        {
-          label: `🗑 ${t('delete')}`,
-          action: 'delete',
-          accelerator: '',
-        },
-      ]
-    })
-    .then(rsp => {
-      if (rsp.code === 200) {
-        switch (rsp.result) {
-          case 'copy':
-            clipboard.writeText(JSON.stringify(item));
-            break;
-          case 'top':
-            dispatch(top(item.id));
-            break;
-          case 'move_up':
-            dispatch(moveUp(item.id));
-            break;
-          case 'move_down':
-            dispatch(moveDown(item.id));
-            break;
-          case 'delete':
-            handleRemoveButtonClick();
-          default:
-            break;
-        }
-      }
-    });
+    e.stopPropagation();
+    handleMenuOpen(e);
   };
 
   return (
     <div
-      onContextMenu={onContextMenu}
     >
       <Accordion expanded={expanded} onChange={() => handleChange(!expanded)}>
         <StyledAccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls="panel1bh-content"
+          onContextMenu={onContextMenu}
         >
           { item.name }
         </StyledAccordionSummary>
@@ -164,6 +147,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           }
         </StyledAccordionDetails>
       </Accordion>
+      <ContextMenu onItemClick={onContextMenuClick} />
     </div>
   );
 };

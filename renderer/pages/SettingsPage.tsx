@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import Form, { Field } from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import {
   Container,
@@ -20,13 +21,13 @@ import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
 import { SET_SETTING, getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy } from "../redux/actions/settings";
 import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
-import { Settings } from "../types";
+// import { Settings } from "../types";
 import { getDefaultLang } from "../utils";
 import { useStylesOfSettings as useStyles } from "./styles";
 import useSnackbarAlert from "../hooks/useSnackbarAlert";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
-import EditAclDialog from "../components/EditAclDialog";
+// import EditAclDialog from "../components/EditAclDialog";
 import { getFirstLanguage } from "../i18n";
 import { persistStore } from "../App";
 import { TextWithTooltip } from "../components/Pices/TextWithTooltip";
@@ -37,9 +38,10 @@ const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
 
   const dispatch = useTypedDispatch();
+  const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
-  const [aclVisible, setAclVisible] = useState(false);
+  // const [aclVisible, setAclVisible] = useState(false);
   const inputFileRef = React.useRef<HTMLInputElement>(null);
   const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 2e3 });
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
@@ -79,107 +81,22 @@ const SettingsPage: React.FC = () => {
     }));
   }
 
-  const checkPortValid = (value: string) => {
-    const parsedValue = parseInt(value.trim(), 10);
+  const checkPortValid = (parsedValue: number) => {
     if (!(parsedValue && parsedValue > 1024 && parsedValue <= 65535)) {
-          setSnackbarMessage(t("invalid_port"));
-          return false;
+          return Promise.reject(t("invalid_port_range"));
     }
-    return true;
-  }
-
-  const checkPortUsed = (value: number, target: 'httpProxy', useValue?: boolean) => {
-    if (
-      useValue === undefined ?
-      (value == settings[target].port &&
-      settings.httpProxy.enable)
-      :
-      (value == settings[target].port &&
-      settings[target].enable &&
-      useValue)
-    ) {
-      setTimeout(() => {
-        setSnackbarMessage(t("https_http_proxy_port_not_same"));
-      }, 200);
-      return false;
-    }
-    return true;
+    return Promise.resolve();
   };
 
-  const handleValueChange = (
-    key: keyof Settings,
-    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    let value: any = e.target.value;
-    switch (key) {
-      case 'localPort':
-        if (!checkPortValid(value)) return;
-        break;
-      case 'pacPort':
-        if (!checkPortValid(value)) return;
-        break;
-      case 'httpProxy':
-        if (!checkPortUsed(value, 'httpProxy')) return;
-        value = {
-          ...settings.httpProxy,
-          port: value
-        }
-        break;
-      case 'acl':
-        value = {
-          ...settings.acl,
-          text: value
-        }
-        break;
-      default:
-        break;
+  const checkPortSame = () => {
+    const localPort = +form.getFieldValue('localPort');
+    const pacPort = +form.getFieldValue('pacPort');
+    const httpPort = +form.getFieldValue('httpProxyPort');
+    const num = localPort ^ pacPort ^ httpPort;
+    if (num === localPort || num === pacPort || num === httpPort) {
+      return Promise.reject(t("the_same_port_is_not_allowed"));
     }
-
-    dispatch({
-      type: SET_SETTING,
-      key,
-      value: value
-    });
-  };
-
-  const handleSwitchValueChange = (
-    key: keyof Settings,
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    let value: any = e.target.checked;
-    switch (key) {
-      case 'autoLaunch':
-        dispatch<any>(setStartupOnBoot(value));
-        break;
-      case 'httpProxy':
-        // if (!checkPortUsed(settings.httpProxy.port, 'httpsProxy', value)) return;
-        value = {
-          ...settings.httpProxy,
-          enable: value
-        };
-        setHttpAndHttpsProxy({...value, type: 'http', proxyPort: settings.localPort });
-        break;
-      case 'acl':
-        value = {
-          ...settings.acl,
-          enable: value
-        };
-        // setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
-        break;
-      case 'darkMode':
-        persistStore.set('darkMode', value ? 'true' : 'false');
-        MessageChannel.invoke('main', 'service:desktop', {
-          action: 'reloadMainWindow',
-          params: {}
-        });
-        break;
-      default:
-        break;
-    }
-    dispatch({
-      type: SET_SETTING, key,
-      value: value
-    });
+    return Promise.resolve();
   };
 
   const handleOpenLog = async () => {
@@ -270,225 +187,320 @@ const SettingsPage: React.FC = () => {
     });
   }
 
+  const checkPortField = (rule: any, value: any) => {
+    return Promise.all([checkPortSame(), checkPortValid(value)]);
+  };
+
+  const onFieldChange = (changedFields: { [key: string]: any }, allFields: { [key: string]: any }) => {
+    const keys = Object.keys(changedFields);
+    keys.forEach((key) => {
+      let value = changedFields[key];
+      form.validateFields([key]).then(() => {
+        switch (key) {
+          case 'httpProxy':
+            value = {
+              ...settings.httpProxy,
+              enable: value
+            };
+            dispatch({ type: SET_SETTING, key: 'httpProxy', value });
+            setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
+            return;
+          case 'httpProxyPort':
+            value = {
+              ...settings.httpProxy,
+              port: value
+            };
+            dispatch({ type: SET_SETTING, key: 'httpProxy', value });
+            setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
+            return;
+          case 'acl':
+            dispatch({ type: SET_SETTING, key, value: {
+              ...settings.acl,
+              text: value
+            } });
+            return;
+          case 'autoLaunch':
+            dispatch<any>(setStartupOnBoot(value));
+            return;
+          case 'darkMode':
+            persistStore.set('darkMode', value ? 'true' : 'false');
+            MessageChannel.invoke('main', 'service:desktop', {
+              action: 'reloadMainWindow',
+              params: {}
+            });
+            break;
+          default:
+            break;
+        }
+
+        dispatch({ type: SET_SETTING, key, value });
+      }).catch((reason: { errorFields: { errors: string[] }[] }) => {
+        setSnackbarMessage(reason?.errorFields?.map(item => item.errors.join()).join())
+      });
+    });
+  }
+
   return (
     <Container className={styles.container}>
-      <TextField
-        className={styles.textField}
-        required
-        fullWidth
-        size="small"
-        type="number"
-        label={t('local_port')}
-        placeholder={t('local_port_tips')}
-        value={settings.localPort}
-        onChange={e => handleValueChange("localPort", e)}
-      />
-      <TextField
-        className={styles.textField}
-        required
-        fullWidth
-        type="number"
-        size="small"
-        label={t('pac_port')}
-        placeholder={t('pac_port_tips')}
-        value={settings.pacPort}
-        onChange={e => handleValueChange("pacPort", e)}
-      />
-      <input onChange={onGFWListFileChange} ref={inputFileRef} type={'file'} multiple={false} style={{ display: 'none' }}></input>
-      <TextField
-        className={styles.textField}
-        required
-        fullWidth
-        type="url"
-        size="small"
-        label={
-          <TextWithTooltip
-            text={t('gfwlist_url')}
-            icon={
-              <span>
-                <Tooltip arrow placement="top" title={t('recover_pac_file_with_link') as string}>
-                  <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFileWithUrl} />
-                </Tooltip>
-                <Tooltip arrow placement="top" title={t('recover_pac_file_with_file') as string}>
-                  <NoteAdd className={styles.cursorPointer} onClick={reGeneratePacFileWithFile}/>
-                </Tooltip>
-              </span>
-            }
-          />
+      <Form
+        form={form}
+        initialValues={
+          {
+            localPort: settings.localPort,
+            pacPort: settings.pacPort,
+            gfwListUrl: settings.gfwListUrl,
+            httpProxy: settings.httpProxy.enable,
+            httpProxyPort: settings.httpProxy.port,
+            autoLaunch: settings.autoLaunch,
+            fixedMenu: settings.fixedMenu,
+            darkMode: settings.darkMode,
+            verbose: settings.verbose
+          }
         }
-        placeholder={t('gfwlist_url_tips')}
-        value={settings.gfwListUrl}
-        onChange={e => handleValueChange("gfwListUrl", e)}
-      />
-
-      <List className={styles.list}>
-        <ListItem>
-            <ListItemText
-              primary={t('http_proxy')}
-              // secondary="Not applicable to Linux"
+        onValuesChange={onFieldChange}
+      >
+        <Field
+          name="localPort"
+          rules={[
+            { required: true, message: t('invalid_value') },
+            { validator: checkPortField },
+          ]}
+          normalize={(value: string) => +(value.trim())}
+          validateTrigger={false}
+        >
+          <TextField
+            className={styles.textField}
+            required
+            fullWidth
+            size="small"
+            type="number"
+            label={t('local_port')}
+            placeholder={t('local_port_tips')}
+          />
+        </Field>
+        <Field
+          name="pacPort"
+          rules={[
+            { required: true, message: t('invalid_value') },
+            { validator: checkPortField }
+          ]}
+          normalize={(value: string) => +(value.trim())}
+          validateTrigger={false}
+        >
+          <TextField
+            className={styles.textField}
+            required
+            fullWidth
+            type="number"
+            size="small"
+            label={t('pac_port')}
+            placeholder={t('pac_port_tips')}
+          />
+        </Field>
+        <Field
+          name="gfwListUrl"
+          validateTrigger={false}
+        >
+          <TextField
+          className={styles.textField}
+          required
+          fullWidth
+          type="url"
+          size="small"
+          label={
+            <TextWithTooltip
+              text={t('gfwlist_url')}
+              icon={
+                <span>
+                  <Tooltip arrow placement="top" title={t('recover_pac_file_with_link') as string}>
+                    <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFileWithUrl} />
+                  </Tooltip>
+                  <Tooltip arrow placement="top" title={t('recover_pac_file_with_file') as string}>
+                    <NoteAdd className={styles.cursorPointer} onClick={reGeneratePacFileWithFile}/>
+                  </Tooltip>
+                </span>
+              }
             />
-            <ListItemSecondaryAction>
-              <AdaptiveSwitch
-                edge="end"
-                checked={settings.httpProxy.enable}
-                onChange={e => handleSwitchValueChange("httpProxy", e)}
-              />
-            </ListItemSecondaryAction>
-        </ListItem>
-        {
-          settings.httpProxy.enable && (
-            <ListItem>
+          }
+          placeholder={t('gfwlist_url_tips')}
+        />
+        </Field>
+        <input onChange={onGFWListFileChange} ref={inputFileRef} type={'file'} multiple={false} style={{ display: 'none' }}></input>
+        <List className={styles.list}>
+          <ListItem>
               <ListItemText
-                primary={t('http_proxy_port')}
+                primary={t('http_proxy')}
               />
               <ListItemSecondaryAction>
-                <TextField
-                  className={`${styles.textField} ${styles.indentInput}`}
-                  // style={{ width: '120px', textAlign: 'right' }}
-                  required
-                  size="small"
-                  type="number"
-                  // variant="filled"
-                  placeholder={t('http_proxy_port')}
-                  value={settings.httpProxy.port}
-                  onChange={e => handleValueChange("httpProxy", e)}
-                />
+                <Field name="httpProxy" valuePropName="checked">
+                  <AdaptiveSwitch
+                    edge="end"
+                  />
+                </Field>
               </ListItemSecondaryAction>
-            </ListItem>
-          )
-        }
-        {/* <ListItem>
-            <ListItemText
-              primary={'ACL'}
-              // secondary="Not applicable to Linux"
-            />
-            <ListItemSecondaryAction>
-              <AdaptiveSwitch
-                edge="end"
-                checked={settings.acl.enable}
-                onChange={e => handleSwitchValueChange("acl", e)}
-              />
-            </ListItemSecondaryAction>
-        </ListItem>
-        {
-          settings.acl.enable && (
-            <ListItem>
+          </ListItem>
+          {
+            settings.httpProxy.enable && (
+              <ListItem>
+                <ListItemText
+                  primary={t('http_proxy_port')}
+                />
+                <ListItemSecondaryAction>
+                  <Field
+                    name="httpProxyPort"
+                    rules={[
+                      { required: true, message: t('invalid_value') },
+                      { validator: checkPortField }
+                    ]}
+                    normalize={(value: string) => +(value.trim())}
+                    validateTrigger={false}
+                  >
+                    <TextField
+                      className={`${styles.textField} ${styles.indentInput}`}
+                      required
+                      size="small"
+                      type="number"
+                      placeholder={t('http_proxy_port')}
+                    />
+                  </Field>
+                </ListItemSecondaryAction>
+              </ListItem>
+            )
+          }
+          {/* <ListItem>
               <ListItemText
-                primary={t('acl_content')}
+                primary={'ACL'}
+                // secondary="Not applicable to Linux"
               />
               <ListItemSecondaryAction>
-                <TextField
-                  className={`${styles.textField} ${styles.indentInput}`}
-                  style={{ width: '120px', textAlign: 'right' }}
-                  required
-                  size="small"
-                  type="text"
-                  placeholder={t('click_to_edit')}
-                  onClick={() => setAclVisible(true)}
-                  value={'*****'}
+                <AdaptiveSwitch
+                  edge="end"
+                  checked={settings.acl.enable}
+                  onChange={e => handleSwitchValueChange("acl", e)}
                 />
               </ListItemSecondaryAction>
-            </ListItem>
-          )
-        } */}
-        <ListItem>
-          <ListItemText
-            primary={t('launch_on_boot')}
-            secondary={t('not_applicable_to_linux_snap_application')}
-          />
-          <ListItemSecondaryAction>
-            <AdaptiveSwitch
-              edge="end"
-              checked={settings.autoLaunch}
-              onChange={e => handleSwitchValueChange("autoLaunch", e)}
+          </ListItem>
+          {
+            settings.acl.enable && (
+              <ListItem>
+                <ListItemText
+                  primary={t('acl_content')}
+                />
+                <ListItemSecondaryAction>
+                  <TextField
+                    className={`${styles.textField} ${styles.indentInput}`}
+                    style={{ width: '120px', textAlign: 'right' }}
+                    required
+                    size="small"
+                    type="text"
+                    placeholder={t('click_to_edit')}
+                    onClick={() => setAclVisible(true)}
+                    value={'*****'}
+                  />
+                </ListItemSecondaryAction>
+              </ListItem>
+            )
+          } */}
+          <ListItem>
+            <ListItemText
+              primary={t('launch_on_boot')}
+              secondary={t('not_applicable_to_linux_snap_application')}
             />
-          </ListItemSecondaryAction>
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary={t('fixed_menu')}
-          />
-          <ListItemSecondaryAction>
-            <AdaptiveSwitch
-              edge="end"
-              checked={settings.fixedMenu}
-              onChange={e => handleSwitchValueChange("fixedMenu", e)}
+            <ListItemSecondaryAction>
+              <Field name="autoLaunch" valuePropName="checked">
+                <AdaptiveSwitch
+                  edge="end"
+                />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={t('fixed_menu')}
             />
-          </ListItemSecondaryAction>
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary={t('darkMode')}
-          />
-          <ListItemSecondaryAction>
-            <AdaptiveSwitch
-              edge="end"
-              checked={settings.darkMode}
-              onChange={e => handleSwitchValueChange("darkMode", e)}
+            <ListItemSecondaryAction>
+              <Field name="fixedMenu" valuePropName="checked">
+                <AdaptiveSwitch
+                  edge="end"
+                />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={t('darkMode')}
             />
-          </ListItemSecondaryAction>
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary={'Language'}
-          />
-          <ListItemSecondaryAction>
-            <Select
-              value={getDefaultLang()}
-              onChange={onLangChange}
-            >
-            <MenuItem value={'en-US'}>English</MenuItem>
-            <MenuItem value={'zh-CN'}>中文简体</MenuItem>
-          </Select>
-          </ListItemSecondaryAction>
-        </ListItem>
-
-        <ListItem button onClick={backupConfiguration}>
-            <ListItemText primary={t('backup')} />
-        </ListItem>
-        <ListItem button onClick={() => restoreConfiguration()}>
-            <ListItemText primary={t('restore')} />
-        </ListItem>
-        <ListItem button onClick={handleAlertDialogOpen}>
-          <ListItemText primary={t('reset_data')} />
-        </ListItem>
-
-        <Divider className={styles.margin} />
-
-        <ListSubheader>{t('debugging')}</ListSubheader>
-
-        <ListItem>
-          <ListItemText
-            primary="Verbose"
-            secondary={t('verbose_output')}
-          />
-          <ListItemSecondaryAction>
-            <AdaptiveSwitch
-              edge="end"
-              checked={settings.verbose}
-              onChange={e => handleSwitchValueChange("verbose", e)}
+            <ListItemSecondaryAction>
+              <Field name="darkMode" valuePropName="checked">
+                <AdaptiveSwitch
+                  edge="end"
+                />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={'Language'}
             />
-          </ListItemSecondaryAction>
-        </ListItem>
-        <ListItem button onClick={handleOpenLog}>
-          <ListItemText primary={t('open_log_dir')} />
-        </ListItem>
-        <ListItem button onClick={handleOpenProcessManager}>
-          <ListItemText primary={t('open_process_manager')} />
-        </ListItem>
-      </List>
+            <ListItemSecondaryAction>
+              <Select
+                value={getDefaultLang()}
+                onChange={onLangChange}
+              >
+              <MenuItem value={'en-US'}>English</MenuItem>
+              <MenuItem value={'zh-CN'}>中文简体</MenuItem>
+            </Select>
+            </ListItemSecondaryAction>
+          </ListItem>
+
+          <ListItem button onClick={backupConfiguration}>
+              <ListItemText primary={t('backup')} />
+          </ListItem>
+          <ListItem button onClick={() => restoreConfiguration()}>
+              <ListItemText primary={t('restore')} />
+          </ListItem>
+          <ListItem button onClick={handleAlertDialogOpen}>
+            <ListItemText primary={t('reset_data')} />
+          </ListItem>
+
+          <Divider className={styles.margin} />
+
+          <ListSubheader>{t('debugging')}</ListSubheader>
+
+          <ListItem>
+            <ListItemText
+              primary="Verbose"
+              secondary={t('verbose_output')}
+            />
+            <ListItemSecondaryAction>
+              <Field name="verbose" valuePropName="checked">
+                <AdaptiveSwitch
+                  edge="end"
+                />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem button onClick={handleOpenLog}>
+            <ListItemText primary={t('open_log_dir')} />
+          </ListItem>
+          <ListItem button onClick={handleOpenProcessManager}>
+            <ListItemText primary={t('open_process_manager')} />
+          </ListItem>
+        </List>
+
+      </Form>
 
       {/* dialog */}
 
-      <EditAclDialog
+      {/* <EditAclDialog
         open={aclVisible}
         onClose={() => setAclVisible(false)}
         children={undefined}
         onTextChange={handleValueChange}
-      />
+      /> */}
 
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
-      {SnackbarAlert}
+      <SnackbarAlert />
     </Container>
   );
 };

@@ -90,7 +90,7 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
     <>
       <div className={styles.fabPlaceholder} />
       <div className={styles.fabs}>
-        <Fab size="small" color="secondary" className={styles.noShadow} variant="round" onClick={handleDialogOpen}>
+        <Fab size="small" color="secondary" className={styles.noShadow} variant="circular" onClick={handleDialogOpen}>
           <AddIcon />
         </Fab>
         <span>

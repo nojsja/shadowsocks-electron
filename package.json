@@ -1,6 +1,6 @@
 {
   "name": "shadowsocks-electron",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "description": "Shadowsocks GUI client with cross-platform desktop support",
   "author": {
     "name": "nojsja",
@@ -40,7 +40,7 @@
     "@types/i18n": "^0.13.2",
     "clsx": "^1.1.1",
     "electron-is-dev": "1.1.0",
-    "electron-re": "^1.2.0",
+    "electron-re": "^1.2.1",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.5",
     "electron-window-state": "^5.0.3",
@@ -53,6 +53,7 @@
     "node-fetch": "2.6.0",
     "open": "7.0.3",
     "qrcode": "^1.4.4",
+    "rc-field-form": "^1.26.2",
     "react-i18next": "^11.12.0",
     "socks": "1.x",
     "tapable": "^2.2.1",
@@ -79,7 +80,7 @@
     "cross-env": "^7.0.3",
     "customize-cra": "0.9.1",
     "dotenv": "8.2.0",
-    "electron": "13.4.0",
+    "electron": "18.0.3",
     "electron-builder": "^22.14.5",
     "electron-devtools-installer": "^3.2.0",
     "electron-notarize": "0.3.0",

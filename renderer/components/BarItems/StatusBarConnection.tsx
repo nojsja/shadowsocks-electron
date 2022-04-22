@@ -6,6 +6,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { makeStyles, createStyles, withStyles } from '@material-ui/core/styles';
 import { green, grey, orange } from '@material-ui/core/colors';
+import clsx from 'clsx';
 
 type StatusBarConnectionProps = {
   status: 'online' | 'offline'
@@ -51,7 +52,11 @@ const StatusBarConnection: React.FC<StatusBarConnectionProps> = (props) => {
       }}>
       <span>
         {
-          props.status === 'online' ? t('connected').toLowerCase() : t('offline').toLowerCase()
+          clsx(
+            props.status === 'online' && t('online').toLowerCase(),
+            props.status !== 'online' && t('offline').toLowerCase()
+          )
+
         }
       </span>
     </StyledBadge>
