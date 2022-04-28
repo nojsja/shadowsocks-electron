@@ -41,7 +41,7 @@ const StyledAccordionSummary = withStyles((theme: Theme) => (
       minHeight: '36px',
       backgroundColor: theme.palette.type === "dark" ? '#525252' : 'rgba(255, 255, 255, 1)',
       '&.Mui-expanded': {
-        minHeight: '56px',
+        minHeight: '36px',
       },
       '& .MuiAccordionSummary-content': {
         margin: '8px 0'

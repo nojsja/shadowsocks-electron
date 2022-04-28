@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import {
   MainService as MainServiceType,
-  Config, Settings, ServiceResult, clipboardParseType
+  Config, Settings, ServiceResult, clipboardParseType, SSRConfig
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
@@ -118,7 +118,8 @@ export class MainService implements MainServiceType {
       case 'ssr':
         url = ProxyURI.generateSSR(
           params.serverHost, params.serverPort, params.encryptMethod,
-          params.password, params.remark
+          params.password, params.remark,
+          params.protocol, params.protocolParam, (params as SSRConfig).obfs, (params as SSRConfig).obfsParam
         );
         break;
       default:
