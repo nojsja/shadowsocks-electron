@@ -9,7 +9,7 @@ import SyncIcon from '@material-ui/icons/Sync';
 import uuid from "uuid/v1";
 import { useSnackbar } from 'notistack';
 
-import { Config, closeOptions, GroupConfig } from "../types";
+import { Config, CloseOptions, GroupConfig } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 // import useBackDrop from '../hooks/useBackDrop';
@@ -78,7 +78,7 @@ const HomePage: React.FC = () => {
     });
   }, []);
 
-  const handleDialogClose = (selection?: closeOptions) => {
+  const handleDialogClose = (selection?: CloseOptions) => {
     switch (selection) {
       case 'manual':
         setDialogOpen(false);

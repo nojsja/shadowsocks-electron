@@ -4,7 +4,7 @@ import fs from 'fs';
 
 import {
   MainService as MainServiceType,
-  Config, Settings, ServiceResult, clipboardParseType, SSRConfig
+  Config, Settings, ServiceResult, ClipboardParseType, SSRConfig
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
@@ -51,7 +51,7 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async parseClipboardText(params: { text: string, type: clipboardParseType }): Promise<ServiceResult> {
+  async parseClipboardText(params: { text: string, type: ClipboardParseType }): Promise<ServiceResult> {
     const text = params.text || clipboard.readText('clipboard');
     const type = params.type || 'url';
 

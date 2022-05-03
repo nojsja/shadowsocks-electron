@@ -4,7 +4,7 @@ import jsqr from 'jsqr';
 import uuid from "uuid/v1";
 import { MessageChannel } from 'electron-re';
 
-import { clipboardParseType, Config, GroupConfig, RootState } from "../../types";
+import { ClipboardParseType, Config, GroupConfig, RootState } from "../../types";
 import { getScreenCapturedResources } from '../../utils';
 import { overrideSetting } from './settings';
 import { setStatus } from './status';
@@ -67,7 +67,7 @@ export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: n
   }
 }
 
-export const parseClipboardText = (text: string | null, type: clipboardParseType, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const parseClipboardText = (text: string | null, type: ClipboardParseType, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {

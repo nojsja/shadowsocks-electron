@@ -20,10 +20,10 @@ import CopyIcon from "@material-ui/icons/Code";
 import CreateIcon from "@material-ui/icons/Create";
 import { AdaptiveDialog } from "./Pices/Dialog";
 
-import { closeOptions } from '../types';
+import { CloseOptions } from '../types';
 import { TextWithTooltip } from "./Pices/TextWithTooltip";
 
-export type onCloseType = (selection: closeOptions) => void;
+export type onCloseType = (selection: CloseOptions) => void;
 
 export interface AddServerDialog extends DialogProps {
   onClose: onCloseType
@@ -31,7 +31,7 @@ export interface AddServerDialog extends DialogProps {
 
 export interface DefineDialogTitleProps extends DialogTitleProps {
   onClose: onCloseType
-  attr: closeOptions
+  attr: CloseOptions
 }
 
 const useStyles = makeStyles((theme: Theme) =>

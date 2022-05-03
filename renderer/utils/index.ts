@@ -1,4 +1,4 @@
-import { Config, GroupConfig, notificationOptions } from '../types';
+import { Config, GroupConfig, NotificationOptions } from '../types';
 import { MessageChannel } from 'electron-re';
 import { persistStore } from '../App';
 import { getFirstLanguage } from '../i18n';
@@ -34,7 +34,7 @@ export function getScreenCapturedResources(): Promise<Electron.DesktopCapturerSo
   });
 }
 
-export function openNotification(options: notificationOptions) {
+export function openNotification(options: NotificationOptions) {
   MessageChannel.invoke('main', 'service:desktop', {
     action: 'openNotification',
     params: options

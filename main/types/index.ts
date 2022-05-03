@@ -1,4 +1,5 @@
 export const encryptMethods = [
+  "none",
   "aes-128-gcm",
   "aes-192-gcm",
   "aes-256-gcm",
@@ -21,35 +22,12 @@ export const encryptMethods = [
 ] as const;
 
 export type Encryption = typeof encryptMethods[number];
-
 export const plugins = ["v2ray-plugin", "kcptun"] as const;
-
 export type Plugin = typeof plugins[number];
-
 export type ACL = boolean;
-
-export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
-
-export type notificationOptions = {
+export type CloseOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
+export type NotificationOptions = {
   title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined
-}
-
-export interface Config {
-  id: string;
-  remark?: string;
-  serverHost: string;
-  serverPort: number;
-  password: string;
-  encryptMethod: Encryption;
-  timeout?: number;
-  acl?: ACL;
-  fastOpen?: boolean;
-  noDelay?: boolean;
-  udp?: boolean;
-  maxOpenFile?: number;
-  plugin?: Plugin;
-  pluginOpts?: string;
-  type?: string;
 }
 
 export type Mode = "PAC" | "Global" | "Manual";
@@ -74,10 +52,4 @@ export interface Status {
   connected: boolean;
   loading: boolean;
   delay: number | null | '';
-}
-
-export interface RootState {
-  config: Config[];
-  status: Status;
-  settings: Settings;
 }

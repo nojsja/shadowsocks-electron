@@ -1,7 +1,7 @@
 import { app, BrowserWindow, screen } from "electron";
 import path from "path";
 
-import { TransparentWindowType, rectPoint } from '../types/extention';
+import { TransparentWindowType, RectPoint } from '../types/extention';
 
 export default class Transparentwindow implements TransparentWindowType {
   icon: string
@@ -19,7 +19,7 @@ export default class Transparentwindow implements TransparentWindowType {
     this.height = screenSize.height;
   }
 
-  create(params: { fillRect: rectPoint[] }): Promise<any> {
+  create(params: { fillRect: RectPoint[] }): Promise<any> {
 
     this.win = new BrowserWindow({
       width: this.width,

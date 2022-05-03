@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { exec, ExecOptions } from "child_process";
-import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR, SubscriptionParserConfig } from '../types/extention';
+import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig } from '../types/extention';
 import { getPathRuntime } from '../config';
 import { i18n } from '../electron';
 import { ProxyURI } from './ProxyURI';
@@ -244,12 +244,12 @@ export function debounce<params extends any[]> (fn: (...args: params) => any, ti
 export function parseUrl(text: string) {
   const parsedInfo = ProxyURI.parse(text);
 
-  const result: Config[] = parsedInfo.map(info => {
+  const result: OneOfConfig[] = parsedInfo.map(info => {
     const base = {
-      remark: info.remark || info.host,
+      remark: info.remark ?? info.host,
       serverHost: info.host,
       serverPort: info.port,
-      password: info.password || '',
+      password: info.password ?? '',
       encryptMethod: info.authscheme,
       timeout: 60
     };
@@ -257,10 +257,10 @@ export function parseUrl(text: string) {
       return ({
         ...base,
         type: info.type as any,
-        protocol: info.protocol || '',
-        protocolParam: info.protocolParam || '',
-        obfs: info.obfs || '',
-        obfsParam: info.obfsParam
+        protocol: info.protocol ?? '',
+        protocolParam: info.protocolParam ?? '',
+        obfs: info.obfs ?? '',
+        obfsParam: info.obfsParam ?? ''
       }) as SSRConfig;
     }
 
@@ -273,7 +273,7 @@ export function parseUrl(text: string) {
   return result;
 }
 
-export function parseSubscription(text: string): Promise<{ error: string | null, result: Config[], name: string | null }> {
+export function parseSubscription(text: string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
   return new Promise((resolve, reject) => {
     const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w\.]+)?\/(.*)/;
     const httpReg = /^(http|https)/;
@@ -281,7 +281,7 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
       const subHandler = subParserStore(text);
       if (subHandler) {
         get(text).then(res => {
-          let data: Config[] = [];
+          let data: OneOfConfig[] = [];
           try {
             data = subHandler.parse(res.data);
           } catch (error) {
@@ -337,7 +337,7 @@ export function subscriptionParserStore(parsers: SubscriptionParserConfig[]): (l
 };
 
 /* 泡芙云 paofusub 订阅解析 */
-export function paofuSubscriptionParser(res: { result: string }): Config[] {
+export function paofuSubscriptionParser(res: { result: string }): OneOfConfig[] {
   if (!((typeof res.result) === 'string')) return [];
 
   const serversBase64 = Buffer.from(res.result, 'base64').toString();
@@ -346,8 +346,8 @@ export function paofuSubscriptionParser(res: { result: string }): Config[] {
 };
 
 /* mono cloud 订阅解析 */
-export function monoCloudSubscriptionParser (res: SubscriptionResult): Config[] {
-  const result: Config[] = [];
+export function monoCloudSubscriptionParser (res: SubscriptionResult): OneOfConfig[] {
+  const result: OneOfConfig[] = [];
 
   for (let i = 0; i < res.server.length; i++) {
     const item = res.server[i];

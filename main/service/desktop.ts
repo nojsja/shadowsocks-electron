@@ -6,8 +6,8 @@ import { ProcessManager } from 'electron-re';
 import {
   contextAction,
   DesktopService as DesktopServiceType,
-  rectPoint, ServiceResult,
-  windowInfo
+  RectPoint, ServiceResult,
+  WindowInfo
 } from '../types/extention';
 import { openLogDir } from '../logs';
 import TransparentWindow from '../window/TransparentWindow';
@@ -206,7 +206,7 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
-  async createTransparentWindow(params: rectPoint[]): Promise<ServiceResult> {
+  async createTransparentWindow(params: RectPoint[]): Promise<ServiceResult> {
     return new Promise(resolve => {
       const win = new TransparentWindow();
       win.create({
@@ -235,7 +235,7 @@ export class DesktopService implements DesktopServiceType {
     })
   }
 
-  async getScreenCapturedResources(params: windowInfo): Promise<ServiceResult> {
+  async getScreenCapturedResources(params: WindowInfo): Promise<ServiceResult> {
 
     const { devicePixelRatio, width, height, types } = params;
 

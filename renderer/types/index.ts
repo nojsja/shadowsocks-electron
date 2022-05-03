@@ -56,35 +56,56 @@ export type ACL = {
   text: string
 };
 
-export type closeOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
+export type CloseOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
 
-export type clipboardParseType = 'url' | 'subscription';
+export type ClipboardParseType = 'url' | 'subscription';
 
-export type notificationOptions = {
+export type NotificationOptions = {
   title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined
 };
 
-export interface Config {
+export interface SSConfig {
   id: string;
+  type: string;
   remark?: string;
   serverHost: string;
   serverPort: number;
   password: string;
-  encryptMethod: Encryption;
-  protocol?: typeof protocols[number];
-  protocolParam?: string;
-  obfs?: typeof obfs[number];
-  obfsParam?: string;
+  encryptMethod: Encryption | string;
   timeout?: number;
   acl?: ACL;
   fastOpen?: boolean;
   noDelay?: boolean;
-  udp?: boolean;
   maxOpenFile?: number;
+  udp?: boolean;
   plugin?: Plugin;
   pluginOpts?: string;
-  type?: string;
-};
+}
+
+
+export interface SSRConfig {
+  id: string;
+  type: string;
+  remark?: string;
+  serverHost: string;
+  serverPort: number;
+  password: string;
+  encryptMethod: Encryption | string;
+  protocol: typeof protocols[number];
+  protocolParam: string;
+  obfs: typeof obfs[number],
+  obfsParam: string,
+  timeout?: number;
+  acl?: ACL;
+  fastOpen?: boolean;
+  noDelay?: boolean;
+  maxOpenFile?: number;
+  udp?: boolean;
+  plugin?: Plugin;
+  pluginOpts?: string;
+}
+
+export type Config = SSConfig & SSRConfig;
 
 export interface GroupConfig {
   id: string,

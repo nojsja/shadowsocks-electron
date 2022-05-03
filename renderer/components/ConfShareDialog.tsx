@@ -22,11 +22,11 @@ import { saveDataURLAsFile } from '../utils';
 import { DialogTitle } from './AddServerDialog';
 import { AdaptiveDialog } from "./Pices/Dialog";
 import { withStyles } from "@material-ui/styles";
-import { closeOptions } from '../types';
+import { CloseOptions } from '../types';
 
 
 export interface ConfShareDialog extends DialogProps, MediaCard {
-  onClose: (selection: closeOptions) => void
+  onClose: (selection: CloseOptions) => void
 }
 
 export interface MediaCard {

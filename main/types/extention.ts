@@ -1,6 +1,8 @@
 import { MenuItemConstructorOptions } from "electron/main";
 import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem, Menu } from 'electron';
 
+import { Encryption } from './index';
+
 export interface Service {
   ipc: IpcMain
 }
@@ -13,7 +15,7 @@ export interface TransparentWindowType {
   win: null | BrowserWindow
   width: number
   height: number
-  create: (params: { fillRect: rectPoint[] }) => Promise<any>
+  create: (params: { fillRect: RectPoint[] }) => Promise<any>
   destroy: () => void
 }
 
@@ -43,13 +45,13 @@ export interface MainService extends Service {
   isConnected: () => Promise<ServiceResult>
   startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>
   stopClient: () => Promise<ServiceResult>
-  parseClipboardText: (params: { text: string, type: clipboardParseType }) => Promise<ServiceResult>
-  generateUrlFromConfig: (params: SSRConfig | SSConfig) => Promise<ServiceResult>
+  parseClipboardText: (params: { text: string, type: ClipboardParseType }) => Promise<ServiceResult>
+  generateUrlFromConfig: (params: Config) => Promise<ServiceResult>
 }
 
 export interface DesktopService extends Service {
   [attr: string]: IpcMain | ServiceHandler | any
-  createTransparentWindow: (params: rectPoint[]) => Promise<ServiceResult>
+  createTransparentWindow: (params: RectPoint[]) => Promise<ServiceResult>
   reloadMainWindow: (params: any) => Promise<ServiceResult>
   setStartupOnBoot: (on: boolean) => Promise<ServiceResult>
   openLogDir: (params: Config) => Promise<ServiceResult>
@@ -70,45 +72,17 @@ export interface IpcMainProcess {
 
 export type IpcMain = _IpcMain;
 
-export const encryptMethods = [
-  "aes-128-gcm",
-  "aes-192-gcm",
-  "aes-256-gcm",
-  "rc4-md5",
-  "aes-128-cfb",
-  "aes-192-cfb",
-  "aes-256-cfb",
-  "aes-128-ctr",
-  "aes-192-ctr",
-  "aes-256-ctr",
-  "bf-cfb",
-  "camellia-128-cfb",
-  "camellia-192-cfb",
-  "camellia-256-cfb",
-  "chacha20-ietf-poly1305",
-  "xchacha20-ietf-poly1305",
-  "salsa20",
-  "chacha20",
-  "chacha20-ietf"
-] as const;
-
-export type Encryption = typeof encryptMethods[number];
-
 export const plugins = ["v2ray-plugin", "kcptun"] as const;
-
 export type Plugin = typeof plugins[number];
-
 export type ACL = boolean;
-
-export type Config = SSConfig | SSRConfig;
-
+export type Config = SSConfig & SSRConfig;
+export type OneOfConfig = SSConfig | SSRConfig;
 export type MonoSubscription = MonoSubscriptionSS | MonoSubscriptionSSR;
-
 export type SubscriptionParserStore = SubscriptionParserConfig[];
 export type SubscriptionParserConfig = {
   name: string,
   test: RegExp,
-  parse: (data: any) => Config[]
+  parse: (data: any) => OneOfConfig[]
 }
 
 export interface SubscriptionResult {
@@ -141,8 +115,25 @@ export interface MonoSubscriptionSS {
   method: string,
 }
 
+export type ClipboardParseType = 'url' | 'subscription';
+
+export const obfs = ['plain', 'http_simple', 'http_post', 'tls1.2_ticket_auth'];
+
+export const protocols = [
+  "origin",
+  "verify_deflate",
+  "auth_sha1_v4",
+  "auth_aes128_md5",
+  "auth_aes128_sha1",
+  "auth_chain_a",
+  "auth_chain_b",
+  "auth_chain_c",
+  "auth_chain_d",
+];
+
 export interface SSConfig {
   id?: string;
+  type?: string;
   remark?: string;
   serverHost: string;
   serverPort: number;
@@ -156,23 +147,19 @@ export interface SSConfig {
   udp?: boolean;
   plugin?: Plugin;
   pluginOpts?: string;
-  type?: 'ss' | 'ssr';
-  protocol?: string;
-  protocolParam?: string;
 }
-
-export type clipboardParseType = 'url' | 'subscription';
 
 export interface SSRConfig {
   id?: string;
+  type?: string;
   remark?: string;
   serverHost: string;
   serverPort: number;
   password: string;
   encryptMethod: Encryption | string;
-  protocol: string;
+  protocol: typeof protocols[number];
   protocolParam: string;
-  obfs: string,
+  obfs: typeof obfs[number];
   obfsParam: string,
   timeout?: number;
   acl?: ACL;
@@ -182,7 +169,6 @@ export interface SSRConfig {
   udp?: boolean;
   plugin?: Plugin;
   pluginOpts?: string;
-  type?: 'ss' | 'ssr';
 }
 
 export type Mode = "PAC" | "Global" | "Manual";
@@ -205,9 +191,9 @@ export interface Settings {
   autoLaunch: boolean;
 };
 
-export type rectPoint = { x: number, y: number, width: number, height: number };
+export type RectPoint = { x: number, y: number, width: number, height: number };
 
-export type windowInfo = {
+export type WindowInfo = {
   devicePixelRatio: number,
   width: number,
   height: number,

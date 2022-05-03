@@ -12,11 +12,11 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import { AdaptiveDialog } from "./Pices/Dialog";
 
-import { closeOptions, Settings } from '../types';
+import { CloseOptions, Settings } from '../types';
 import { scrollBarStyle } from "../pages/styles";
 import StyledTextareaAutosize from "./Pices/TextAreaAutosize";
 
-export type onCloseType = (selection: closeOptions) => void;
+export type onCloseType = (selection: CloseOptions) => void;
 
 export interface EditAclDialog extends DialogProps {
   onClose: onCloseType,
@@ -25,7 +25,7 @@ export interface EditAclDialog extends DialogProps {
 
 export interface DefineDialogTitleProps extends DialogTitleProps {
   onClose: onCloseType
-  attr: closeOptions
+  attr: CloseOptions
 }
 
 const useStyles = makeStyles((theme: Theme) =>
