@@ -32,9 +32,9 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from "@material-ui/icons/Close";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import { useSnackbar } from "notistack";
 
 import { Config, encryptMethods, plugins, serverTypes, protocols, obfs } from "../types";
-import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import { AdaptiveAppBar } from "./Pices/AppBar";
 import { scrollBarStyle } from "../pages/styles";
 import { TextWithTooltip } from "./Pices/TextWithTooltip";
@@ -89,7 +89,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [values, setValues] = useState<Partial<Config>>(
     defaultValues ?? {
@@ -126,7 +126,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
 
   const handleAdd = () => {
     if (!values.serverHost) {
-      setSnackbarMessage(t("invalid_server_address"));
+      enqueueSnackbar(t("invalid_server_address"), { variant: "warning" });
       return;
     }
     if (
@@ -136,15 +136,15 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
         values.serverPort <= 65535
       )
     ) {
-      setSnackbarMessage(t("invalid_server_port"));
+      enqueueSnackbar(t("invalid_server_port"), { variant: "warning" });
       return;
     }
     if (!values.password) {
-      setSnackbarMessage(t("invalid_password"));
+      enqueueSnackbar(t("invalid_password"), { variant: "warning" });
       return;
     }
     if (!values.timeout) {
-      setSnackbarMessage(t("invalid_timeout"));
+      enqueueSnackbar(t("invalid_timeout"), { variant: "warning" });
       return;
     }
 
@@ -381,7 +381,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           )
         }
       </Container>
-      <SnackbarAlert />
     </StyledDialog>
   );
 };

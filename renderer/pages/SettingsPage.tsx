@@ -16,6 +16,7 @@ import {
 } from "@material-ui/core";
 import { RestorePage, NoteAdd } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import { useSnackbar } from 'notistack';
 
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
@@ -24,7 +25,6 @@ import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redu
 // import { Settings } from "../types";
 import { getDefaultLang } from "../utils";
 import { useStylesOfSettings as useStyles } from "./styles";
-import useSnackbarAlert from "../hooks/useSnackbarAlert";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
 // import EditAclDialog from "../components/EditAclDialog";
@@ -43,7 +43,7 @@ const SettingsPage: React.FC = () => {
   const config = useTypedSelector(state => state.config);
   // const [aclVisible, setAclVisible] = useState(false);
   const inputFileRef = React.useRef<HTMLInputElement>(null);
-  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 2e3 });
+  const { enqueueSnackbar } = useSnackbar();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
 
   useEffect(() => {
@@ -74,9 +74,9 @@ const SettingsPage: React.FC = () => {
   const restoreConfiguration = () => {
     dispatch<any>(restoreConfigurationFromFile((success, code) => {
       if (success) {
-        setSnackbarMessage(t('the_recovery_is_successful'));
+        enqueueSnackbar(t('the_recovery_is_successful'), { variant: 'success' });
       } else {
-        setSnackbarMessage(code === 404 ? t('user_canceled') : t('the_recovery_is_failed'));
+        enqueueSnackbar(code === 404 ? t('user_canceled') : t('the_recovery_is_failed'), { variant: 'error' });
       }
     }));
   }
@@ -122,7 +122,7 @@ const SettingsPage: React.FC = () => {
       action: 'stopClient',
       params: {}
     });
-    setSnackbarMessage(t('cleared_all_data'));
+    enqueueSnackbar(t('cleared_all_data'), { variant: 'success' });
   };
 
   const handleAlertDialogOpen = () => {
@@ -167,9 +167,9 @@ const SettingsPage: React.FC = () => {
     }).then((rsp) => {
       setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
       if (rsp.code === 200) {
-        setSnackbarMessage(t('successful_operation'));
+        enqueueSnackbar(t('successful_operation'), { variant: 'success' });
       } else {
-        setSnackbarMessage(t('failed_to_download_file'));
+        enqueueSnackbar(t('failed_to_download_file'), { variant: 'error' });
       }
     });
   }
@@ -235,7 +235,7 @@ const SettingsPage: React.FC = () => {
 
         dispatch({ type: SET_SETTING, key, value });
       }).catch((reason: { errorFields: { errors: string[] }[] }) => {
-        setSnackbarMessage(reason?.errorFields?.map(item => item.errors.join()).join())
+        enqueueSnackbar(reason?.errorFields?.map(item => item.errors.join()).join(), { variant: 'error' });
       });
     });
   }
@@ -500,7 +500,6 @@ const SettingsPage: React.FC = () => {
       /> */}
 
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
-      <SnackbarAlert />
     </Container>
   );
 };

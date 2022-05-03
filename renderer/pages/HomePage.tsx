@@ -7,10 +7,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import SyncIcon from '@material-ui/icons/Sync';
 import uuid from "uuid/v1";
+import { useSnackbar } from 'notistack';
 
 import { Config, closeOptions, GroupConfig } from "../types";
 import { useTypedSelector } from "../redux/reducers";
-import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import useDialogConfirm from '../hooks/useDialogConfirm';
 // import useBackDrop from '../hooks/useBackDrop';
 import {
@@ -55,7 +55,7 @@ const HomePage: React.FC = () => {
   const delay = useTypedSelector(state => state.status.delay);
   const loading = useTypedSelector(state => state.status.loading);
 
-  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert({ duration: 1.5e3 });
+  const { enqueueSnackbar } = useSnackbar();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
   // const [BackDrop, setBackDrop] = useBackDrop();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -88,12 +88,12 @@ const HomePage: React.FC = () => {
         // setBackDrop.current(true);
         dispatch(getQrCodeFromScreenResources((added: boolean, reason?: string) => {
           if (added) {
-            setSnackbarMessage(t('added_a_server'));
+            enqueueSnackbar(t('added_a_server'), { variant: 'success' });
           } else {
             if (reason) {
-              setSnackbarMessage(reason)
+              enqueueSnackbar(reason, { variant: 'error' });
             } else {
-              setSnackbarMessage(t('no_qr_code_is_detected'));
+              enqueueSnackbar(t('no_qr_code_is_detected'), { variant: 'warning' });
             }
           }
         }));
@@ -103,14 +103,14 @@ const HomePage: React.FC = () => {
         setDialogOpen(false);
         // setBackDrop.current(true);
         dispatch(addConfigFromClipboard((added: boolean) => {
-          setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
+          enqueueSnackbar(added ? t('added_a_server') : t('invalid_operation'), { variant: added ? 'success' : 'warning' });
         }));
         break;
       case 'subscription':
         setDialogOpen(false);
         // setBackDrop.current(true);
         dispatch(addSubscriptionFromClipboard((added: boolean) => {
-          setSnackbarMessage(added ? t('added_a_server') : t('invalid_operation') )
+          enqueueSnackbar(added ? t('added_a_server') : t('invalid_operation'), { variant: added ? 'success' : 'warning' });
         }));
         break;
       case 'share':
@@ -129,7 +129,7 @@ const HomePage: React.FC = () => {
         const id = uuid();
         dispatch({ type: ADD_CONFIG, config: values, id });
         selectedServer === id && connectedToServer(config, id, values);
-        setSnackbarMessage(t("added_a_server"));
+        enqueueSnackbar(t("added_a_server"), { variant: 'success' });
       } else {
         dispatch({
           type: EDIT_CONFIG,
@@ -137,7 +137,7 @@ const HomePage: React.FC = () => {
           id: values.id
         });
         selectedServer === values.id && connectedToServer(config, values.id, values);
-        setSnackbarMessage(t("edited_a_server"));
+        enqueueSnackbar(t("edited_a_server"), { variant: 'success' });
       }
     }
 
@@ -202,7 +202,7 @@ const HomePage: React.FC = () => {
 
   const handleRemoveButtonClick = useCallback((id: string) => {
     if (id === selectedServer) {
-      setSnackbarMessage(t('cannot_remove_selected_server'));
+      enqueueSnackbar(t('cannot_remove_selected_server'), { variant: 'warning' });
       return;
     }
 
@@ -216,7 +216,7 @@ const HomePage: React.FC = () => {
       config: null as any,
       id: removingServerId!
     });
-    setSnackbarMessage(t("removed_a_server"));
+    enqueueSnackbar(t("removed_a_server"), { variant: 'success' });
 
     closeDialog();
     setRemovingServerId(null);
@@ -321,7 +321,6 @@ const HomePage: React.FC = () => {
         onValues={handleEditServer}
       />
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleServerRemove} />
-      <SnackbarAlert />
     </Container>
   );
 };

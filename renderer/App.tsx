@@ -7,6 +7,7 @@ import {
   Theme,
   ThemeProvider
 } from "@material-ui/core/styles";
+import { SnackbarProvider } from 'notistack';
 import {
   HashRouter,
   Switch,
@@ -115,27 +116,33 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <ThemeProvider theme={darkMode ? darkTheme : mainTheme}>
-          <HashRouter>
-            <div className={styles.root}>
-              <CssBaseline />
-              <AppNav />
-              <main className={styles.content}>
-                <div className={styles.toolbar} />
-                <Switch>
-                  <Route path="/home">
-                    <HomePage />
-                  </Route>
-                  <Route path="/settings">
-                    <SettingsPage />
-                  </Route>
-                  <Route path="/about">
-                    <AboutPage />
-                  </Route>
-                  <Redirect to="/home" />
-                </Switch>
-              </main>
-            </div>
-          </HashRouter>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
+            autoHideDuration={1.5e3}
+          >
+            <HashRouter>
+              <div className={styles.root}>
+                <CssBaseline />
+                <AppNav />
+                <main className={styles.content}>
+                  <div className={styles.toolbar} />
+                  <Switch>
+                    <Route path="/home">
+                      <HomePage />
+                    </Route>
+                    <Route path="/settings">
+                      <SettingsPage />
+                    </Route>
+                    <Route path="/about">
+                      <AboutPage />
+                    </Route>
+                    <Redirect to="/home" />
+                  </Switch>
+                </main>
+              </div>
+            </HashRouter>
+          </SnackbarProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

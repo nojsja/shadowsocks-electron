@@ -16,9 +16,9 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { useSnackbar } from 'notistack';
 
 import { saveDataURLAsFile } from '../utils';
-import useSnackbarAlert from '../hooks/useSnackbarAlert';
 import { DialogTitle } from './AddServerDialog';
 import { AdaptiveDialog } from "./Pices/Dialog";
 import { withStyles } from "@material-ui/styles";
@@ -77,7 +77,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
   const classes = useStyles();
 
   const { t } = useTranslation();
-  const [SnackbarAlert, setSnackbarMessage] = useSnackbarAlert();
+  const { enqueueSnackbar } = useSnackbar();
 
   const downloadPicture = (dataLink: string) => {
     setTimeout(() => {
@@ -90,7 +90,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
     setTimeout(() => {
       props.onClose('share');
     }, 1e3);
-    setSnackbarMessage(t('copied'));
+    enqueueSnackbar(t('copied'), { variant: 'success' });
     clipboard.writeText(link, 'clipboard');
   }
 
@@ -128,7 +128,6 @@ const MediaCard: React.FC<MediaCard> = (props) => {
           {t('save')}
         </Button>
       </CardActions>
-      <SnackbarAlert />
     </StyledCard>
   );
 }
