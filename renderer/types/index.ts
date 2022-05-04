@@ -1,3 +1,5 @@
+import { OptionsObject } from "notistack";
+
 export const encryptMethods = [
   "none",
   "aes-128-gcm",
@@ -142,7 +144,16 @@ export interface Status {
   delay: number | null | '';
 }
 
+export type Notification = OptionsObject;
+export type EnqueueSnackbarOptions = {
+  message: string,
+  key: string,
+  dismissed?: boolean,
+  options: Notification
+}
+
 export interface RootState {
+  notifications: EnqueueSnackbarOptions[],
   config: (Config | GroupConfig)[];
   status: Status;
   settings: Settings;

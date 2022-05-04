@@ -10,9 +10,6 @@ import {
 import { SnackbarProvider } from 'notistack';
 import {
   HashRouter,
-  Switch,
-  Route,
-  Redirect
 } from "react-router-dom";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -21,15 +18,13 @@ import { grey, indigo } from "@material-ui/core/colors";
 import { MessageChannel } from "electron-re";
 import ElectronStore from 'electron-store';
 
-import AppNav from "./components/AppNav";
-import HomePage from "./pages/HomePage";
-import SettingsPage from "./pages/SettingsPage";
-import AboutPage from "./pages/AboutPage";
-import { store, persistor } from "./redux/store";
-import Loading from "./components/Loading";
-import { getConnectionStatus, SET_STATUS } from "./redux/actions/status";
 import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from "./utils";
+import { store, persistor } from "./redux/store";
+import { getConnectionStatus, SET_STATUS } from "./redux/actions/status";
+import AppNav from "./components/AppNav";
+import Loading from "./components/Loading";
+import RouterComp from './Router';
 
 export const persistStore = new ElectronStore();
 
@@ -127,18 +122,7 @@ const App: React.FC = () => {
                 <AppNav />
                 <main className={styles.content}>
                   <div className={styles.toolbar} />
-                  <Switch>
-                    <Route path="/home">
-                      <HomePage />
-                    </Route>
-                    <Route path="/settings">
-                      <SettingsPage />
-                    </Route>
-                    <Route path="/about">
-                      <AboutPage />
-                    </Route>
-                    <Redirect to="/home" />
-                  </Switch>
+                  <RouterComp />
                 </main>
               </div>
             </HashRouter>

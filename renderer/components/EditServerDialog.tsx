@@ -32,12 +32,15 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from "@material-ui/icons/Close";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import { useSnackbar } from "notistack";
+import { SnackbarMessage } from 'notistack';
+import { useDispatch } from "react-redux";
 
-import { Config, encryptMethods, plugins, serverTypes, protocols, obfs } from "../types";
+import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
+import { Config, encryptMethods, plugins, serverTypes, protocols, obfs, Notification } from "../types";
 import { AdaptiveAppBar } from "./Pices/AppBar";
 import { scrollBarStyle } from "../pages/styles";
 import { TextWithTooltip } from "./Pices/TextWithTooltip";
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -84,12 +87,17 @@ export interface EditServerDialogProps extends DialogProps {
 const EditServerDialog: React.FC<EditServerDialogProps> = props => {
   const styles = useStyles();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const { open, onClose, defaultValues, onValues } = props;
 
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const { enqueueSnackbar } = useSnackbar();
+
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   const [values, setValues] = useState<Partial<Config>>(
     defaultValues ?? {

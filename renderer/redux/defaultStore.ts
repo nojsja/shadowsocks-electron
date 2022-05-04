@@ -1,6 +1,7 @@
 import { RootState } from "../types";
 
 const defaultStore: RootState = {
+  notifications: [],
   config: [],
   status: {
     connected: false,

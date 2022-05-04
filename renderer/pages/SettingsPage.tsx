@@ -16,22 +16,25 @@ import {
 } from "@material-ui/core";
 import { RestorePage, NoteAdd } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { useSnackbar } from 'notistack';
+import { SnackbarMessage } from 'notistack';
 
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
+import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
 import { SET_SETTING, getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy } from "../redux/actions/settings";
+import { setStatus } from "../redux/actions/status";
 import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
-// import { Settings } from "../types";
-import { getDefaultLang } from "../utils";
+import { Notification } from "../types";
+
 import { useStylesOfSettings as useStyles } from "./styles";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
-// import EditAclDialog from "../components/EditAclDialog";
-import { getFirstLanguage } from "../i18n";
-import { persistStore } from "../App";
 import { TextWithTooltip } from "../components/Pices/TextWithTooltip";
-import { setStatus } from "../redux/actions/status";
+// import EditAclDialog from "../components/EditAclDialog";
+
+import { persistStore } from "../App";
+import { getDefaultLang } from "../utils";
+import { getFirstLanguage } from "../i18n";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -43,8 +46,11 @@ const SettingsPage: React.FC = () => {
   const config = useTypedSelector(state => state.config);
   // const [aclVisible, setAclVisible] = useState(false);
   const inputFileRef = React.useRef<HTMLInputElement>(null);
-  const { enqueueSnackbar } = useSnackbar();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
+
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   useEffect(() => {
     dispatch<any>(getStartupOnBoot());
@@ -72,11 +78,11 @@ const SettingsPage: React.FC = () => {
   };
 
   const restoreConfiguration = () => {
-    dispatch<any>(restoreConfigurationFromFile((success, code) => {
-      if (success) {
-        enqueueSnackbar(t('the_recovery_is_successful'), { variant: 'success' });
-      } else {
-        enqueueSnackbar(code === 404 ? t('user_canceled') : t('the_recovery_is_failed'), { variant: 'error' });
+    dispatch<any>(restoreConfigurationFromFile({
+      success: t('the_recovery_is_successful'),
+      error: {
+        default: t('the_recovery_is_failed'),
+        404: t('user_canceled')
       }
     }));
   }

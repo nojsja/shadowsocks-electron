@@ -7,9 +7,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import SyncIcon from '@material-ui/icons/Sync';
 import uuid from "uuid/v1";
-import { useSnackbar } from 'notistack';
+import { SnackbarMessage } from 'notistack';
 
-import { Config, CloseOptions, GroupConfig } from "../types";
+import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
+import { Config, CloseOptions, GroupConfig, Notification } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 // import useBackDrop from '../hooks/useBackDrop';
@@ -55,7 +56,6 @@ const HomePage: React.FC = () => {
   const delay = useTypedSelector(state => state.status.delay);
   const loading = useTypedSelector(state => state.status.loading);
 
-  const { enqueueSnackbar } = useSnackbar();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
   // const [BackDrop, setBackDrop] = useBackDrop();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -69,6 +69,10 @@ const HomePage: React.FC = () => {
   const [removingServerId, setRemovingServerId] = useState<string | null>(null);
 
   {/* -------- functions ------- */}
+
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   const handleServerSelect = useCallback((id: string) => {
     dispatch({
@@ -86,31 +90,26 @@ const HomePage: React.FC = () => {
         break;
       case 'qrcode':
         // setBackDrop.current(true);
-        dispatch(getQrCodeFromScreenResources((added: boolean, reason?: string) => {
-          if (added) {
-            enqueueSnackbar(t('added_a_server'), { variant: 'success' });
-          } else {
-            if (reason) {
-              enqueueSnackbar(reason, { variant: 'error' });
-            } else {
-              enqueueSnackbar(t('no_qr_code_is_detected'), { variant: 'warning' });
-            }
-          }
+        dispatch(getQrCodeFromScreenResources({
+          success: t('added_a_server'),
+          error: t('no_qr_code_is_detected'),
         }));
         setDialogOpen(false);
         break;
       case 'url':
         setDialogOpen(false);
         // setBackDrop.current(true);
-        dispatch(addConfigFromClipboard((added: boolean) => {
-          enqueueSnackbar(added ? t('added_a_server') : t('invalid_operation'), { variant: added ? 'success' : 'warning' });
+        dispatch(addConfigFromClipboard({
+          success: t('added_a_server'),
+          error: t('invalid_operation')
         }));
         break;
       case 'subscription':
         setDialogOpen(false);
         // setBackDrop.current(true);
-        dispatch(addSubscriptionFromClipboard((added: boolean) => {
-          enqueueSnackbar(added ? t('added_a_server') : t('invalid_operation'), { variant: added ? 'success' : 'warning' });
+        dispatch(addSubscriptionFromClipboard({
+          success: t('added_a_server'),
+          error: t('invalid_operation')
         }));
         break;
       case 'share':

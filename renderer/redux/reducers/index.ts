@@ -1,11 +1,14 @@
 import { combineReducers } from "redux";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+
+import { RootState } from "../../types";
 import configReducer from "./config";
 import settingsReducer from "./settings";
-import { RootState } from "../../types";
 import statusReducer from "./status";
+import notificationReducer from "./notifications";
 
 const appReducer = combineReducers({
+  notifications: notificationReducer,
   config: configReducer,
   status: statusReducer,
   settings: settingsReducer

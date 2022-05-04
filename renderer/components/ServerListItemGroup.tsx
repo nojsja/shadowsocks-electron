@@ -18,12 +18,13 @@ import {
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
-import { useSnackbar } from 'notistack';
 
 import { moveDown, moveUp, top, updateSubscription } from "../redux/actions/config";
+import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
 import ServerListItemSingle from "./ServerListItemSingle";
-import { GroupConfig } from "../types";
+import { GroupConfig, Notification } from "../types";
 import useContextMenu from "../hooks/useContextMenu";
+import { SnackbarMessage } from "notistack";
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
   createStyles({
@@ -72,7 +73,9 @@ export interface ServerListItemGroupProps extends ListItemProps {
 const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   // const styles = useStyles();
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
   const { t } = useTranslation();
 
   const {
@@ -105,12 +108,9 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         break;
       case 'update_subscription':
         if (item.url) {
-          dispatch(updateSubscription(item.id, item.url, (success: boolean) => {
-            if (success) {
-              enqueueSnackbar(t('subscription_updated'), { variant: 'success' });
-            } else {
-              enqueueSnackbar(t('failed_to_update_subscription'), { variant: 'error' });
-            }
+          dispatch(updateSubscription(item.id, item.url, {
+            success: t('subscription_updated'),
+            error: t('failed_to_update_subscription')
           }));
         } else {
           enqueueSnackbar(t('server_url_not_set'), { variant: 'warning' });

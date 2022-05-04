@@ -16,14 +16,15 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { useSnackbar } from 'notistack';
+import { SnackbarMessage } from 'notistack';
+import { useDispatch } from "react-redux";
 
 import { saveDataURLAsFile } from '../utils';
 import { DialogTitle } from './AddServerDialog';
 import { AdaptiveDialog } from "./Pices/Dialog";
 import { withStyles } from "@material-ui/styles";
-import { CloseOptions } from '../types';
-
+import { CloseOptions, Notification } from '../types';
+import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
 
 export interface ConfShareDialog extends DialogProps, MediaCard {
   onClose: (selection: CloseOptions) => void
@@ -75,9 +76,12 @@ export const StyledCard = withStyles(
 
 const MediaCard: React.FC<MediaCard> = (props) => {
   const classes = useStyles();
-
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
+
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   const downloadPicture = (dataLink: string) => {
     setTimeout(() => {

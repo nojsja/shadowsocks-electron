@@ -8,6 +8,7 @@ import { ClipboardParseType, Config, GroupConfig, RootState } from "../../types"
 import { getScreenCapturedResources } from '../../utils';
 import { overrideSetting } from './settings';
 import { setStatus } from './status';
+import { enqueueSnackbar } from './notifications';
 
 export const ADD_CONFIG = "ADD_CONFIG";
 export const ADD_SUBSCRIPTION = "ADD_SUBSCRIPTION";
@@ -29,21 +30,15 @@ export const addConfig = (id: string, config: Config) => {
   };
 };
 
-export const backupConfigurationToFile = (params: any, callback?: (attr: boolean) => void) => {
-  MessageChannel.invoke('main', 'service:desktop', {
+export const backupConfigurationToFile = (params: any) => {
+  return MessageChannel.invoke('main', 'service:desktop', {
     action: 'backupConfigurationToFile',
     params
-  })
-  .then((rsp) => {
-    if (rsp.code === 200) {
-      callback && callback(true);
-    } else {
-      callback && callback(false);
-    }
   });
 }
 
-export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: number) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const restoreConfigurationFromFile =
+  (info: { success: string, error: { [key: string]: string } }): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'restoreConfigurationFromFile',
@@ -51,7 +46,7 @@ export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: n
     })
     .then((rsp) => {
       if (rsp.code === 200) {
-        callback && callback(true);
+        dispatch(enqueueSnackbar(info.success, { variant: "success" }));
         dispatch(wipeConfig());
         if (rsp.result.config?.length) {
           rsp.result.config.forEach((conf: Config) => {
@@ -62,13 +57,13 @@ export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: n
           dispatch(overrideSetting(rsp.result.settings));
         }
       } else {
-        callback && callback(false, rsp.code);
+        dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
       }
     });
   }
 }
 
-export const updateSubscription = (id: string, url: string, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const updateSubscription = (id: string, url: string, info: { error: string, success: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
@@ -93,16 +88,16 @@ export const updateSubscription = (id: string, url: string, callback?: (added: b
               }),
             }
           });
-          return callback && callback(true);
+          dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
         }
       }
-      callback && callback(false);
+      dispatch(enqueueSnackbar(info.error, { variant: 'success' }));
     });
   }
 };
 
 
-export const parseClipboardText = (text: string | null, type: ClipboardParseType, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
@@ -124,21 +119,21 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
                 return server;
               }),
             }))
-            return callback && callback(true);
+            return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
           }
         } else {
           if (rsp.result?.length) {
             dispatch(addConfig(uuid(), rsp.result[0]));
-            return callback && callback(true);
+            return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
           }
         }
       }
-      callback && callback(false);
+      return dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
     });
   }
 };
 
-export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?: string) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const getQrCodeFromScreenResources = (info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true))
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
@@ -164,18 +159,17 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
             params: qrs
           }).then(() => {
             values.forEach(value => {
-              dispatch(parseClipboardText(value, 'url'));
+              dispatch(parseClipboardText(value, 'url', info));
             });
           });
-          callback && callback(true);
         } else {
-          callback && callback(false);
+          dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
         }
       } else {
-        callback && callback(false);
+        dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
       }
     }).catch(error => {
-      callback && callback(false, error && error.toString());
+      dispatch(enqueueSnackbar(error && error.toString(), { variant: 'error' }));
     }).finally(() => {
       setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
     });
@@ -184,16 +178,16 @@ export const getQrCodeFromScreenResources = (callback?: (added: boolean, reason?
 
 /* parse and get ss/ssr config from clipboard */
 export const addConfigFromClipboard =
-  (callback: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
-    dispatch(parseClipboardText(null, 'url', callback));
+    dispatch(parseClipboardText(null, 'url', info));
   }
 };
 
 export const addSubscriptionFromClipboard =
-  (callback: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
-      dispatch(parseClipboardText(null, 'subscription', callback));
+      dispatch(parseClipboardText(null, 'subscription', info));
     }
   };
 
