@@ -88,10 +88,10 @@ export const updateSubscription = (id: string, url: string, info: { error: strin
               }),
             }
           });
-          dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
+          return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
         }
       }
-      dispatch(enqueueSnackbar(info.error, { variant: 'success' }));
+      dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
     });
   }
 };
