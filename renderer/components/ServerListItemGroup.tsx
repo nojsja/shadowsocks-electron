@@ -14,10 +14,13 @@ import {
   ArrowUpward as ArrowUpwardIcon,
   ArrowDownward as ArrowDownwardIcon,
   Delete as DeleteIcon,
+  Refresh,
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
-import { moveDown, moveUp, top } from "../redux/actions/config";
+import { useSnackbar } from 'notistack';
+
+import { moveDown, moveUp, top, updateSubscription } from "../redux/actions/config";
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig } from "../types";
 import useContextMenu from "../hooks/useContextMenu";
@@ -69,6 +72,7 @@ export interface ServerListItemGroupProps extends ListItemProps {
 const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   // const styles = useStyles();
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
 
   const {
@@ -79,6 +83,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
   const [ContextMenu, handleMenuOpen] = useContextMenu([
     { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
+    { label: t('update'), action: 'update_subscription', icon: <Refresh fontSize="small" /> },
     { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
     { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
     { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
@@ -97,6 +102,19 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     switch (action) {
       case 'copy':
         clipboard.writeText(JSON.stringify(item));
+        break;
+      case 'update_subscription':
+        if (item.url) {
+          dispatch(updateSubscription(item.id, item.url, (success: boolean) => {
+            if (success) {
+              enqueueSnackbar(t('subscription_updated'), { variant: 'success' });
+            } else {
+              enqueueSnackbar(t('failed_to_update_subscription'), { variant: 'error' });
+            }
+          }));
+        } else {
+          enqueueSnackbar(t('server_url_not_set'), { variant: 'warning' });
+        }
         break;
       case 'top':
         dispatch(top(item.id));

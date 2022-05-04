@@ -119,7 +119,7 @@ const App: React.FC = () => {
           <SnackbarProvider
             maxSnack={3}
             anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
-            autoHideDuration={1.5e3}
+            autoHideDuration={2e3}
           >
             <HashRouter>
               <div className={styles.root}>

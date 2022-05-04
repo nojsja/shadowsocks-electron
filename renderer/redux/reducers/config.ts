@@ -1,5 +1,6 @@
 import {
   ADD_SUBSCRIPTION,
+  UPDATE_SUBSCRIPTION,
   ADD_CONFIG,
   EditConfigAction,
   MoveConfigAction,
@@ -9,7 +10,8 @@ import {
   MOVE_UP,
   MOVE_DOWN,
   MOVE_TO,
-  TOP
+  TOP,
+  AddSubscriptionAction
 } from "../actions/config";
 import { Config, GroupConfig } from "../../types";
 import defaultStore from "../defaultStore";
@@ -17,7 +19,7 @@ import { findAndModify } from "../../utils";
 
 function configReducer(
   state: (Config | GroupConfig)[] = defaultStore.config,
-  action: EditConfigAction | MoveConfigAction
+  action: EditConfigAction | MoveConfigAction | AddSubscriptionAction
 ): (Config | GroupConfig)[] {
   let sourceIndex: number, targetIndex: number, newState: (Config | GroupConfig)[];
 
@@ -26,11 +28,28 @@ function configReducer(
       return [
         ...state,
         {
-          ...(action as EditConfigAction).config as GroupConfig,
+          ...(action as AddSubscriptionAction).config,
           id: action.id,
+          url: (action as AddSubscriptionAction).url,
           type: "group",
         }
       ];
+    case UPDATE_SUBSCRIPTION:
+      return state.map((config) => {
+        if (config.id === action.id) {
+          return {
+            ...config,
+            ...(action as AddSubscriptionAction).config,
+            servers: (action as AddSubscriptionAction).config.servers.map((server, i) => {
+              return {
+                ...server,
+                id: (config as GroupConfig).servers[i]?.id ?? server.id,
+              };
+            })
+          };
+        }
+        return { ...config };
+      });
     case ADD_CONFIG:
       return [
         ...state,

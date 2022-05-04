@@ -67,7 +67,8 @@ export class MainService implements MainServiceType {
             code: 200,
             result: {
               name: '',
-              result: []
+              result: [],
+              url: text
             }
           };
         }
@@ -75,7 +76,8 @@ export class MainService implements MainServiceType {
           code: 200,
           result: {
             name: res.name || '',
-            result: res.result || []
+            result: res.result || [],
+            url: text
           }
         };
       });

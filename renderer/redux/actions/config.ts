@@ -11,6 +11,7 @@ import { setStatus } from './status';
 
 export const ADD_CONFIG = "ADD_CONFIG";
 export const ADD_SUBSCRIPTION = "ADD_SUBSCRIPTION";
+export const UPDATE_SUBSCRIPTION = "UPDATE_SUBSCRIPTION";
 export const REMOVE_CONFIG = "REMOVE_CONFIG";
 export const EDIT_CONFIG = "EDIT_CONFIG";
 export const WIPE_CONFIG = "WIPE_CONFIG";
@@ -67,6 +68,40 @@ export const restoreConfigurationFromFile = (callback?: (attr: boolean, code?: n
   }
 }
 
+export const updateSubscription = (id: string, url: string, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    dispatch(setStatus('waiting', true));
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'parseClipboardText',
+      params: {
+        text: url,
+        type: 'subscription'
+      }
+    })
+    .then((rsp) => {
+      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
+      if (rsp.code === 200) {
+        if (rsp.result?.result?.length) {
+          dispatch({
+            type: UPDATE_SUBSCRIPTION,
+            id: id,
+            config: {
+              name: rsp.result.name || 'new subscription',
+              servers: (rsp.result.result as Config[]).map(server => {
+                server.id = uuid();
+                return server;
+              }),
+            }
+          });
+          return callback && callback(true);
+        }
+      }
+      callback && callback(false);
+    });
+  }
+};
+
+
 export const parseClipboardText = (text: string | null, type: ClipboardParseType, callback?: (added: boolean) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
@@ -80,19 +115,15 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
     .then((rsp) => {
       setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
       if (rsp.code === 200) {
-        if (type === 'subscription') {
+        if ((type === 'subscription')) {
           if (rsp.result?.result?.length) {
-            dispatch({
-              type: ADD_SUBSCRIPTION,
-              id: uuid(),
-              config: {
-                name: rsp.result.name || 'new subscription',
-                servers: (rsp.result.result as Config[]).map(server => {
-                  server.id = uuid();
-                  return server;
-                }),
-              }
-            });
+            dispatch(addSubscription(uuid(), rsp.result.url, {
+              name: rsp.result.name || 'new subscription',
+              servers: (rsp.result.result as Config[]).map(server => {
+                server.id = uuid();
+                return server;
+              }),
+            }))
             return callback && callback(true);
           }
         } else {
@@ -183,7 +214,21 @@ export const removeConfig = (id: string, config: Config | GroupConfig) => {
   };
 };
 
-export const editConfig = (id: string, config: Config | GroupConfig) => {
+type PartialGroupConfig = {
+  name: string;
+  servers: Config[];
+}
+
+export const addSubscription = (id: string, url: string, config: PartialGroupConfig) => {
+  return {
+    type: ADD_SUBSCRIPTION,
+    id,
+    config,
+    url
+  }
+};
+
+export const editConfig = (id: string, config: Config) => {
   return {
     type: EDIT_CONFIG,
     id,
@@ -230,3 +275,4 @@ export type AddConfigAction = ReturnType<typeof addConfig>;
 export type RemoveConfigAction = ReturnType<typeof removeConfig>;
 export type EditConfigAction = ReturnType<typeof editConfig>;
 export type MoveConfigAction = ReturnType<typeof moveConfig>;
+export type AddSubscriptionAction = ReturnType<typeof addSubscription>;

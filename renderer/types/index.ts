@@ -111,7 +111,8 @@ export interface GroupConfig {
   id: string,
   name: string,
   servers: Config[],
-  type: string
+  type: string,
+  url?: string
 };
 
 export type Mode = "PAC" | "Global" | "Manual";
