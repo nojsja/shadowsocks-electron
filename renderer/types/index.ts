@@ -134,6 +134,7 @@ export interface Settings {
   acl: ACL,
   gfwListUrl: string;
   autoLaunch: boolean;
+  autoHide: boolean;
   lang: string;
 }
 

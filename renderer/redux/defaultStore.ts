@@ -28,6 +28,7 @@ const defaultStore: RootState = {
     gfwListUrl:
       "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt",
     autoLaunch: false,
+    autoHide: false,
     lang: 'zh-CN'
   }
 };

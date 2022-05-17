@@ -6,7 +6,7 @@ import windowStateKeeper from 'electron-window-state';
 
 import { IpcMainWindowType, TrayMenu } from '../types/extention';
 import { getBestWindowPosition } from "../helpers";
-import { i18n } from "../electron";
+import { electronStore, i18n } from "../electron";
 
 const platform = os.platform();
 
@@ -44,6 +44,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
   create() {
     return new Promise((resolve, reject) => {
+      let autoHide = false;
       const mainWindowState = windowStateKeeper({
         defaultWidth: this.width,
         defaultHeight: this.height,
@@ -67,6 +68,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
         frame: false,
         fullscreenable: false,
         fullscreen: false,
+        show: false,
         icon: this.icon,
         titleBarStyle: "hidden",
         webPreferences: {
@@ -77,7 +79,15 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
       mainWindowState.manage(this.win);
 
-      if (platform === "darwin") this.win.hide();
+      try {
+        autoHide = JSON.parse(
+          JSON.parse(electronStore.get('persist:root') as string).settings
+        ).autoHide;
+      } catch(error) {}
+
+      if (!autoHide) {
+        this.win.show();
+      }
 
       this.win.on("minimize", (e: Electron.Event) => {
         e.preventDefault();

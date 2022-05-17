@@ -40,6 +40,11 @@ export interface IpcMainWindowType {
   beforeQuitting: () => void
 }
 
+export type ServiceResult = {
+  code: number,
+  result: any
+};
+
 export interface MainService extends Service {
   [attr: string]: IpcMain | ServiceHandler | any
   isConnected: () => Promise<ServiceResult>
@@ -57,10 +62,10 @@ export interface DesktopService extends Service {
   openLogDir: (params: Config) => Promise<ServiceResult>
 }
 
-export type ServiceResult = {
-  code: number,
-  result: any
-};
+export interface ThemeService extends Service {
+  listenForUpdate: (params: any) => Promise<ServiceResult>
+  unlistenForUpdate: (params: any) => Promise<ServiceResult>
+}
 
 export type ServiceHandler = (params: any) => Promise<ServiceResult>
 

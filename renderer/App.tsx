@@ -25,6 +25,7 @@ import { getConnectionStatus, SET_STATUS } from "./redux/actions/status";
 import AppNav from "./components/AppNav";
 import Loading from "./components/Loading";
 import RouterComp from './Router';
+import { SET_SETTING } from "./redux/actions/settings";
 
 export const persistStore = new ElectronStore();
 
@@ -83,6 +84,14 @@ ipcRenderer.on("connected", (e, message) => {
     type: SET_STATUS,
     key: "connected",
     value: message
+  });
+});
+
+ipcRenderer.on("theme:update", (e, message) => {
+  store.dispatch({
+    type: SET_SETTING,
+    key: 'darkMode',
+    value: !!message.shouldUseDarkColors
   });
 });
 

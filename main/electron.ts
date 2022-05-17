@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import isDev from "electron-is-dev";
-import { initRenderer } from 'electron-store';
 import { autoUpdater } from'electron-updater';
 import { I18n } from 'i18n';
 
@@ -17,10 +16,12 @@ import { startProfiler } from "./performance/v8-inspect-profiler";
 import registryHooks from './hooks';
 
 import { packageName, platform, isInspect, appDataPath, pathRuntime, pathExecutable } from './config';
+import ElectronStore from "electron-store";
 
 export let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
 export const msgc = MessageChannel;
+export const electronStore = new ElectronStore();
 
 export const i18n = new I18n();
 
@@ -46,14 +47,9 @@ app.on("ready", async () => {
   let mainProfiler: any;
 
   electronApp.afterReady(app, (err, app) => { if (err) console.log(err); });
-
   electronApp.ready(app);
-
   isInspect && (mainProfiler = await startProfiler('main', 5222));
-
-  initRenderer();
   ipcMainProcess = new IpcMainProcess(ipcMain);
-
   await setupAfterInstall(true);
 
   ipcMainWindow = new IpcMainWindow({

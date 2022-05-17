@@ -260,7 +260,8 @@ const SettingsPage: React.FC = () => {
             autoLaunch: settings.autoLaunch,
             fixedMenu: settings.fixedMenu,
             darkMode: settings.darkMode,
-            verbose: settings.verbose
+            verbose: settings.verbose,
+            autoHide: settings.autoHide,
           }
         }
         onValuesChange={onFieldChange}
@@ -426,6 +427,19 @@ const SettingsPage: React.FC = () => {
             />
             <ListItemSecondaryAction>
               <Field name="fixedMenu" valuePropName="checked">
+                <AdaptiveSwitch
+                  edge="end"
+                />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText
+              primary={t('auto_hide')}
+              secondary={t('minimize_on_start')}
+            />
+            <ListItemSecondaryAction>
+              <Field name="autoHide" valuePropName="checked">
                 <AdaptiveSwitch
                   edge="end"
                 />
