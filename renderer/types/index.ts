@@ -118,6 +118,7 @@ export interface GroupConfig {
 };
 
 export type Mode = "PAC" | "Global" | "Manual";
+export type ThemeMode = 'dark' | 'light';
 
 export interface Settings {
   selectedServer?: string | null;

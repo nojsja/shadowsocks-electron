@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import Form, { Field } from "rc-field-form";
 import { MessageChannel } from 'electron-re';
+import { dispatch as dispatchEvent } from 'use-bus';
 import {
   Container,
   List,
@@ -193,11 +194,17 @@ const SettingsPage: React.FC = () => {
     });
   }
 
-  const onAutoHideChange = (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => {
+  const onAutoThemeChange = (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => {
     MessageChannel.invoke('main', 'service:theme', {
       action: e.target.checked ? 'listenForUpdate' : 'unlistenForUpdate',
       params: {}
     });
+    if (e.target.checked) {
+      // dispatchEvent({
+      //   type: 'theme:update',
+      //   payload: e.target.checked ? 'dark' : 'light'
+      // });
+    }
   }
 
   const checkPortField = (rule: any, value: any) => {
@@ -237,9 +244,9 @@ const SettingsPage: React.FC = () => {
             return;
           case 'darkMode':
             persistStore.set('darkMode', value ? 'true' : 'false');
-            MessageChannel.invoke('main', 'service:desktop', {
-              action: 'reloadMainWindow',
-              params: {}
+            dispatchEvent({
+              type: 'theme:update',
+              payload: value ? 'dark' : 'light'
             });
             break;
           default:
@@ -463,7 +470,7 @@ const SettingsPage: React.FC = () => {
               <Field name="autoTheme" valuePropName="checked">
                 <AdaptiveSwitch
                   edge="end"
-                  onChange={onAutoHideChange}
+                  onChange={onAutoThemeChange}
                 />
               </Field>
             </ListItemSecondaryAction>

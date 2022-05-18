@@ -105,6 +105,7 @@
     "targz": "1.0.1",
     "typeface-roboto": "0.0.75",
     "typescript": "3.8.3",
+    "use-bus": "^2.5.0",
     "uuid": "7.0.2",
     "v8-inspect-profiler": "^0.1.0",
     "wait-on": "4.0.1"
