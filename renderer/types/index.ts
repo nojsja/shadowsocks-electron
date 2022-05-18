@@ -125,6 +125,7 @@ export interface Settings {
   verbose: boolean;
   fixedMenu: boolean;
   darkMode: boolean;
+  autoTheme: boolean;
   localPort: number;
   pacPort: number;
   httpProxy: {

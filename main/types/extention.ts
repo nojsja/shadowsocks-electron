@@ -63,8 +63,8 @@ export interface DesktopService extends Service {
 }
 
 export interface ThemeService extends Service {
-  listenForUpdate: (params: any) => Promise<ServiceResult>
-  unlistenForUpdate: (params: any) => Promise<ServiceResult>
+  listenForUpdate: () => Promise<ServiceResult>
+  unlistenForUpdate: () => Promise<ServiceResult>
 }
 
 export type ServiceHandler = (params: any) => Promise<ServiceResult>

@@ -86,6 +86,8 @@
   "edit": "编辑",
   "delete": "删除",
   "darkMode": "暗色模式",
+  "autoTheme": "主题同步",
+  "autoThemeTips": "主题和系统保持一致",
   "save": "保存",
   "language": "语言",
   "invalid_operation": "操作无效",

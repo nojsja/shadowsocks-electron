@@ -193,6 +193,13 @@ const SettingsPage: React.FC = () => {
     });
   }
 
+  const onAutoHideChange = (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => {
+    MessageChannel.invoke('main', 'service:theme', {
+      action: e.target.checked ? 'listenForUpdate' : 'unlistenForUpdate',
+      params: {}
+    });
+  }
+
   const checkPortField = (rule: any, value: any) => {
     return Promise.all([checkPortSame(), checkPortValid(value)]);
   };
@@ -260,6 +267,7 @@ const SettingsPage: React.FC = () => {
             autoLaunch: settings.autoLaunch,
             fixedMenu: settings.fixedMenu,
             darkMode: settings.darkMode,
+            autoTheme: settings.autoTheme,
             verbose: settings.verbose,
             autoHide: settings.autoHide,
           }
@@ -448,12 +456,27 @@ const SettingsPage: React.FC = () => {
           </ListItem>
           <ListItem>
             <ListItemText
+              primary={t('autoTheme')}
+              secondary={t('autoThemeTips')}
+            />
+            <ListItemSecondaryAction>
+              <Field name="autoTheme" valuePropName="checked">
+                <AdaptiveSwitch
+                  edge="end"
+                  onChange={onAutoHideChange}
+                />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText
               primary={t('darkMode')}
             />
             <ListItemSecondaryAction>
               <Field name="darkMode" valuePropName="checked">
                 <AdaptiveSwitch
                   edge="end"
+                  disabled={settings.autoTheme}
                 />
               </Field>
             </ListItemSecondaryAction>

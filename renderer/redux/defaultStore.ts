@@ -14,6 +14,7 @@ const defaultStore: RootState = {
     selectedServer: null,
     mode: "Manual",
     darkMode: false,
+    autoTheme: false,
     verbose: false,
     localPort: 1080,
     pacPort: 1090,

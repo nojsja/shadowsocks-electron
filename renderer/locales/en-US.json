@@ -81,6 +81,8 @@
   "edit": "Edit",
   "delete": "Delete",
   "darkMode": "Dark Mode",
+  "autoTheme": "Theme Auto Mode",
+  "autoThemeTips": "theme sync with system",
   "remove_this_server?": "Remove this server?",
   "this_action_cannot_be_undone": "This action cannot be undone!",
   "copied": "copied",
