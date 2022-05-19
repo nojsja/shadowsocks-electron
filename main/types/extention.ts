@@ -65,6 +65,7 @@ export interface DesktopService extends Service {
 export interface ThemeService extends Service {
   listenForUpdate: () => Promise<ServiceResult>
   unlistenForUpdate: () => Promise<ServiceResult>
+  getSystemThemeInfo: () => Promise<ServiceResult>
 }
 
 export type ServiceHandler = (params: any) => Promise<ServiceResult>

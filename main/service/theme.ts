@@ -50,4 +50,17 @@ export class ThemeService implements ThemeServiceType {
       });
     });
   };
+
+  async getSystemThemeInfo(): Promise<ServiceResult> {
+    return new Promise((resolve, reject) => {
+      resolve({
+        code: 200,
+        result: {
+          shouldUseDarkColors: nativeTheme.shouldUseDarkColors,
+          shouldUseHighContrastColors: nativeTheme.shouldUseHighContrastColors,
+          shouldUseInvertedColorScheme: nativeTheme.shouldUseInvertedColorScheme
+        }
+      });
+    });
+  };
 }

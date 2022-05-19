@@ -49,8 +49,7 @@ const themes = {
 export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMode>>] => {
   const [mode, setMode] = useState<ThemeMode>(theme);
 
-  const updateTheme = (e: IpcRendererEvent, data: { shouldUseDarkColors: boolean }) => {
-    if (persistStore.get('darkMode') === (data.shouldUseDarkColors ? 'true' : 'false')) return;
+  const updateTheme = (e: IpcRendererEvent | EventAction, data: { shouldUseDarkColors: boolean }) => {
     persistStore.set('darkMode', !!data.shouldUseDarkColors ? 'true' : 'false');
     store.dispatch({
       type: SET_SETTING,
@@ -68,7 +67,7 @@ export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMo
     }
   }, []);
 
-  useBus('theme:update', (event: EventAction) => setMode(event.payload), [setMode]);
+  useBus('theme:update', (event: EventAction) => updateTheme(event, event.payload), [setMode]);
 
   return [themes[mode] ?? themes['light'], setMode];
 };

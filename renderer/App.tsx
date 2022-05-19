@@ -50,23 +50,6 @@ ipcRenderer.on("connected", (e, message) => {
   });
 });
 
-// ipcRenderer.on("theme:update", (e, { shouldUseDarkColors }) => {
-//   if (persistStore.get('darkMode') === (shouldUseDarkColors ? 'true' : 'false')) return;
-
-//   store.dispatch({
-//     type: SET_SETTING,
-//     key: "darkMode",
-//     value: shouldUseDarkColors
-//   });
-//   persistStore.set('darkMode', !!shouldUseDarkColors ? 'true' : 'false');
-//   setTimeout(() => {
-//     MessageChannel.invoke('main', 'service:desktop', {
-//       action: 'reloadMainWindow',
-//       params: {}
-//     });
-//   }, 800);
-// });
-
 prepareForLanguage(getDefaultLang());
 
 const App: React.FC = () => {

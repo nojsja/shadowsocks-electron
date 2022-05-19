@@ -63,11 +63,12 @@ const SettingsPage: React.FC = () => {
       (persistStore.get('darkMode') === 'false' && !!settings.darkMode) ||
       (persistStore.get('darkMode') === undefined && !!settings.darkMode)
     ) {
-      persistStore.set('darkMode', !!settings.darkMode ? 'true' : 'false');
-        MessageChannel.invoke('main', 'service:desktop', {
-          action: 'reloadMainWindow',
-          params: {}
-        });
+      dispatchEvent({
+        type: 'theme:update',
+        payload: {
+          shouldUseDarkColors: !!settings.darkMode
+        }
+      });
     }
   }, [settings.darkMode]);
 
@@ -195,16 +196,29 @@ const SettingsPage: React.FC = () => {
   }
 
   const onAutoThemeChange = (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => {
+    const checked = e.target.checked;
     MessageChannel.invoke('main', 'service:theme', {
-      action: e.target.checked ? 'listenForUpdate' : 'unlistenForUpdate',
+      action: checked ? 'listenForUpdate' : 'unlistenForUpdate',
       params: {}
     });
-    if (e.target.checked) {
-      // dispatchEvent({
-      //   type: 'theme:update',
-      //   payload: e.target.checked ? 'dark' : 'light'
-      // });
-    }
+    MessageChannel.invoke('main', 'service:theme', {
+      action: 'getSystemThemeInfo',
+      params: {}
+    })
+    .then(rsp => {
+      if (rsp.code === 200) {
+        dispatchEvent({
+          type: 'theme:update',
+          payload: rsp.result
+        });
+        if (!checked) {
+          form.setFieldsValue({
+            darkMode: rsp.result?.shouldUseDarkColors
+          });
+        }
+      }
+    });
+
   }
 
   const checkPortField = (rule: any, value: any) => {
@@ -243,10 +257,11 @@ const SettingsPage: React.FC = () => {
             dispatch<any>(setStartupOnBoot(value));
             return;
           case 'darkMode':
-            persistStore.set('darkMode', value ? 'true' : 'false');
             dispatchEvent({
               type: 'theme:update',
-              payload: value ? 'dark' : 'light'
+              payload: {
+                shouldUseDarkColors: value
+              }
             });
             break;
           default:
