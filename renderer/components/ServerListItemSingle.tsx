@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
 import {
   ListItem,
-  ListItemText,
   ListItemSecondaryAction,
   IconButton,
   ListItemProps,
@@ -35,6 +34,8 @@ import useContextMenu from "../hooks/useContextMenu";
 import { getConnectionDelay } from "../redux/actions/status";
 import { moveDown, moveUp, top } from "../redux/actions/config";
 import { Config } from "../types";
+
+import ListItemTextMultibleLine from "./Pices/ListItemTextMultibleLine";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -123,6 +124,14 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
   const origin = `${serverHost}:${serverPort}`;
   const [actionHidden, setActionHidden] = useState(true);
   const [ContextMenu, handleMenuOpen] = useContextMenu(getMenuContents());
+  const secondaryText =
+    (remark && plugin) ?
+    `${origin} / ${plugin}` :
+    remark ?
+    origin :
+    plugin ?
+    plugin :
+    "";
 
   function getMenuContents () {
     return [
@@ -232,7 +241,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           }
         </ListItemIcon>
 
-        <ListItemText
+        <ListItemTextMultibleLine
           primary={
             <StyledBadge
               badgeContent={type} color="primary"
@@ -241,13 +250,8 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
             </StyledBadge>
           }
           secondary={
-            remark && plugin
-              ? `${origin} / ${plugin}`
-              : remark
-                ? origin
-                : plugin
-                  ? plugin
-                  : ""
+            // <TextEllipsis text={secondaryText as string} />
+            secondaryText
           }
         />
 

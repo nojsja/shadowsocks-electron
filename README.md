@@ -151,7 +151,6 @@ $: git clone https://github.com/nojsja/shadowsocks-electron.git
 $: cd shadowsocks-electron
 
 # for china developers
-$: npm config set electron_custom_dir "13.4.0"
 $: npm config set electron_mirror http://npm.taobao.org/mirrors/electron/
 
 # [02]npm
