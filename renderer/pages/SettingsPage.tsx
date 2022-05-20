@@ -200,6 +200,10 @@ const SettingsPage: React.FC = () => {
     MessageChannel.invoke('main', 'service:theme', {
       action: checked ? 'listenForUpdate' : 'unlistenForUpdate',
       params: {}
+    }).then(rsp => {
+      if (rsp.code === 200) {
+        persistStore.set('autoTheme', checked ? 'true' : 'false');
+      }
     });
     MessageChannel.invoke('main', 'service:theme', {
       action: 'getSystemThemeInfo',

@@ -3,6 +3,8 @@ import React, { Dispatch, useEffect, useState } from 'react';
 import useBus, { EventAction } from 'use-bus';
 import { createTheme, Theme } from '@material-ui/core';
 import { grey, indigo } from "@material-ui/core/colors";
+import { dispatch as dispatchEvent } from 'use-bus';
+import { MessageChannel } from 'electron-re';
 
 import { persistStore } from '../App';
 import { SET_SETTING } from '../redux/actions/settings';
@@ -59,6 +61,8 @@ export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMo
     setMode(data.shouldUseDarkColors ? 'dark' : 'light');
   };
 
+  useBus('theme:update', (event: EventAction) => updateTheme(event, event.payload), [setMode]);
+
   useEffect(() => {
     ipcRenderer.on("theme:update", updateTheme);
 
@@ -67,7 +71,22 @@ export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMo
     }
   }, []);
 
-  useBus('theme:update', (event: EventAction) => updateTheme(event, event.payload), [setMode]);
+  useEffect(() => {
+    if (persistStore.get('autoTheme') === 'true') {
+      MessageChannel.invoke('main', 'service:theme', {
+        action: 'getSystemThemeInfo',
+        params: {}
+      })
+      .then(rsp => {
+        if (rsp.code === 200) {
+          dispatchEvent({
+            type: 'theme:update',
+            payload: rsp.result
+          });
+        }
+      });
+    }
+  }, []);
 
   return [themes[mode] ?? themes['light'], setMode];
 };
