@@ -4,11 +4,10 @@ import { MessageChannel } from 'electron-re';
 
 import { Settings, RootState } from "../../types";
 
-
 export const SET_SETTING = "SET_SETTING";
 export const OVERRIDE_SETTING = "OVERRIDE_SETTING";
 
-export function setSetting<T extends (keyof Settings), Settings>(
+export function setSetting<T extends keyof Settings>(
   key: T,
   value: Settings[T]
 ) {
@@ -77,4 +76,6 @@ export const setHttpAndHttpsProxy = (
       });
   };
 }
-export type SetSettingAction = ReturnType<typeof setSetting>;
+
+export type SetAction = ReturnType<typeof setSetting>;
+export type OverAction = ReturnType<typeof overrideSetting>;

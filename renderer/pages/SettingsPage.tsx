@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import Form, { Field } from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
@@ -22,7 +22,7 @@ import { SnackbarMessage } from 'notistack';
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { SET_SETTING, getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy } from "../redux/actions/settings";
+import { getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy, setSetting } from "../redux/actions/settings";
 import { setStatus } from "../redux/actions/status";
 import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
 import { Notification } from "../types";
@@ -71,6 +71,30 @@ const SettingsPage: React.FC = () => {
       });
     }
   }, [settings.darkMode]);
+
+  /* restoreFromFile */
+  useMemo(() => {
+    form.setFieldsValue({
+      ...{
+        localPort: settings.localPort,
+        pacPort: settings.pacPort,
+        gfwListUrl: settings.gfwListUrl,
+        httpProxy: settings.httpProxy.enable,
+        httpProxyPort: settings.httpProxy.port,
+        autoLaunch: settings.autoLaunch,
+        fixedMenu: settings.fixedMenu,
+        darkMode: settings.darkMode,
+        autoTheme: settings.autoTheme,
+        verbose: settings.verbose,
+        autoHide: settings.autoHide,
+      }
+    });
+  }, [
+    settings.localPort, settings.pacPort, settings.gfwListUrl,
+    settings.httpProxy.enable, settings.httpProxy.port, settings.autoLaunch,
+    settings.fixedMenu, settings.darkMode, settings.autoTheme,
+    settings.verbose, settings.autoHide
+  ]);
 
   const backupConfiguration = () => {
     return backupConfigurationToFile({
@@ -240,7 +264,7 @@ const SettingsPage: React.FC = () => {
               ...settings.httpProxy,
               enable: value
             };
-            dispatch({ type: SET_SETTING, key: 'httpProxy', value });
+            dispatch(setSetting<'httpProxy'>(key, value))
             setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
             return;
           case 'httpProxyPort':
@@ -248,14 +272,14 @@ const SettingsPage: React.FC = () => {
               ...settings.httpProxy,
               port: value
             };
-            dispatch({ type: SET_SETTING, key: 'httpProxy', value });
+            dispatch(setSetting<'httpProxy'>('httpProxy', value))
             setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
             return;
           case 'acl':
-            dispatch({ type: SET_SETTING, key, value: {
+            dispatch(setSetting<'acl'>(key, {
               ...settings.acl,
               text: value
-            } });
+            }));
             return;
           case 'autoLaunch':
             dispatch<any>(setStartupOnBoot(value));
@@ -272,7 +296,7 @@ const SettingsPage: React.FC = () => {
             break;
         }
 
-        dispatch({ type: SET_SETTING, key, value });
+        dispatch(setSetting<any>(key, value));
       }).catch((reason: { errorFields: { errors: string[] }[] }) => {
         enqueueSnackbar(reason?.errorFields?.map(item => item.errors.join()).join(), { variant: 'error' });
       });

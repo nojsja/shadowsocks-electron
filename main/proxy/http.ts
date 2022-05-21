@@ -43,15 +43,10 @@ export const createHttpServer = (options: {port: number, host: string, proxyPort
 
 /* Stop Https Server */
 export const stopHttpServer = (port: number, host: string, callback: InnerCallback) => {
-  checkPortInUse([port], host)
-  .then(results => {
-    if (results[0].isInUse) {
-      console.log('Stop http proxy server...');
-      httpServer?.stop();
-      httpServer = null;
-      callback(null);
-    };
-  });
+  console.log('Stop http proxy server...');
+  httpServer?.stop();
+  httpServer = null;
+  callback(null);
 }
 
 /* Stop Http Server */

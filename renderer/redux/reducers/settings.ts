@@ -1,23 +1,22 @@
+import produce from 'immer';
 import { Settings } from "../../types";
 import defaultStore from "../defaultStore";
-import { OVERRIDE_SETTING, SetSettingAction, SET_SETTING } from "../actions/settings";
+import { OverAction, OVERRIDE_SETTING, SetAction, SET_SETTING } from "../actions/settings";
 
 function settingsReducer(
   state: Settings = defaultStore.settings,
-  action: SetSettingAction
+  action: SetAction | OverAction
 ): Settings {
   switch (action.type) {
     case SET_SETTING:
-      return {
-        ...state,
-        lang: state.lang || 'zh-CN',
-        [action.key]: action.value
-      };
+      return produce(state, draft => {
+        draft.lang = state.lang || 'zh-CN';
+        (draft as any)[(action as SetAction).key] = action.value;
+      });
     case OVERRIDE_SETTING:
-      return {
-        ...state,
-        ...(action.value)
-      }
+      return produce(state, draft => {
+        Object.assign(draft, action.value);
+      });
     default:
       return state;
   }

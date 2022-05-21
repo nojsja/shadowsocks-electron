@@ -86,6 +86,7 @@
     "electron-notarize": "0.3.0",
     "eslint-plugin-node": "^11.1.0",
     "husky": "4.2.3",
+    "immer": "^9.0.14",
     "lint-staged": "10.0.9",
     "nodemon": "2.0.2",
     "notistack": "^1.0.10",
