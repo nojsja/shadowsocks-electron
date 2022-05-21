@@ -73,5 +73,5 @@ export function findAndModify(server: undefined | (Config | GroupConfig)[], id: 
     }
   }
 
-  return [...server];
+  return server;
 }

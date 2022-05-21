@@ -1,3 +1,4 @@
+import produce from "immer";
 import defaultStore from "../defaultStore";
 import { EnqueueSnackbarOptions } from '../../types';
 import { ENQUEUE_SNACKBAR, CLOSE_SNACKBAR, REMOVE_SNACKBAR } from '../actions/notifications';
@@ -8,21 +9,20 @@ function notificationsReducer(
 ): EnqueueSnackbarOptions[] {
   switch (action.type) {
     case ENQUEUE_SNACKBAR:
-      return [
-        ...state,
-        {
+      return produce(state, draft => {
+        draft.push({
           key: action.key,
           ...action.notification,
-        },
-      ];
-
+        });
+      });
     case CLOSE_SNACKBAR:
-      return state.map(notification => (
-        (action.dismissAll || notification.key === action.key)
-          ? { ...notification, dismissed: true }
-          : { ...notification }
-      ));
-
+      return produce(state, draft => {
+        draft.map(notification => {
+          if (action.dismissAll || notification.key === action.key) {
+            notification.dismissed = true;
+          }
+        });
+      });
     case REMOVE_SNACKBAR:
       return state.filter(
         notification => notification.key !== action.key,

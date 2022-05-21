@@ -1,9 +1,11 @@
+import produce from "immer";
 import {
   ADD_SUBSCRIPTION,
   UPDATE_SUBSCRIPTION,
   ADD_CONFIG,
-  EditConfigAction,
-  MoveConfigAction,
+  EditConfigAction as ECA,
+  MoveConfigAction as MCA,
+  AddSubscriptionAction as ASA,
   REMOVE_CONFIG,
   EDIT_CONFIG,
   WIPE_CONFIG,
@@ -11,7 +13,6 @@ import {
   MOVE_DOWN,
   MOVE_TO,
   TOP,
-  AddSubscriptionAction
 } from "../actions/config";
 import { Config, GroupConfig } from "../../types";
 import defaultStore from "../defaultStore";
@@ -19,49 +20,49 @@ import { findAndModify } from "../../utils";
 
 function configReducer(
   state: (Config | GroupConfig)[] = defaultStore.config,
-  action: EditConfigAction | MoveConfigAction | AddSubscriptionAction
+  action: ECA | MCA | ASA
 ): (Config | GroupConfig)[] {
   let sourceIndex: number, targetIndex: number, newState: (Config | GroupConfig)[];
 
   switch (action.type) {
     case ADD_SUBSCRIPTION:
-      return [
-        ...state,
-        {
-          ...(action as AddSubscriptionAction).config,
+      return produce(state, draft => {
+        draft.push({
+          ...(action as ASA).config,
           id: action.id,
-          url: (action as AddSubscriptionAction).url,
+          url: (action as ASA).url,
           type: "group",
-        }
-      ];
+        })
+      });
     case UPDATE_SUBSCRIPTION:
-      return state.map((config) => {
-        if (config.id === action.id) {
-          return {
-            ...config,
-            ...(action as AddSubscriptionAction).config,
-            servers: (action as AddSubscriptionAction).config.servers.map((server, i) => {
-              return {
-                ...server,
-                id: (config as GroupConfig).servers[i]?.id ?? server.id,
-              };
-            })
-          };
-        }
-        return { ...config };
+      return produce(state, draft => {
+        draft.map((config) => {
+          if (config.id === action.id) {
+            Object.assign(config, {
+              ...(action as ASA).config,
+              servers: (action as ASA).config.servers.map((server, i) => {
+                return {
+                  ...server,
+                  id: (config as GroupConfig).servers[i]?.id ?? server.id,
+                };
+              })
+            });
+          }
+        });
       });
     case ADD_CONFIG:
-      return [
-        ...state,
-        {
-          ...(action as EditConfigAction).config,
+      return produce(state, draft => {
+        draft.push({
+          ...(action as ECA).config,
           id: action.id
-        }
-      ];
+        });
+      });
     case REMOVE_CONFIG:
       return state.filter(i => i.id !== action.id);
     case EDIT_CONFIG:
-      return findAndModify(state, action.id, (action as EditConfigAction).config);
+      return produce(state, draft => {
+        findAndModify(draft, action.id, (action as ECA).config);
+      });
     case WIPE_CONFIG:
       return [];
     case TOP:
@@ -73,7 +74,7 @@ function configReducer(
       return newState;
     case MOVE_TO:
       sourceIndex = state.findIndex((config, index) => config.id === action.id);
-      targetIndex  = state.findIndex((config, index) => config.id === (action as MoveConfigAction).target);
+      targetIndex  = state.findIndex((config, index) => config.id === (action as MCA).target);
       newState = [...state];
       if (sourceIndex !== -1 && targetIndex !== -1) {
         const newConfig = {...newState[sourceIndex]};

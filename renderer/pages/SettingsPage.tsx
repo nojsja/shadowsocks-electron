@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Form, { Field } from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
@@ -48,6 +48,12 @@ const SettingsPage: React.FC = () => {
   // const [aclVisible, setAclVisible] = useState(false);
   const inputFileRef = React.useRef<HTMLInputElement>(null);
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
+  const settingKeys = useRef(
+    ['localPort', 'pacPort', 'gfwListUrl',
+    'httpProxy', 'autoLaunch', 'fixedMenu',
+    'darkMode', 'autoTheme', 'verbose', 'autoHide']
+  );
+  const cachedRef = useRef<any>(null);
 
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
@@ -57,6 +63,7 @@ const SettingsPage: React.FC = () => {
     dispatch<any>(getStartupOnBoot());
   }, [dispatch]);
 
+  /* dark mode */
   useEffect(() => {
     if (
       (persistStore.get('darkMode') === 'true' && !settings.darkMode) ||
@@ -74,27 +81,27 @@ const SettingsPage: React.FC = () => {
 
   /* restoreFromFile */
   useMemo(() => {
-    form.setFieldsValue({
-      ...{
-        localPort: settings.localPort,
-        pacPort: settings.pacPort,
-        gfwListUrl: settings.gfwListUrl,
-        httpProxy: settings.httpProxy.enable,
-        httpProxyPort: settings.httpProxy.port,
-        autoLaunch: settings.autoLaunch,
-        fixedMenu: settings.fixedMenu,
-        darkMode: settings.darkMode,
-        autoTheme: settings.autoTheme,
-        verbose: settings.verbose,
-        autoHide: settings.autoHide,
-      }
-    });
-  }, [
-    settings.localPort, settings.pacPort, settings.gfwListUrl,
-    settings.httpProxy.enable, settings.httpProxy.port, settings.autoLaunch,
-    settings.fixedMenu, settings.darkMode, settings.autoTheme,
-    settings.verbose, settings.autoHide
-  ]);
+    const obj = {};
+    if (cachedRef.current) {
+      settingKeys.current.forEach(key => {
+        if (cachedRef.current[key] !== (settings as any)[key]) {
+          if (key === 'httpProxy') {
+            Object.assign(obj, {
+              httpProxy: settings.httpProxy.enable,
+              httpProxyPort: settings.httpProxy.port,
+            });
+          } else {
+            Object.assign(obj, { [key]: (settings as any)[key] });
+          }
+        }
+      });
+      form.setFieldsValue(obj);
+    }
+    cachedRef.current = settingKeys.current.reduce(
+      (pre, cur) => Object.assign(pre, { [cur]: (settings as any)[cur] }),
+      {}
+    );
+  }, settingKeys.current.map(key => (settings as any)[key]));
 
   const backupConfiguration = () => {
     return backupConfigurationToFile({
