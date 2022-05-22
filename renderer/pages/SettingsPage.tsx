@@ -416,6 +416,7 @@ const SettingsPage: React.FC = () => {
               <ListItem>
                 <ListItemText
                   primary={t('http_proxy_port')}
+                  secondary={t('restart_when_changed')}
                 />
                 <ListItemSecondaryAction>
                   <Field

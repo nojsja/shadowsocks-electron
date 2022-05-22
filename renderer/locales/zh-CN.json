@@ -42,6 +42,7 @@
   "http_proxy": "http 代理",
   "https_proxy": "https 代理",
   "http_proxy_port": "http 代理端口",
+  "restart_when_changed": "更改后请重启http代理",
   "https_proxy_port": "https 代理端口",
   "the_same_port_is_not_allowed": "端口号冲突",
   "gfwlist_url": "GFWList 链接",
