@@ -89,6 +89,7 @@ export class SSClient extends Client {
 
   parseParams(config: SSConfig) {
     const { acl } = this.settings;
+    const isAclEnabled = acl.enable && acl.url;
     this.params = [
       "-s",
       config.serverHost,
@@ -110,7 +111,8 @@ export class SSClient extends Client {
       this.settings.verbose ? "-v" : "",
       "-t",
       (config.timeout ?? "600").toString(),
-      (acl.enable && acl.url) ? `--acl ${acl.url}` : ""
+      isAclEnabled ? `--acl` : "",
+      isAclEnabled ? `${acl.url}` : ""
     ].filter(arg => arg !== '');
   }
 
@@ -218,6 +220,7 @@ export class SSRClient extends Client {
 
   parseParams(config: SSRConfig) {
     const { acl } = this.settings;
+    const isAclEnabled = acl.enable && acl.url;
     this.params = [
       "-s",
       config.serverHost,
@@ -241,7 +244,8 @@ export class SSRClient extends Client {
       config.fastOpen ? "--fast-open" : "",
       // config.noDelay ? "--no-delay" : "",
       this.settings.verbose ? "-v" : "",
-      (acl.enable && acl.url) ? `--acl ${acl.url}` : ""
+      isAclEnabled ? `--acl` : "",
+      isAclEnabled ? `${acl.url}` : ""
     ].filter(arg => arg !== '');
   }
 
