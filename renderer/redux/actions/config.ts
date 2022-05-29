@@ -4,7 +4,7 @@ import jsqr from 'jsqr';
 import uuid from "uuid/v1";
 import { MessageChannel } from 'electron-re';
 
-import { ClipboardParseType, Config, GroupConfig, RootState } from "../../types";
+import { ActionRspText, ClipboardParseType, Config, GroupConfig, RootState } from "../../types";
 import { getScreenCapturedResources } from '../../utils';
 import { overrideSetting } from './settings';
 import { setStatus } from './status';
@@ -30,15 +30,22 @@ export const addConfig = (id: string, config: Config) => {
   };
 };
 
-export const backupConfigurationToFile = (params: any) => {
-  return MessageChannel.invoke('main', 'service:desktop', {
-    action: 'backupConfigurationToFile',
-    params
-  });
+export const backupConfigurationToFile = (params: any, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    MessageChannel.invoke('main', 'service:desktop', {
+      action: 'backupConfigurationToFile',
+      params
+    }).then(rsp => {
+      if (rsp.code === 200) {
+        return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
+      }
+      dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
+    });
+  }
 }
 
 export const restoreConfigurationFromFile =
-  (info: { success: string, error: { [key: string]: string } }): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'restoreConfigurationFromFile',
@@ -63,7 +70,7 @@ export const restoreConfigurationFromFile =
   }
 }
 
-export const updateSubscription = (id: string, url: string, info: { error: string, success: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const updateSubscription = (id: string, url: string, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
@@ -91,13 +98,13 @@ export const updateSubscription = (id: string, url: string, info: { error: strin
           return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
         }
       }
-      dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
+      dispatch(enqueueSnackbar(info.error.default, { variant: 'error' }));
     });
   }
 };
 
 
-export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
@@ -128,12 +135,12 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
           }
         }
       }
-      return dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
+      return dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "error" }));
     });
   }
 };
 
-export const getQrCodeFromScreenResources = (info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const getQrCodeFromScreenResources = (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true))
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
@@ -163,10 +170,10 @@ export const getQrCodeFromScreenResources = (info: { success: string, error: str
             });
           });
         } else {
-          dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
+          dispatch(enqueueSnackbar(info.error.default, { variant: 'error' }));
         }
       } else {
-        dispatch(enqueueSnackbar(info.error, { variant: 'error' }));
+        dispatch(enqueueSnackbar(info.error.default, { variant: 'error' }));
       }
     }).catch(error => {
       dispatch(enqueueSnackbar(error && error.toString(), { variant: 'error' }));
@@ -178,14 +185,14 @@ export const getQrCodeFromScreenResources = (info: { success: string, error: str
 
 /* parse and get ss/ssr config from clipboard */
 export const addConfigFromClipboard =
-  (info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(parseClipboardText(null, 'url', info));
   }
 };
 
 export const addSubscriptionFromClipboard =
-  (info: { success: string, error: string }): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
       dispatch(parseClipboardText(null, 'subscription', info));
     }

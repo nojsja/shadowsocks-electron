@@ -6,6 +6,7 @@
   "not_applicable_to_linux_snap_application": "linux snap 版本暂未支持",
   "failed_to_download_file": "文件下载失败",
   "successful_operation": "操作成功",
+  "failed_operation": "操作失败",
   "recover_pac_file_with_link": "使用填入的 GFWList 链接重新生成 PAC 文件",
   "recover_pac_file_with_file": "使用本地 GFWList 文件重新生成 PAC 文件",
   "fixed_menu": "固定菜单",
@@ -112,6 +113,7 @@
   "the_local_port_is_occupied": "本地端口被占用！",
   "verbose_output": "记录完整的访问日志",
   "acl_settings": "ACL 设置",
-  "acl_content": "ACL 内容",
-  "click_to_edit": "点击编辑"
+  "acl_content": "ACL 文件地址",
+  "click_to_edit": "点击编辑",
+  "select": "选择"
 }

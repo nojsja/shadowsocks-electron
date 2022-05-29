@@ -2,7 +2,8 @@ import { ThunkAction } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { MessageChannel } from 'electron-re';
 
-import { Settings, RootState } from "../../types";
+import { Settings, RootState, ActionRspText } from "../../types";
+import { enqueueSnackbar } from './notifications';
 
 export const SET_SETTING = "SET_SETTING";
 export const OVERRIDE_SETTING = "OVERRIDE_SETTING";
@@ -75,6 +76,25 @@ export const setHttpAndHttpsProxy = (
         params: { port, proxyPort }
       });
   };
+}
+
+export const setAclUrl = (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    return MessageChannel.invoke('main', 'service:desktop', {
+      action: 'setAclUrl',
+      params: {}
+    }).then(rsp => {
+      if (rsp.code === 200) {
+        dispatch(setSetting<'acl'>('acl', {
+          enable: true,
+          url: rsp.result
+        }));
+        dispatch(enqueueSnackbar(info.success, { variant: "success" }));
+      } else {
+        dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
+      }
+    });
+  }
 }
 
 export type SetAction = ReturnType<typeof setSetting>;

@@ -92,7 +92,9 @@ const HomePage: React.FC = () => {
         // setBackDrop.current(true);
         dispatch(getQrCodeFromScreenResources({
           success: t('added_a_server'),
-          error: t('no_qr_code_is_detected'),
+          error: {
+            default: t('no_qr_code_is_detected')
+          },
         }));
         setDialogOpen(false);
         break;
@@ -101,7 +103,9 @@ const HomePage: React.FC = () => {
         // setBackDrop.current(true);
         dispatch(addConfigFromClipboard({
           success: t('added_a_server'),
-          error: t('invalid_operation')
+          error: {
+            default: t('invalid_operation')
+          }
         }));
         break;
       case 'subscription':
@@ -109,7 +113,9 @@ const HomePage: React.FC = () => {
         // setBackDrop.current(true);
         dispatch(addSubscriptionFromClipboard({
           success: t('added_a_server'),
-          error: t('invalid_operation')
+          error: {
+            default: t('invalid_operation')
+          }
         }));
         break;
       case 'share':

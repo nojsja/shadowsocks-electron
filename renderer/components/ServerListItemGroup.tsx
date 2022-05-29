@@ -105,7 +105,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         if (item.url) {
           dispatch(updateSubscription(item.id, item.url, {
             success: t('subscription_updated'),
-            error: t('failed_to_update_subscription')
+            error: { default: t('failed_to_update_subscription') }
           }));
         } else {
           enqueueSnackbar(t('server_url_not_set'), { variant: 'warning' });

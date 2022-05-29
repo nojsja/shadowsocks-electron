@@ -20,7 +20,7 @@ const defaultStore: RootState = {
     pacPort: 1090,
     acl: {
       enable: false,
-      text: ""
+      url: ""
     },
     httpProxy: {
       enable: false,

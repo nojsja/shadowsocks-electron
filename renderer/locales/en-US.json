@@ -6,6 +6,7 @@
   "not_applicable_to_linux_snap_application": "not applicable to linux snap version",
   "failed_to_download_file": "Failed to download file",
   "successful_operation": "Successful Operation",
+  "failed_operation": "Operation failed",
   "recover_pac_file_with_link": "Recover the pac file using the gfw-list link below",
   "recover_pac_file_with_file": "Recover the pac file using the local gfw-list file",
   "fixed_menu": "Fixed Menu",
@@ -112,6 +113,7 @@
   "the_local_port_is_occupied": "The local port is occupied!",
   "verbose_output": "See App logs for verbose output",
   "acl_settings": "ACL Settings",
-  "acl_content": "ACL Content",
-  "click_to_edit": "Click to edit"
+  "acl_content": "ACL File URL",
+  "click_to_edit": "Click to edit",
+  "select": "Select"
 }

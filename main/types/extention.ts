@@ -190,9 +190,13 @@ export interface Settings {
   localPort: number;
   pacPort: number;
   httpProxy: {
-    enable: false,
-    port: 1095
+    enable: boolean,
+    port: number
   },
+  acl: {
+    enable: boolean,
+    url: string
+  }
   gfwListUrl: string;
   autoLaunch: boolean;
 };

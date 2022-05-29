@@ -142,6 +142,26 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
+  async setAclUrl(): Promise<ServiceResult> {
+    return new Promise(resolve => {
+      const filePath = dialog.showOpenDialogSync((global as any).win, {
+        defaultPath: app.getPath('home'),
+        properties: ['openFile', 'showHiddenFiles'],
+      });
+      if (filePath && filePath.length) {
+        resolve({
+          code: 200,
+          result: filePath[0]
+        });
+      } else {
+        resolve({
+          code: 404,
+          result: null
+        });
+      }
+    });
+  }
+
   async restoreConfigurationFromFile(): Promise<ServiceResult> {
     const filePath = dialog.showOpenDialogSync((global as any).win, {
       defaultPath: `${app.getPath('downloads')}/gui-config.json`,

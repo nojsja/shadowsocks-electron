@@ -88,6 +88,7 @@ export class SSClient extends Client {
   }
 
   parseParams(config: SSConfig) {
+    const { acl } = this.settings;
     this.params = [
       "-s",
       config.serverHost,
@@ -108,7 +109,8 @@ export class SSClient extends Client {
       config.pluginOpts ?? "",
       this.settings.verbose ? "-v" : "",
       "-t",
-      (config.timeout ?? "600").toString()
+      (config.timeout ?? "600").toString(),
+      (acl.enable && acl.url) ? `--acl ${acl.url}` : ""
     ].filter(arg => arg !== '');
   }
 
@@ -215,6 +217,7 @@ export class SSRClient extends Client {
   }
 
   parseParams(config: SSRConfig) {
+    const { acl } = this.settings;
     this.params = [
       "-s",
       config.serverHost,
@@ -237,7 +240,8 @@ export class SSRClient extends Client {
       config.udp ? "-u" : "",
       config.fastOpen ? "--fast-open" : "",
       // config.noDelay ? "--no-delay" : "",
-      this.settings.verbose ? "-v" : ""
+      this.settings.verbose ? "-v" : "",
+      (acl.enable && acl.url) ? `--acl ${acl.url}` : ""
     ].filter(arg => arg !== '');
   }
 

@@ -55,7 +55,7 @@ export type Plugin = typeof plugins[number];
 
 export type ACL = {
   enable: boolean,
-  text: string
+  url: string
 };
 
 export type CloseOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
@@ -161,3 +161,5 @@ export interface RootState {
   status: Status;
   settings: Settings;
 }
+
+export interface ActionRspText { success: string, error: { [key: string]: string } }

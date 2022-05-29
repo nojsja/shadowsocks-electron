@@ -13,11 +13,13 @@ import {
   Divider,
   Select,
   MenuItem,
-  Tooltip
+  Tooltip,
+  Button
 } from "@material-ui/core";
 import { RestorePage, NoteAdd } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
+import path from 'path';
 
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
@@ -25,13 +27,14 @@ import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notif
 import { getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy, setSetting } from "../redux/actions/settings";
 import { setStatus } from "../redux/actions/status";
 import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
+import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
 import { Notification } from "../types";
 
 import { useStylesOfSettings as useStyles } from "./styles";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
 import { TextWithTooltip } from "../components/Pices/TextWithTooltip";
-// import EditAclDialog from "../components/EditAclDialog";
+import ListItemTextMultibleLine from "../components/Pices/ListItemTextMultibleLine";
 
 import { persistStore } from "../App";
 import { getDefaultLang } from "../utils";
@@ -104,11 +107,27 @@ const SettingsPage: React.FC = () => {
   }, settingKeys.current.map(key => (settings as any)[key]));
 
   const backupConfiguration = () => {
-    return backupConfigurationToFile({
+    return dispatch<any>(backupConfigurationToFile({
       config,
       settings
-    });
+    }, {
+      success: t('successful_operation'),
+      error: {
+        default: t('failed_operation'),
+        404: t('user_canceled')
+      }
+    }));
   };
+
+  const setAclUrl = () => {
+    dispatch<any>(setAclUrlAction({
+      success: t('successful_operation'),
+      error: {
+        default: t('failed_operation'),
+        404: t('user_canceled')
+      }
+    }));
+  }
 
   const restoreConfiguration = () => {
     dispatch<any>(restoreConfigurationFromFile({
@@ -283,9 +302,9 @@ const SettingsPage: React.FC = () => {
             setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
             return;
           case 'acl':
-            dispatch(setSetting<'acl'>(key, {
+            dispatch(setSetting<'acl'>('acl', {
               ...settings.acl,
-              text: value
+              enable: value
             }));
             return;
           case 'autoLaunch':
@@ -327,6 +346,8 @@ const SettingsPage: React.FC = () => {
             autoTheme: settings.autoTheme,
             verbose: settings.verbose,
             autoHide: settings.autoHide,
+            acl: settings.acl.enable,
+            acl_url: settings.acl.url
           }
         }
         onValuesChange={onFieldChange}
@@ -440,40 +461,30 @@ const SettingsPage: React.FC = () => {
               </ListItem>
             )
           }
-          {/* <ListItem>
-              <ListItemText
-                primary={'ACL'}
-                // secondary="Not applicable to Linux"
-              />
-              <ListItemSecondaryAction>
+          <ListItem>
+            <ListItemTextMultibleLine
+              primary={'ACL'}
+              secondary={
+                settings.acl.enable ?
+                <Tooltip arrow placement="top" title={settings.acl.url}>
+                  <span>{ path.basename(settings.acl.url) }</span>
+                </Tooltip> : null
+              }
+            />
+            <ListItemSecondaryAction>
+              {
+                settings.acl.enable ? (
+                  <Button onClick={setAclUrl} size="small">{t('select')}</Button>
+                ) : null
+              }
+              <Field name="acl" valuePropName="checked">
                 <AdaptiveSwitch
                   edge="end"
-                  checked={settings.acl.enable}
-                  onChange={e => handleSwitchValueChange("acl", e)}
                 />
-              </ListItemSecondaryAction>
+              </Field>
+              <input style={{ display: 'none' }} type="file"></input>
+            </ListItemSecondaryAction>
           </ListItem>
-          {
-            settings.acl.enable && (
-              <ListItem>
-                <ListItemText
-                  primary={t('acl_content')}
-                />
-                <ListItemSecondaryAction>
-                  <TextField
-                    className={`${styles.textField} ${styles.indentInput}`}
-                    style={{ width: '120px', textAlign: 'right' }}
-                    required
-                    size="small"
-                    type="text"
-                    placeholder={t('click_to_edit')}
-                    onClick={() => setAclVisible(true)}
-                    value={'*****'}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
-            )
-          } */}
           <ListItem>
             <ListItemText
               primary={t('launch_on_boot')}
@@ -590,15 +601,6 @@ const SettingsPage: React.FC = () => {
         </List>
 
       </Form>
-
-      {/* dialog */}
-
-      {/* <EditAclDialog
-        open={aclVisible}
-        onClose={() => setAclVisible(false)}
-        children={undefined}
-        onTextChange={handleValueChange}
-      /> */}
 
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
     </Container>
