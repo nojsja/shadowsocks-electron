@@ -12,6 +12,7 @@ import { scrollBarStyle } from "../pages/styles";
 import { useDispatch } from "react-redux";
 import { moveConfig } from "../redux/actions/config";
 import GradientDivider from "./Pices/GradientDivider";
+import ContextMenuProvider from "../hooks/useContextMenu"
 
 export let cloneElement: HTMLDivElement | null;
 export const setCloneElement = (div: HTMLDivElement | null) => cloneElement = div;
@@ -91,7 +92,7 @@ const ServerList: React.FC<ServerListProps> = props => {
   return (
     !!config.length ? (
       (
-      <>
+      <ContextMenuProvider>
         <List className={`${styles.list} ${styles.scrollbar}`}>
           {config.map((item, index) => (
             <ServerListItem
@@ -114,7 +115,7 @@ const ServerList: React.FC<ServerListProps> = props => {
           ))}
         </List>
         <GradientDivider />
-      </>
+      </ContextMenuProvider>
       )
     )
     : (

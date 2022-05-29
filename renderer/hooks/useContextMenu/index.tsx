@@ -1,24 +1,21 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles, createStyles } from '@material-ui/styles';
 import { ListItemIcon, Typography } from '@material-ui/core';
+
+import MenuContext from './context';
 
 const initialState = {
   mouseX: null,
   mouseY: null,
 };
 
-interface MenuContent {
+export interface MenuContent {
   label: string | React.ElementType | JSX.Element,
   action: string,
   icon?: string | React.ElementType | JSX.Element,
-}
-
-interface ContextMenuProps {
-  onItemClick?: (action: string) => void;
-  contents?: MenuContent[];
-}
+};
 
 const StyledMenuItem = withStyles((theme) => createStyles({
   root: {
@@ -26,27 +23,31 @@ const StyledMenuItem = withStyles((theme) => createStyles({
   }
 }))(MenuItem);
 
-export default function ContextMenu(contents: MenuContent[]): [React.ElementType, (event: React.MouseEvent<HTMLElement>) => void, () => void] {
-  const [state, setState] = React.useState<{
+const ContextMenu: React.FC<{}> = (props) => {
+  const [state, setState] = useState<{
     mouseX: null | number;
     mouseY: null | number;
   }>(initialState);
+  const [items, setItems] = useState<MenuContent[]>([]);
+  const callbackRef = useRef<any>(null);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, items: MenuContent[], callback?: (action: string) => void) => {
     event.preventDefault();
+    callbackRef.current = callback;
     setState({
       mouseX: event.clientX - 2,
       mouseY: event.clientY - 4,
     });
+    setItems(items);
   };
 
   const handleMenuClose = () => {
     setState(initialState);
   }
 
-  const handleMenuClick = (action: string, callback?: (action: string) => void) => {
+  const handleMenuClick = (action: string) => {
     handleMenuClose();
-    callback && callback(action);
+    callbackRef?.current(action)
   };
 
   const anchorPosition =
@@ -54,31 +55,34 @@ export default function ContextMenu(contents: MenuContent[]): [React.ElementType
       ? { top: state.mouseY, left: state.mouseX }
       : undefined;
 
-  return [
-    React.memo((innerProps: ContextMenuProps) =>
+  return (
+    <MenuContext.Provider value={{ show: handleMenuOpen, items }}>
+      {
+        props.children
+      }
       <Menu
         keepMounted
         open={state.mouseY !== null}
         onClose={handleMenuClose}
         anchorReference="anchorPosition"
-        anchorPosition={ anchorPosition }
+        anchorPosition={anchorPosition}
       >
         {
-          (innerProps.contents ?? contents).map(content => (
+          items.map(content => (
             <StyledMenuItem
               key={content.action}
-              onClick={() => handleMenuClick(content.action, innerProps.onItemClick)}
+              onClick={() => handleMenuClick(content.action)}
             >
               <ListItemIcon>
-                { content.icon }
+                {content.icon}
               </ListItemIcon>
               <Typography variant="inherit">{content.label}</Typography>
             </StyledMenuItem>
           ))
         }
-    </Menu>
-    ),
-    handleMenuOpen,
-    handleMenuClose
-  ];
+      </Menu>
+    </MenuContext.Provider>
+  )
 }
+
+export default ContextMenu;

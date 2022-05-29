@@ -1,4 +1,4 @@
-import React, { useState, memo, useEffect } from "react";
+import React, { useState, useMemo, memo, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
 import {
@@ -18,13 +18,13 @@ import {
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
+import { SnackbarMessage } from "notistack";
 
 import { moveDown, moveUp, top, updateSubscription } from "../redux/actions/config";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig, Notification } from "../types";
-import useContextMenu from "../hooks/useContextMenu";
-import { SnackbarMessage } from "notistack";
+import menuContext from '../hooks/useContextMenu/context';
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
   createStyles({
@@ -71,27 +71,22 @@ export interface ServerListItemGroupProps extends ListItemProps {
 }
 
 const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
-  // const styles = useStyles();
   const dispatch = useDispatch();
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
+  const { item, selectedServer } = props;
   const { t } = useTranslation();
-
-  const {
-    item,
-    selectedServer
-  } = props;
-
+  const context = useContext(menuContext);
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
-  const [ContextMenu, handleMenuOpen] = useContextMenu([
+  const menuContents = useMemo(() => [
     { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
     { label: t('update'), action: 'update_subscription', icon: <Refresh fontSize="small" /> },
     { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
     { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
     { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
     { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />}
-  ]);
+  ], []);
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   useEffect(() => {
     handleChange(!!item.servers?.find(server => server.id === selectedServer));
@@ -135,7 +130,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    handleMenuOpen(e);
+    context.show(e, menuContents, onContextMenuClick);
   };
 
   return (
@@ -165,7 +160,6 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           }
         </StyledAccordionDetails>
       </Accordion>
-      <ContextMenu onItemClick={onContextMenuClick} />
     </div>
   );
 };

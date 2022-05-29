@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState, memo, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
 import {
@@ -29,8 +29,7 @@ import {
   WifiOff as WifiOffIcon,
 } from "@material-ui/icons";
 
-import useContextMenu from "../hooks/useContextMenu";
-
+import menuContext from '../hooks/useContextMenu/context';
 import { getConnectionDelay } from "../redux/actions/status";
 import { moveDown, moveUp, top } from "../redux/actions/config";
 import { Config } from "../types";
@@ -123,7 +122,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
 
   const origin = `${serverHost}:${serverPort}`;
   const [actionHidden, setActionHidden] = useState(true);
-  const [ContextMenu, handleMenuOpen] = useContextMenu(getMenuContents());
+  const context = useContext(menuContext);
   const secondaryText =
     (remark && plugin) ?
     `${origin} / ${plugin}` :
@@ -133,7 +132,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
     plugin :
     "";
 
-  function getMenuContents () {
+  const menuContents = useMemo(() => {
     return [
       {
         label: (connected && selected) ? t('disconnect') : t('connect'),
@@ -149,7 +148,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
         label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" />},
       { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> }] : [],
     ];
-  }
+  }, [connected, selected, topable, moveable]);
 
   const handleActionHide = () => {
     setActionHidden(true);
@@ -221,7 +220,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
   const onContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    handleMenuOpen(e);
+    context.show(e, menuContents, handleContextMenuClick);
   };
 
   return (
@@ -280,7 +279,6 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           }
         </ListItemSecondaryAction>
       </ListItem>
-      <ContextMenu onItemClick={handleContextMenuClick} />
     </div>
   );
 };
