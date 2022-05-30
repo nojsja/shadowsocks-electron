@@ -1,24 +1,15 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import Form, { Field } from "rc-field-form";
+import Form from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
 import {
   Container,
   List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
   ListSubheader,
-  TextField,
   Divider,
-  Select,
-  MenuItem,
-  Tooltip,
-  Button
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
-import path from 'path';
 
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
@@ -31,17 +22,26 @@ import { Notification } from "../types";
 
 import { useStylesOfSettings as useStyles } from "./styles";
 import useDialogConfirm from '../hooks/useDialogConfirm';
-import { AdaptiveSwitch } from "../components/Pices/Switch";
-import ListItemTextMultibleLine from "../components/Pices/ListItemTextMultibleLine";
-import If from "../components/HOC/IF";
 
 import { persistStore } from "../App";
-import { getDefaultLang } from "../utils";
-import { getFirstLanguage } from "../i18n";
 
 import LocalPort from "./settings/LocalPort";
 import PacPort from "./settings/PacPort";
 import GfwListUrl from "./settings/GfwListUrl";
+import HttpProxy from './settings/HttpProxy';
+import Acl from './settings/Acl';
+import LaunchOnBool from "./settings/LaunchOnBool";
+import FixedMenu from "./settings/FixedMenu";
+import AutoHide from "./settings/AutoHide";
+import AutoTheme from "./settings/AutoTheme";
+import DarkMode from "./settings/DarkMode";
+import Backup from './settings/Backup';
+import Language from './settings/Language';
+import Restore from "./settings/Restore";
+import ResetData from "./settings/ResetData";
+import Verbose from "./settings/Verbose";
+import OpenLogDir from "./settings/OpenLogDir";
+import OpenProcessManager from "./settings/OpenProcessManager";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -159,19 +159,6 @@ const SettingsPage: React.FC = () => {
     return Promise.resolve();
   };
 
-  const handleOpenLog = async () => {
-    await MessageChannel.invoke('main', 'service:desktop', {
-      action: 'openLogDir',
-      params: {}
-    });
-  };
-
-  const handleOpenProcessManager = async () => {
-    await MessageChannel.invoke('main', 'service:desktop', {
-      action: 'openProcessManager',
-      params: {}
-    });
-  };
 
   const handleReset = () => {
     dispatch({
@@ -205,19 +192,6 @@ const SettingsPage: React.FC = () => {
       } else {
         enqueueSnackbar(t('failed_to_download_file'), { variant: 'error' });
       }
-    });
-  }
-
-  const onLangChange = (e: React.ChangeEvent<{ name?: string | undefined, value: unknown; }>) => {
-    if (persistStore.get('lang') === e.target.value) return;
-    persistStore.set('lang', e.target.value as string);
-    MessageChannel.invoke('main', 'service:desktop', {
-      action: 'reloadMainWindow',
-      params: {}
-    });
-    MessageChannel.invoke('main', 'service:desktop', {
-      action: 'setLocale',
-      params: getFirstLanguage(e.target.value as string)
     });
   }
 
@@ -347,200 +321,36 @@ const SettingsPage: React.FC = () => {
           gfwListUrl={settings.gfwListUrl}
         />
         <List className={styles.list}>
-          <ListItem>
-              <ListItemText
-                primary={t('http_proxy')}
-              />
-              <ListItemSecondaryAction>
-                <Field name="httpProxy" valuePropName="checked">
-                  <AdaptiveSwitch
-                    edge="end"
-                  />
-                </Field>
-              </ListItemSecondaryAction>
-          </ListItem>
-          <If
-            condition={settings.httpProxy.enable}
-            then={
-              <ListItem>
-                <ListItemText
-                  primary={t('http_proxy_port')}
-                  secondary={t('restart_when_changed')}
-                />
-                <ListItemSecondaryAction>
-                  <Field
-                    name="httpProxyPort"
-                    rules={[
-                      { required: true, message: t('invalid_value') },
-                      { validator: checkPortField }
-                    ]}
-                    normalize={(value: string) => +(value.trim())}
-                    validateTrigger={false}
-                  >
-                    <TextField
-                      className={`${styles.textField} ${styles.indentInput}`}
-                      required
-                      size="small"
-                      type="number"
-                      placeholder={t('http_proxy_port')}
-                    />
-                  </Field>
-                </ListItemSecondaryAction>
-              </ListItem>
+          <HttpProxy
+            enable={settings.httpProxy.enable}
+            rules={
+              [
+                { required: true, message: t('invalid_value') },
+                { validator: checkPortField }
+              ]
             }
           />
-          <ListItem>
-            <ListItemTextMultibleLine
-              primary={'ACL'}
-              secondary={
-                <If
-                  condition={settings.acl.enable}
-                  then={
-                    <Tooltip arrow
-                      placement="top"
-                      title={
-                        <If
-                          condition={!!settings?.acl?.url}
-                          then={settings?.acl?.url}
-                        />
-                      }
-                    >
-                      <span>{path.basename(settings?.acl?.url || '')}</span>
-                    </Tooltip>
-                  }
-                />
-              }
-            />
-            <ListItemSecondaryAction>
-              <If
-                condition={settings.acl.enable}
-                then={<Button onClick={setAclUrl} size="small">{t('select')}</Button>}
-              />
-              <Field name="acl" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                />
-              </Field>
-              <input style={{ display: 'none' }} type="file"></input>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={t('launch_on_boot')}
-              secondary={t('not_applicable_to_linux_snap_application')}
-            />
-            <ListItemSecondaryAction>
-              <Field name="autoLaunch" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                />
-              </Field>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={t('fixed_menu')}
-            />
-            <ListItemSecondaryAction>
-              <Field name="fixedMenu" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                />
-              </Field>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={t('auto_hide')}
-              secondary={t('minimize_on_start')}
-            />
-            <ListItemSecondaryAction>
-              <Field name="autoHide" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                />
-              </Field>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={t('autoTheme')}
-              secondary={t('autoThemeTips')}
-            />
-            <ListItemSecondaryAction>
-              <Field name="autoTheme" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                  onChange={onAutoThemeChange}
-                />
-              </Field>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={t('darkMode')}
-            />
-            <ListItemSecondaryAction>
-              <Field name="darkMode" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                  disabled={settings.autoTheme}
-                />
-              </Field>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem>
-            <ListItemText
-              primary={'Language'}
-            />
-            <ListItemSecondaryAction>
-              <Select
-                value={getDefaultLang()}
-                onChange={onLangChange}
-              >
-              <MenuItem value={'en-US'}>English</MenuItem>
-              <MenuItem value={'zh-CN'}>中文简体</MenuItem>
-            </Select>
-            </ListItemSecondaryAction>
-          </ListItem>
-
-          <ListItem button onClick={backupConfiguration}>
-              <ListItemText primary={t('backup')} />
-          </ListItem>
-          <ListItem button onClick={() => restoreConfiguration()}>
-              <ListItemText primary={t('restore')} />
-          </ListItem>
-          <ListItem button onClick={handleAlertDialogOpen}>
-            <ListItemText primary={t('reset_data')} />
-          </ListItem>
-
+          <Acl
+            enable={settings.acl.enable}
+            url={settings?.acl?.url}
+            setAclUrl={setAclUrl}
+          />
+          <LaunchOnBool />
+          <FixedMenu />
+          <AutoHide />
+          <AutoTheme onAutoThemeChange={onAutoThemeChange} />
+          <DarkMode disabled={settings.autoTheme} />
+          <Language />
+          <Backup backupConfiguration={backupConfiguration} />
+          <Restore restoreConfiguration={restoreConfiguration}/>
+          <ResetData handleAlertDialogOpen={handleAlertDialogOpen} />
           <Divider className={styles.margin} />
-
           <ListSubheader>{t('debugging')}</ListSubheader>
-
-          <ListItem>
-            <ListItemText
-              primary="Verbose"
-              secondary={t('verbose_output')}
-            />
-            <ListItemSecondaryAction>
-              <Field name="verbose" valuePropName="checked">
-                <AdaptiveSwitch
-                  edge="end"
-                />
-              </Field>
-            </ListItemSecondaryAction>
-          </ListItem>
-          <ListItem button onClick={handleOpenLog}>
-            <ListItemText primary={t('open_log_dir')} />
-          </ListItem>
-          <ListItem button onClick={handleOpenProcessManager}>
-            <ListItemText primary={t('open_process_manager')} />
-          </ListItem>
+          <Verbose />
+          <OpenLogDir />
+          <OpenProcessManager />
         </List>
-
       </Form>
-
       <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
     </Container>
   );

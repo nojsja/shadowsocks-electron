@@ -115,5 +115,7 @@
   "acl_settings": "ACL Settings",
   "acl_content": "ACL File URL",
   "click_to_edit": "Click to edit",
-  "select": "Select"
+  "select": "Select",
+  "langEnglish": "English",
+  "langZhong": "中文"
 }

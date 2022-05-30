@@ -115,5 +115,7 @@
   "acl_settings": "ACL 设置",
   "acl_content": "ACL 文件地址",
   "click_to_edit": "点击编辑",
-  "select": "选择"
+  "select": "选择",
+  "langEnglish": "English",
+  "langZhong": "中文"
 }
