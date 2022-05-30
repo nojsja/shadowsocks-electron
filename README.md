@@ -2,6 +2,16 @@
 
 ![GitHub issues](https://img.shields.io/github/issues/nojsja/shadowsocks-electron) ![GitHub contributors](https://img.shields.io/github/contributors-anon/nojsja/shadowsocks-electron)
 
+```txt
+
+███████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗    ██╗███████╗ ██████╗  ██████╗██╗  ██╗███████╗      ███████╗██╗     ███████╗ ██████╗████████╗██████╗  ██████╗ ███╗   ██╗
+██╔════╝██║  ██║██╔══██╗██╔══██╗██╔═══██╗██║    ██║██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝      ██╔════╝██║     ██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔═══██╗████╗  ██║
+███████╗███████║███████║██║  ██║██║   ██║██║ █╗ ██║███████╗██║   ██║██║     █████╔╝ ███████╗█████╗█████╗  ██║     █████╗  ██║        ██║   ████****██╔╝██║   ██║██╔██╗ ██║
+╚════██║██╔══██║██╔══██║██║  ██║██║   ██║██║███╗██║╚════██║██║   ██║██║     ██╔═██╗ ╚════██║╚════╝██╔══╝  ██║     ██╔══╝  ██║        ██║   ██╔══██╗██║   ██║██║╚****██╗██║
+███████║██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████║      ███████╗███████╗███████╗╚██████╗   ██║   ██║  ██║╚██████╔╝██║ ╚████║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝      ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+```
+
 ## Shadowsocks Electron
 
 > Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina (x64) ● Windows 10/11 (x64)
@@ -17,6 +27,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 - __Global__ Mode (socks proxy)
 - __Manual__ Mode (no system-wide proxy set)
 - __HTTP(S)__ Proxy
+- ACL (access control list)
 - Clipboard / QR-code Import
 - Subscription Import
 - Language Detecting And Switching (zh-CN / en-US)
@@ -33,7 +44,6 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 
 ### ➣ Comming Soon
 
-- ACL
 - v2ray-plugin
 
 ## Supported Platforms & Arch
@@ -73,6 +83,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 ### Context Menu
 
 ![context_menu.png](./assets/context_menu.png)
+
 ### Server Edit
 
 ![edit.png](./assets/edit.png)
@@ -106,6 +117,17 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
   - effect: Use the plugin for traffic obfuscation. You must install it on you system first and enable it on ss server configuration.
   - [↪ v2ray-plugin repo releases](https://github.com/shadowsocks/v2ray-plugin/releases)
   - install: Download the correct version, unpack and rename it to  `v2ray-plugin`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR You may need to configure `system variables` on windows.
+
+## Recommended ACL Files
+
+**1. Download ACL file and saved it to local directory.**
+
+[>> Github repo - SuperAcl](https://github.com/Windelight/SuperACL.git)
+- [inchina.acl](https://raw.githubusercontent.com/Windelight/SuperACL/master/inchina.acl): Proxy only sites blocked by the firewall.
+- [inforeign.acl](https://raw.githubusercontent.com/Windelight/SuperACL/master/inforeign.acl): Proxy the sites in china which restricted access to overseas.
+
+**2. Enable ACL Mode and load the file on settings page of client.**
+
 ## Why?
 
 - The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.
