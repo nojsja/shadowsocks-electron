@@ -102,7 +102,12 @@ const ServerListItem: React.FC<ServerListItemProps> = props => {
           else={<ServerListItemSingle {...props} item={(props.item as Config)} selected={selectedServer === item.id} />}
         />
       </div>
-      {!isLast && <GradientDivider />}
+      <If
+        condition={!isLast}
+        then={
+          <GradientDivider />
+        }
+      />
     </>
   );
 };

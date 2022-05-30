@@ -40,7 +40,7 @@ import { Config, encryptMethods, plugins, serverTypes, protocols, obfs, Notifica
 import { AdaptiveAppBar } from "./Pices/AppBar";
 import { scrollBarStyle } from "../pages/styles";
 import { TextWithTooltip } from "./Pices/TextWithTooltip";
-
+import If from "./HOC/IF";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -194,7 +194,10 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
         </Toolbar>
       </AdaptiveAppBar>
       <Container className={`${styles.container}`}>
-        {fullScreen && <div className={`${styles.toolbar}`} />}
+        <If
+          condition={fullScreen}
+          then={<div className={`${styles.toolbar}`} />}
+        />
         <InputLabel required style={{ marginBottom: 0 }}>
           {t('server_type')}
         </InputLabel>
@@ -269,8 +272,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             </MenuItem>
           ))}
         </Select>
-        {
-          isSSR && (
+        <If
+          condition={isSSR}
+          then={
             <>
               <InputLabel required style={{ marginBottom: 0 }}>
                 {t('protocol')}
@@ -296,10 +300,11 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 onChange={e => handleValueChange("protocolParam", e.target.value.trim())}
               />
             </>
-          )
-        }
-        {
-          isSSR && (
+          }
+        />
+        <If
+          condition={isSSR}
+          then={
             <>
               <InputLabel required style={{ marginBottom: 0 }}>
                 {t('obfs')}
@@ -325,8 +330,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 onChange={e => handleValueChange("obfsParam", e.target.value.trim())}
               />
             </>
-          )
-        }
+          }
+        />
         <TextField
           required
           fullWidth
@@ -341,16 +346,17 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
               <Switch checked={!!values.fastOpen} edge="end" color="primary" onChange={(e) => handleValueChange('fastOpen', e.target.checked)} />
             </ListItemSecondaryAction>
           </ListItem>
-          {
-            isSS && (
+          <If
+            condition={isSS}
+            then={
               <ListItem>
                 <ListItemText primary="TCP No Delay" />
                 <ListItemSecondaryAction>
                   <Switch checked={!!values.noDelay} edge="end" color="primary" onChange={(e) => handleValueChange('noDelay', e.target.checked)} />
                 </ListItemSecondaryAction>
               </ListItem>
-            )
-          }
+            }
+          />
           <ListItem>
             <ListItemText primary="UDP Relay" />
             <ListItemSecondaryAction>
@@ -359,8 +365,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           </ListItem>
         </List>
         <InputLabel style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
-        {
-          isSS && (
+        <If
+          condition={isSS}
+          then={
             <>
               <Select
                 label={t('plugin')}
@@ -372,11 +379,13 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 <MenuItem key="none" value="">
                   <em>{t('none')}</em>
                 </MenuItem>
-                {plugins.map(plugin => (
-                  <MenuItem key={plugin.name} value={plugin.name}>
-                    {plugin.name} {plugin.tips ? `(${t(plugin.tips)})` : ""}
-                  </MenuItem>
-                ))}
+                {
+                  plugins.map(plugin => (
+                    <MenuItem key={plugin.name} value={plugin.name}>
+                      {plugin.name} {plugin.tips ? `(${t(plugin.tips)})` : ""}
+                    </MenuItem>
+                  ))
+                }
               </Select>
               <TextField
                 fullWidth
@@ -386,8 +395,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 onChange={e => handleValueChange("pluginOpts", e.target.value.trim())}
               />
             </>
-          )
-        }
+          }
+        />
       </Container>
     </StyledDialog>
   );

@@ -286,6 +286,7 @@ const HomePage: React.FC = () => {
         handleServerSelect={handleServerSelect}
         handleServerConnect={handleServerConnect}
       />
+
       <FooterBar mode={mode} setDialogOpen={setDialogOpen} />
 
       <StatusBar

@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 
 import AppNavMac from './Pices/AppNavMac';
 import AppNavNormal from './Pices/AppNavNormal';
+import If from "./HOC/IF";
 
 const isMacOS = os.platform() === "darwin";
 
@@ -22,10 +23,15 @@ const AppNav: React.FC = () => {
   const title = titleMap.get(path) || '';
 
   return (
-    isMacOS ?
-      <AppNavMac title={title}/>
-      :
-      <AppNavNormal title={title} />
+    <If
+      condition={isMacOS}
+      then={
+        <AppNavMac title={title}/>
+      }
+      else={
+        <AppNavNormal title={title} />
+      }
+    />
   );
 };
 

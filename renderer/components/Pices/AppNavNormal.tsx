@@ -16,6 +16,7 @@ import DrawerMenu from "../DrawerMenu";
 import { AdaptiveDrawer } from "../Pices/Drawer";
 import { AdaptiveAppBar } from "../Pices/AppBar";
 import { useTypedSelector } from "../../redux/reducers";
+import If from "../HOC/IF";
 
 export type AppNavNormalProps = {
   title: string | React.ReactElement;
@@ -110,8 +111,9 @@ const AppNavNormal: React.FC<AppNavNormalProps> = (props) => {
       <AdaptiveAppBar position="fixed" className={styles.appBar}>
         <Toolbar className={styles.toolBar} variant="dense">
           <div className={styles['disableDrag']}>
-            {
-              !settings.fixedMenu && (
+            <If
+              condition={!settings.fixedMenu}
+              then={
                 <IconButton
                   color="inherit"
                   edge="start"
@@ -119,9 +121,10 @@ const AppNavNormal: React.FC<AppNavNormalProps> = (props) => {
                 >
                   <MenuIcon className={styles.menuButton} />
                 </IconButton>
-              )
-            }
-              <span className={styles.title}>{title}</span>
+              }
+              else={null}
+            />
+            <span className={styles.title}>{title}</span>
           </div>
           <span>
             <IconButton

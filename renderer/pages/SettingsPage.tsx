@@ -16,7 +16,6 @@ import {
   Tooltip,
   Button
 } from "@material-ui/core";
-import { RestorePage, NoteAdd } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
 import path from 'path';
@@ -33,12 +32,16 @@ import { Notification } from "../types";
 import { useStylesOfSettings as useStyles } from "./styles";
 import useDialogConfirm from '../hooks/useDialogConfirm';
 import { AdaptiveSwitch } from "../components/Pices/Switch";
-import { TextWithTooltip } from "../components/Pices/TextWithTooltip";
 import ListItemTextMultibleLine from "../components/Pices/ListItemTextMultibleLine";
+import If from "../components/HOC/IF";
 
 import { persistStore } from "../App";
 import { getDefaultLang } from "../utils";
 import { getFirstLanguage } from "../i18n";
+
+import LocalPort from "./settings/LocalPort";
+import PacPort from "./settings/PacPort";
+import GfwListUrl from "./settings/GfwListUrl";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -49,7 +52,6 @@ const SettingsPage: React.FC = () => {
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
   // const [aclVisible, setAclVisible] = useState(false);
-  const inputFileRef = React.useRef<HTMLInputElement>(null);
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
   const settingKeys = useRef(
     ['localPort', 'pacPort', 'gfwListUrl',
@@ -191,32 +193,6 @@ const SettingsPage: React.FC = () => {
     closeDialog();
   };
 
-  const reGeneratePacFileWithFile = () => {
-    inputFileRef.current?.click();
-  }
-
-  const reGeneratePacFileWithUrl = () => {
-    reGeneratePacFile({
-      url: settings.gfwListUrl
-    });
-  }
-
-  const onGFWListFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const text = e.target.result;
-        if (text) {
-          reGeneratePacFile({
-            text: text
-          });
-        }
-      };
-      reader.readAsText(file);
-    }
-  }
-
   const reGeneratePacFile = (params: { url?: string, text?: string }) => {
     dispatch<any>(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
@@ -352,73 +328,24 @@ const SettingsPage: React.FC = () => {
         }
         onValuesChange={onFieldChange}
       >
-        <Field
-          name="localPort"
-          rules={[
-            { required: true, message: t('invalid_value') },
-            { validator: checkPortField },
-          ]}
-          normalize={(value: string) => +(value.trim())}
-          validateTrigger={false}
-        >
-          <TextField
-            className={styles.textField}
-            required
-            fullWidth
-            size="small"
-            type="number"
-            label={t('local_port')}
-            placeholder={t('local_port_tips')}
-          />
-        </Field>
-        <Field
-          name="pacPort"
+        <LocalPort
+          rules={
+            [
+              { required: true, message: t('invalid_value') },
+              { validator: checkPortField },
+            ]
+          }
+        />
+        <PacPort
           rules={[
             { required: true, message: t('invalid_value') },
             { validator: checkPortField }
           ]}
-          normalize={(value: string) => +(value.trim())}
-          validateTrigger={false}
-        >
-          <TextField
-            className={styles.textField}
-            required
-            fullWidth
-            type="number"
-            size="small"
-            label={t('pac_port')}
-            placeholder={t('pac_port_tips')}
-          />
-        </Field>
-        <Field
-          name="gfwListUrl"
-          validateTrigger={false}
-        >
-          <TextField
-          className={styles.textField}
-          required
-          fullWidth
-          type="url"
-          size="small"
-          label={
-            <TextWithTooltip
-              text={t('gfwlist_url')}
-              icon={
-                <span>
-                  <Tooltip arrow placement="top" title={t('recover_pac_file_with_link') as string}>
-                    <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFileWithUrl} />
-                  </Tooltip>
-                  <Tooltip arrow placement="top" title={t('recover_pac_file_with_file') as string}>
-                    <NoteAdd className={styles.cursorPointer} onClick={reGeneratePacFileWithFile}/>
-                  </Tooltip>
-                </span>
-              }
-            />
-          }
-          placeholder={t('gfwlist_url_tips')}
         />
-        </Field>
-        <input onChange={onGFWListFileChange} ref={inputFileRef} type={'file'} multiple={false} style={{ display: 'none' }}></input>
+        <GfwListUrl
+          reGeneratePacFile={reGeneratePacFile}
+          gfwListUrl={settings.gfwListUrl}
+        />
         <List className={styles.list}>
           <ListItem>
               <ListItemText
@@ -432,8 +359,9 @@ const SettingsPage: React.FC = () => {
                 </Field>
               </ListItemSecondaryAction>
           </ListItem>
-          {
-            settings.httpProxy.enable && (
+          <If
+            condition={settings.httpProxy.enable}
+            then={
               <ListItem>
                 <ListItemText
                   primary={t('http_proxy_port')}
@@ -459,24 +387,35 @@ const SettingsPage: React.FC = () => {
                   </Field>
                 </ListItemSecondaryAction>
               </ListItem>
-            )
-          }
+            }
+          />
           <ListItem>
             <ListItemTextMultibleLine
               primary={'ACL'}
               secondary={
-                settings.acl.enable ?
-                <Tooltip arrow placement="top" title={settings.acl.url}>
-                  <span>{ path.basename(settings.acl.url) }</span>
-                </Tooltip> : null
+                <If
+                  condition={settings.acl.enable}
+                  then={
+                    <Tooltip arrow
+                      placement="top"
+                      title={
+                        <If
+                          condition={!!settings?.acl?.url}
+                          then={settings?.acl?.url}
+                        />
+                      }
+                    >
+                      <span>{path.basename(settings?.acl?.url || '')}</span>
+                    </Tooltip>
+                  }
+                />
               }
             />
             <ListItemSecondaryAction>
-              {
-                settings.acl.enable ? (
-                  <Button onClick={setAclUrl} size="small">{t('select')}</Button>
-                ) : null
-              }
+              <If
+                condition={settings.acl.enable}
+                then={<Button onClick={setAclUrl} size="small">{t('select')}</Button>}
+              />
               <Field name="acl" valuePropName="checked">
                 <AdaptiveSwitch
                   edge="end"

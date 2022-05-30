@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { moveConfig } from "../redux/actions/config";
 import GradientDivider from "./Pices/GradientDivider";
 import ContextMenuProvider from "../hooks/useContextMenu"
+import If from "./HOC/IF";
 
 export let cloneElement: HTMLDivElement | null;
 export const setCloneElement = (div: HTMLDivElement | null) => cloneElement = div;
@@ -90,41 +91,42 @@ const ServerList: React.FC<ServerListProps> = props => {
   } = props;
 
   return (
-    !!config.length ? (
-      (
-      <ContextMenuProvider>
-        <List className={`${styles.list} ${styles.scrollbar}`}>
-          {config.map((item, index) => (
-            <ServerListItem
-              key={item.id}
-              item={item}
-              dragTarget={dragTarget}
-              dragSort={dragSort}
-              dragSource={dragSource}
-              setDragSource={setDragSource}
-              setDragTarget={setDragTarget}
-              selectedServer={selectedServer}
-              connected={connected}
-              onShare={handleShareButtonClick}
-              onEdit={handleEditButtonClick}
-              onRemove={handleRemoveButtonClick}
-              handleServerSelect={handleServerSelect}
-              handleServerConnect={handleServerConnect}
-              isLast={index === config.length - 1}
-            />
-          ))}
-        </List>
-        <GradientDivider />
-      </ContextMenuProvider>
-      )
-    )
-    : (
-    <div className={styles.empty}>
-      <Typography variant="body1" color="textSecondary">
-        No Server
-      </Typography>
-    </div>
-  )
+    <If
+      condition={!!config.length}
+      then={
+        <ContextMenuProvider>
+          <List className={`${styles.list} ${styles.scrollbar}`}>
+            {config.map((item, index) => (
+              <ServerListItem
+                key={item.id}
+                item={item}
+                dragTarget={dragTarget}
+                dragSort={dragSort}
+                dragSource={dragSource}
+                setDragSource={setDragSource}
+                setDragTarget={setDragTarget}
+                selectedServer={selectedServer}
+                connected={connected}
+                onShare={handleShareButtonClick}
+                onEdit={handleEditButtonClick}
+                onRemove={handleRemoveButtonClick}
+                handleServerSelect={handleServerSelect}
+                handleServerConnect={handleServerConnect}
+                isLast={index === config.length - 1}
+              />
+            ))}
+          </List>
+          <GradientDivider />
+        </ContextMenuProvider>
+      }
+      else={
+        <div className={styles.empty}>
+          <Typography variant="body1" color="textSecondary">
+            No Server
+          </Typography>
+        </div>
+      }
+    />
   )
 
 };

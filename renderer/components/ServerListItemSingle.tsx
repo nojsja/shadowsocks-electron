@@ -35,6 +35,7 @@ import { moveDown, moveUp, top } from "../redux/actions/config";
 import { Config } from "../types";
 
 import ListItemTextMultibleLine from "./Pices/ListItemTextMultibleLine";
+import If from "./HOC/IF";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -232,12 +233,11 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
         <ListItemIcon
           className={styles.listIcon}
         >
-          {
-            selected ? (
-              <CheckBoxIcon className={styles.lighterPrimary} />
-            ) :
-              <CheckBoxOutlineBlankIcon />
-          }
+          <If
+            condition={selected}
+            then={<CheckBoxIcon className={styles.lighterPrimary} />}
+            else={<CheckBoxOutlineBlankIcon />}
+          />
         </ListItemIcon>
 
         <ListItemTextMultibleLine
@@ -268,15 +268,16 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
               <EditIcon />
             </IconButton>
           </Tooltip>
-          {
-            deleteable && (
+          <If
+            condition={deleteable}
+            then={
               <Tooltip title={(t('delete') as string)}>
                 <IconButton edge="end" onClick={handleRemoveButtonClick} size="small" className={styles.deleteButton}>
                   <RemoveIcon />
                 </IconButton>
               </Tooltip>
-            )
-          }
+            }
+          />
         </ListItemSecondaryAction>
       </ListItem>
     </div>
