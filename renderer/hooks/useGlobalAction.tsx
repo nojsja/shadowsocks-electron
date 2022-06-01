@@ -1,46 +1,66 @@
-import { useState } from 'react';
-import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
-import produce from 'immer';
+import { dispatch as dispatchEvent } from 'use-bus';
 
 export interface GlobalActionItem {
   type: string;
-  payload: any
+  payload?: any
 };
 
 export interface GlobalActionStore {
   [type: string]: GlobalActionItem;
-}
+};
 
-export default (store?: GlobalActionStore) => {
-  const [actions, setActions] = useState<GlobalActionStore>(store ?? {});
+const store: GlobalActionStore = {};
 
-  useBus('action:set', (event: EventAction) => {
-    const newActions = produce(actions, draft => {
-      draft[event.type] = event.payload;
-    });
+export const set = (payload: GlobalActionItem) => {
+  if (typeof payload?.type !== 'string') {
+    throw new Error('ActionStore: [type] must be a string');
+  }
+  Object.assign(store, {
+    [payload.type]: payload
+  });
+  dispatchEvent({
+    type: `action:set:${payload.type}`,
+    payload: payload
+  });
+
+  return payload ?? null;
+};
+
+export const get = (payload: GlobalActionItem) => {
+  const action = store[payload.type];
+
+  if (action) {
     dispatchEvent({
-      type: `action:set:${event.payload.type}`,
-      payload: event.payload
+      type: `action:get:${action.type}`,
+      payload: action
     });
-    setActions(newActions);
-  }, [actions]);
+    delete store[payload.type];
+    return action;
+  }
 
-  useBus('action:get', (event: EventAction) => {
-    const { payload } = event;
-    const newActions = produce(actions, draft => {
-      const action = draft[payload.type];
-      console.log('action:get', action);
-      if (action) {
-        payload.callback && payload.callback(action);
-        dispatchEvent({
-          type: `action:get:${action.type}`,
-          payload: action
-        });
-        delete draft[payload.type];
+  return null;
+};
+
+export default (initialStore?: GlobalActionStore) => {
+  Object.assign(store, initialStore ?? {});
+
+  return new Proxy(store, {
+    get(target, attr) {
+      if (typeof attr !== 'string') return null;
+      return get({
+        type: attr
+      });
+    },
+    set(target, attr, value) {
+      if (typeof attr !== 'string') {
+        throw new Error('ActionStore: [type] must be a string');
       }
-    });
-    setActions(newActions);
-  }, [actions]);
+      set({
+        type: attr,
+        payload: value
+      });
 
-  return [actions, setActions];
+      return true;
+    }
+  });
 };

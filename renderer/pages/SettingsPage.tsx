@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import Form from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
@@ -22,6 +22,7 @@ import { Notification } from "../types";
 
 import { useStylesOfSettings as useStyles } from "./styles";
 import useDialogConfirm from '../hooks/useDialogConfirm';
+import * as globalAction from "../hooks/useGlobalAction";
 
 import { persistStore } from "../App";
 
@@ -63,7 +64,7 @@ const SettingsPage: React.FC = () => {
 
   /* -------------- hooks -------------- */
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     return () => {
       /* check settings item */
       calGlobalActions();
@@ -133,24 +134,15 @@ const SettingsPage: React.FC = () => {
         needReconnectPac = true;
       }
     });
-    console.log(needReconnectServer, needReconnectHttp, needReconnectPac, changedFields.current);
     if (needReconnectServer) {
-      dispatchEvent({
-        type: 'action:set',
-        payload: { type: 'reconnect-server' }
-      });
+      globalAction.set({ type: 'reconnect-server' });
     }
     if (needReconnectHttp) {
-      dispatchEvent({
-        type: 'action:set',
-        payload: { type: 'reconnect-http' }
-      });
+      globalAction.set({ type: 'reconnect-http' });
+
     }
     if (needReconnectPac) {
-      dispatchEvent({
-        type: 'action:set',
-        payload: { type: 'reconnect-pac' }
-      });
+      globalAction.set({ type: 'reconnect-pac' });
     }
   }, []);
 

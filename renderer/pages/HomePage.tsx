@@ -1,6 +1,6 @@
 import { MessageChannel } from 'electron-re';
 import React, { useState, useEffect, useCallback } from "react";
-import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
+import useBus, { EventAction } from 'use-bus';
 import { useDispatch } from "react-redux";
 import {
   Container,
@@ -28,6 +28,8 @@ import {
 import { setHttpAndHttpsProxy, SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
 import { getConnectionDelay, startClientAction } from '../redux/actions/status';
+import { findAndCallback } from '../utils';
+import * as globalAction from '../hooks/useGlobalAction';
 
 import ServerList from "../components/ServerList";
 import FooterBar from '../components/FooterBar';
@@ -37,7 +39,6 @@ import EditServerDialog from "../components/EditServerDialog";
 import StatusBar from '../components/StatusBar';
 import StatusBarConnection from '../components/BarItems/StatusBarConnection';
 import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
-import { findAndCallback } from '../utils';
 
 /**
  * HomePage
@@ -74,18 +75,17 @@ const HomePage: React.FC = () => {
 
   /* do reconnect when get the event from queue */
   useBus('action:get:reconnect-server', (event: EventAction) => {
-    console.log(1111111);
     selectedServer && connectedToServer(config, selectedServer);
   }, [config, selectedServer]);
 
   /* status checker on mount */
   useEffect(() => {
-    console.log(1.55555555555);
     if (selectedServer) {
       setTimeout(() => {
-        console.log(2222222);
           /* check reconnect event of queue */
-          dispatchEvent({ type: 'action:get', payload: { type: 'reconnect-server' } });
+          globalAction.get({ type: 'reconnect-server' });
+          globalAction.get({ type: 'reconnect-http' });
+          globalAction.get({ type: 'reconnect-pac' });
         }, 500);
     }
 
@@ -99,9 +99,7 @@ const HomePage: React.FC = () => {
 
   /* reconnect watcher when attrs update */
   useDidUpdate(() => {
-    console.log(4444444444);
     if (selectedServer && connected) {
-      console.log(555555555555);
       connectedToServer(config, selectedServer);
     }
   }, [selectedServer, settings]);

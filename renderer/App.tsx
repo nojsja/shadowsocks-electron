@@ -57,10 +57,10 @@ const App: React.FC = () => {
   const styles = useStyles();
   const darkMode = persistStore.get('darkMode') === 'true';
   const [theme] = useTheme(darkMode ? 'dark' : 'light');
-  const [actions] = useGlobalAction({
+
+  useGlobalAction({
     'reconnect-server': { type: 'reconnect-server', payload: '' }
   });
-  console.log(actions);
 
   useEffect(() => {
     getConnectionStatus((status) => {
