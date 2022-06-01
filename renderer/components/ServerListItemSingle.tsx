@@ -141,7 +141,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
         icon: (connected && selected) ? <WifiOffIcon fontSize="small" /> : <WifiIcon fontSize="small" />
       },
       { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
-      { label: t('delay_test'), action: 'test', icon: <SettingsEthernetIcon fontSize="small"  />},
+      { label: t('share'), action: 'share', icon: <ShareIcon fontSize="small" />},
       ...topable ? [
         { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
       ] : [],
@@ -163,8 +163,8 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
     onEdit?.(id);
   };
 
-  const handleShareButtonClick = () => {
-    onShare?.(id);
+  const handleTestButtonClick = () => {
+    dispatch(getConnectionDelay(serverHost, serverPort));
   };
 
   const handleRemoveButtonClick = () => {
@@ -201,8 +201,8 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
       case 'copy':
         clipboard.writeText(JSON.stringify(item));
         break;
-      case 'test':
-        dispatch(getConnectionDelay(serverHost, serverPort));
+      case 'share':
+        onShare?.(id);
         break;
       case 'top':
         dispatch(top(item.id));
@@ -258,12 +258,12 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           className={styles.action}
           hidden={actionHidden}
         >
-          <Tooltip title={(t('share') as string)}>
-            <IconButton edge="end" onClick={handleShareButtonClick} size="small">
-              <ShareIcon />
+          <Tooltip title={t<string>('delay_test')}>
+            <IconButton edge="end" onClick={handleTestButtonClick} size="small" >
+              <SettingsEthernetIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title={(t('edit') as string)}>
+          <Tooltip title={t<string>('edit')}>
             <IconButton edge="end" onClick={handleEditButtonClick} size="small">
               <EditIcon />
             </IconButton>
@@ -271,7 +271,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           <If
             condition={deleteable}
             then={
-              <Tooltip title={(t('delete') as string)}>
+              <Tooltip title={t<string>('delete')}>
                 <IconButton edge="end" onClick={handleRemoveButtonClick} size="small" className={styles.deleteButton}>
                   <RemoveIcon />
                 </IconButton>

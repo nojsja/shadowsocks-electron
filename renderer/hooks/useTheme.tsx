@@ -1,9 +1,8 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import React, { Dispatch, useEffect, useState } from 'react';
-import useBus, { EventAction } from 'use-bus';
+import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
 import { createTheme, Theme } from '@material-ui/core';
 import { grey, indigo } from "@material-ui/core/colors";
-import { dispatch as dispatchEvent } from 'use-bus';
 import { MessageChannel } from 'electron-re';
 
 import { persistStore } from '../App';

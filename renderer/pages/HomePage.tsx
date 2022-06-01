@@ -1,5 +1,6 @@
 import { MessageChannel } from 'electron-re';
 import React, { useState, useEffect, useCallback } from "react";
+import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
 import { useDispatch } from "react-redux";
 import {
   Container,
@@ -13,6 +14,7 @@ import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notif
 import { Config, CloseOptions, GroupConfig, Notification } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 import useDialogConfirm from '../hooks/useDialogConfirm';
+import useDidUpdate from '../hooks/useDidUpdate';
 // import useBackDrop from '../hooks/useBackDrop';
 import {
   addConfigFromClipboard, generateUrlFromConfig, getQrCodeFromScreenResources,
@@ -67,6 +69,42 @@ const HomePage: React.FC = () => {
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
   const [removingServerId, setRemovingServerId] = useState<string | null>(null);
+
+  {/* -------- hooks ------- */}
+
+  /* do reconnect when get the event from queue */
+  useBus('action:get:reconnect-server', (event: EventAction) => {
+    console.log(1111111);
+    selectedServer && connectedToServer(config, selectedServer);
+  }, [config, selectedServer]);
+
+  /* status checker on mount */
+  useEffect(() => {
+    console.log(1.55555555555);
+    if (selectedServer) {
+      setTimeout(() => {
+        console.log(2222222);
+          /* check reconnect event of queue */
+          dispatchEvent({ type: 'action:get', payload: { type: 'reconnect-server' } });
+        }, 500);
+    }
+
+    /* connect http server */
+    setHttpAndHttpsProxy({
+      ...settings.httpProxy,
+      type: 'http',
+      proxyPort: settings.localPort
+    });
+  }, []);
+
+  /* reconnect watcher when attrs update */
+  useDidUpdate(() => {
+    console.log(4444444444);
+    if (selectedServer && connected) {
+      console.log(555555555555);
+      connectedToServer(config, selectedServer);
+    }
+  }, [selectedServer, settings]);
 
   {/* -------- functions ------- */}
 
@@ -245,32 +283,6 @@ const HomePage: React.FC = () => {
         )
       )});
   }
-
-  {/* -------- hooks ------- */}
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!connected && selectedServer) {
-        connectedToServer(config, selectedServer);
-      }
-
-      if (settings.httpProxy.enable) {
-        setHttpAndHttpsProxy({
-          ...settings.httpProxy,
-          type: 'http',
-          proxyPort: settings.localPort
-        });
-      }
-
-    }, 500);
-
-  }, [])
-
-  useEffect(() => {
-    if (selectedServer && connected) {
-      connectedToServer(config, selectedServer);
-    }
-  }, [selectedServer, settings]);
 
   return (
     <Container className={styles.container}>

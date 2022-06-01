@@ -24,6 +24,7 @@ import AppNav from "./components/AppNav";
 import Loading from "./components/Loading";
 import RouterComp from './Router';
 import useTheme from "./hooks/useTheme";
+import useGlobalAction from "./hooks/useGlobalAction";
 // import { SET_SETTING } from "./redux/actions/settings";
 
 export const persistStore = new ElectronStore();
@@ -56,6 +57,10 @@ const App: React.FC = () => {
   const styles = useStyles();
   const darkMode = persistStore.get('darkMode') === 'true';
   const [theme] = useTheme(darkMode ? 'dark' : 'light');
+  const [actions] = useGlobalAction({
+    'reconnect-server': { type: 'reconnect-server', payload: '' }
+  });
+  console.log(actions);
 
   useEffect(() => {
     getConnectionStatus((status) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import Form from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
@@ -59,10 +59,16 @@ const SettingsPage: React.FC = () => {
     'darkMode', 'autoTheme', 'verbose', 'autoHide']
   );
   const cachedRef = useRef<any>(null);
+  const changedFields = useRef<{[key: string]: any}>({});
 
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
+  /* -------------- hooks -------------- */
+
+  useLayoutEffect(() => {
+    return () => {
+      /* check settings item */
+      calGlobalActions();
+    };
+  }, []);
 
   useEffect(() => {
     dispatch<any>(getStartupOnBoot());
@@ -107,6 +113,50 @@ const SettingsPage: React.FC = () => {
       {}
     );
   }, settingKeys.current.map(key => (settings as any)[key]));
+
+  /* -------------- functions -------------- */
+
+  const calGlobalActions = useCallback(() => {
+    let needReconnectServer = false,
+        needReconnectHttp = false,
+        needReconnectPac = false;
+    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url'];
+    const httpConditions = ['httpProxyPort', 'httpProxy'];
+    const pacConditions = ['pacPort'];
+
+    Object.keys(changedFields.current).forEach(key => {
+      if (serverConditions.includes(key)) {
+        needReconnectServer = true;
+      } else if (httpConditions.includes(key)) {
+        needReconnectHttp = true;
+      } else if (pacConditions.includes(key)) {
+        needReconnectPac = true;
+      }
+    });
+    console.log(needReconnectServer, needReconnectHttp, needReconnectPac, changedFields.current);
+    if (needReconnectServer) {
+      dispatchEvent({
+        type: 'action:set',
+        payload: { type: 'reconnect-server' }
+      });
+    }
+    if (needReconnectHttp) {
+      dispatchEvent({
+        type: 'action:set',
+        payload: { type: 'reconnect-http' }
+      });
+    }
+    if (needReconnectPac) {
+      dispatchEvent({
+        type: 'action:set',
+        payload: { type: 'reconnect-pac' }
+      });
+    }
+  }, []);
+
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   const backupConfiguration = () => {
     return dispatch<any>(backupConfigurationToFile({
@@ -229,10 +279,12 @@ const SettingsPage: React.FC = () => {
     return Promise.all([checkPortSame(), checkPortValid(value)]);
   };
 
-  const onFieldChange = (changedFields: { [key: string]: any }, allFields: { [key: string]: any }) => {
-    const keys = Object.keys(changedFields);
+  const onFieldChange = (fields: { [key: string]: any }, allFields: { [key: string]: any }) => {
+    const keys = Object.keys(fields);
+    changedFields.current = Object.assign(changedFields.current || {}, fields);
+
     keys.forEach((key) => {
-      let value = changedFields[key];
+      let value = fields[key];
       form.validateFields([key]).then(() => {
         switch (key) {
           case 'httpProxy':

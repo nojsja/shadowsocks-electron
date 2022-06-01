@@ -141,7 +141,7 @@ export class SSClient extends Client {
       });
 
       this.child.stdout?.on("data", data => {
-        logger.info(data);
+        logger.info(data.toString());
       });
 
       this.child.stderr?.on('data', err => {

@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Typography } from "@material-ui/core";
+import os from "os";
 
 import packageJson from "../../package.json";
 import authorPic from '../../assets/icons/256x256.png';
@@ -35,7 +36,7 @@ const AboutPage: React.FC = () => {
         <div className={styles['author-info__others']}>
           <div>
               <Typography variant="caption" gutterBottom>
-                OS: {process.platform} ({process.arch})
+                OS: {os.platform()} ({os.arch()})
               </Typography>
             </div>
           <div>
