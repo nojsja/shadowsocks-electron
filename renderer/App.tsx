@@ -59,7 +59,9 @@ const App: React.FC = () => {
   const [theme] = useTheme(darkMode ? 'dark' : 'light');
 
   useGlobalAction({
-    'reconnect-server': { type: 'reconnect-server', payload: '' }
+    'reconnect-server': { type: 'reconnect-server', payload: '' },
+    'reconnect-http': { type: 'reconnect-http', payload: '' },
+    'reconnect-pac': { type: 'reconnect-pac', payload: '' },
   });
 
   useEffect(() => {

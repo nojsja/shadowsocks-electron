@@ -4,7 +4,7 @@ import { session } from "electron";
 import isDev from "electron-is-dev";
 
 import logger from "../logs";
-import { generatePacWithoutPort } from "../proxy/pac";
+import { PacServer as PS } from "../proxy/pac";
 import { getChromeExtensionsPath } from '../utils/utils';
 import { getPathRuntime } from "../config";
 
@@ -56,7 +56,7 @@ export const setupIfFirstRun = async () => {
 
     const data = await fs.readFile(path.resolve(pacDir, "gfwlist.txt"));
     const text = data.toString("ascii");
-    await generatePacWithoutPort(text);
+    await PS.generatePacWithoutPort(text);
   } catch (err) {
     logger.error(err as object);
   }

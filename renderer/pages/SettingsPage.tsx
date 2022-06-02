@@ -14,7 +14,7 @@ import { SnackbarMessage } from 'notistack';
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { getStartupOnBoot, setStartupOnBoot, setHttpAndHttpsProxy, setSetting } from "../redux/actions/settings";
+import { getStartupOnBoot, setStartupOnBoot, setHttpProxy, setSetting } from "../redux/actions/settings";
 import { setStatus } from "../redux/actions/status";
 import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
@@ -122,28 +122,17 @@ const SettingsPage: React.FC = () => {
         needReconnectHttp = false,
         needReconnectPac = false;
     const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url'];
-    const httpConditions = ['httpProxyPort', 'httpProxy'];
+    const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
     const pacConditions = ['pacPort'];
 
     Object.keys(changedFields.current).forEach(key => {
-      if (serverConditions.includes(key)) {
-        needReconnectServer = true;
-      } else if (httpConditions.includes(key)) {
-        needReconnectHttp = true;
-      } else if (pacConditions.includes(key)) {
-        needReconnectPac = true;
-      }
+      if (serverConditions.includes(key)) needReconnectServer = true;
+      if (httpConditions.includes(key)) needReconnectHttp = true;
+      if (pacConditions.includes(key)) needReconnectPac = true;
     });
-    if (needReconnectServer) {
-      globalAction.set({ type: 'reconnect-server' });
-    }
-    if (needReconnectHttp) {
-      globalAction.set({ type: 'reconnect-http' });
-
-    }
-    if (needReconnectPac) {
-      globalAction.set({ type: 'reconnect-pac' });
-    }
+    if (needReconnectServer) globalAction.set({ type: 'reconnect-server' });
+    if (needReconnectHttp) globalAction.set({ type: 'reconnect-http' });
+    if (needReconnectPac) globalAction.set({ type: 'reconnect-pac' });
   }, []);
 
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
@@ -285,7 +274,7 @@ const SettingsPage: React.FC = () => {
               enable: value
             };
             dispatch(setSetting<'httpProxy'>(key, value))
-            setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
+            setHttpProxy({ ...value, proxyPort: settings.localPort });
             return;
           case 'httpProxyPort':
             value = {
@@ -293,7 +282,7 @@ const SettingsPage: React.FC = () => {
               port: value
             };
             dispatch(setSetting<'httpProxy'>('httpProxy', value))
-            setHttpAndHttpsProxy({ ...value, type: 'http', proxyPort: settings.localPort });
+            setHttpProxy({ ...value, proxyPort: settings.localPort });
             return;
           case 'acl':
             dispatch(setSetting<'acl'>('acl', {

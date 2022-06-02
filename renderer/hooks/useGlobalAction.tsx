@@ -41,6 +41,13 @@ export const get = (payload: GlobalActionItem) => {
   return null;
 };
 
+export const dispatchAction = (payload: GlobalActionItem) => {
+  dispatchEvent({
+    type: `action:get:${payload.type}`,
+    payload: payload.payload
+  });
+}
+
 export default (initialStore?: GlobalActionStore) => {
   Object.assign(store, initialStore ?? {});
 

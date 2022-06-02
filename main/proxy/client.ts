@@ -27,7 +27,7 @@ export class Client extends EventEmitter {
   error: null | Error | string
   params: string[]
   settings: Settings
-  proxy?: Proxy
+  proxy: Proxy | null
 
   constructor(settings: Settings, type: 'ssr' | 'ss') {
     super();
@@ -41,14 +41,12 @@ export class Client extends EventEmitter {
     this.onConnected.bind(this);
     this.on('connected', this.onConnected);
     this.on('exited', debounce(this.onExited, 600));
-    if (settings.mode !== 'Manual') {
-      this.proxy = Proxy.createProxy(
-        platform,
-        platform === 'win32' ? settings.httpProxy.port : settings.localPort,
-        settings.pacPort,
-        settings.mode
-      );
-    }
+    this.proxy = Proxy.createProxy(
+      platform,
+      platform === 'win32' ? settings.httpProxy.port : settings.localPort,
+      settings.pacPort,
+      settings.mode
+    );
   }
 
   async onConnected(cb?: (success: boolean) => void) {

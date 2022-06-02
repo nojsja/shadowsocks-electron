@@ -25,7 +25,7 @@ import {
   EDIT_CONFIG,
   REMOVE_CONFIG
 } from "../redux/actions/config";
-import { setHttpAndHttpsProxy, SET_SETTING } from "../redux/actions/settings";
+import { setHttpProxy, setPacServer, SET_SETTING } from "../redux/actions/settings";
 import { useStylesOfHome as useStyles } from "./styles";
 import { getConnectionDelay, startClientAction } from '../redux/actions/status';
 import { findAndCallback } from '../utils';
@@ -78,6 +78,26 @@ const HomePage: React.FC = () => {
     selectedServer && connectedToServer(config, selectedServer);
   }, [config, selectedServer]);
 
+  useBus('action:get:reconnect-http', (event: EventAction) => {
+    selectedServer && setHttpProxy({
+      ...settings.httpProxy,
+      proxyPort: settings.localPort
+    });
+  }, [settings, selectedServer]);
+
+  useBus('action:get:reconnect-pac', (event: EventAction) => {
+    if (!selectedServer) return;
+    setPacServer({
+      pacPort: settings.pacPort,
+      enable:
+        event.payload?.enable === true
+          ? true
+          : event.payload?.enable === false
+          ? false
+          : settings.mode === 'PAC'
+    });
+  }, [settings, selectedServer]);
+
   /* status checker on mount */
   useEffect(() => {
     if (selectedServer) {
@@ -88,13 +108,6 @@ const HomePage: React.FC = () => {
           globalAction.get({ type: 'reconnect-pac' });
         }, 500);
     }
-
-    /* connect http server */
-    setHttpAndHttpsProxy({
-      ...settings.httpProxy,
-      type: 'http',
-      proxyPort: settings.localPort
-    });
   }, []);
 
   /* reconnect watcher when attrs update */

@@ -8,11 +8,11 @@ import {
 } from '../types/extention';
 import { ProxyURI } from '../utils/ProxyURI';
 import { startClient, stopClient, isConnected } from '../proxy';
-import { createHttpServer, stopHttpServer } from '../proxy/http';
 import tcpPing from '../utils/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
-import { downloadAndGeneratePac } from '../proxy/pac';
+import { HttpProxyServer as HPS } from '../proxy/http';
+import { PacServer as PS } from '../proxy/pac';
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -150,13 +150,13 @@ export class MainService implements MainServiceType {
 
   async reGeneratePacFile(params: { url?: string, text?: string }) {
     return new Promise(resolve => {
-      return downloadAndGeneratePac(params.url ?? '', params.text ?? '').then(() => {
+      return PS.downloadAndGeneratePac(params.url ?? '', params.text ?? '').then(() => {
         resolve({
           code: 200,
           result: params.url
         });
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         resolve({
           code: 500,
           result: err?.toString()
@@ -167,7 +167,7 @@ export class MainService implements MainServiceType {
 
   async startHttpProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
-      return createHttpServer({...params, host: '127.0.0.1'}, (error) => {
+      return HPS.createHttpServer({...params, host: '127.0.0.1'}, (error) => {
         resolve({
           code: error ? 500 : 200,
           result: error ?? ''
@@ -178,11 +178,31 @@ export class MainService implements MainServiceType {
 
   async stopHttpProxyServer(params: { port: number }) {
     return new Promise(resolve => {
-      return stopHttpServer(params.port, '127.0.0.1', (error) => {
+      return HPS.stopHttpServer(params.port, '127.0.0.1', (error) => {
         resolve({
           code: error ? 500 : 200,
           result: error ?? ''
         });
+      });
+    });
+  }
+
+  async startPacServer(params: { pacPort: number }) {
+    return new Promise(resolve => {
+      PS.startPacServer(params.pacPort);
+      resolve({
+        code: 200,
+        result: ''
+      });
+    });
+  }
+
+  async stopPacServer() {
+    return new Promise(resolve => {
+      PS.stopPacServer();
+      resolve({
+        code: 200,
+        result: ''
       });
     });
   }

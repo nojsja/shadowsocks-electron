@@ -1,8 +1,7 @@
 import * as networksetup from "../helpers/networksetup";
 import * as gsettings from "../helpers/gsettings";
 import * as sysproxy from "../helpers/sysproxy";
-import { startPacServer, stopPacServer } from "./pac";
-import { generateFullPac } from "./pac";
+import { PacServer as PS } from "./pac";
 import { Mode, ProxyStatus } from "../types/extention";
 import { setupIfFirstRun } from "../install";
 
@@ -21,7 +20,8 @@ export class Proxy {
     this.mode = mode;
   }
 
-  static createProxy(platform: NodeJS.Platform, localPort: number, pacPort: number, mode: Mode): Proxy {
+  static createProxy(platform: NodeJS.Platform, localPort: number, pacPort: number, mode: Mode): Proxy | null {
+    if (mode === 'Manual') return null;
     switch (platform) {
       case "darwin":
         return new DarwinProxy(localPort, pacPort, mode);
@@ -57,9 +57,7 @@ export class LinuxProxy extends Proxy {
       await gsettings.setGlobalProxy("127.0.0.1", this.localPort ?? 1080);
     } else if (this.mode === "PAC") {
       await setupIfFirstRun();
-      await generateFullPac(this.localPort ?? 1080);
-      await stopPacServer();
-      startPacServer(this.pacPort ?? 1090);
+      await PS.generateFullPac(this.localPort ?? 1080);
       await gsettings.setPacProxy(
         `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
       );
@@ -68,7 +66,6 @@ export class LinuxProxy extends Proxy {
 
   public async stop() {
     await gsettings.unsetProxy();
-    stopPacServer();
   }
 }
 
@@ -82,9 +79,7 @@ export class WinProxy extends Proxy {
       await sysproxy.setGlobalProxy("127.0.0.1", this.localPort ?? 1080);
     } else if (this.mode === "PAC") {
       await setupIfFirstRun();
-      await generateFullPac(this.localPort ?? 1095);
-      await stopPacServer();
-      startPacServer(this.pacPort ?? 1090);
+      await PS.generateFullPac(this.localPort ?? 1095);
       await sysproxy.setPacProxy(
         `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
       );
@@ -93,7 +88,6 @@ export class WinProxy extends Proxy {
 
   public async stop() {
     await sysproxy.unsetProxy();
-    stopPacServer();
   }
 }
 
@@ -107,9 +101,8 @@ export class DarwinProxy extends Proxy {
       await networksetup.setGlobalProxy("127.0.0.1", this.localPort ?? 1080);
     } else if (this.mode === "PAC") {
       await setupIfFirstRun();
-      await generateFullPac(this.localPort ?? 1080);
-      await stopPacServer();
-      startPacServer(this.pacPort ?? 1090);
+      await PS.generateFullPac(this.localPort ?? 1080);
+      // PS.startPacServer(this.pacPort ?? 1090);
       await networksetup.setPacProxy(
         `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
       );
@@ -118,6 +111,5 @@ export class DarwinProxy extends Proxy {
 
   public async stop() {
     await networksetup.unsetProxy();
-    stopPacServer();
   }
 }

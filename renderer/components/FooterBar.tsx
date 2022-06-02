@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Mode } from "../types";
 import { SET_SETTING } from '../redux/actions/settings';
 import { useTypedSelector } from "../redux/reducers";
+import { dispatchAction } from '../hooks/useGlobalAction';
 
 type StatusBarProps = {
   mode: string,
@@ -60,25 +61,30 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
   const { mode, setDialogOpen } = props;
 
   const handleModeChange = ((value: string) => {
-    if (value !== mode) {
-      if (
-        platform === "win32" &&
-        value !== 'Manual' &&
-        !settings.httpProxy.enable
-      ) {
-        MessageChannel.invoke('main', 'service:desktop', {
-          action: 'openNotification',
-          params: {
-            title: t('warning'),
-            body: t('use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings')
-          }
-        });
-      }
-      dispatch({
-        type: SET_SETTING,
-        key: "mode",
-        value: value as Mode
+    if (value === mode) return;
+    if (
+      platform === "win32" &&
+      value !== 'Manual' &&
+      !settings.httpProxy.enable
+    ) {
+      MessageChannel.invoke('main', 'service:desktop', {
+        action: 'openNotification',
+        params: {
+          title: t('warning'),
+          body: t('use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings')
+        }
       });
+    }
+    dispatch({
+      type: SET_SETTING,
+      key: "mode",
+      value: value as Mode
+    });
+    if (value === 'PAC') {
+      return dispatchAction({ type: 'reconnect-pac', payload: { enable: true } });
+    }
+    if (mode === 'PAC') {
+      return dispatchAction({ type: 'reconnect-pac', payload: { enable: false } });
     }
   });
 
