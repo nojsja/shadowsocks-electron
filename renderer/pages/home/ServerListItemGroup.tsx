@@ -20,11 +20,11 @@ import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { SnackbarMessage } from "notistack";
 
-import { moveDown, moveUp, top, updateSubscription } from "../redux/actions/config";
-import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
+import { moveDown, moveUp, top, updateSubscription } from "../../redux/actions/config";
+import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 import ServerListItemSingle from "./ServerListItemSingle";
-import { GroupConfig, Notification } from "../types";
-import menuContext from '../hooks/useContextMenu/context';
+import { GroupConfig, Notification } from "../../types";
+import menuContext from '../../hooks/useContextMenu/context';
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
   createStyles({

@@ -29,13 +29,13 @@ import {
   WifiOff as WifiOffIcon,
 } from "@material-ui/icons";
 
-import menuContext from '../hooks/useContextMenu/context';
-import { getConnectionDelay } from "../redux/actions/status";
-import { moveDown, moveUp, top } from "../redux/actions/config";
-import { Config } from "../types";
+import menuContext from '../../hooks/useContextMenu/context';
+import { getConnectionDelay } from "../../redux/actions/status";
+import { moveDown, moveUp, top } from "../../redux/actions/config";
+import { Config } from "../../types";
 
-import ListItemTextMultibleLine from "./Pices/ListItemTextMultibleLine";
-import If from "./HOC/IF";
+import ListItemTextMultibleLine from "../../components/Pices/ListItemTextMultibleLine";
+import If from "../../components/HOC/IF";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

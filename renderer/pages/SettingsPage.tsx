@@ -12,16 +12,14 @@ import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
 
 import { useTypedDispatch } from "../redux/actions";
-import { useTypedSelector, CLEAR_STORE } from "../redux/reducers";
+import { useTypedSelector } from "../redux/reducers";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
 import { getStartupOnBoot, setStartupOnBoot, setHttpProxy, setSetting } from "../redux/actions/settings";
 import { setStatus } from "../redux/actions/status";
-import { backupConfigurationToFile, restoreConfigurationFromFile } from '../redux/actions/config';
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
 import { Notification } from "../types";
 
 import { useStylesOfSettings as useStyles } from "./styles";
-import useDialogConfirm from '../hooks/useDialogConfirm';
 import * as globalAction from "../hooks/useGlobalAction";
 
 import { persistStore } from "../App";
@@ -51,9 +49,7 @@ const SettingsPage: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
-  const config = useTypedSelector(state => state.config);
   // const [aclVisible, setAclVisible] = useState(false);
-  const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
   const settingKeys = useRef(
     ['localPort', 'pacPort', 'gfwListUrl',
     'httpProxy', 'autoLaunch', 'fixedMenu',
@@ -139,34 +135,11 @@ const SettingsPage: React.FC = () => {
     dispatch(enqueueSnackbarAction(message, options))
   };
 
-  const backupConfiguration = () => {
-    return dispatch<any>(backupConfigurationToFile({
-      config,
-      settings
-    }, {
-      success: t('successful_operation'),
-      error: {
-        default: t('failed_operation'),
-        404: t('user_canceled')
-      }
-    }));
-  };
-
   const setAclUrl = () => {
     dispatch<any>(setAclUrlAction({
       success: t('successful_operation'),
       error: {
         default: t('failed_operation'),
-        404: t('user_canceled')
-      }
-    }));
-  }
-
-  const restoreConfiguration = () => {
-    dispatch<any>(restoreConfigurationFromFile({
-      success: t('the_recovery_is_successful'),
-      error: {
-        default: t('the_recovery_is_failed'),
         404: t('user_canceled')
       }
     }));
@@ -188,27 +161,6 @@ const SettingsPage: React.FC = () => {
       return Promise.reject(t("the_same_port_is_not_allowed"));
     }
     return Promise.resolve();
-  };
-
-
-  const handleReset = () => {
-    dispatch({
-      type: CLEAR_STORE
-    } as any);
-    closeDialog();
-    MessageChannel.invoke('main', 'service:main', {
-      action: 'stopClient',
-      params: {}
-    });
-    enqueueSnackbar(t('cleared_all_data'), { variant: 'success' });
-  };
-
-  const handleAlertDialogOpen = () => {
-    showDialog(t('reset_all_data'), t('reset_all_data_tips'));
-  };
-
-  const handleAlertDialogClose = () => {
-    closeDialog();
   };
 
   const reGeneratePacFile = (params: { url?: string, text?: string }) => {
@@ -374,9 +326,9 @@ const SettingsPage: React.FC = () => {
           <AutoTheme onAutoThemeChange={onAutoThemeChange} />
           <DarkMode disabled={settings.autoTheme} />
           <Language />
-          <Backup backupConfiguration={backupConfiguration} />
-          <Restore restoreConfiguration={restoreConfiguration}/>
-          <ResetData handleAlertDialogOpen={handleAlertDialogOpen} />
+          <Backup />
+          <Restore />
+          <ResetData enqueueSnackbar={enqueueSnackbar} />
           <Divider className={styles.margin} />
           <ListSubheader>{t('debugging')}</ListSubheader>
           <Verbose />
@@ -384,7 +336,6 @@ const SettingsPage: React.FC = () => {
           <OpenProcessManager />
         </List>
       </Form>
-      <DialogConfirm onClose={handleAlertDialogClose} onConfirm={handleReset} />
     </Container>
   );
 };

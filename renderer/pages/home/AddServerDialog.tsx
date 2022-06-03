@@ -18,10 +18,10 @@ import CameraIcon from "@material-ui/icons/PhotoCamera";
 import CloseIcon from '@material-ui/icons/Close';
 import CopyIcon from "@material-ui/icons/Code";
 import CreateIcon from "@material-ui/icons/Create";
-import { AdaptiveDialog } from "./Pices/Dialog";
+import { AdaptiveDialog } from "../../components/Pices/Dialog";
 
-import { CloseOptions } from '../types';
-import { TextWithTooltip } from "./Pices/TextWithTooltip";
+import { CloseOptions } from '../../types';
+import { TextWithTooltip } from "../../components/Pices/TextWithTooltip";
 
 export type onCloseType = (selection: CloseOptions) => void;
 

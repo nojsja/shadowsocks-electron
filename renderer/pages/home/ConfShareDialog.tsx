@@ -19,12 +19,12 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { SnackbarMessage } from 'notistack';
 import { useDispatch } from "react-redux";
 
-import { saveDataURLAsFile } from '../utils';
+import { saveDataURLAsFile } from '../../utils';
 import { DialogTitle } from './AddServerDialog';
-import { AdaptiveDialog } from "./Pices/Dialog";
+import { AdaptiveDialog } from "../../components/Pices/Dialog";
 import { withStyles } from "@material-ui/styles";
-import { CloseOptions, Notification } from '../types';
-import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
+import { CloseOptions, Notification } from '../../types';
+import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 
 export interface ConfShareDialog extends DialogProps, MediaCard {
   onClose: (selection: CloseOptions) => void

@@ -35,12 +35,12 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { SnackbarMessage } from 'notistack';
 import { useDispatch } from "react-redux";
 
-import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { Config, encryptMethods, plugins, serverTypes, protocols, obfs, Notification } from "../types";
-import { AdaptiveAppBar } from "./Pices/AppBar";
-import { scrollBarStyle } from "../pages/styles";
-import { TextWithTooltip } from "./Pices/TextWithTooltip";
-import If from "./HOC/IF";
+import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
+import { Config, encryptMethods, plugins, serverTypes, protocols, obfs, Notification } from "../../types";
+import { AdaptiveAppBar } from "../../components/Pices/AppBar";
+import { scrollBarStyle } from "../../pages/styles";
+import { TextWithTooltip } from "../../components/Pices/TextWithTooltip";
+import If from "../../components/HOC/IF";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

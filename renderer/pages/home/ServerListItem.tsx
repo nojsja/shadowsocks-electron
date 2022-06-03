@@ -6,15 +6,19 @@ import {
 import { makeStyles, createStyles, useTheme } from "@material-ui/styles";
 import clsx from "clsx";
 
-import { cloneElement, setCloneElement } from "./ServerList";
-import { Config, GroupConfig } from "../types";
+import { Config, GroupConfig } from "../../types";
+
+import If from "../../components/HOC/IF";
+
 import ServerListItemGroup from "./ServerListItemGroup";
 import ServerListItemSingle from "./ServerListItemSingle";
-import GradientDivider from "./Pices/GradientDivider";
-import If from "./HOC/IF";
+import GradientDivider from "../../components/Pices/GradientDivider";
 
 const img = new Image();
 img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII= ';
+
+let cloneElement: HTMLDivElement | null;
+const setCloneElement = (div: HTMLDivElement | null) => cloneElement = div;
 
 export interface ServerListItemProps extends ListItemProps {
   isLast?: boolean;
