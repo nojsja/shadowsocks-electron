@@ -15,16 +15,18 @@ import {
   ArrowDownward as ArrowDownwardIcon,
   Delete as DeleteIcon,
   Refresh,
+  ViewComfy
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { SnackbarMessage } from "notistack";
 
-import { moveDown, moveUp, top, updateSubscription } from "../../redux/actions/config";
+import { moveDown, moveUp, startCluster, top, updateSubscription } from "../../redux/actions/config";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig, Notification } from "../../types";
 import menuContext from '../../hooks/useContextMenu/context';
+import { useTypedSelector } from "../../redux/reducers";
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
   createStyles({
@@ -75,6 +77,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const { item, selectedServer } = props;
   const { t } = useTranslation();
   const context = useContext(menuContext);
+  const settings = useTypedSelector(state => state.settings);
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
   const menuContents = useMemo(() => [
     { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
@@ -82,7 +85,8 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
     { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
     { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
-    { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />}
+    { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />},
+    { label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />},
   ], []);
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
@@ -122,6 +126,9 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         break;
       case 'delete':
         handleRemoveButtonClick();
+      case 'start_cluster':
+        dispatch(startCluster(item.servers, settings));
+        break;
       default:
         break;
     }

@@ -6,8 +6,7 @@ import isDev from "electron-is-dev";
 import logger from '../logs';
 import { ElectronApp } from "../app";
 import { appDataPath, platform, pathRuntime, pathExecutable } from "../config";
-import { checkEnvFiles as check, copyDir } from "../utils/utils";
-import chmod from '../utils/fsChmod';
+import { checkEnvFiles as check, copyDir, chmod } from "../utils/utils";
 import { pacDir, binDir } from '../config';
 
 export default (electronApp: ElectronApp) => {

@@ -47,12 +47,10 @@ const socketConnect = (port: number, host: string, timeout: number = 1e3): Promi
   });
 }
 
-const checkPortInUse = (
+export default (
   ports: number[], host: string, timeout?: number
 ): Promise<ReturnType[]> => {
   return Promise.all(
     ports.map(port => socketConnect(port, host, timeout))
   );
 };
-
-export default checkPortInUse;

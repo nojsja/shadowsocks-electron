@@ -4,7 +4,7 @@ import jsqr from 'jsqr';
 import uuid from "uuid/v1";
 import { MessageChannel } from 'electron-re';
 
-import { ActionRspText, ClipboardParseType, Config, GroupConfig, RootState } from "../../types";
+import { ActionRspText, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
 import { getScreenCapturedResources } from '../../utils';
 import { overrideSetting } from './settings';
 import { setStatus } from './status';
@@ -102,6 +102,26 @@ export const updateSubscription = (id: string, url: string, info: ActionRspText)
     });
   }
 };
+
+export const startCluster =
+  (configs: Config[], settings: Settings): ThunkAction<void, RootState, unknown, AnyAction> => {
+    return (dispatch) => {
+      MessageChannel.invoke('main', 'service:main', {
+        action: 'startCluster',
+        params: {
+          configs,
+          settings
+        }
+      })
+        .then((rsp) => {
+          console.log(rsp);
+          if (rsp.code === 200) {
+          } else {
+
+          }
+        });
+    }
+  }
 
 
 export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {

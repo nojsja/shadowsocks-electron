@@ -7,12 +7,12 @@ import {
   Config, Settings, ServiceResult, ClipboardParseType, SSRConfig
 } from '../types/extention';
 import { manager, http, pac } from '../core';
-import tcpPing from '../utils/tcp-ping';
+import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
-import { ProxyURI } from '../utils/ProxyURI';
+import { ProxyURI } from '../core/helpers/proxy-url';
 
-const { startClient, stopClient, isConnected } = manager;
+const { Manager } = manager;
 const { HttpProxyServer : HPS } = http;
 const { PacServer : PS } = pac;
 
@@ -27,17 +27,17 @@ export class MainService implements MainServiceType {
   async isConnected(): Promise<ServiceResult> {
     return Promise.resolve({
       code: 200,
-      result: isConnected()
+      result: Manager.isConnected()
     });
   }
 
   async startClient(params: { config: Config, settings: Settings }): Promise<ServiceResult> {
-    return startClient(params.config, params.settings);
+    return Manager.startClient(params.config, params.settings);
   }
 
   async stopClient(): Promise<ServiceResult> {
     return new Promise((resolve) => {
-      stopClient()
+      Manager.stopClient()
         .then(() => {
           resolve({
             code: 200,
@@ -51,6 +51,14 @@ export class MainService implements MainServiceType {
           });
         })
     });
+  }
+
+  async startCluster(params: { configs: Config[], settings: Settings }): Promise<ServiceResult> {
+    return Manager.startCluster(params.configs, params.settings);
+  }
+
+  async stopCluster(): Promise<ServiceResult> {
+    return Manager.stopCluster();
   }
 
   async parseClipboardText(params: { text: string, type: ClipboardParseType }): Promise<ServiceResult> {

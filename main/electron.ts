@@ -23,7 +23,7 @@ export const msgc = MessageChannel;
 export const electronStore = new ElectronStore();
 export const i18n = new I18n();
 
-const { stopClient } = manager;
+const { Manager } = manager;
 const { setMainWindow } = client;
 
 logger.info(`appDataPath: ${appDataPath}`);
@@ -91,7 +91,7 @@ app.on("before-quit", () => {
 app.on("will-quit", async () => {
   logger.info("App will quit. Cleaning up...");
   electronApp.beforeQuit(app);
-  await stopClient();
+  await Manager.stopClient();
 });
 
 app.on("activate", () => {

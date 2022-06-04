@@ -4,17 +4,14 @@ import { BrowserWindow } from "electron";
 import os from 'os';
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 
-import checkPortInUse from "../utils/checkPortInUse";
+import checkPortInUse from "./helpers/port-checker";
 import { debounce, getSSLocalBinPath } from "../utils/utils";
 import { Settings, SSRConfig, SSConfig } from "../types/extention";
 import logger from "../logs";
 import { Proxy } from './proxy';
 
 let mainWindow: BrowserWindow | null = null;
-export let connected = false;
 const platform = os.platform();
-
-export const getConnected = () => connected;
 
 export const setMainWindow = (window: BrowserWindow) => {
   mainWindow = window;
@@ -28,6 +25,8 @@ export class Client extends EventEmitter {
   params: string[]
   settings: Settings
   proxy: Proxy | null
+  connected: boolean
+  port: number
 
   constructor(settings: Settings, type: 'ssr' | 'ss') {
     super();
@@ -36,9 +35,11 @@ export class Client extends EventEmitter {
     this.params = [];
     this.error = '';
     this.settings = settings;
+    this.port = settings.localPort;
     this.child = null;
     this.onExited.bind(this);
     this.onConnected.bind(this);
+    this.connected = false;
     this.on('connected', this.onConnected);
     this.on('exited', debounce(this.onExited, 600));
     this.proxy = Proxy.createProxy(
@@ -53,7 +54,7 @@ export class Client extends EventEmitter {
     logger.info(`Started ${this.type}-local`);
     await this.proxy?.start();
     logger.info("Set proxy on");
-    connected = true;
+    this.connected = true;
     mainWindow?.webContents.send("connected", true);
     cb && cb(true);
   }
@@ -68,7 +69,7 @@ export class Client extends EventEmitter {
         await this.proxy?.stop();
         logger.info("Set proxy off");
 
-        connected = false;
+        this.connected = false;
         MessageChannel.sendTo(mainWindow?.id || 1, 'connected', false);
 
         cb && cb(false);
@@ -78,8 +79,11 @@ export class Client extends EventEmitter {
 }
 
 export class SSClient extends Client {
-  constructor(settings: Settings) {
+  config: SSConfig
+
+  constructor(settings: Settings, config: SSConfig) {
     super(settings, 'ss');
+    this.config = config;
     this.on('error', () => {
 
     });
@@ -94,7 +98,7 @@ export class SSClient extends Client {
       "-p",
       config.serverPort.toString(),
       "-l",
-      this.settings.localPort.toString(),
+      this.port.toString(),
       "-k",
       config.password,
       "-m",
@@ -114,7 +118,7 @@ export class SSClient extends Client {
     ].filter(arg => arg !== '');
   }
 
-  connect(config: SSConfig): Promise<{code: number, result: any}> {
+  connect(config: SSConfig = this.config): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
       logger.info(`Exec command:${this.bin} ${this.params.join(' ')}`);
@@ -133,7 +137,10 @@ export class SSClient extends Client {
         this.emit('connected', () => {
           resolve({
             code: 200,
-            result: 'success'
+            result: {
+              info: 'success',
+              port: this.port
+            }
           });
         });
       });
@@ -153,7 +160,10 @@ export class SSClient extends Client {
             this.emit('connected', () => {
               resolve({
                 code: 200,
-                result: 'success'
+                result: {
+                  info: 'success',
+                  port: this.port
+                }
               });
             });
           }
@@ -171,7 +181,10 @@ export class SSClient extends Client {
             this.emit('connected', () => {
               resolve({
                 code: 200,
-                result: 'success'
+                result: {
+                  info: 'success',
+                  port: this.port
+                }
               });
             });
           }
@@ -209,8 +222,11 @@ export class SSClient extends Client {
 }
 
 export class SSRClient extends Client {
-  constructor(settings: Settings) {
+  config: SSRConfig
+
+  constructor(settings: Settings, config: SSRConfig) {
     super(settings, 'ssr');
+    this.config = config;
     this.on('error', () => {
 
     });
@@ -225,7 +241,7 @@ export class SSRClient extends Client {
       "-p",
       config.serverPort.toString(),
       "-l",
-      this.settings.localPort.toString(),
+      this.port.toString(),
       "-k",
       config.password,
       "-m",
@@ -247,7 +263,7 @@ export class SSRClient extends Client {
     ].filter(arg => arg !== '');
   }
 
-  connect(config: SSRConfig): Promise<{code: number, result: any}> {
+  connect(config: SSRConfig = this.config): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
       logger.info(`Exec command: ${this.bin} ${this.params.join(' ')}`);
@@ -267,7 +283,10 @@ export class SSRClient extends Client {
         this.emit('connected', () => {
           resolve({
             code: 200,
-            result: 'success'
+            result: {
+              info: 'success',
+              port: this.port
+            }
           });
         });
       });
@@ -287,7 +306,10 @@ export class SSRClient extends Client {
             this.emit('connected', () => {
               resolve({
                 code: 200,
-                result: 'success'
+                result: {
+                  info: 'success',
+                  port: this.port
+                }
               });
             });
           }
@@ -305,7 +327,10 @@ export class SSRClient extends Client {
             this.emit('connected', () => {
               resolve({
                 code: 200,
-                result: 'success'
+                result: {
+                  info: 'success',
+                  port: this.port
+                }
               });
             });
           }

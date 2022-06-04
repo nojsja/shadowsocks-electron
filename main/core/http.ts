@@ -1,5 +1,5 @@
 import { InnerCallback } from '../types/extention';
-import checkPortInUse from '../utils/checkPortInUse';
+import checkPortInUse from './helpers/port-checker';
 
 import { EventEmitter } from 'events';
 import url from 'url';
@@ -124,6 +124,10 @@ export class HttpProxyServer extends EventEmitter {
       proxy: agentConf,
       target: { host: u.hostname, port: u.port },
     };
+
+    cSocket.on('error', (err) => {
+      console.log('cSocket error: ', err.message);
+    });
     // connect tcp tunnel between https-client and socks5-client by proxy-server.
     // when tcp tunnel established, the tunnel let data-pack pass from https-client to target-server with socks5 proxy.
     // the entire process: https-client <--(tcp)--> sockets-client <--(tcp)--> sockets-server <--(tcp)--> https-server
@@ -133,7 +137,7 @@ export class HttpProxyServer extends EventEmitter {
         return;
       }
       pSocket.on('error', (err) => {
-        console.log('http-proxy: ', err.message);
+        console.log('pSocket error: ', err.message);
       });
       pSocket.pipe(cSocket);
       cSocket.pipe(pSocket);
@@ -144,7 +148,7 @@ export class HttpProxyServer extends EventEmitter {
   }
 
   /**
-    * request [HTTP request method for http proxy] (not used)
+    * request [HTTP request method for http proxy]
     * @author nojsja
     * @param  {http.IncomingMessage} req [request]
     * @param  {http.ServerResponse} res [response]

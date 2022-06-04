@@ -1,4 +1,5 @@
 {
+  "enable_load_balance": "开启负载均衡",
   "invalid_value": "非法值",
   "readme": "请查看 Github 页面中的 - 插件安装说明",
   "please_confirm_v2ray-plugin_installed_on_your_system": "需要先安装 v2ray-plugin",

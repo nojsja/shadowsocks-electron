@@ -50,6 +50,8 @@ export interface MainService extends Service {
   isConnected: () => Promise<ServiceResult>
   startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>
   stopClient: () => Promise<ServiceResult>
+  startCluster: (params: { configs: Config[], settings: Settings }) => Promise<ServiceResult>
+  stopCluster: () => Promise<ServiceResult>
   parseClipboardText: (params: { text: string, type: ClipboardParseType }) => Promise<ServiceResult>
   generateUrlFromConfig: (params: Config) => Promise<ServiceResult>
 }

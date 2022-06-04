@@ -1,4 +1,5 @@
 {
+  "enable_load_balance": "Enable nodes load balancing",
   "invalid_value": "Invalid value",
   "readme": "checkout plugins installation instructions on github readme page",
   "please_confirm_v2ray-plugin_installed_on_your_system": "need to install v2ray-plugin first",
