@@ -1,6 +1,6 @@
-import { execAsync } from "../utils/utils";
+import { execAsync } from "../../utils/utils";
 import { ignoredHosts_win } from "./config";
-import { getPathRuntime } from '../config';
+import { getPathRuntime } from '../../config';
 
 export const unsetProxy = async () => {
   const result = await execAsync(

@@ -20,8 +20,11 @@ export const pathExecutable =
       path.dirname(app.getPath('exe'))
   );
 
+
 export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
+export const pacDir = getPathRuntime('pac');
+export const binDir = getPathRuntime('bin');
 
 export default {
   packageName,

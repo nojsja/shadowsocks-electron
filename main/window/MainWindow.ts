@@ -5,7 +5,7 @@ import os from "os";
 import windowStateKeeper from 'electron-window-state';
 
 import { IpcMainWindowType, TrayMenu } from '../types/extention';
-import { getBestWindowPosition } from "../helpers";
+import { getBestWindowPosition } from "../core/helpers";
 import { electronStore, i18n } from "../electron";
 
 const platform = os.platform();

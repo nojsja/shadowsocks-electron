@@ -4,12 +4,9 @@ import { session } from "electron";
 import isDev from "electron-is-dev";
 
 import logger from "../logs";
-import { PacServer as PS } from "../proxy/pac";
+import { pac } from "../core";
 import { getChromeExtensionsPath } from '../utils/utils';
-import { getPathRuntime } from "../config";
-
-export const pacDir = getPathRuntime('pac');
-export const binDir = getPathRuntime('bin');
+import { pacDir } from "../config";
 
 const loadExtensionsManually = (paths: string[]) => {
   paths.forEach(async (_path) => {
@@ -47,6 +44,7 @@ export const setupAfterInstall = async (manually?: boolean) => {
 export const setupIfFirstRun = async () => {
   try {
     const firstRun = !(await fs.pathExists(path.resolve(pacDir, "pac.txt")));
+    const { PacServer: PS } = pac;
 
     if (!firstRun) {
       return;

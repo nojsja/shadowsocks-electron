@@ -1,6 +1,6 @@
-import * as networksetup from "../helpers/networksetup";
-import * as gsettings from "../helpers/gsettings";
-import * as sysproxy from "../helpers/sysproxy";
+import * as networksetup from "./helpers/networksetup";
+import * as gsettings from "./helpers/gsettings";
+import * as sysproxy from "./helpers/sysproxy";
 import { PacServer as PS } from "./pac";
 import { Mode, ProxyStatus } from "../types/extention";
 import { setupIfFirstRun } from "../install";

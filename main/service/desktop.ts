@@ -15,7 +15,7 @@ import {
   setStartupOnBoot_darwin, getStartupOnBoot_darwin,
   getStartupOnBoot_linux, setStartupOnBoot_linux,
   getStartupOnBoot_win32, setStartupOnBoot_win32
-} from '../helpers';
+} from '../core/helpers';
 import { i18n, ipcMainWindow } from '../electron';
 
 /* main service handler */

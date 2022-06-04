@@ -1,4 +1,4 @@
-import { execAsync } from "../utils/utils";
+import { execAsync } from "../../utils/utils";
 import { ignoredHosts } from "./config";
 
 const listNetworkServices = async () => {

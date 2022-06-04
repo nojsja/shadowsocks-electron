@@ -8,7 +8,7 @@ import { ElectronApp } from "../app";
 import { appDataPath, platform, pathRuntime, pathExecutable } from "../config";
 import { checkEnvFiles as check, copyDir } from "../utils/utils";
 import chmod from '../utils/fsChmod';
-import { pacDir, binDir } from '../install';
+import { pacDir, binDir } from '../config';
 
 export default (electronApp: ElectronApp) => {
   checkEnvFiles(electronApp);

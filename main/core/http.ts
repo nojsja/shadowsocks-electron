@@ -132,6 +132,9 @@ export class HttpProxyServer extends EventEmitter {
         cSocket.write(`HTTP/${request.httpVersion} 500 Connection error\r\n\r\n`);
         return;
       }
+      pSocket.on('error', (err) => {
+        console.log('http-proxy: ', err.message);
+      });
       pSocket.pipe(cSocket);
       cSocket.pipe(pSocket);
       pSocket.write(head);
@@ -141,7 +144,7 @@ export class HttpProxyServer extends EventEmitter {
   }
 
   /**
-    * request [HTTP request method for http proxy]
+    * request [HTTP request method for http proxy] (not used)
     * @author nojsja
     * @param  {http.IncomingMessage} req [request]
     * @param  {http.ServerResponse} res [response]

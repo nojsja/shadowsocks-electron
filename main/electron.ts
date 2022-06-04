@@ -2,16 +2,15 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import isDev from "electron-is-dev";
 import { autoUpdater } from'electron-updater';
 import { I18n } from 'i18n';
+import { MessageChannel, ProcessManager } from 'electron-re';
 
 import App from './app';
-import { stopClient } from "./proxy";
-import { setMainWindow } from "./proxy/client";
+import { manager, client } from "./core";
 import logger from "./logs";
 import { setupAfterInstall } from "./install";
 import { IpcMainProcess } from './service/index';
 import { IpcMainProcess as IpcMainProcessType, IpcMainWindowType } from './types/extention';
 import IpcMainWindow from './window/MainWindow';
-import { MessageChannel, ProcessManager } from 'electron-re';
 import { startProfiler } from "./performance/v8-inspect-profiler";
 import registryHooks from './hooks';
 
@@ -22,8 +21,10 @@ export let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
 export const msgc = MessageChannel;
 export const electronStore = new ElectronStore();
-
 export const i18n = new I18n();
+
+const { stopClient } = manager;
+const { setMainWindow } = client;
 
 logger.info(`appDataPath: ${appDataPath}`);
 logger.info(`pathRuntime: ${pathRuntime}`);

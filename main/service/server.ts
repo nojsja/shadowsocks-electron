@@ -6,13 +6,15 @@ import {
   MainService as MainServiceType,
   Config, Settings, ServiceResult, ClipboardParseType, SSRConfig
 } from '../types/extention';
-import { ProxyURI } from '../utils/ProxyURI';
-import { startClient, stopClient, isConnected } from '../proxy';
+import { manager, http, pac } from '../core';
 import tcpPing from '../utils/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
-import { HttpProxyServer as HPS } from '../proxy/http';
-import { PacServer as PS } from '../proxy/pac';
+import { ProxyURI } from '../utils/ProxyURI';
+
+const { startClient, stopClient, isConnected } = manager;
+const { HttpProxyServer : HPS } = http;
+const { PacServer : PS } = pac;
 
 /* main service handler */
 export class MainService implements MainServiceType {

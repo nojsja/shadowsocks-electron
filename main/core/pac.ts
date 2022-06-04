@@ -2,11 +2,11 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import fetch from "node-fetch";
+import fsExtra from "fs-extra";
 
 import logger from "../logs";
-import fsExtra from "fs-extra";
-import fetch from "node-fetch";
-import { pacDir } from "../install";
+import { pacDir } from "../config";
 import { i18n } from "../electron";
 
 let server: PacServer | null;
