@@ -1,5 +1,16 @@
 import { OptionsObject } from "notistack";
 
+export enum ALGORITHM {
+  POLLING = 'POLLING', // 轮询
+  WEIGHTS = 'WEIGHTS', // 权重
+  RANDOM = 'RANDOM', // 随机
+  SPECIFY = 'SPECIFY', // 声明绑定
+  WEIGHTS_POLLING = 'WEIGHTS_POLLING', // 权重轮询
+  WEIGHTS_RANDOM = 'WEIGHTS_RANDOM', // 权重随机
+  MINIMUM_CONNECTION = 'MINIMUM_CONNECTION', // 最小连接数
+  WEIGHTS_MINIMUM_CONNECTION = 'WEIGHTS_MINIMUM_CONNECTION', // 权重最小连接数
+}
+
 export const encryptMethods = [
   "none",
   "aes-128-gcm",
@@ -122,6 +133,8 @@ export type ThemeMode = 'dark' | 'light';
 
 export interface Settings {
   selectedServer?: string | null;
+  nodeMode?: 'single' | 'cluster',
+  clusterId?: string,
   mode: Mode;
   verbose: boolean;
   fixedMenu: boolean;
@@ -145,6 +158,8 @@ export interface Status {
   loading: boolean;
   waiting: boolean;
   delay: number | null | '';
+  mode?: 'cluster' | 'single',
+  clusterId?: string,
 }
 
 export type Notification = OptionsObject;

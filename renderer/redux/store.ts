@@ -13,7 +13,7 @@ const persistConfig: PersistConfig<RootState> = {
     electronStore: new Store()
   }),
   stateReconciler: autoMergeLevel2,
-  blacklist: ["status"]
+  blacklist: ["status", "notifications"]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

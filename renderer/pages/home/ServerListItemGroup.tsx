@@ -6,6 +6,7 @@ import {
   AccordionDetails,
   ListItemProps,
   AccordionSummary,
+  Badge
 } from "@material-ui/core";
 import {
   ExpandMore,
@@ -21,12 +22,29 @@ import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { SnackbarMessage } from "notistack";
 
-import { moveDown, moveUp, startCluster, top, updateSubscription } from "../../redux/actions/config";
+import { moveDown, moveUp, startCluster, stopCluster,top, updateSubscription } from "../../redux/actions/config";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig, Notification } from "../../types";
 import menuContext from '../../hooks/useContextMenu/context';
 import { useTypedSelector } from "../../redux/reducers";
+import If from "../../components/HOC/IF";
+import { blue } from "@material-ui/core/colors";
+
+const StyledBadge = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      right: -20,
+      top: 10,
+      borderRadius: 3,
+      padding: '0 5',
+      border: `solid 1px #8f8f8f`,
+      backgroundColor: 'inherit',
+      color: blue[400]
+    },
+  }),
+)(Badge);
+
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
   createStyles({
@@ -78,7 +96,9 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const { t } = useTranslation();
   const context = useContext(menuContext);
   const settings = useTypedSelector(state => state.settings);
+  const config = useTypedSelector(state => state.config);
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
+  const { nodeMode, clusterId } = settings;
   const menuContents = useMemo(() => [
     { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
     { label: t('update'), action: 'update_subscription', icon: <Refresh fontSize="small" /> },
@@ -86,8 +106,11 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
     { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
     { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />},
-    { label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />},
-  ], []);
+    ... (nodeMode === 'single' || !nodeMode || clusterId !== item.id)
+      ? [{ label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />}]
+      : [{ label: t('disable_load_balance'), action: 'stop_cluster', icon: <ViewComfy fontSize="small" />}]
+    ,
+  ], [nodeMode, clusterId]);
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
@@ -127,7 +150,16 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
       case 'delete':
         handleRemoveButtonClick();
       case 'start_cluster':
-        dispatch(startCluster(item.servers, settings));
+        dispatch(startCluster(config, item.id, settings, {
+          success: t('successfully_enabled_load_balance'),
+          error: { default: t('failed_to_enable_load_balance') }
+        }));
+        break;
+      case 'stop_cluster':
+        dispatch(stopCluster(item, settings, {
+          success: t('successful_operation'),
+          error: { default: t('failed_operation') }
+        }));
         break;
       default:
         break;
@@ -149,7 +181,19 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           aria-controls="panel1bh-content"
           onContextMenu={onContextMenu}
         >
-          { item.name }
+          <If
+            condition={clusterId === item.id}
+            then={
+              <StyledBadge
+                badgeContent={<>LB</>} color="primary"
+              >
+                {item.name}
+              </StyledBadge>
+            }
+            else={
+              <>{item.name}</>
+            }
+          />
         </StyledAccordionSummary>
         <StyledAccordionDetails>
           {

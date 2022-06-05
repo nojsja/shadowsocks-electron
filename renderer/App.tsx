@@ -19,7 +19,7 @@ import ElectronStore from 'electron-store';
 import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from "./utils";
 import { store, persistor } from "./redux/store";
-import { getConnectionStatus, SET_STATUS } from "./redux/actions/status";
+import { getConnectionStatus, setStatus } from "./redux/actions/status";
 import AppNav from "./components/AppNav";
 import Loading from "./components/Loading";
 import RouterComp from './Router';
@@ -44,11 +44,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 ipcRenderer.on("connected", (e, message) => {
-  store.dispatch({
-    type: SET_STATUS,
-    key: "connected",
-    value: message
-  });
+  store.dispatch(setStatus('connected', message));
 });
 
 prepareForLanguage(getDefaultLang());
@@ -66,11 +62,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     getConnectionStatus((status) => {
-      store.dispatch({
-        type: SET_STATUS,
-        key: "connected",
-        value: status
-      });
+      store.dispatch(setStatus('connected', status));
     });
 
     MessageChannel.invoke('main', 'service:desktop', {

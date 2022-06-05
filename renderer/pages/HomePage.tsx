@@ -17,7 +17,8 @@ import { useTypedSelector } from "../redux/reducers";
 import {
   addConfigFromClipboard, getQrCodeFromScreenResources,
   ADD_CONFIG, EDIT_CONFIG,
-  addSubscriptionFromClipboard
+  addSubscriptionFromClipboard,
+  startCluster
 } from '../redux/actions/config';
 import { setHttpProxy, setPacServer } from "../redux/actions/settings";
 import { getConnectionDelay, startClientAction } from '../redux/actions/status';
@@ -60,13 +61,23 @@ const HomePage: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
+  const { nodeMode, clusterId } = settings;
 
   {/* -------- hooks ------- */}
 
   /* reconnect after get event from queue */
   useBus('action:get:reconnect-server', (event: EventAction) => {
-    selectedServer && connectedToServer(config, selectedServer);
-  }, [config, selectedServer]);
+    if (nodeMode === 'cluster') {
+      if (clusterId) {
+        dispatch(startCluster(config, clusterId, settings, {
+          success: t('successfully_enabled_load_balance'),
+          error: { default: t('failed_to_enable_load_balance') }
+        }));
+      }
+    } else {
+      selectedServer && connectedToServer(config, selectedServer);
+    }
+  }, [config, selectedServer, nodeMode, clusterId, settings]);
 
   useBus('action:get:reconnect-http', (event: EventAction) => {
     selectedServer && setHttpProxy({

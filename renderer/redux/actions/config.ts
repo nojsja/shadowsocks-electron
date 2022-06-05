@@ -5,8 +5,8 @@ import uuid from "uuid/v1";
 import { MessageChannel } from 'electron-re';
 
 import { ActionRspText, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
-import { getScreenCapturedResources } from '../../utils';
-import { overrideSetting } from './settings';
+import { findAndCallback, getScreenCapturedResources } from '../../utils';
+import { overrideSetting, setSetting } from './settings';
 import { setStatus } from './status';
 import { enqueueSnackbar } from './notifications';
 
@@ -104,20 +104,44 @@ export const updateSubscription = (id: string, url: string, info: ActionRspText)
 };
 
 export const startCluster =
-  (configs: Config[], settings: Settings): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (config: (GroupConfig | Config)[], id: string, settings: Settings, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+    return (dispatch) => {
+      findAndCallback(config, id, (c: Config) => {
+        const { servers: configs } = c as any;
+        MessageChannel.invoke('main', 'service:main', {
+          action: 'startCluster',
+          params: {
+            configs,
+            settings
+          }
+        })
+          .then((rsp) => {
+            if (rsp.code === 200) {
+              dispatch(setSetting('nodeMode', 'cluster'));
+              dispatch(setSetting('clusterId', id));
+              return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
+            } else {
+              return dispatch(enqueueSnackbar(info.error.default, { variant: "error" }));
+            }
+          });
+      });
+    }
+  }
+
+export const stopCluster =
+  (item: GroupConfig, settings: Settings, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
       MessageChannel.invoke('main', 'service:main', {
-        action: 'startCluster',
-        params: {
-          configs,
-          settings
-        }
+        action: 'stopCluster',
+        params: {}
       })
         .then((rsp) => {
-          console.log(rsp);
           if (rsp.code === 200) {
+            dispatch(setSetting('nodeMode', 'single'));
+            dispatch(setSetting('clusterId', ''));
+            return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
           } else {
-
+            return dispatch(enqueueSnackbar(info.error.default, { variant: "error" }));
           }
         });
     }

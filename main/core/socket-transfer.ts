@@ -129,6 +129,9 @@ export class SocketTransfer extends EventEmitter {
       this.server.close((error) => {
         resolve(error);
       });
+      setTimeout(() => {
+        resolve(new Error('unlisten timeout'));
+      }, 500);
     });
   }
 

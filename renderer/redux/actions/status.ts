@@ -72,6 +72,8 @@ export const startClientAction =
             settings
           }
         }).then(rsp => {
+          dispatch(setStatus('mode', 'single'));
+          dispatch(setStatus('clusterId', ''));
           dispatch(setStatus('waiting', false));
           dispatch(getConnectionStatusAction());
           if (rsp.code === 600 && rsp.result.isInUse) {

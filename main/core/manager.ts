@@ -71,22 +71,13 @@ export class Manager extends EventEmitter {
   }
 
   static async changeMode(mode: 'single' | 'cluster') {
-    if (Manager.mode === 'single') {
-      if (Manager.ssLocal) {
-        await Manager.kill(Manager.ssLocal);
-        await new Promise<void>(resolve => setTimeout(() => resolve(), 1000));
-      }
-      await Manager.stopClient();
-    } else {
-      await Manager.stopCluster();
+    if (Manager.ssLocal) {
+      await Manager.kill(Manager.ssLocal);
+      await new Promise<void>(resolve => setTimeout(() => resolve(), 1000));
     }
 
     if (Manager.pool.length) {
       await Manager.stopCluster();
-    }
-
-    if (Manager.ssLocal) {
-      await Manager.stopClient();
     }
 
     if (Manager.socketTransfer) {
@@ -106,6 +97,12 @@ export class Manager extends EventEmitter {
         } else {
           return rsp;
         }
+      })
+      .catch(err => {
+        return {
+          code: 600,
+          result: err?.toString()
+        };
       });
   }
 
@@ -117,28 +114,28 @@ export class Manager extends EventEmitter {
     return new Promise(resolve => {
       Manager
         .changeMode('cluster')
-        .then(() => {
+        .then(async () => {
           if (!configs.length) {
             throw new Error('No server configs found');
           }
-          return pickPorts(
+
+          const ports = await pickPorts(
             settings.localPort + 1, 3,
             [settings.pacPort, settings.httpProxy.port]
-          ).then(ports => {
-            return Promise
-              .all(
-                configs
-                  .filter((config, i) => {
-                    return i < ports.length;
-                  })
-                  .map((config, i) => {
-                    return Manager.spawnClient(
-                      config,
-                      { ...settings, localPort: ports[i] }
-                    );
-                  })
-              );
-          });
+          );
+
+          return Promise.all(
+            configs
+              .filter((config, i) => {
+                return i < ports.length;
+              })
+              .map((config, i) => {
+                return Manager.spawnClient(
+                  config,
+                  { ...settings, localPort: ports[i] }
+                );
+              })
+            );
         })
         .then(async (results) => {
           Manager.pool =
