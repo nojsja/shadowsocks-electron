@@ -1,21 +1,10 @@
 import { EventEmitter } from "events";
-import { MessageChannel } from "electron-re";
-import { BrowserWindow } from "electron";
-import os from 'os';
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 
 import checkPortInUse from "./helpers/port-checker";
 import { debounce, getSSLocalBinPath } from "../utils/utils";
 import { Settings, SSRConfig, SSConfig } from "../types/extention";
 import logger from "../logs";
-import { Proxy } from './proxy';
-
-let mainWindow: BrowserWindow | null = null;
-const platform = os.platform();
-
-export const setMainWindow = (window: BrowserWindow) => {
-  mainWindow = window;
-};
 
 export class Client extends EventEmitter {
   bin: string
@@ -24,9 +13,9 @@ export class Client extends EventEmitter {
   error: null | Error | string
   params: string[]
   settings: Settings
-  proxy: Proxy | null
   connected: boolean
   port: number
+  onDebouncedExited: (fn?: (isAlive: boolean) => void) => void
 
   constructor(settings: Settings, type: 'ssr' | 'ss') {
     super();
@@ -40,38 +29,29 @@ export class Client extends EventEmitter {
     this.onExited.bind(this);
     this.onConnected.bind(this);
     this.connected = false;
-    this.on('connected', this.onConnected);
-    this.on('exited', debounce(this.onExited, 600));
-    this.proxy = Proxy.createProxy(
-      platform,
-      platform === 'win32' ? settings.httpProxy.port : settings.localPort,
-      settings.pacPort,
-      settings.mode
-    );
+    this.onDebouncedExited = debounce(this.onExited, 600);
   }
 
-  async onConnected(cb?: (success: boolean) => void) {
+  async onConnected() {
     logger.info(`Started ${this.type}-local`);
-    await this.proxy?.start();
     logger.info("Set proxy on");
     this.connected = true;
-    mainWindow?.webContents.send("connected", true);
-    cb && cb(true);
+    this.emit('connected', true);
   }
 
   async onExited(cb?: (success: boolean) => void) {
     checkPortInUse([this.settings.localPort], '127.0.0.1')
     .then(async results => {
       if (results[0]?.isInUse) {
+        this.emit('connected', true);
         cb && cb(true);
       } else {
         logger.info(`Exited ${this.bin} with error ${this.error}`);
-        await this.proxy?.stop();
         logger.info("Set proxy off");
 
         this.connected = false;
-        MessageChannel.sendTo(mainWindow?.id || 1, 'connected', false);
 
+        this.emit('connected', false);
         cb && cb(false);
       }
     });
@@ -134,14 +114,13 @@ export class SSClient extends Client {
       });
 
       this.child.stdout?.once("data", async () => {
-        this.emit('connected', () => {
-          resolve({
-            code: 200,
-            result: {
-              info: 'success',
-              port: this.port
-            }
-          });
+        this.onConnected();
+        resolve({
+          code: 200,
+          result: {
+            info: 'success',
+            port: this.port
+          }
         });
       });
 
@@ -153,40 +132,38 @@ export class SSClient extends Client {
         this.error = err || null;
         console.log('child.stderr.on.data >> ');
         logger.error(err);
-        this.emit('exited', (isAlive: boolean) => {
+        this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
           } else {
-            this.emit('connected', () => {
-              resolve({
-                code: 200,
-                result: {
-                  info: 'success',
-                  port: this.port
-                }
-              });
+            this.onConnected();
+            resolve({
+              code: 200,
+              result: {
+                info: 'success',
+                port: this.port
+              }
             });
           }
-        });
+        })
       });
 
       this.child.on("error", async (err) => {
         this.error = err || null;
         console.log('child.on.error >> ');
         logger.error(err);
-        this.emit('exited', (isAlive: boolean) => {
+        this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
           } else {
-            this.emit('connected', () => {
-              resolve({
-                code: 200,
-                result: {
-                  info: 'success',
-                  port: this.port
-                }
-              });
+            resolve({
+              code: 200,
+              result: {
+                info: 'success',
+                port: this.port
+              }
             });
+            this.onConnected();
           }
         });
       });
@@ -204,7 +181,7 @@ export class SSClient extends Client {
   disconnect() {
     return new Promise((resolve, reject) => {
       this.child?.kill("SIGKILL");
-      this.emit('exited', (isAlive: boolean) => {
+      this.onDebouncedExited((isAlive: boolean) => {
         if (isAlive) {
           reject({
             code: 500,
@@ -280,15 +257,14 @@ export class SSRClient extends Client {
       });
 
       this.child.stdout?.once("data", async () => {
-        this.emit('connected', () => {
-          resolve({
-            code: 200,
-            result: {
-              info: 'success',
-              port: this.port
-            }
-          });
+        resolve({
+          code: 200,
+          result: {
+            info: 'success',
+            port: this.port
+          }
         });
+        this.onConnected();
       });
 
       this.child.stdout?.on("data", data => {
@@ -299,19 +275,18 @@ export class SSRClient extends Client {
         this.error = err || null;
         console.log('child.stderr.on.data >> ');
         logger.error(err);
-        this.emit('exited', (isAlive: boolean) => {
+        this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
           } else {
-            this.emit('connected', () => {
-              resolve({
-                code: 200,
-                result: {
-                  info: 'success',
-                  port: this.port
-                }
-              });
+            resolve({
+              code: 200,
+              result: {
+                info: 'success',
+                port: this.port
+              }
             });
+            this.onConnected();
           }
         });
       });
@@ -320,19 +295,18 @@ export class SSRClient extends Client {
         this.error = err || null;
         console.log('child.on.error >> ');
         logger.error(err);
-        this.emit('exited', (isAlive: boolean) => {
+        this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
           } else {
-            this.emit('connected', () => {
-              resolve({
-                code: 200,
-                result: {
-                  info: 'success',
-                  port: this.port
-                }
-              });
+            resolve({
+              code: 200,
+              result: {
+                info: 'success',
+                port: this.port
+              }
             });
+            this.onConnected();
           }
         });
       });
@@ -350,7 +324,7 @@ export class SSRClient extends Client {
   disconnect() {
     return new Promise((resolve, reject) => {
       this.child?.kill("SIGKILL");
-      this.emit('exited', (isAlive: boolean) => {
+      this.onDebouncedExited((isAlive: boolean) => {
         if (isAlive) {
           reject({
             code: 500,

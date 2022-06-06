@@ -1,5 +1,6 @@
 import electronIsDev from "electron-is-dev";
 import { EventEmitter } from "events";
+import os from 'os';
 
 import { Config, Settings } from "../types/extention";
 import logger from "../logs";
@@ -9,9 +10,13 @@ import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient } from "./client";
 import { ALGORITHM } from "./LoadBalancer";
 import pickPorts from "./helpers/port-picker";
+import { Proxy } from "./proxy";
+
+const platform = os.platform();
 
 export class Manager extends EventEmitter {
   static mode: 'single' | 'cluster' = 'single';
+  static proxy: Proxy | null
   static ssLocal: SSRClient | SSClient | null;
   static ssLoadBalancer: SSRClient | SSClient | null;
   static pool: (SSRClient | SSClient)[] = []
@@ -84,11 +89,33 @@ export class Manager extends EventEmitter {
       await Manager.socketTransfer.stop();
     }
 
+    if (Manager.proxy) {
+      await Manager.disableProxy();
+    }
+
     Manager.mode = mode;
+  }
+
+  static async enableProxy(settings: Settings) {
+    Manager.proxy = Proxy.createProxy(
+      platform,
+      platform === 'win32' ? settings.httpProxy.port : settings.localPort,
+      settings.pacPort,
+      settings.mode
+    );
+    await Manager.proxy?.start();
+  }
+
+  static async disableProxy() {
+    await Manager.proxy?.stop();
+    Manager.proxy = null;
   }
 
   static async startClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
     return this.changeMode('single')
+      .then(async () => {
+        await Manager.enableProxy(settings);
+      })
       .then(() => Manager.spawnClient(config, settings))
       .then(rsp => {
         if (rsp.code === 200) {
@@ -97,6 +124,10 @@ export class Manager extends EventEmitter {
         } else {
           return rsp;
         }
+      })
+      .then(rsp => {
+        (global as any)?.win.webContents.send("connected", !!Manager.ssLocal?.connected);
+        return rsp;
       })
       .catch(err => {
         return {
@@ -107,13 +138,18 @@ export class Manager extends EventEmitter {
   }
 
   static async stopClient() {
+    await Manager.disableProxy();
     await Manager.kill(Manager.ssLocal);
+    (global as any)?.win.webContents.send("connected", !!Manager.ssLocal?.connected);
   }
 
   static startCluster(configs: Config[], settings: Settings): Promise<{ code: number, result: any }> {
     return new Promise(resolve => {
       Manager
         .changeMode('cluster')
+        .then(async () => {
+          await Manager.enableProxy(settings);
+        })
         .then(async () => {
           if (!configs.length) {
             throw new Error('No server configs found');
@@ -160,6 +196,8 @@ export class Manager extends EventEmitter {
           });
 
           await Manager.socketTransfer.listen();
+
+          (global as any)?.win.webContents.send("connected", true);
         })
         .then(() => {
           resolve({
@@ -186,7 +224,11 @@ export class Manager extends EventEmitter {
           await Manager.socketTransfer?.stop();
           Manager.socketTransfer = null;
         })
+        .then(async () => {
+          await Manager.disableProxy();
+        })
         .then(() => {
+          (global as any)?.win.webContents.send("connected", false);
           resolve({
             code: 200,
             result: ''

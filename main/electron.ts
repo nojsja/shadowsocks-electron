@@ -5,7 +5,7 @@ import { I18n } from 'i18n';
 import { MessageChannel, ProcessManager } from 'electron-re';
 
 import App from './app';
-import { manager, client } from "./core";
+import { manager } from "./core";
 import logger from "./logs";
 import { setupAfterInstall } from "./install";
 import { IpcMainProcess } from './service/index';
@@ -24,7 +24,6 @@ export const electronStore = new ElectronStore();
 export const i18n = new I18n();
 
 const { Manager } = manager;
-const { setMainWindow } = client;
 
 logger.info(`appDataPath: ${appDataPath}`);
 logger.info(`pathRuntime: ${pathRuntime}`);
@@ -64,7 +63,6 @@ app.on("ready", async () => {
       win.webContents.openDevTools({ mode: 'undocked' });
       ProcessManager.openWindow();
     }
-    setMainWindow(win);
   });
 
   ipcMainWindow.createTray();
