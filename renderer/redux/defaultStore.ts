@@ -1,4 +1,4 @@
-import { RootState } from "../types";
+import { ALGORITHM, RootState } from "../types";
 
 const defaultStore: RootState = {
   notifications: [],
@@ -13,6 +13,11 @@ const defaultStore: RootState = {
     fixedMenu: false,
     selectedServer: null,
     serverMode: 'single',
+    loadBalance: {
+      enable: false,
+      count: 3,
+      strategy: ALGORITHM.POLLING,
+    },
     clusterId: '',
     mode: "Manual",
     darkMode: false,

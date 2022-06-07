@@ -135,6 +135,11 @@ export type ServerMode = 'single' | 'cluster';
 export interface Settings {
   selectedServer?: string | null;
   serverMode?: ServerMode,
+  loadBalance?: {
+    enable: boolean,
+    count: number,
+    strategy: ALGORITHM
+  },
   clusterId?: string,
   mode: Mode;
   verbose: boolean;

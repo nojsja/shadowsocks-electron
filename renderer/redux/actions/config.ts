@@ -4,7 +4,7 @@ import jsqr from 'jsqr';
 import uuid from "uuid/v1";
 import { MessageChannel } from 'electron-re';
 
-import { ActionRspText, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
+import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
 import { findAndCallback, getScreenCapturedResources } from '../../utils';
 import { overrideSetting, setSetting } from './settings';
 import { setStatus, getConnectionStatusAction } from './status';
@@ -113,7 +113,14 @@ export const startClusterAction =
           action: 'startCluster',
           params: {
             configs,
-            settings
+            settings: {
+              ...settings,
+              loadBalance: {
+                ...settings.loadBalance,
+                count: settings.loadBalance?.count ?? 3,
+                strategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING
+              }
+            }
           }
         })
         .then((rsp) => {

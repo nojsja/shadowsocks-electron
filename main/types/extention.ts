@@ -2,6 +2,7 @@ import { MenuItemConstructorOptions } from "electron/main";
 import { BrowserWindow, IpcMain as _IpcMain, Tray, MenuItem, Menu } from 'electron';
 
 import { Encryption } from './index';
+import CONSTS from "../core/LoadBalancer/consts";
 
 export interface Service {
   ipc: IpcMain
@@ -194,6 +195,11 @@ export interface Settings {
   httpProxy: {
     enable: boolean,
     port: number
+  },
+  loadBalance: {
+    enable: boolean,
+    count: number,
+    strategy: CONSTS
   },
   acl: {
     enable: boolean,

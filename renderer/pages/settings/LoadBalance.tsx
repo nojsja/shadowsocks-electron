@@ -6,17 +6,21 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  TextField
+  TextField,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 import If from "../../components/HOC/IF";
+import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
 import { useStylesOfSettings as useStyles } from "../styles";
+import { ALGORITHM } from '../../types';
 
 interface LoadBalanceProps {
   rules?: Rule[] | undefined;
-  enable: boolean
+  enable: boolean;
 }
 
 const LoadBalance: React.FC<LoadBalanceProps> = ({
@@ -30,10 +34,16 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
     <>
       <ListItem>
         <ListItemText
-          primary={t('load_balance')}
+          primary={
+            <TextWithTooltip
+              text={t('load_balance')}
+              tooltip={t('only_for_server_groups')}
+            />
+          }
+          secondary={t('unstable_feature')}
         />
         <ListItemSecondaryAction>
-          <Field name="loadBanlance" valuePropName="checked">
+          <Field name="loadBalance" valuePropName="checked">
             <AdaptiveSwitch
               edge="end"
             />
@@ -45,12 +55,16 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
         then={
           <ListItem>
             <ListItemText
-              primary={t('http_proxy_port')}
-              secondary={t('unstable_feature')}
+              primary={
+                <TextWithTooltip
+                  text={t('nodes_count_limit')}
+                  tooltip={t('load_balance_tips')}
+                />
+              }
             />
             <ListItemSecondaryAction>
               <Field
-                name="nodes_count_limit"
+                name="loadBalanceCount"
                 rules={rules}
                 normalize={(value: string) => +(value.trim())}
                 validateTrigger={false}
@@ -60,8 +74,39 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
                   required
                   size="small"
                   type="number"
-                  placeholder={t('nodes_count_limit')}
                 />
+              </Field>
+            </ListItemSecondaryAction>
+          </ListItem>
+        }
+      />
+      <If
+        condition={enable}
+        then={
+          <ListItem>
+            <ListItemText
+              primary={
+                <TextWithTooltip
+                  text={t('load_balance_strategy')}
+                  tooltip={
+                    <div>
+                      <div>{t('polling')} - {t('polling_tips')}</div>
+                      <div>{t('random')} - {t('random_tips')}</div>
+                    </div>
+                  }
+                />
+              }
+            />
+            <ListItemSecondaryAction>
+              <Field
+                name="loadBalanceStrategy"
+                validateTrigger={false}
+              >
+                <Select
+                >
+                  <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
+                  <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
+                </Select>
               </Field>
             </ListItemSecondaryAction>
           </ListItem>

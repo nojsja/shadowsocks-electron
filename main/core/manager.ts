@@ -8,9 +8,9 @@ import logger from "../logs";
 import checkPortInUse from "./helpers/port-checker";
 import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient } from "./client";
-import { ALGORITHM } from "./LoadBalancer";
 import pickPorts from "./helpers/port-picker";
 import { Proxy } from "./proxy";
+import randomPicker from "./helpers/random-picker";
 
 const platform = os.platform();
 
@@ -30,7 +30,7 @@ export class Manager extends EventEmitter {
   }
 
   static async spawnClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
-    if (electronIsDev) console.log(config);
+    if (electronIsDev && Manager.mode === 'single') console.log(config);
 
     return new Promise(resolve => {
       checkPortInUse([settings.localPort], '127.0.0.1')
@@ -197,16 +197,14 @@ export class Manager extends EventEmitter {
           }
 
           const ports = await pickPorts(
-            settings.localPort + 1, 3,
+            settings.localPort + 1, settings.loadBalance.count,
             [settings.pacPort, settings.httpProxy.port]
           );
 
           return Promise.all(
-            configs
-              .filter((config, i) => {
-                return i < ports.length;
-              })
+            randomPicker(configs, ports.length)
               .map((config, i) => {
+                console.log('pick: ', config.remark);
                 return Manager.spawnClient(
                   config,
                   { ...settings, localPort: ports[i] }
@@ -233,7 +231,7 @@ export class Manager extends EventEmitter {
 
           Manager.socketTransfer = new SocketTransfer({
             port: settings.localPort,
-            strategy: ALGORITHM.POLLING,
+            strategy: settings.loadBalance.strategy,
             targets: successPorts.map(port => ({ id: port })),
           });
 

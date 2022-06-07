@@ -17,7 +17,7 @@ import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notif
 import { getStartupOnBoot, setStartupOnBoot, setHttpProxy, setSetting } from "../redux/actions/settings";
 import { setStatus } from "../redux/actions/status";
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
-import { Notification } from "../types";
+import { ALGORITHM, Notification } from "../types";
 
 import { useStylesOfSettings as useStyles } from "./styles";
 import * as globalAction from "../hooks/useGlobalAction";
@@ -54,7 +54,9 @@ const SettingsPage: React.FC = () => {
   const settingKeys = useRef(
     ['localPort', 'pacPort', 'gfwListUrl',
     'httpProxy', 'autoLaunch', 'fixedMenu',
-    'darkMode', 'autoTheme', 'verbose', 'autoHide']
+    'darkMode', 'autoTheme', 'verbose', 'autoHide',
+    'acl', 'loadBalance'
+  ]
   );
   const cachedRef = useRef<any>(null);
   const changedFields = useRef<{[key: string]: any}>({});
@@ -94,13 +96,22 @@ const SettingsPage: React.FC = () => {
     if (cachedRef.current) {
       settingKeys.current.forEach(key => {
         if (cachedRef.current[key] !== (settings as any)[key]) {
-          if (key === 'httpProxy') {
-            Object.assign(obj, {
-              httpProxy: settings.httpProxy.enable,
-              httpProxyPort: settings.httpProxy.port,
-            });
-          } else {
-            Object.assign(obj, { [key]: (settings as any)[key] });
+          switch(key) {
+            case 'httpProxy':
+              Object.assign(obj, {
+                httpProxy: settings.httpProxy.enable,
+                httpProxyPort: settings.httpProxy.port,
+              });
+            break;
+            case 'loadBalance':
+              Object.assign(obj, {
+                loadBalance: settings.loadBalance?.enable,
+                loadBalanceCount: settings.loadBalance?.count ?? 3,
+                loadBalanceStrategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
+              });
+            break;
+            default:
+              Object.assign(obj, { [key]: (settings as any)[key] });
           }
         }
       });
@@ -152,6 +163,14 @@ const SettingsPage: React.FC = () => {
     }
     return Promise.resolve();
   };
+
+  const checkLbCountValid = (rule: any, value: any) => {
+    const parsedValue = +value;
+    if (!(parsedValue && parsedValue <= 5 && parsedValue >= 2)) {
+      return Promise.reject(t("count_range_2_5"));
+    }
+    return Promise.resolve();
+  }
 
   const checkPortSame = () => {
     const localPort = +form.getFieldValue('localPort');
@@ -237,6 +256,27 @@ const SettingsPage: React.FC = () => {
             dispatch(setSetting<'httpProxy'>('httpProxy', value))
             setHttpProxy({ ...value, proxyPort: settings.localPort });
             return;
+          case 'loadBalance':
+            value = {
+              ...settings.loadBalance,
+              enable: value
+            };
+            dispatch(setSetting<'loadBalance'>(key, value))
+            return;
+          case 'loadBalanceCount':
+            value = {
+              ...settings.loadBalance,
+              count: value
+            };
+            dispatch(setSetting<'loadBalance'>('loadBalance', value))
+            return;
+          case 'loadBalanceStrategy':
+            value = {
+              ...settings.loadBalance,
+              strategy: value
+            };
+            dispatch(setSetting<'loadBalance'>('loadBalance', value))
+            return;
           case 'acl':
             dispatch(setSetting<'acl'>('acl', {
               ...settings.acl,
@@ -257,7 +297,6 @@ const SettingsPage: React.FC = () => {
           default:
             break;
         }
-
         dispatch(setSetting<any>(key, value));
       }).catch((reason: { errorFields: { errors: string[] }[] }) => {
         enqueueSnackbar(reason?.errorFields?.map(item => item.errors.join()).join(), { variant: 'error' });
@@ -276,6 +315,9 @@ const SettingsPage: React.FC = () => {
             gfwListUrl: settings.gfwListUrl,
             httpProxy: settings.httpProxy.enable,
             httpProxyPort: settings.httpProxy.port,
+            loadBalance: settings.loadBalance?.enable,
+            loadBalanceCount: settings.loadBalance?.count || 3,
+            loadBalanceStrategy: settings.loadBalance?.strategy || ALGORITHM.POLLING,
             autoLaunch: settings.autoLaunch,
             fixedMenu: settings.fixedMenu,
             darkMode: settings.darkMode,
@@ -332,7 +374,15 @@ const SettingsPage: React.FC = () => {
           <ResetData enqueueSnackbar={enqueueSnackbar} />
           <Divider className={styles.margin} />
           <ListSubheader>{t('experimental')}</ListSubheader>
-          <LoadBalance enable={false} />
+          <LoadBalance
+            enable={!!settings.loadBalance?.enable}
+            rules={
+              [
+                { required: true, message: t('invalid_value') },
+                { validator: checkLbCountValid },
+              ]
+            }
+          />
           <Divider className={styles.margin} />
           <ListSubheader>{t('debugging')}</ListSubheader>
           <Verbose />

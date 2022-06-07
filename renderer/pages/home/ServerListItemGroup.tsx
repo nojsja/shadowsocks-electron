@@ -107,18 +107,24 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const config = useTypedSelector(state => state.config);
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
   const { serverMode, clusterId } = settings;
-  const menuContents = useMemo(() => [
-    { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
-    { label: t('update'), action: 'update_subscription', icon: <Refresh fontSize="small" /> },
-    { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
-    { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
-    { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
-    { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />},
-    ... (serverMode === 'single' || !serverMode || clusterId !== item.id)
-      ? [{ label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />}]
-      : [{ label: t('disable_load_balance'), action: 'stop_cluster', icon: <ViewComfy fontSize="small" />}]
-    ,
-  ], [serverMode, clusterId]);
+  const menuContents = useMemo(() => {
+    const items = [
+      { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
+      { label: t('update'), action: 'update_subscription', icon: <Refresh fontSize="small" /> },
+      { label: t('top'), action: 'top', icon: <VerticalAlignTopIcon fontSize="small" />},
+      { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
+      { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
+      { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />},
+    ];
+    if (settings.loadBalance?.enable) {
+      items.push(
+        ... (serverMode === 'single' || !serverMode || clusterId !== item.id)
+        ? [{ label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />}]
+        : [{ label: t('disable_load_balance'), action: 'stop_cluster', icon: <ViewComfy fontSize="small" />}]
+      )
+    }
+    return items;
+  }, [serverMode, clusterId]);
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
@@ -187,7 +193,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           onContextMenu={onContextMenu}
         >
           <If
-            condition={clusterId === item.id}
+            condition={clusterId === item.id && settings.loadBalance?.enable}
             then={
               <If
                 condition={serverMode === 'cluster'}
