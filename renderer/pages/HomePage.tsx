@@ -1,4 +1,3 @@
-import { MessageChannel } from 'electron-re';
 import React, { useState, useEffect, useCallback } from "react";
 import useBus, { EventAction } from 'use-bus';
 import { useDispatch } from "react-redux";
@@ -11,17 +10,17 @@ import uuid from "uuid/v1";
 import { SnackbarMessage } from 'notistack';
 
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { Config, CloseOptions, GroupConfig, Notification } from "../types";
+import { Config, CloseOptions, GroupConfig, Notification, ServerMode } from "../types";
 import { useTypedSelector } from "../redux/reducers";
 // import useBackDrop from '../hooks/useBackDrop';
 import {
   addConfigFromClipboard, getQrCodeFromScreenResources,
   ADD_CONFIG, EDIT_CONFIG,
   addSubscriptionFromClipboard,
-  startCluster
+  startClusterAction, startClientAction, stopClientAction
 } from '../redux/actions/config';
 import { setHttpProxy, setPacServer } from "../redux/actions/settings";
-import { getConnectionDelay, startClientAction } from '../redux/actions/status';
+import { getConnectionDelay } from '../redux/actions/status';
 
 import { findAndCallback } from '../utils';
 import * as globalAction from '../hooks/useGlobalAction';
@@ -61,15 +60,16 @@ const HomePage: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
-  const { nodeMode, clusterId } = settings;
+  const { serverMode, clusterId } = settings;
 
   {/* -------- hooks ------- */}
 
-  /* reconnect after get event from queue */
-  useBus('action:get:reconnect-server', (event: EventAction) => {
-    if (nodeMode === 'cluster') {
+  /* do connect by mode */
+  const connectByMode = useCallback((mode?: ServerMode) => {
+    const modeToConnect = mode ?? serverMode;
+    if (modeToConnect === 'cluster') {
       if (clusterId) {
-        dispatch(startCluster(config, clusterId, settings, {
+        dispatch(startClusterAction(config, clusterId, settings, {
           success: t('successfully_enabled_load_balance'),
           error: { default: t('failed_to_enable_load_balance') }
         }));
@@ -77,7 +77,12 @@ const HomePage: React.FC = () => {
     } else {
       selectedServer && connectedToServer(config, selectedServer);
     }
-  }, [config, selectedServer, nodeMode, clusterId, settings]);
+  }, [config, selectedServer, mode, serverMode, clusterId, settings]);
+
+  /* reconnect after get event from queue */
+  useBus('action:get:reconnect-server', (event: EventAction) => {
+    connectByMode();
+  }, [connectByMode]);
 
   useBus('action:get:reconnect-http', (event: EventAction) => {
     selectedServer && setHttpProxy({
@@ -115,9 +120,13 @@ const HomePage: React.FC = () => {
   /* reconnect when settings/selected update */
   useDidUpdate(() => {
     if (!selectedServer || !connected) return;
+    connectByMode('single');
+  }, [selectedServer]);
 
-    connectedToServer(config, selectedServer);
-  }, [selectedServer, settings]);
+  useDidUpdate(() => {
+    if (!selectedServer || !connected) return;
+    connectByMode();
+  }, [mode]);
 
   {/* -------- functions ------- */}
 
@@ -190,10 +199,9 @@ const HomePage: React.FC = () => {
     const value = useValue === undefined ? selectedServer : useValue;
     if (!value || !selectedServer) return
     if (connected) {
-      await MessageChannel.invoke('main', 'service:main', {
-        action: 'stopClient',
-        params: {}
-      });
+      if (settings.serverMode === 'single') {
+        dispatch(stopClientAction());
+      }
     } else {
       findAndCallback(config, value, (conf: Config) => {
         dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));

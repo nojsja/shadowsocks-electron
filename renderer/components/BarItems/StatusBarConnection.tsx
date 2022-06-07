@@ -48,15 +48,15 @@ const StatusBarConnection: React.FC<StatusBarConnectionProps> = (props) => {
   const styles = useStyles();
   const { t } =  useTranslation();
   const settings = useTypedSelector(state => state.settings);
-  const { nodeMode } = settings;
+  const { serverMode } = settings;
 
   return (
     <StyledBadge
       className={
         styles[
           clsx(
-            (nodeMode === 'cluster' && props.status === 'online') &&  'cluster',
-            (nodeMode !== 'cluster' && props.status === 'online') && 'online',
+            (serverMode === 'cluster' && props.status === 'online') &&  'cluster',
+            (serverMode !== 'cluster' && props.status === 'online') && 'online',
             (props.status === 'offline') && 'offline'
           ) as 'online' | 'offline' | 'cluster'
         ]

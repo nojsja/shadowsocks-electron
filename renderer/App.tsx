@@ -20,12 +20,13 @@ import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from "./utils";
 import { store, persistor } from "./redux/store";
 import { getConnectionStatus, setStatus } from "./redux/actions/status";
+import { setSetting } from "./redux/actions/settings";
 import AppNav from "./components/AppNav";
 import Loading from "./components/Loading";
 import RouterComp from './Router';
 import useTheme from "./hooks/useTheme";
 import useGlobalAction from "./hooks/useGlobalAction";
-// import { SET_SETTING } from "./redux/actions/settings";
+import { ServerMode } from "./types";
 
 export const persistStore = new ElectronStore();
 
@@ -43,8 +44,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-ipcRenderer.on("connected", (e, message) => {
-  store.dispatch(setStatus('connected', message));
+ipcRenderer.on("connected", (e, message : { status: boolean, mode: ServerMode }) => {
+  store.dispatch(setStatus('connected', message.status));
+  store.dispatch(setSetting('serverMode', message.mode));
 });
 
 prepareForLanguage(getDefaultLang());

@@ -7,7 +7,7 @@ import { MessageChannel } from 'electron-re';
 import { ActionRspText, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
 import { findAndCallback, getScreenCapturedResources } from '../../utils';
 import { overrideSetting, setSetting } from './settings';
-import { setStatus } from './status';
+import { setStatus, getConnectionStatusAction } from './status';
 import { enqueueSnackbar } from './notifications';
 
 export const ADD_CONFIG = "ADD_CONFIG";
@@ -103,11 +103,12 @@ export const updateSubscription = (id: string, url: string, info: ActionRspText)
   }
 };
 
-export const startCluster =
+export const startClusterAction =
   (config: (GroupConfig | Config)[], id: string, settings: Settings, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
       findAndCallback(config, id, (c: Config) => {
         const { servers: configs } = c as any;
+        dispatch(setStatus('waiting', true));
         MessageChannel.invoke('main', 'service:main', {
           action: 'startCluster',
           params: {
@@ -115,21 +116,24 @@ export const startCluster =
             settings
           }
         })
-          .then((rsp) => {
-            if (rsp.code === 200) {
-              dispatch(setSetting('nodeMode', 'cluster'));
-              dispatch(setSetting('clusterId', id));
-              return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
-            } else {
-              return dispatch(enqueueSnackbar(info.error.default, { variant: "error" }));
-            }
-          });
+        .then((rsp) => {
+          if (rsp.code === 200) {
+            dispatch(setSetting('serverMode', 'cluster'));
+            dispatch(setSetting('clusterId', id));
+            return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
+          } else {
+            return dispatch(enqueueSnackbar(info.error.default, { variant: "error" }));
+          }
+        })
+        .finally(() => {
+          dispatch(setStatus('waiting', false));
+        });
       });
     }
   }
 
-export const stopCluster =
-  (item: GroupConfig, settings: Settings, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const stopClusterAction =
+  (): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
       MessageChannel.invoke('main', 'service:main', {
         action: 'stopCluster',
@@ -137,16 +141,57 @@ export const stopCluster =
       })
         .then((rsp) => {
           if (rsp.code === 200) {
-            dispatch(setSetting('nodeMode', 'single'));
+            dispatch(setSetting('serverMode', 'single'));
             dispatch(setSetting('clusterId', ''));
-            return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
           } else {
-            return dispatch(enqueueSnackbar(info.error.default, { variant: "error" }));
+            return dispatch(enqueueSnackbar(rsp.result, { variant: "error" }));
           }
         });
     }
   }
 
+export const startClientAction =
+  (config: Config | undefined, settings: Settings, warningTitle: string, warningBody: string):
+    ThunkAction<void, RootState, unknown, AnyAction> => {
+      return (dispatch) => {
+        dispatch(setStatus('waiting', true));
+        MessageChannel.invoke('main', 'service:main', {
+          action: 'startClient',
+          params: {
+            config,
+            settings
+          }
+        }).then(rsp => {
+          dispatch(setStatus('mode', 'single'));
+          dispatch(setStatus('clusterId', ''));
+          dispatch(setStatus('waiting', false));
+          dispatch(getConnectionStatusAction());
+          if (rsp.code === 600 && rsp.result.isInUse) {
+            MessageChannel.invoke('main', 'service:desktop', {
+              action: 'openNotification',
+              params: {
+                title: warningTitle,
+                body: warningBody
+              }
+            });
+          }
+        });
+      }
+}
+
+export const stopClientAction =
+  (): ThunkAction<void, RootState, unknown, AnyAction> => {
+    return (dispatch) => {
+      MessageChannel.invoke('main', 'service:main', {
+        action: 'stopClient',
+        params: {}
+      }).then((rsp) => {
+        if (rsp.code !== 200) {
+          dispatch(enqueueSnackbar(rsp.result, { variant: "error" }));
+        }
+      });
+    };
+  }
 
 export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {

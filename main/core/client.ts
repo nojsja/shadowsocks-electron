@@ -34,7 +34,6 @@ export class Client extends EventEmitter {
 
   async onConnected() {
     logger.info(`Started ${this.type}-local`);
-    logger.info("Set proxy on");
     this.connected = true;
     this.emit('connected', true);
   }
@@ -43,14 +42,13 @@ export class Client extends EventEmitter {
     checkPortInUse([this.settings.localPort], '127.0.0.1')
     .then(async results => {
       if (results[0]?.isInUse) {
+        this.connected = true;
         this.emit('connected', true);
         cb && cb(true);
       } else {
         logger.info(`Exited ${this.bin} with error ${this.error}`);
-        logger.info("Set proxy off");
 
         this.connected = false;
-
         this.emit('connected', false);
         cb && cb(false);
       }
@@ -169,6 +167,8 @@ export class SSClient extends Client {
       });
 
       this.child.on("exit", async () => {
+        this.connected = false;
+        this.emit('connected', false);
         resolve({
           code: 500,
           result: String(this.error)
@@ -188,6 +188,8 @@ export class SSClient extends Client {
             result: 'failed'
           });
         } else {
+          this.connected = false;
+          this.emit('connected', false);
           resolve({
             code: 200,
             result: 'success'
@@ -312,6 +314,8 @@ export class SSRClient extends Client {
       });
 
       this.child.on("exit", async () => {
+        this.connected = false;
+        this.emit('connected', false);
         resolve({
           code: 500,
           result: String(this.error)
@@ -331,6 +335,8 @@ export class SSRClient extends Client {
             result: 'failed'
           });
         } else {
+          this.connected = false;
+          this.emit('connected', false);
           resolve({
             code: 200,
             result: 'success'

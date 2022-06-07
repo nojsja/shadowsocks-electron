@@ -22,14 +22,14 @@ import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { useDispatch } from "react-redux";
 import { SnackbarMessage } from "notistack";
 
-import { moveDown, moveUp, startCluster, stopCluster,top, updateSubscription } from "../../redux/actions/config";
+import { moveDown, moveUp, startClusterAction, stopClusterAction, top, updateSubscription } from "../../redux/actions/config";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 import ServerListItemSingle from "./ServerListItemSingle";
 import { GroupConfig, Notification } from "../../types";
 import menuContext from '../../hooks/useContextMenu/context';
 import { useTypedSelector } from "../../redux/reducers";
 import If from "../../components/HOC/IF";
-import { blue } from "@material-ui/core/colors";
+import { blue, grey } from "@material-ui/core/colors";
 
 const StyledBadge = withStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +44,14 @@ const StyledBadge = withStyles((theme: Theme) =>
     },
   }),
 )(Badge);
+
+const StyledBadgeInactive = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      color: grey[400]
+    },
+  }),
+)(StyledBadge);
 
 
 const StyledAccordionDetails = withStyles((theme: Theme) =>
@@ -98,7 +106,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
   const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
-  const { nodeMode, clusterId } = settings;
+  const { serverMode, clusterId } = settings;
   const menuContents = useMemo(() => [
     { label: t('copy'), action: 'copy', icon: <CopyIcon fontSize="small" /> },
     { label: t('update'), action: 'update_subscription', icon: <Refresh fontSize="small" /> },
@@ -106,11 +114,11 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     { label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" /> },
     { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> },
     { label: t('delete'), action: 'delete', icon: <DeleteIcon fontSize="small" />},
-    ... (nodeMode === 'single' || !nodeMode || clusterId !== item.id)
+    ... (serverMode === 'single' || !serverMode || clusterId !== item.id)
       ? [{ label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />}]
       : [{ label: t('disable_load_balance'), action: 'stop_cluster', icon: <ViewComfy fontSize="small" />}]
     ,
-  ], [nodeMode, clusterId]);
+  ], [serverMode, clusterId]);
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
@@ -150,16 +158,13 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
       case 'delete':
         handleRemoveButtonClick();
       case 'start_cluster':
-        dispatch(startCluster(config, item.id, settings, {
+        dispatch(startClusterAction(config, item.id, settings, {
           success: t('successfully_enabled_load_balance'),
           error: { default: t('failed_to_enable_load_balance') }
         }));
         break;
       case 'stop_cluster':
-        dispatch(stopCluster(item, settings, {
-          success: t('successful_operation'),
-          error: { default: t('failed_operation') }
-        }));
+        dispatch(stopClusterAction());
         break;
       default:
         break;
@@ -184,11 +189,21 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
           <If
             condition={clusterId === item.id}
             then={
-              <StyledBadge
-                badgeContent={<>LB</>} color="primary"
-              >
-                {item.name}
-              </StyledBadge>
+              <If
+                condition={serverMode === 'cluster'}
+                then={
+                  <StyledBadge
+                    badgeContent={<>LB</>}
+                  >{item.name}
+                  </StyledBadge>
+                }
+                else={
+                  <StyledBadgeInactive
+                    badgeContent={<>LB</>}
+                  >{item.name}
+                  </StyledBadgeInactive>
+                }
+              />
             }
             else={
               <>{item.name}</>

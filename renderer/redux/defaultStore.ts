@@ -12,7 +12,7 @@ const defaultStore: RootState = {
   settings: {
     fixedMenu: false,
     selectedServer: null,
-    nodeMode: 'single',
+    serverMode: 'single',
     clusterId: '',
     mode: "Manual",
     darkMode: false,

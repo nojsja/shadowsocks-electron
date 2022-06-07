@@ -4,6 +4,7 @@ import * as sysproxy from "./helpers/sysproxy";
 import { PacServer as PS } from "./pac";
 import { Mode, ProxyStatus } from "../types/extention";
 import { setupIfFirstRun } from "../install";
+import logger from "../logs";
 
 export class Proxy {
   mode: Mode;
@@ -62,10 +63,12 @@ export class LinuxProxy extends Proxy {
         `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
       );
     }
+    logger.info("Set proxy on");
   }
 
   public async stop() {
     await gsettings.unsetProxy();
+    logger.info("Set proxy off");
   }
 }
 
@@ -84,10 +87,12 @@ export class WinProxy extends Proxy {
         `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
       );
     }
+    logger.info("Set proxy on");
   }
 
   public async stop() {
     await sysproxy.unsetProxy();
+    logger.info("Set proxy off");
   }
 }
 
@@ -107,9 +112,11 @@ export class DarwinProxy extends Proxy {
         `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
       );
     }
+    logger.info("Set proxy on");
   }
 
   public async stop() {
     await networksetup.unsetProxy();
+    logger.info("Set proxy off");
   }
 }

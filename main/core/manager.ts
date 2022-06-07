@@ -22,6 +22,13 @@ export class Manager extends EventEmitter {
   static pool: (SSRClient | SSClient)[] = []
   static socketTransfer: SocketTransfer | null
 
+  static async syncConnected(connected: boolean) {
+    (global as any)?.win.webContents.send("connected", {
+      status: connected,
+      mode: Manager.mode
+    });
+  }
+
   static async spawnClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
     if (electronIsDev) console.log(config);
 
@@ -111,12 +118,29 @@ export class Manager extends EventEmitter {
     Manager.proxy = null;
   }
 
+   /**
+   * @name startClient start single client mode
+   * @param config ss/ssr config
+   * @param settings global settings
+   * @returns Promise<{ code: number, result: any }>
+   *
+   * total steps:
+   *  - change mode to single
+   *  - enable proxy
+   *  - create client
+   *  - connect client
+   *  - sync status
+   */
   static async startClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
+    /* change mode to single */
     return this.changeMode('single')
+      /* enable proxy */
       .then(async () => {
         await Manager.enableProxy(settings);
       })
+      /* create client */
       .then(() => Manager.spawnClient(config, settings))
+      /* connect client */
       .then(rsp => {
         if (rsp.code === 200) {
           Manager.ssLocal = rsp.result;
@@ -125,11 +149,13 @@ export class Manager extends EventEmitter {
           return rsp;
         }
       })
+      /* sync status */
       .then(rsp => {
-        (global as any)?.win.webContents.send("connected", !!Manager.ssLocal?.connected);
+        Manager.syncConnected(!!Manager.ssLocal?.connected);
         return rsp;
       })
       .catch(err => {
+        Manager.disableProxy();
         return {
           code: 600,
           result: err?.toString()
@@ -140,16 +166,31 @@ export class Manager extends EventEmitter {
   static async stopClient() {
     await Manager.disableProxy();
     await Manager.kill(Manager.ssLocal);
-    (global as any)?.win.webContents.send("connected", !!Manager.ssLocal?.connected);
+    Manager.syncConnected(!!Manager.ssLocal?.connected);
   }
 
+  /**
+   * @name startCluster start cluster mode
+   * @param configs subscription group
+   * @param settings global settings
+   * @returns Promise<{ code: number, result: any }>
+   *
+   * total steps:
+   *  - change mode to cluster
+   *  - enable proxy
+   *  - select clients
+   *  - connect clients and init socket transfer
+   *  - sync status
+   */
   static startCluster(configs: Config[], settings: Settings): Promise<{ code: number, result: any }> {
     return new Promise(resolve => {
       Manager
         .changeMode('cluster')
+        /* enable proxy */
         .then(async () => {
           await Manager.enableProxy(settings);
         })
+        /* select clients */
         .then(async () => {
           if (!configs.length) {
             throw new Error('No server configs found');
@@ -173,6 +214,7 @@ export class Manager extends EventEmitter {
               })
             );
         })
+        /* connect clients and init socket transfer */
         .then(async (results) => {
           Manager.pool =
             results
@@ -196,8 +238,10 @@ export class Manager extends EventEmitter {
           });
 
           await Manager.socketTransfer.listen();
-
-          (global as any)?.win.webContents.send("connected", true);
+        })
+        /* sync status */
+        .then(() => {
+          Manager.syncConnected(true);
         })
         .then(() => {
           resolve({
@@ -207,6 +251,7 @@ export class Manager extends EventEmitter {
         })
         .catch(err => {
           console.error(err);
+          Manager.disableProxy();
           resolve({
             code: 500,
             result: err?.toString()
@@ -228,7 +273,7 @@ export class Manager extends EventEmitter {
           await Manager.disableProxy();
         })
         .then(() => {
-          (global as any)?.win.webContents.send("connected", false);
+          Manager.syncConnected(false);
           resolve({
             code: 200,
             result: ''

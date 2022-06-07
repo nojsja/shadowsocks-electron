@@ -130,10 +130,11 @@ export interface GroupConfig {
 
 export type Mode = "PAC" | "Global" | "Manual";
 export type ThemeMode = 'dark' | 'light';
+export type ServerMode = 'single' | 'cluster';
 
 export interface Settings {
   selectedServer?: string | null;
-  nodeMode?: 'single' | 'cluster',
+  serverMode?: ServerMode,
   clusterId?: string,
   mode: Mode;
   verbose: boolean;
@@ -158,7 +159,7 @@ export interface Status {
   loading: boolean;
   waiting: boolean;
   delay: number | null | '';
-  mode?: 'cluster' | 'single',
+  mode?: ServerMode,
   clusterId?: string,
 }
 

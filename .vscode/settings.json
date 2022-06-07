@@ -10,18 +10,35 @@
   "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "workbench.colorCustomizations": {
-    "statusBar.background": "#832561",
-    "statusBar.foreground": "#e7e7e7",
     "statusBarItem.hoverBackground": "#ab307e",
-    "tab.activeBorder": "#ab307e",
-    "titleBar.activeBackground": "#832561",
-    "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#83256199",
     "titleBar.inactiveForeground": "#e7e7e799",
     "sash.hoverBorder": "#ab307e",
     "statusBarItem.remoteBackground": "#832561",
-    "statusBarItem.remoteForeground": "#e7e7e7"
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "statusBar.background": "#832561",
+    "statusBar.foreground": "#e7e7e7",
+    "titleBar.activeBackground": "#832561",
+    "titleBar.activeForeground": "#e7e7e7",
+    "tab.activeBorder": "#7fff00"
   },
   "peacock.color": "#832561",
-  "files.exclude": {}
+  "files.exclude": {},
+  "colorTabs.config": [
+    {
+      "regex": "main/core\\.*",
+      "color": "#aa0000",
+      "label": "CORE"
+    },
+    {
+      "regex": "main/\\.*",
+      "color": "#ff7f50",
+      "label": "CORE"
+    },
+    {
+      "regex": "renderer/\\.*",
+      "color": "#7fff00",
+      "label": "CORE"
+    },
+  ]
 }
