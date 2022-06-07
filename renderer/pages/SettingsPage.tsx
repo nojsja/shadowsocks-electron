@@ -41,6 +41,7 @@ import ResetData from "./settings/ResetData";
 import Verbose from "./settings/Verbose";
 import OpenLogDir from "./settings/OpenLogDir";
 import OpenProcessManager from "./settings/OpenProcessManager";
+import LoadBalance from "./settings/LoadBalance";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -329,6 +330,9 @@ const SettingsPage: React.FC = () => {
           <Backup />
           <Restore />
           <ResetData enqueueSnackbar={enqueueSnackbar} />
+          <Divider className={styles.margin} />
+          <ListSubheader>{t('experimental')}</ListSubheader>
+          <LoadBalance enable={false} />
           <Divider className={styles.margin} />
           <ListSubheader>{t('debugging')}</ListSubheader>
           <Verbose />

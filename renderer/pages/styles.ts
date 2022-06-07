@@ -142,8 +142,7 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
       color: theme.palette.primary.light,
     },
     margin: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2)
+      marginTop: theme.spacing(1),
     }
   })
 );
