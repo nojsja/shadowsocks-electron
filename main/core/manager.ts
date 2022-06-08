@@ -2,7 +2,6 @@ import electronIsDev from "electron-is-dev";
 import { EventEmitter } from "events";
 import os from 'os';
 
-import { Config, Settings } from "../types/extention";
 import logger from "../logs";
 
 import checkPortInUse from "./helpers/port-checker";
@@ -11,22 +10,139 @@ import { SSClient, SSRClient } from "./client";
 import pickPorts from "./helpers/port-picker";
 import { Proxy } from "./proxy";
 import randomPicker from "./helpers/random-picker";
+import { Target } from "./LoadBalancer/types";
+import { Config, Settings } from "../types/extention";
 
 const platform = os.platform();
 
-export class Manager extends EventEmitter {
+export class Manager {
   static mode: 'single' | 'cluster' = 'single';
   static proxy: Proxy | null
   static ssLocal: SSRClient | SSClient | null;
   static ssLoadBalancer: SSRClient | SSClient | null;
   static pool: (SSRClient | SSClient)[] = []
   static socketTransfer: SocketTransfer | null
+  static clusterConfig: Config[]
+  static event: EventEmitter = new EventEmitter();
 
   static async syncConnected(connected: boolean) {
     (global as any)?.win.webContents.send("connected", {
       status: connected,
       mode: Manager.mode
     });
+  }
+
+  /**
+   * @name healCluster 治愈不健康的集群节点
+   * @param targets 待治愈的节点端口组
+   * @returns Promise<void>
+   *
+   * total steps:
+   *  - get healthy/unhealthy cluster nodes
+   *  - set healthy cluster nodes to pool / socket transfer
+   *  - disconnect unhealthy cluster nodes
+   *  - recreate some nodes from configs
+   *  - connect those nodes
+   *  - push connected new nodes to pool / socket transfer
+   */
+  static async healCluster(targets: Target[]) {
+    const abnormalPorts = targets.map(target => target.id);
+    const abnormalClients: (SSRClient | SSClient)[] = [];
+    const normalClients: (SSRClient | SSClient)[] = [];
+
+    console.log('------------------------------------');
+    console.log('abnormal client that need to heal: ', abnormalPorts);
+
+    /* get healthy/unhealthy cluster nodes */
+    Manager.pool.forEach(client => {
+      if (abnormalPorts.includes(client.settings.localPort)) {
+        abnormalClients.push(client);
+      } else {
+        normalClients.push(client);
+      }
+    });
+
+    if (!abnormalClients.length) return;
+
+    /* set healthy cluster nodes to pool / socket transfer */
+    Manager.pool = normalClients;
+    Manager.socketTransfer?.setTargetsWithFilter((target) => {
+      return !abnormalPorts.includes(target.id);
+    });
+
+    /* disconnect unhealthy cluster nodes */
+    return Promise
+      .all(abnormalClients.map(client => client.disconnect()))
+      .then((results) => {
+        const pendingClients: (SSRClient | SSClient)[] = [];
+        results.forEach((result, i) => {
+          if (result.code === 200) {
+            pendingClients.push(abnormalClients[i]);
+          }
+        });
+
+        if (!pendingClients.length)
+          throw new Error('Healer: No pending clients');
+
+        return pendingClients;
+      })
+      /* recreate some nodes from configs */
+      .then((pendingClients: (SSRClient | SSClient)[]) => {
+        console.log('pending clients: ', pendingClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
+        const filterIds = [
+          ...pendingClients.map(client => client.config.id),
+          ...Manager.pool.map(client => client.config.id)
+        ];
+
+        return Promise.all(
+          randomPicker(
+            Manager.clusterConfig.filter(conf => !filterIds.includes(conf.id)),
+            pendingClients.length
+          )
+            .map((config, i) => {
+              console.log('healer pick: ', `${config.serverHost}:${config.serverPort}`);
+              return Manager.spawnClient(
+                config,
+                pendingClients[i].settings
+              );
+            })
+        );
+      })
+      /* connect those nodes */
+      .then(async (results) => {
+        const createdClients = results
+          .filter(results => results.code === 200)
+          .map(rsp => rsp.result as (SSRClient | SSClient));
+        const cons = await Promise.all(createdClients.map(client => client.connect()));
+        let hasSuccess = 0;
+
+        console.log('reconnected clients: ', createdClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
+
+        /* push connected new nodes to pool / socket transfer */
+        cons.forEach((c, i) => {
+          if (c.code === 200 && c.result?.port) {
+            Manager.pool.push(createdClients[i]);
+            Manager.socketTransfer?.pushTargets([
+              { id: createdClients[i].settings.localPort }
+            ]);
+            hasSuccess += 1;
+          }
+        });
+
+        if (!Manager.pool.length) {
+          Manager.syncConnected(false);
+          throw new Error('Warning: Pool is empty')
+        }
+
+        if (!hasSuccess) {
+          throw new Error('Cluster heal failed');
+        }
+
+        console.log(`Cluster heal ${hasSuccess} nodes!`);
+      })
+      .catch(err => {
+        console.error(err?.message);
+      });
   }
 
   static async spawnClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
@@ -196,6 +312,7 @@ export class Manager extends EventEmitter {
             throw new Error('No server configs found');
           }
 
+          Manager.clusterConfig = configs;
           const ports = await pickPorts(
             settings.localPort + 1, settings.loadBalance.count,
             [settings.pacPort, settings.httpProxy.port]
@@ -220,7 +337,7 @@ export class Manager extends EventEmitter {
               .map(rsp => rsp.result as (SSRClient | SSClient));
 
           if (!Manager.pool.length) {
-            throw new Error('Pool is empty')
+            throw new Error('Warning: Pool is empty')
           }
 
           const cons = await Promise.all(Manager.pool.map(client => client.connect()));
@@ -233,7 +350,10 @@ export class Manager extends EventEmitter {
             port: settings.localPort,
             strategy: settings.loadBalance.strategy,
             targets: successPorts.map(port => ({ id: port })),
+            heartbeat: 30e3,
           });
+
+          Manager.socketTransfer.on('health:check:failed', Manager.healCluster);
 
           await Manager.socketTransfer.listen();
         })
@@ -260,12 +380,17 @@ export class Manager extends EventEmitter {
 
   static stopCluster(): Promise<{ code: number, result: any }> {
     return new Promise(resolve => {
+      if (Manager?.socketTransfer) {
+        Manager.socketTransfer.off('health:check:failed', Manager.healCluster)
+      }
+
       Promise
         .all(Manager.pool.map(client => Manager.kill(client)))
         .then(async () => {
           Manager.pool = [];
           await Manager.socketTransfer?.stop();
           Manager.socketTransfer = null;
+          Manager.clusterConfig = [];
         })
         .then(async () => {
           await Manager.disableProxy();

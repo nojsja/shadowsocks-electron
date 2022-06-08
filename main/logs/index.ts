@@ -3,6 +3,7 @@ import { app } from "electron";
 import winston, { format } from "winston";
 import open from "open";
 import  DailyRotateFile from 'winston-daily-rotate-file';
+import chalk from "chalk";
 
 const { combine, simple, colorize } = format;
 
@@ -41,5 +42,9 @@ if (process.env.NODE_ENV !== "production") {
     })
   );
 }
+
+export const warning = chalk.bold.yellow;
+export const error = chalk.bold.red;
+export const info = chalk.bold.green;
 
 export default logger;

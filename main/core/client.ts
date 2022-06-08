@@ -3,7 +3,7 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 
 import checkPortInUse from "./helpers/port-checker";
 import { debounce, getSSLocalBinPath } from "../utils/utils";
-import { Settings, SSRConfig, SSConfig } from "../types/extention";
+import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types/extention";
 import logger from "../logs";
 
 export class Client extends EventEmitter {
@@ -62,9 +62,6 @@ export class SSClient extends Client {
   constructor(settings: Settings, config: SSConfig) {
     super(settings, 'ss');
     this.config = config;
-    this.on('error', () => {
-
-    });
   }
 
   parseParams(config: SSConfig) {
@@ -179,7 +176,7 @@ export class SSClient extends Client {
   }
 
   disconnect() {
-    return new Promise((resolve, reject) => {
+    return new Promise<ServiceResult>((resolve, reject) => {
       this.child?.kill("SIGKILL");
       this.onDebouncedExited((isAlive: boolean) => {
         if (isAlive) {
@@ -206,9 +203,6 @@ export class SSRClient extends Client {
   constructor(settings: Settings, config: SSRConfig) {
     super(settings, 'ssr');
     this.config = config;
-    this.on('error', () => {
-
-    });
   }
 
   parseParams(config: SSRConfig) {
@@ -326,7 +320,7 @@ export class SSRClient extends Client {
   }
 
   disconnect() {
-    return new Promise((resolve, reject) => {
+    return new Promise<ServiceResult>((resolve, reject) => {
       this.child?.kill("SIGKILL");
       this.onDebouncedExited((isAlive: boolean) => {
         if (isAlive) {

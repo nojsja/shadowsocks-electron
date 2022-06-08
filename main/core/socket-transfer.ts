@@ -4,6 +4,7 @@ import { EventEmitter } from 'events';
 import LoadBalancer, { ALGORITHM } from './LoadBalancer';
 import shadowChecker from './helpers/shadow-checker';
 import { Target } from './LoadBalancer/types';
+import { info } from '../logs';
 
 export interface SocketTransferOptions {
   port?: number;
@@ -86,11 +87,11 @@ export class SocketTransfer extends EventEmitter {
     Promise
       .all(this.targets.map(target => shadowChecker('127.0.0.1', target.id as number)))
       .then(results => {
-        console.log(results);
-        const failed: number[] = [];
+        info('>> health check results:', results);
+        const failed: Target[] = [];
         results.forEach((pass, i) => {
           if (!pass) {
-            failed.push(this.targets[i].id as number);
+            failed.push(this.targets[i]);
           }
         });
         if (failed.length) {
@@ -118,7 +119,7 @@ export class SocketTransfer extends EventEmitter {
     return new Promise((resolve => {
       this.server.listen(this.port, () => {
         resolve(port);
-        console.log('SocketTransfer listening on port', this.port);
+        info('SocketTransfer listening on port', this.port);
       });
     }));
   }
@@ -140,9 +141,19 @@ export class SocketTransfer extends EventEmitter {
     await this.unlisten();
   }
 
+  public pushTargets = (targets: Target[]) => {
+    this.targets.push(...targets);
+    this.lb.setTargets(this.targets);
+  }
+
   public setTargets = (targets: Target[]) => {
     this.targets = targets;
     this.lb.setTargets(targets);
+  }
+
+  public setTargetsWithFilter = (filter: (targets: Target) => boolean) => {
+    this.targets = this.targets.filter(filter);
+    this.setTargets(this.targets)
   }
 
   public getTargets = () => {
