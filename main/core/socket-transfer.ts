@@ -5,6 +5,7 @@ import LoadBalancer, { ALGORITHM } from './LoadBalancer';
 import shadowChecker from './helpers/shadow-checker';
 import { Target } from './LoadBalancer/types';
 import { info } from '../logs';
+import { i18n } from '../electron';
 
 export interface SocketTransferOptions {
   port?: number;
@@ -87,7 +88,7 @@ export class SocketTransfer extends EventEmitter {
     Promise
       .all(this.targets.map(target => shadowChecker('127.0.0.1', target.id as number)))
       .then(results => {
-        info('>> health check results:', results);
+        info.bold('>> health check results:', results);
         const failed: Target[] = [];
         results.forEach((pass, i) => {
           if (!pass) {
@@ -116,10 +117,17 @@ export class SocketTransfer extends EventEmitter {
   public listen = (port?: number) => {
     if (port) this.port = port;
 
-    return new Promise((resolve => {
+    return new Promise(((resolve, reject) => {
+      this.once('error:socket:transfer', ({ error }) => {
+        if (error && error.code === 'EADDRINUSE') {
+          reject(`${i18n.__('port_already_used')}${this.port}`);
+        } else {
+          reject(error ?? new Error('Socket Transfer failed to start'));
+        }
+      });
       this.server.listen(this.port, () => {
         resolve(port);
-        info('SocketTransfer listening on port', this.port);
+        info.bold('>> SocketTransfer listening on port: ', this.port);
       });
     }));
   }

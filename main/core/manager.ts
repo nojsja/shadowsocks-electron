@@ -2,7 +2,7 @@ import electronIsDev from "electron-is-dev";
 import { EventEmitter } from "events";
 import os from 'os';
 
-import logger from "../logs";
+import logger, { info, warning } from "../logs";
 
 import checkPortInUse from "./helpers/port-checker";
 import { SocketTransfer } from './socket-transfer';
@@ -43,19 +43,21 @@ export class Manager {
    *  - disconnect unhealthy cluster nodes
    *  - recreate some nodes from configs
    *  - connect those nodes
-   *  - push connected new nodes to pool / socket transfer
+   *  - put connected new nodes socket into socket-transfer and pool, failed nodes only put into pool
    */
   static async healCluster(targets: Target[]) {
     const abnormalPorts = targets.map(target => target.id);
     const abnormalClients: (SSRClient | SSClient)[] = [];
     const normalClients: (SSRClient | SSClient)[] = [];
 
-    console.log('------------------------------------');
-    console.log('abnormal client that need to heal: ', abnormalPorts);
+    info.bold('>> abnormal client that need to heal: ', abnormalPorts);
 
     /* get healthy/unhealthy cluster nodes */
     Manager.pool.forEach(client => {
-      if (abnormalPorts.includes(client.settings.localPort)) {
+      if (
+        abnormalPorts.includes(client.settings.localPort)
+        || !client.connected
+      ) {
         abnormalClients.push(client);
       } else {
         normalClients.push(client);
@@ -78,6 +80,8 @@ export class Manager {
         results.forEach((result, i) => {
           if (result.code === 200) {
             pendingClients.push(abnormalClients[i]);
+          } else {
+            Manager.pool.push(abnormalClients[i]);
           }
         });
 
@@ -88,7 +92,7 @@ export class Manager {
       })
       /* recreate some nodes from configs */
       .then((pendingClients: (SSRClient | SSClient)[]) => {
-        console.log('pending clients: ', pendingClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
+        info.underline('>> pending clients: ', pendingClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
         const filterIds = [
           ...pendingClients.map(client => client.config.id),
           ...Manager.pool.map(client => client.config.id)
@@ -100,7 +104,7 @@ export class Manager {
             pendingClients.length
           )
             .map((config, i) => {
-              console.log('healer pick: ', `${config.serverHost}:${config.serverPort}`);
+              info.underline('>> healer pick: ', `${config.serverHost}:${config.serverPort}`);
               return Manager.spawnClient(
                 config,
                 pendingClients[i].settings
@@ -110,18 +114,27 @@ export class Manager {
       })
       /* connect those nodes */
       .then(async (results) => {
+        const failedClients: (SSRClient | SSClient)[] = [];
         const createdClients = results
-          .filter(results => results.code === 200)
+          .filter(rsp => {
+            if (rsp.code === 200) {
+              return true;
+            } else {
+              failedClients.push(rsp.result as (SSRClient | SSClient))
+              return false;
+            }
+          })
           .map(rsp => rsp.result as (SSRClient | SSClient));
         const cons = await Promise.all(createdClients.map(client => client.connect()));
         let hasSuccess = 0;
 
-        console.log('reconnected clients: ', createdClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
+        info.underline('>> reconnected clients: ', createdClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
 
         /* push connected new nodes to pool / socket transfer */
+        Manager.pool.push(...failedClients);
         cons.forEach((c, i) => {
+          Manager.pool.push(createdClients[i]);
           if (c.code === 200 && c.result?.port) {
-            Manager.pool.push(createdClients[i]);
             Manager.socketTransfer?.pushTargets([
               { id: createdClients[i].settings.localPort }
             ]);
@@ -138,42 +151,34 @@ export class Manager {
           throw new Error('Cluster heal failed');
         }
 
-        console.log(`Cluster heal ${hasSuccess} nodes!`);
+        info.underline(`>> Cluster heal ${hasSuccess} nodes!`);
+        info.underline(`>> Pool now have ${Manager.pool.length} nodes.`);
       })
       .catch(err => {
-        console.error(err?.message);
+        warning(err?.message);
       });
   }
 
-  static async spawnClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
+  static async spawnClient(config: Config, settings: Settings): Promise<{ code: number, result: unknown }> {
     if (electronIsDev && Manager.mode === 'single') console.log(config);
 
     return new Promise(resolve => {
-      checkPortInUse([settings.localPort], '127.0.0.1')
-        .then(results => {
-          if (results[0]?.isInUse) {
-            return resolve({
-              code: 600,
-              result: results[0]
-            });
-          }
-          if (config.type === 'ssr') {
-            resolve({
-              code: 200,
-              result: new SSRClient(settings, config)
-            });
-          } else if (config.type === 'ss') {
-            resolve({
-              code: 200,
-              result: new SSClient(settings, config)
-            });
-          } else {
-            resolve({
-              code: 600,
-              result: `Unknown shadowsocks client type: ${config.type}`
-            });
-          }
+      if (config.type === 'ssr') {
+        resolve({
+          code: 200,
+          result: new SSRClient(settings, config)
         });
+      } else if (config.type === 'ss') {
+        resolve({
+          code: 200,
+          result: new SSClient(settings, config)
+        });
+      } else {
+        resolve({
+          code: 600,
+          result: `Unknown shadowsocks client type: ${config.type}`
+        });
+      }
     });
   }
 
@@ -183,10 +188,10 @@ export class Manager {
     Manager.ssLocal = null;
     await client.disconnect()?.then(
       () => {
-        logger.info(`Killed ${Manager.ssLocal?.type || 'ss'}-local`);
+        logger.info(`>> Killed ${Manager.ssLocal?.type || 'ss'}-local`);
       },
       () => {
-        logger.info(`Killed ${Manager.ssLocal?.type || 'ss'}-local failed`);
+        logger.info(`>> Killed ${Manager.ssLocal?.type || 'ss'}-local failed`);
       }
     );
   };
@@ -250,6 +255,13 @@ export class Manager {
   static async startClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
     /* change mode to single */
     return this.changeMode('single')
+      .then(() => checkPortInUse([settings.localPort], '127.0.0.1'))
+      .then(results => {
+        if (results[0]?.isInUse) {
+          warning(`Port ${settings.localPort} is in use`);
+          throw new Error(`Port already in use: ${settings.localPort}`);
+        }
+      })
       /* enable proxy */
       .then(async () => {
         await Manager.enableProxy(settings);
@@ -257,9 +269,9 @@ export class Manager {
       /* create client */
       .then(() => Manager.spawnClient(config, settings))
       /* connect client */
-      .then(rsp => {
+      .then(async rsp => {
         if (rsp.code === 200) {
-          Manager.ssLocal = rsp.result;
+          Manager.ssLocal = rsp.result as (SSRClient | SSClient);
           return (rsp.result as (SSRClient | SSClient)).connect();
         } else {
           return rsp;
@@ -300,8 +312,14 @@ export class Manager {
    */
   static startCluster(configs: Config[], settings: Settings): Promise<{ code: number, result: any }> {
     return new Promise(resolve => {
-      Manager
-        .changeMode('cluster')
+      Manager.changeMode('cluster')
+        .then(() => checkPortInUse([settings.localPort], '127.0.0.1'))
+        .then(results => {
+          if (results[0]?.isInUse) {
+            warning(`Port ${settings.localPort} is in use`);
+            throw new Error(`Port already in use: ${settings.localPort}`);
+          }
+        })
         /* enable proxy */
         .then(async () => {
           await Manager.enableProxy(settings);
@@ -321,7 +339,7 @@ export class Manager {
           return Promise.all(
             randomPicker(configs, ports.length)
               .map((config, i) => {
-                console.log('pick: ', config.remark);
+                info.underline('>> pick: ', config.remark);
                 return Manager.spawnClient(
                   config,
                   { ...settings, localPort: ports[i] }
@@ -350,7 +368,7 @@ export class Manager {
             port: settings.localPort,
             strategy: settings.loadBalance.strategy,
             targets: successPorts.map(port => ({ id: port })),
-            heartbeat: 30e3,
+            // heartbeat: 30e3,
           });
 
           Manager.socketTransfer.on('health:check:failed', Manager.healCluster);
@@ -368,7 +386,7 @@ export class Manager {
           });
         })
         .catch(err => {
-          console.error(err);
+          warning(err);
           Manager.disableProxy();
           resolve({
             code: 500,
