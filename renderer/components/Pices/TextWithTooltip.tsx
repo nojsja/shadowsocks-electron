@@ -19,6 +19,11 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
+    },
+    symbol: {
+      marginLeft: '4px',
+      marginBottom: '2px',
+      cursor: 'pointer'
     }
   })
 );
@@ -37,7 +42,7 @@ export function TextWithTooltip(props: TextWithTooltipProps) {
       {
         tooltip ? (
           <Tooltip arrow placement="top" title={<span>{tooltip}</span>}>
-            { icon ? icon : <HelpOutline fontSize="small" /> }
+            { icon ? icon : <span className={styles.symbol}>⍰</span> }
           </Tooltip>
         ) : (
           icon || <HelpOutline fontSize="small" />

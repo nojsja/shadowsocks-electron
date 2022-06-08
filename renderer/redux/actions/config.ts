@@ -129,7 +129,13 @@ export const startClusterAction =
             dispatch(setSetting('clusterId', id));
             return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
           } else {
-            return dispatch(enqueueSnackbar(info.error.default, { variant: "error" }));
+            MessageChannel.invoke('main', 'service:desktop', {
+              action: 'openNotification',
+              params: {
+                action: 'warning',
+                body: rsp.result
+              }
+            });
           }
         })
         .finally(() => {
@@ -158,7 +164,7 @@ export const stopClusterAction =
   }
 
 export const startClientAction =
-  (config: Config | undefined, settings: Settings, warningTitle: string, warningBody: string):
+  (config: Config | undefined, settings: Settings):
     ThunkAction<void, RootState, unknown, AnyAction> => {
       return (dispatch) => {
         dispatch(setStatus('waiting', true));
@@ -173,12 +179,12 @@ export const startClientAction =
           dispatch(setStatus('clusterId', ''));
           dispatch(setStatus('waiting', false));
           dispatch(getConnectionStatusAction());
-          if (rsp.code === 600 && rsp.result.isInUse) {
+          if (rsp.code !== 200) {
             MessageChannel.invoke('main', 'service:desktop', {
               action: 'openNotification',
               params: {
-                title: warningTitle,
-                body: warningBody
+                action: 'warning',
+                body: rsp.result
               }
             });
           }

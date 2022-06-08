@@ -5,6 +5,7 @@ import LoadBalancer, { ALGORITHM } from './LoadBalancer';
 import shadowChecker from './helpers/shadow-checker';
 import { Target } from './LoadBalancer/types';
 import { info } from '../logs';
+import { i18n } from '../electron';
 
 export interface SocketTransferOptions {
   port?: number;
@@ -42,7 +43,7 @@ export class SocketTransfer extends EventEmitter {
     return net.createServer((c) => {
       const target = this.lb.pickOne();
 
-      console.log('pick target -> ', target.id);
+      console.log('pick target -> ', target?.id);
 
       if (!target || !target.id) {
         this.onLoadBalancerError(new Error('no available target!'));
@@ -82,18 +83,28 @@ export class SocketTransfer extends EventEmitter {
     });
   }
 
+  private doCheckWorks = async (targets: Target[]): Promise<Target[]> => {
+    const failed: Target[] = [];
+    const results = await Promise.all(targets.map(target => shadowChecker('127.0.0.1', target.id as number)));
+    info.bold('>> healthCheck results: ', results);
+    results.forEach((pass, i) => {
+      if (!pass) {
+        failed.push(targets[i]);
+      }
+    });
+
+    return failed;
+  };
+
   private healthCheck = () => {
     if (this.targets.length === 0) return;
-    Promise
-      .all(this.targets.map(target => shadowChecker('127.0.0.1', target.id as number)))
-      .then(results => {
-        info('>> health check results:', results);
-        const failed: Target[] = [];
-        results.forEach((pass, i) => {
-          if (!pass) {
-            failed.push(this.targets[i]);
-          }
-        });
+
+    this.doCheckWorks(this.targets)
+      .then((pending = []) => {
+        if (!pending.length) return pending;
+        return this.doCheckWorks(pending);
+      })
+      .then(failed => {
         if (failed.length) {
           this.emit('health:check:failed', failed);
         }
@@ -116,10 +127,17 @@ export class SocketTransfer extends EventEmitter {
   public listen = (port?: number) => {
     if (port) this.port = port;
 
-    return new Promise((resolve => {
+    return new Promise(((resolve, reject) => {
+      this.once('error:socket:transfer', ({ error }) => {
+        if (error && error.code === 'EADDRINUSE') {
+          reject(`${i18n.__('port_already_used')}${this.port}`);
+        } else {
+          reject(error ?? new Error('Socket Transfer failed to start'));
+        }
+      });
       this.server.listen(this.port, () => {
         resolve(port);
-        info('SocketTransfer listening on port', this.port);
+        info.bold('>> SocketTransfer listening on port: ', this.port);
       });
     }));
   }
@@ -144,6 +162,15 @@ export class SocketTransfer extends EventEmitter {
   public pushTargets = (targets: Target[]) => {
     this.targets.push(...targets);
     this.lb.setTargets(this.targets);
+  }
+
+  public setHeartBeat = (heartbeat: number) => {
+    if (typeof heartbeat !== 'number' || heartbeat < 15) {
+      throw new Error('SocketTransfer: heartbeat must be an positive number and no less that 15(seconds).');
+    }
+    this.heartbeat = heartbeat; // 5min
+    clearInterval(this.timer);
+    this.timer = setInterval(this.healthCheck, this.heartbeat);
   }
 
   public setTargets = (targets: Target[]) => {

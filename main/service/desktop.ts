@@ -27,11 +27,18 @@ export class DesktopService implements DesktopServiceType {
   }
 
   async openNotification(
-    params: { title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined }
+    params: {
+      title?: string, action?: 'warning' | 'error' | 'info',
+      body: string, subtitle?: string,
+      urgency?: "normal" | "critical" | "low" | undefined
+    }
   ): Promise<ServiceResult> {
     return new Promise(resolve => {
       new Notification({
-        title: params.title ?? 'shadowsocks-electron',
+        title:
+          params.title
+          ?? (params.action && i18n.__(`action_${params.action}`))
+          ?? 'shadowsocks-electron',
         subtitle: params.subtitle,
         body: params.body,
         urgency: params.urgency ?? 'normal'

@@ -8,6 +8,7 @@ const defaultStore: RootState = {
     delay: 0,
     loading: false,
     waiting: false,
+    traffic: { KB: 0, MB: 0, GB: 0 },
   },
   settings: {
     fixedMenu: false,
