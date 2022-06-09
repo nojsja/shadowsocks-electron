@@ -141,7 +141,7 @@ export const protocols = [
 ];
 
 export interface SSConfig {
-  id?: string;
+  id: string;
   type?: string;
   remark?: string;
   serverHost: string;
@@ -159,7 +159,7 @@ export interface SSConfig {
 }
 
 export interface SSRConfig {
-  id?: string;
+  id: string;
   type?: string;
   remark?: string;
   serverHost: string;

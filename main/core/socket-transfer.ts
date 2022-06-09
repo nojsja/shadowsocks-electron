@@ -43,7 +43,7 @@ export class SocketTransfer extends EventEmitter {
     return net.createServer((c) => {
       const target = this.lb.pickOne();
 
-      console.log('pick target -> ', target.id);
+      console.log('pick target -> ', target?.id);
 
       if (!target || !target.id) {
         this.onLoadBalancerError(new Error('no available target!'));
@@ -85,16 +85,26 @@ export class SocketTransfer extends EventEmitter {
 
   private healthCheck = () => {
     if (this.targets.length === 0) return;
-    Promise
-      .all(this.targets.map(target => shadowChecker('127.0.0.1', target.id as number)))
-      .then(results => {
-        info.bold('>> health check results:', results);
-        const failed: Target[] = [];
-        results.forEach((pass, i) => {
-          if (!pass) {
-            failed.push(this.targets[i]);
-          }
-        });
+
+    const doCheckWorks = async (targets: Target[]): Promise<Target[]> => {
+      const failed: Target[] = [];
+      const results = await Promise.all(targets.map(target => shadowChecker('127.0.0.1', target.id as number)));
+      info.bold('>> healthCheck results: ', results);
+      results.forEach((pass, i) => {
+        if (!pass) {
+          failed.push(targets[i]);
+        }
+      });
+
+      return failed;
+    };
+
+    doCheckWorks(this.targets)
+      .then((pending = []) => {
+        if (!pending.length) return pending;
+        return doCheckWorks(pending);
+      })
+      .then(failed => {
         if (failed.length) {
           this.emit('health:check:failed', failed);
         }
@@ -152,6 +162,15 @@ export class SocketTransfer extends EventEmitter {
   public pushTargets = (targets: Target[]) => {
     this.targets.push(...targets);
     this.lb.setTargets(this.targets);
+  }
+
+  public setHeartBeat = (heartbeat: number) => {
+    if (typeof heartbeat !== 'number' || heartbeat < 15) {
+      throw new Error('SocketTransfer: heartbeat must be an positive number and no less that 15(seconds).');
+    }
+    this.heartbeat = heartbeat; // 5min
+    clearInterval(this.timer);
+    this.timer = setInterval(this.healthCheck, this.heartbeat);
   }
 
   public setTargets = (targets: Target[]) => {

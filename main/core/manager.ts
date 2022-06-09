@@ -16,25 +16,37 @@ import { Config, Settings } from "../types/extention";
 const platform = os.platform();
 
 export class Manager {
-  static mode: 'single' | 'cluster' = 'single';
-  static proxy: Proxy | null
-  static ssLocal: SSRClient | SSClient | null;
-  static ssLoadBalancer: SSRClient | SSClient | null;
-  static pool: (SSRClient | SSClient)[] = []
-  static socketTransfer: SocketTransfer | null
-  static clusterConfig: Config[]
-  static event: EventEmitter = new EventEmitter();
+  static mode: 'single' | 'cluster' = 'single'; // running mode
+  static proxy: Proxy | null; // proxy
+  static ssLocal: SSRClient | SSClient | null; // single mode client
+  static pool: (SSRClient | SSClient)[] = []; // cluster clients pool
+  static socketTransfer: SocketTransfer | null; // cluster tcp gateway
+  static clusterConfig: Config[]; // cluster server configs
+  static event: EventEmitter = new EventEmitter(); // event center
+  static deadMap: { [key: string]: number } = {}; // dead client records
+  static heartbeat: number = 60e3;
+  static trafficTimer: NodeJS.Timer;
 
-  static async syncConnected(connected: boolean) {
-    (global as any)?.win.webContents.send("connected", {
-      status: connected,
-      mode: Manager.mode
-    });
+  static syncConnected(connected: boolean) {
+    if ((global as any)?.win?.webContents) {
+      (global as any).win.webContents.send("connected", {
+        status: connected,
+        mode: Manager.mode
+      });
+    }
+  }
+
+  static syncTraffic() {
+    if ((global as any)?.win?.webContents && Manager.socketTransfer) {
+      (global as any)?.win.webContents.send("traffic", {
+        traffic: Manager.socketTransfer.bytesTransfer
+      });
+    }
   }
 
   /**
-   * @name healCluster 治愈不健康的集群节点
-   * @param targets 待治愈的节点端口组
+   * @name healCluster heal unhealthy cluster nodes
+   * @param targets ports group that need to be healed
    * @returns Promise<void>
    *
    * total steps:
@@ -46,23 +58,43 @@ export class Manager {
    *  - put connected new nodes socket into socket-transfer and pool, failed nodes only put into pool
    */
   static async healCluster(targets: Target[]) {
-    const abnormalPorts = targets.map(target => target.id);
+    const abnormalPorts: (number | string)[] = [];
     const abnormalClients: (SSRClient | SSClient)[] = [];
     const normalClients: (SSRClient | SSClient)[] = [];
 
-    info.bold('>> abnormal client that need to heal: ', abnormalPorts);
+    targets.forEach(target => {
+      if (Manager.deadMap[target.confId as string] !== undefined) {
+        // when healed over than 3 times, make it be dead, reduce system resources.
+        Manager.deadMap[target.confId as string] += 1;
+      } else {
+        Manager.deadMap[target.confId as string] = 1;
+      }
+      abnormalPorts.push(target.id)
+    });
 
     /* get healthy/unhealthy cluster nodes */
     Manager.pool.forEach(client => {
-      if (
-        abnormalPorts.includes(client.settings.localPort)
-        || !client.connected
-      ) {
-        abnormalClients.push(client);
-      } else {
-        normalClients.push(client);
+      if (abnormalPorts.includes(client.settings.localPort)) {
+        return abnormalClients.push(client);
       }
+      if (!client.connected) {
+        abnormalPorts.push(client.settings.localPort);
+        return abnormalClients.push(client);
+      }
+      normalClients.push(client);
     });
+
+    info.bold(
+      '>> abnormal clients that need to heal: ',
+      abnormalClients.map(client => client.settings.localPort)
+    );
+
+    info.underline(
+      `>> ${normalClients.length} normal clients: `,
+      normalClients.map(client => client.settings.localPort)
+    );
+
+    warning('>> dead client map: ', JSON.stringify(Manager.deadMap, null, 2));
 
     if (!abnormalClients.length) return;
 
@@ -82,6 +114,12 @@ export class Manager {
             pendingClients.push(abnormalClients[i]);
           } else {
             Manager.pool.push(abnormalClients[i]);
+            Manager.socketTransfer?.pushTargets([
+              {
+                id: abnormalClients[i].settings.localPort,
+                confId: abnormalClients[i].config.id
+              }
+            ]);
           }
         });
 
@@ -92,7 +130,10 @@ export class Manager {
       })
       /* recreate some nodes from configs */
       .then((pendingClients: (SSRClient | SSClient)[]) => {
-        info.underline('>> pending clients: ', pendingClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
+        info.underline(
+          '>> pending clients: ',
+          pendingClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`)
+        );
         const filterIds = [
           ...pendingClients.map(client => client.config.id),
           ...Manager.pool.map(client => client.config.id)
@@ -128,7 +169,10 @@ export class Manager {
         const cons = await Promise.all(createdClients.map(client => client.connect()));
         let hasSuccess = 0;
 
-        info.underline('>> reconnected clients: ', createdClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`));
+        info.underline(
+          '>> reconnected clients: ',
+          createdClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`)
+        );
 
         /* push connected new nodes to pool / socket transfer */
         Manager.pool.push(...failedClients);
@@ -136,9 +180,14 @@ export class Manager {
           Manager.pool.push(createdClients[i]);
           if (c.code === 200 && c.result?.port) {
             Manager.socketTransfer?.pushTargets([
-              { id: createdClients[i].settings.localPort }
+              {
+                id: createdClients[i].settings.localPort,
+                confId: createdClients[i].config.id
+              }
             ]);
             hasSuccess += 1;
+          } else {
+            createdClients[i].connected = false;
           }
         });
 
@@ -359,16 +408,26 @@ export class Manager {
           }
 
           const cons = await Promise.all(Manager.pool.map(client => client.connect()));
-          const successPorts = cons.filter(c => (c.code === 200 && c.result?.port)).map(c => c.result?.port);
-          if (!successPorts.length) {
+          const targets: {id: number, confId: string}[] = [];
+
+          cons.forEach((con, i) => {
+            if (con.code === 200 && con.result?.port) {
+              targets.push({
+                id: con.result?.port,
+                confId: Manager.pool[i].config.id
+              });
+            }
+          });
+
+          if (!targets.length) {
             throw new Error('Cluster connect failed');
           }
 
           Manager.socketTransfer = new SocketTransfer({
             port: settings.localPort,
             strategy: settings.loadBalance.strategy,
-            targets: successPorts.map(port => ({ id: port })),
-            // heartbeat: 30e3,
+            targets,
+            heartbeat: 15e3,
           });
 
           Manager.socketTransfer.on('health:check:failed', Manager.healCluster);
@@ -378,6 +437,8 @@ export class Manager {
         /* sync status */
         .then(() => {
           Manager.syncConnected(true);
+          clearInterval(Manager.trafficTimer);
+          Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat)
         })
         .then(() => {
           resolve({
@@ -409,6 +470,8 @@ export class Manager {
           await Manager.socketTransfer?.stop();
           Manager.socketTransfer = null;
           Manager.clusterConfig = [];
+          Manager.deadMap = {};
+          clearInterval(Manager.trafficTimer);
         })
         .then(async () => {
           await Manager.disableProxy();

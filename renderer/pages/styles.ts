@@ -135,6 +135,9 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     list: {
       width: "100%"
     },
+    sub: {
+      marginLeft: '10px'
+    },
     textField: {
       marginBottom: `${theme.spacing(2)}px !important`
     },

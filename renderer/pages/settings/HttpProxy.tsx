@@ -43,9 +43,9 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
       <If
         condition={enable}
         then={
-          <ListItem>
+          <ListItem className={styles.sub}>
             <ListItemText
-              primary={t('http_proxy_port')}
+              primary={`↳ ${t('http_proxy_port')}`}
               secondary={t('restart_when_changed')}
             />
             <ListItemSecondaryAction>

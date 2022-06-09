@@ -30,6 +30,7 @@ import FooterBar from '../components/FooterBar';
 import StatusBar from '../components/StatusBar';
 import StatusBarConnection from '../components/BarItems/StatusBarConnection';
 import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
+import StatusBarTraffic from "../components/BarItems/StatusBarTraffic";
 
 import ServerList from "./home/ServerList";
 import AddServerDialog from "./home/AddServerDialog";
@@ -255,7 +256,8 @@ const HomePage: React.FC = () => {
             fontSize='small'
             className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}
           />,
-          <StatusBarNetwork key="status_bar_network" delay={delay}/>
+          <StatusBarNetwork key="status_bar_network" delay={delay}/>,
+          <StatusBarTraffic key="status_bar_traffic" />
         ]}
         right={[
           <StatusBarConnection

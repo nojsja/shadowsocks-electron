@@ -10,19 +10,10 @@
   "files.trimTrailingWhitespace": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "workbench.colorCustomizations": {
-    "statusBarItem.hoverBackground": "#ab307e",
-    "titleBar.inactiveBackground": "#83256199",
     "titleBar.inactiveForeground": "#e7e7e799",
-    "sash.hoverBorder": "#ab307e",
-    "statusBarItem.remoteBackground": "#832561",
-    "statusBarItem.remoteForeground": "#e7e7e7",
-    "statusBar.background": "#832561",
-    "statusBar.foreground": "#e7e7e7",
-    "titleBar.activeBackground": "#832561",
     "titleBar.activeForeground": "#e7e7e7",
     "tab.activeBorder": "#aa0000"
   },
-  "peacock.color": "#832561",
   "files.exclude": {},
   "colorTabs.config": [
     {
@@ -38,7 +29,8 @@
     {
       "regex": "renderer/\\.*",
       "color": "#7fff00",
-      "label": "CORE"
+      "label": "WEB"
     },
-  ]
+  ],
+  "window.title": "~[CORE]~${separator}${separator}${separator}${dirty}${activeEditorShort}${separator}${rootName}${separator}${appName}"
 }
