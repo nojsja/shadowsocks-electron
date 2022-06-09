@@ -20,7 +20,7 @@
     "statusBar.foreground": "#e7e7e7",
     "titleBar.activeBackground": "#832561",
     "titleBar.activeForeground": "#e7e7e7",
-    "tab.activeBorder": "#aa0000"
+    "tab.activeBorder": "#7fff00"
   },
   "peacock.color": "#832561",
   "files.exclude": {},

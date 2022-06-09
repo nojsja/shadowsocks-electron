@@ -11,6 +11,10 @@ export enum ALGORITHM {
   WEIGHTS_MINIMUM_CONNECTION = 'WEIGHTS_MINIMUM_CONNECTION', // 权重最小连接数
 }
 
+export interface Traffic {
+  GB: number, MB: number, KB: number
+};
+
 export const encryptMethods = [
   "none",
   "aes-128-gcm",
@@ -166,6 +170,7 @@ export interface Status {
   delay: number | null | '';
   mode?: ServerMode,
   clusterId?: string,
+  traffic: Traffic
 }
 
 export type Notification = OptionsObject;

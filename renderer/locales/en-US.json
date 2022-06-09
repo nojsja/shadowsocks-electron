@@ -1,4 +1,5 @@
 {
+  "traffic": "Traffic",
   "only_for_server_groups": "Only for the subscription server groups (right click groups on the server list and function menu will pop up)",
   "enable_load_balance": "Enable load-balancing",
   "disable_load_balance": "Disable load-balancing",

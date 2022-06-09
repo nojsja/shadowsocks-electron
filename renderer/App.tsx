@@ -49,6 +49,13 @@ ipcRenderer.on("connected", (e, message : { status: boolean, mode: ServerMode })
   store.dispatch(setSetting('serverMode', message.mode));
 });
 
+ipcRenderer.on("traffic", (e, message: { traffic: number }) => {
+  const KB = (message.traffic / 1024);
+  const MB = (KB / 1024);
+  const GB = (MB / 1024);
+  store.dispatch(setStatus('traffic', { KB, MB, GB }));
+});
+
 prepareForLanguage(getDefaultLang());
 
 const App: React.FC = () => {
