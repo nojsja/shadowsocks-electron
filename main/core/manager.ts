@@ -60,44 +60,38 @@ export class Manager {
   static async healCluster(targets: Target[]) {
     const abnormalPorts: (number | string)[] = [];
     const abnormalClients: (SSRClient | SSClient)[] = [];
-    const normalOrDeadClients: (SSRClient | SSClient)[] = [];
-    const deadTargets: string[] = [];
+    const normalClients: (SSRClient | SSClient)[] = [];
 
     targets.forEach(target => {
       if (Manager.deadMap[target.confId as string] !== undefined) {
         // when healed over than 3 times, make it be dead, reduce system resources.
-        if (Manager.deadMap[target.confId as string] > 3) {
-          deadTargets.push(target.confId);
-        } else {
-          abnormalPorts.push(target.id);
-          Manager.deadMap[target.confId as string] += 1;
-        }
+        Manager.deadMap[target.confId as string] += 1;
       } else {
         Manager.deadMap[target.confId as string] = 1;
-        abnormalPorts.push(target.id)
       }
+      abnormalPorts.push(target.id)
     });
 
     /* get healthy/unhealthy cluster nodes */
     Manager.pool.forEach(client => {
-      if (
-        (!deadTargets.includes(client.config.id)) &&
-        (abnormalPorts.includes(client.settings.localPort) || !client.connected)
-      ) {
-        abnormalClients.push(client);
-      } else {
-        normalOrDeadClients.push(client);
+      if (abnormalPorts.includes(client.settings.localPort)) {
+        return abnormalClients.push(client);
       }
+      if (!client.connected) {
+        abnormalPorts.push(client.settings.localPort);
+        return abnormalClients.push(client);
+      }
+      normalClients.push(client);
     });
 
     info.bold(
-      '>> abnormal client that need to heal: ',
+      '>> abnormal clients that need to heal: ',
       abnormalClients.map(client => client.settings.localPort)
     );
 
     info.underline(
-      `>> ${normalOrDeadClients.length} normal or dead client: `,
-      normalOrDeadClients.map(client => client.settings.localPort)
+      `>> ${normalClients.length} normal clients: `,
+      normalClients.map(client => client.settings.localPort)
     );
 
     warning('>> dead client map: ', JSON.stringify(Manager.deadMap, null, 2));
@@ -105,7 +99,7 @@ export class Manager {
     if (!abnormalClients.length) return;
 
     /* set healthy cluster nodes to pool / socket transfer */
-    Manager.pool = normalOrDeadClients;
+    Manager.pool = normalClients;
     Manager.socketTransfer?.setTargetsWithFilter((target) => {
       return !abnormalPorts.includes(target.id);
     });
@@ -192,6 +186,8 @@ export class Manager {
               }
             ]);
             hasSuccess += 1;
+          } else {
+            createdClients[i].connected = false;
           }
         });
 

@@ -43,7 +43,7 @@ export class SocketTransfer extends EventEmitter {
     return net.createServer((c) => {
       const target = this.lb.pickOne();
 
-      console.log('pick target -> ', target.id);
+      console.log('pick target -> ', target?.id);
 
       if (!target || !target.id) {
         this.onLoadBalancerError(new Error('no available target!'));

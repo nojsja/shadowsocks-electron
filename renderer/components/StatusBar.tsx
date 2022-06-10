@@ -37,10 +37,26 @@ const useStyles = makeStyles((theme: Theme) =>
         direction: 'rtl',
         alignItems: 'center',
         verticalAlign: 'top'
+      },
+      '& .status-bar-item': {
+        display: 'flex',
+        alignItems: 'center',
+        marginLeft: theme.spacing(.2),
+        marginRight: theme.spacing(.2),
       }
     },
   })
 );
+
+export const StatusBarItem: React.FC<{}> = (props) => {
+  return (
+    <div className="status-bar-item">
+      {
+        props.children
+      }
+    </div>
+  );
+}
 
 const StatusBar: React.FC<StatusBarProps> =  (props) => {
   const styles = useStyles();
@@ -49,10 +65,10 @@ const StatusBar: React.FC<StatusBarProps> =  (props) => {
   return (
     <div className={styles['status-bar-wrapper']}>
       <div className={'left-pannel'}>
-        { left }
+        { left.map(item => <StatusBarItem key={item.key as string}>{item}</StatusBarItem>) }
       </div>
       <div className={'right-pannel'}>
-        { right }
+        { right.map(item => <StatusBarItem key={item.key as string}>{item}</StatusBarItem>) }
       </div>
     </div>
   );

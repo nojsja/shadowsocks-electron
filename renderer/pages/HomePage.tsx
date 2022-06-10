@@ -257,7 +257,7 @@ const HomePage: React.FC = () => {
             className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}
           />,
           <StatusBarNetwork key="status_bar_network" delay={delay}/>,
-          <StatusBarTraffic />
+          <StatusBarTraffic key="status_bar_traffic" />
         ]}
         right={[
           <StatusBarConnection
