@@ -61,32 +61,44 @@ export const setStartupOnBoot = (on: boolean): ThunkAction<void, RootState, unkn
   }
 }
 
-export const setHttpProxy = (
-  params: {
-    enable: boolean, port: number,
+export const setHttpProxy =
+  (params: {
+    enable: boolean,
+    port: number,
     proxyPort: number
-  }) => {
-  const { enable, port, proxyPort } = params;
-  const action = `${enable ? 'start' : 'stop'}HttpProxyServer`
-  MessageChannel
-    .invoke('main', 'service:main', {
-      action: action,
-      params: { port, proxyPort }
-    });
+  }): ThunkAction<void, RootState, unknown, AnyAction> => {
+
+  return (dispatch) => {
+    const { enable, port, proxyPort } = params;
+    const action = `${enable ? 'start' : 'stop'}HttpProxyServer`
+    MessageChannel
+      .invoke('main', 'service:main', {
+        action: action,
+        params: { port, proxyPort }
+      })
+      .then(rsp => {
+        if (rsp.code !== 200) {
+          dispatch(enqueueSnackbar(rsp.result, { variant: 'warning' }));
+        }
+      });;
+  };
 }
 
-export const setPacServer = (
-  params: {
-    enable: boolean,
-    pacPort: number
-  }) => {
-  const { enable, pacPort } = params;
-  const action = `${enable ? 'start' : 'stop'}PacServer`
-  MessageChannel
-    .invoke('main', 'service:main', {
-      action: action,
-      params: { pacPort }
-    });
+export const setPacServer = (params: {enable: boolean, pacPort: number}): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    const { enable, pacPort } = params;
+    const action = `${enable ? 'start' : 'stop'}PacServer`
+    MessageChannel
+      .invoke('main', 'service:main', {
+        action: action,
+        params: { pacPort }
+      })
+      .then(rsp => {
+        if (rsp.code !== 200) {
+          dispatch(enqueueSnackbar(rsp.result, { variant: 'warning' }));
+        }
+      });
+  };
 }
 
 export const setAclUrl = (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {

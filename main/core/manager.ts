@@ -1,7 +1,9 @@
 import electronIsDev from "electron-is-dev";
 import { EventEmitter } from "events";
 import os from 'os';
+import { BrowserWindow } from "electron";
 
+import { i18n } from '../electron';
 import logger, { info, warning } from "../logs";
 
 import checkPortInUse from "./helpers/port-checker";
@@ -12,6 +14,7 @@ import { Proxy } from "./proxy";
 import randomPicker from "./helpers/random-picker";
 import { Target } from "./LoadBalancer/types";
 import { Config, Settings } from "../types/extention";
+import { ALGORITHM } from "./LoadBalancer";
 
 const platform = os.platform();
 
@@ -24,7 +27,7 @@ export class Manager {
   static clusterConfig: Config[]; // cluster server configs
   static event: EventEmitter = new EventEmitter(); // event center
   static deadMap: { [key: string]: number } = {}; // dead client records
-  static heartbeat: number = 60e3;
+  static heartbeat: number = 15e3;
   static trafficTimer: NodeJS.Timer;
 
   static syncConnected(connected: boolean) {
@@ -37,11 +40,16 @@ export class Manager {
   }
 
   static syncTraffic() {
-    if ((global as any)?.win?.webContents && Manager.socketTransfer) {
-      (global as any)?.win.webContents.send("traffic", {
-        traffic: Manager.socketTransfer.bytesTransfer
-      });
+    if (
+      !(global as any)?.win?.webContents
+      || !((global as any).win as BrowserWindow).isVisible()
+      || !Manager.socketTransfer
+    ) {
+      return;
     }
+    (global as any)?.win.webContents.send("traffic", {
+      traffic: Manager.socketTransfer.bytesTransfer
+    });
   }
 
   /**
@@ -84,7 +92,7 @@ export class Manager {
       normalClients.push(client);
     });
 
-    info.bold(
+    warning.bold(
       '>> abnormal clients that need to heal: ',
       abnormalClients.map(client => client.settings.localPort)
     );
@@ -225,7 +233,7 @@ export class Manager {
       } else {
         resolve({
           code: 600,
-          result: `Unknown shadowsocks client type: ${config.type}`
+          result: `${i18n.__('unknown_shadowsocks_client_type')} ${config.type}`
         });
       }
     });
@@ -308,31 +316,66 @@ export class Manager {
       .then(results => {
         if (results[0]?.isInUse) {
           warning(`Port ${settings.localPort} is in use`);
-          throw new Error(`Port already in use: ${settings.localPort}`);
+          throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
         }
       })
       /* enable proxy */
       .then(async () => {
         await Manager.enableProxy(settings);
       })
-      /* create client */
-      .then(() => Manager.spawnClient(config, settings))
-      /* connect client */
-      .then(async rsp => {
-        if (rsp.code === 200) {
-          Manager.ssLocal = rsp.result as (SSRClient | SSClient);
-          return (rsp.result as (SSRClient | SSClient)).connect();
-        } else {
-          return rsp;
+      .then(async () => {
+        const ports = await pickPorts(
+          settings.localPort + 1, 1,
+          [settings.pacPort, settings.httpProxy.port]
+        );
+        if (!ports.length) {
+          throw new Error(i18n.__('no_available_ports'));
         }
+        return ports[0];
       })
-      /* sync status */
-      .then(rsp => {
+      /* create client */
+      .then((port: number) => Manager.spawnClient(config, { ...settings, localPort: port }))
+      /* connect client */
+      .then(async (rsp) => {
+        if (rsp.code !== 200) {
+          throw new Error(rsp.result as string);
+        }
+        Manager.ssLocal = rsp.result as (SSRClient | SSClient);
+        return (rsp.result as (SSRClient | SSClient)).connect();
+      })
+      .then(async (rsp) => {
+        if (rsp.code !== 200) {
+          throw new Error(i18n.__('server_connect_failed'));
+        }
+        Manager.socketTransfer = new SocketTransfer({
+          port: settings.localPort,
+          strategy: ALGORITHM.POLLING,
+          targets: [{
+            id: (Manager.ssLocal as (SSClient | SSRClient)).settings.localPort,
+            confId: (Manager.ssLocal as (SSClient | SSRClient)).config.id
+          }],
+          heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3*3, 60e3*5]
+        });
+        Manager.socketTransfer.on('health:check:failed', (targets: Target[]) => {
+          warning.underline('health:check:failed >>', targets[0].id);
+        });
+
+        await Manager.socketTransfer.listen();
         Manager.syncConnected(!!Manager.ssLocal?.connected);
-        return rsp;
+
+        clearInterval(Manager.trafficTimer);
+        Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat);
+        Manager.syncTraffic();
+
+        return {
+          code: 200,
+          result: 'success'
+        };
       })
       .catch(err => {
+        console.log(err);
         Manager.disableProxy();
+        Manager.syncConnected(false);
         return {
           code: 600,
           result: err?.toString()
@@ -341,8 +384,11 @@ export class Manager {
   }
 
   static async stopClient() {
-    await Manager.disableProxy();
     await Manager.kill(Manager.ssLocal);
+    await Manager.disableProxy();
+    await Manager.socketTransfer?.stop();
+    Manager.socketTransfer = null;
+    clearInterval(Manager.trafficTimer);
     Manager.syncConnected(!!Manager.ssLocal?.connected);
   }
 
@@ -366,7 +412,7 @@ export class Manager {
         .then(results => {
           if (results[0]?.isInUse) {
             warning(`Port ${settings.localPort} is in use`);
-            throw new Error(`Port already in use: ${settings.localPort}`);
+            throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
           }
         })
         /* enable proxy */
@@ -376,7 +422,7 @@ export class Manager {
         /* select clients */
         .then(async () => {
           if (!configs.length) {
-            throw new Error('No server configs found');
+            throw new Error(i18n.__('no_server_configs_found'));
           }
 
           Manager.clusterConfig = configs;
@@ -404,7 +450,7 @@ export class Manager {
               .map(rsp => rsp.result as (SSRClient | SSClient));
 
           if (!Manager.pool.length) {
-            throw new Error('Warning: Pool is empty')
+            throw new Error(i18n.__('connections_pool_is_empty_tips'))
           }
 
           const cons = await Promise.all(Manager.pool.map(client => client.connect()));
@@ -420,14 +466,14 @@ export class Manager {
           });
 
           if (!targets.length) {
-            throw new Error('Cluster connect failed');
+            throw new Error(i18n.__('cluster_connect_failed'));
           }
 
           Manager.socketTransfer = new SocketTransfer({
             port: settings.localPort,
             strategy: settings.loadBalance.strategy,
             targets,
-            heartbeat: 15e3,
+            heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3*3, 60e3*5],
           });
 
           Manager.socketTransfer.on('health:check:failed', Manager.healCluster);
@@ -438,7 +484,8 @@ export class Manager {
         .then(() => {
           Manager.syncConnected(true);
           clearInterval(Manager.trafficTimer);
-          Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat)
+          Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat);
+          Manager.syncTraffic();
         })
         .then(() => {
           resolve({

@@ -86,24 +86,28 @@ const HomePage: React.FC = () => {
   }, [connectByMode]);
 
   useBus('action:get:reconnect-http', (event: EventAction) => {
-    selectedServer && setHttpProxy({
-      ...settings.httpProxy,
-      proxyPort: settings.localPort
-    });
+    selectedServer && dispatch(
+      setHttpProxy({
+        ...settings.httpProxy,
+        proxyPort: settings.localPort
+      })
+    );
   }, [settings, selectedServer]);
 
   useBus('action:get:reconnect-pac', (event: EventAction) => {
     if (!selectedServer) return;
 
-    setPacServer({
-      pacPort: settings.pacPort,
-      enable:
-        event.payload?.enable === true
-          ? true
-          : event.payload?.enable === false
-          ? false
-          : settings.mode === 'PAC'
-    });
+    dispatch(
+      setPacServer({
+        pacPort: settings.pacPort,
+        enable:
+          event.payload?.enable === true
+            ? true
+            : event.payload?.enable === false
+              ? false
+              : settings.mode === 'PAC'
+      })
+    );
   }, [settings, selectedServer]);
 
   /* status checker on mount */
