@@ -1,4 +1,4 @@
-import React, { useState, useMemo, memo, useEffect, useContext } from "react";
+import React, { useState, useMemo, memo, useLayoutEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { clipboard } from "electron";
 import {
@@ -105,7 +105,10 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const context = useContext(menuContext);
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
-  const [expanded, handleChange] = useState(!!item.servers?.find(server => server.id === selectedServer));
+  const [expanded, handleChange] = useState(
+    !!item.servers?.find(server => server.id === selectedServer)
+    && settings.serverMode === 'single'
+  );
   const { serverMode, clusterId } = settings;
   const menuContents = useMemo(() => {
     const items = [
@@ -129,9 +132,11 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     dispatch(enqueueSnackbarAction(message, options))
   };
 
-  useEffect(() => {
-    handleChange(!!item.servers?.find(server => server.id === selectedServer));
-  }, [selectedServer]);
+  useLayoutEffect(() => {
+    if (settings.serverMode === 'cluster') {
+      handleChange(false);
+    }
+  }, [settings.serverMode]);
 
   const handleRemoveButtonClick = () => {
     props.onRemove?.(item.id);

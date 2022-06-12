@@ -307,6 +307,7 @@ export class Manager {
    *  - enable proxy
    *  - create client
    *  - connect client
+   *  - init socket transfer
    *  - sync status
    */
   static async startClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
@@ -343,6 +344,8 @@ export class Manager {
         Manager.ssLocal = rsp.result as (SSRClient | SSClient);
         return (rsp.result as (SSRClient | SSClient)).connect();
       })
+      /* init socket transfer */
+      /* sync status */
       .then(async (rsp) => {
         if (rsp.code !== 200) {
           throw new Error(i18n.__('server_connect_failed'));
@@ -401,7 +404,7 @@ export class Manager {
    * total steps:
    *  - change mode to cluster
    *  - enable proxy
-   *  - select clients
+   *  - pick clients
    *  - connect clients and init socket transfer
    *  - sync status
    */
@@ -419,7 +422,7 @@ export class Manager {
         .then(async () => {
           await Manager.enableProxy(settings);
         })
-        /* select clients */
+        /* pick clients */
         .then(async () => {
           if (!configs.length) {
             throw new Error(i18n.__('no_server_configs_found'));
@@ -442,7 +445,8 @@ export class Manager {
               })
             );
         })
-        /* connect clients and init socket transfer */
+        /* connect clients */
+        /* init socket transfer */
         .then(async (results) => {
           Manager.pool =
             results

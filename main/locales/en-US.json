@@ -15,5 +15,6 @@
   "connections_pool_is_empty_tips": "Warning: Connections Pool is empty, the client is offline",
   "cluster_connect_failed": "Connect cluster failed",
   "unknown_shadowsocks_client_type": "Unknown shadowsocks client type:",
-  "server_connect_failed": "Connect server failed"
+  "server_connect_failed": "Connect server failed",
+  "failed_to_start_socket_transfer": "Failed to start socket transfer"
 }

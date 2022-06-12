@@ -145,7 +145,7 @@ export class SocketTransfer extends EventEmitter {
         if (error && error.code === 'EADDRINUSE') {
           reject(`${i18n.__('port_already_used')}${this.port}`);
         } else {
-          reject(error ?? new Error('Socket Transfer failed to start'));
+          reject(error ?? new Error(i18n.__('failed_to_start_socket_transfer')));
         }
       });
       this.server.listen(this.port, () => {

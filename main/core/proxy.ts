@@ -60,7 +60,7 @@ export class LinuxProxy extends Proxy {
       await setupIfFirstRun();
       await PS.generateFullPac(this.localPort ?? 1080);
       await gsettings.setPacProxy(
-        `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
+        `http://127.0.0.1:${this.pacPort ?? 1090}/proxy.pac`
       );
     }
     logger.info("Set proxy on");
@@ -84,7 +84,7 @@ export class WinProxy extends Proxy {
       await setupIfFirstRun();
       await PS.generateFullPac(this.localPort ?? 1095);
       await sysproxy.setPacProxy(
-        `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
+        `http://127.0.0.1:${this.pacPort ?? 1090}/proxy.pac`
       );
     }
     logger.info("Set proxy on");
@@ -109,7 +109,7 @@ export class DarwinProxy extends Proxy {
       await PS.generateFullPac(this.localPort ?? 1080);
       // PS.startPacServer(this.pacPort ?? 1090);
       await networksetup.setPacProxy(
-        `http://localhost:${this.pacPort ?? 1090}/proxy.pac`
+        `http://127.0.0.1:${this.pacPort ?? 1090}/proxy.pac`
       );
     }
     logger.info("Set proxy on");
