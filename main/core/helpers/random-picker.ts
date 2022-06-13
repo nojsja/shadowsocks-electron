@@ -6,7 +6,7 @@ export default function randomPicker(total: any[], count: number) {
   for (let i = 0; i < count; i++) {
       const index = ~~(Math.random() * num) + i;
       if(result.includes(total[index])) continue;
-      result[i] = total[index];
+      (total[index] !== undefined) && (result[i] = total[index]);
       total[index] = total[i];
       num--;
   }

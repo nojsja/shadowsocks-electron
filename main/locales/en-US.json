@@ -8,5 +8,13 @@
   "port_already_used": "The port is already used: ",
   "action_warning": "Warning",
   "action_error": "Error",
-  "action_info": "Info"
+  "action_info": "Info",
+  "port_already_in_use": "Port is already in use:",
+  "no_available_ports": "No available ports",
+  "no_server_configs_found": "No server configs found",
+  "connections_pool_is_empty_tips": "Warning: Connections Pool is empty, the client is offline",
+  "cluster_connect_failed": "Connect cluster failed",
+  "unknown_shadowsocks_client_type": "Unknown shadowsocks client type:",
+  "server_connect_failed": "Connect server failed",
+  "failed_to_start_socket_transfer": "Failed to start socket transfer"
 }

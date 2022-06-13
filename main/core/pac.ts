@@ -4,10 +4,14 @@ import path from "path";
 import os from "os";
 import fetch from "node-fetch";
 import fsExtra from "fs-extra";
+import URL from 'url';
 
 import logger from "../logs";
 import { pacDir } from "../config";
 import { i18n } from "../electron";
+import { request } from "../utils/http-request";
+
+const socks = require('socks');
 
 let server: PacServer | null;
 const platform = os.platform();
@@ -66,29 +70,66 @@ export class PacServer {
   }
 
   static async downloadAndGeneratePac(url: string, text: string) {
+    if (!url && !text) {
+      throw new Error(i18n.__('invalid_parameter'));
+    }
+
     logger.info(`Downloading GFWList from ${url}...`);
 
-    let base64 = "";
-
-    try {
-      if (url) {
-        logger.info("Downloaded GFWList and generated PAC file without port");
-        const response = await fetch(url);
-        base64 = await response.text();
-      } else if (text) {
-        logger.info("Parse GFWList base64 text and generated PAC file without port");
-        base64 = text;
-      } else {
-        throw new Error(i18n.__('invalid_parameter'));
+    return new Promise<string>((resolve, reject) => {
+      if (text) {
+        logger.info("Parsing GFWList base64 text and generating PAC file without port");
+        resolve(text);
       }
+      if (url) {
+        logger.info("Downloading GFWList and generating PAC file without port");
+        const parsedUrl = URL.parse(url);
+        const host = parsedUrl.hostname;
+        const protocol = parsedUrl.protocol;
+        const port = parsedUrl.port ?? (protocol === 'https:' ? 443 : 80);
+        return fetch(url)
+          .then(response => {
+              return response.text();
+          })
+          .then(text => {
+            resolve(text);
+          })
+          .catch(() => {
+            const agentConf = {
+              ipaddress: '127.0.0.1',
+              port: 1080,
+              type: 5,
+            };
 
+            return request({
+              url,
+              method: "GET",
+              agent: new socks.Agent({
+                proxy: agentConf,
+                target: { host, port },
+                authentication: {
+                  username: '',
+                  password: ''
+                }
+              })
+            })
+            .then(rsp => {
+              if (rsp.error) {
+                return reject(new Error(rsp.error.message));
+              }
+              resolve(rsp.data);
+            });
+          })
+      }
+    })
+    .then((base64: string) => {
       const base64Text = Buffer.from(base64, "base64").toString("ascii");
-      await PacServer.generatePacWithoutPort(base64Text);
-
-    } catch (err) {
+      return PacServer.generatePacWithoutPort(base64Text);
+    })
+    .catch(err => {
       logger.error(err);
       return Promise.reject(err);
-    }
+    });
   }
 
   core: http.Server;

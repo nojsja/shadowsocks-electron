@@ -11,6 +11,9 @@ import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
 import { ProxyURI } from '../core/helpers/proxy-url';
+import checkPortInUse from "../core/helpers/port-checker";
+import { warning } from '../logs';
+import { i18n } from '../electron';
 
 const { Manager } = manager;
 const { HttpProxyServer : HPS } = http;
@@ -180,7 +183,7 @@ export class MainService implements MainServiceType {
       return HPS.createHttpServer({...params, host: '127.0.0.1'}, (error) => {
         resolve({
           code: error ? 500 : 200,
-          result: error ?? ''
+          result: (error && error.toString()) ?? ''
         });
       });
     });
@@ -191,7 +194,7 @@ export class MainService implements MainServiceType {
       return HPS.stopHttpServer(params.port, '127.0.0.1', (error) => {
         resolve({
           code: error ? 500 : 200,
-          result: error ?? ''
+          result: (error && error.toString()) ?? ''
         });
       });
     });
@@ -199,11 +202,28 @@ export class MainService implements MainServiceType {
 
   async startPacServer(params: { pacPort: number }) {
     return new Promise(resolve => {
-      PS.startPacServer(params.pacPort);
-      resolve({
-        code: 200,
-        result: ''
-      });
+      checkPortInUse([params.pacPort], '127.0.0.1')
+        .then(results => {
+          if (results[0]?.isInUse) {
+            warning(`Pac port ${params.pacPort} is in use`);
+            throw new Error(`${i18n.__('port_already_in_use')} ${params.pacPort}`);
+          }
+        })
+        .then(() => {
+          PS.startPacServer(params.pacPort);
+        })
+        .then(() => {
+          resolve({
+            code: 200,
+            result: 'success'
+          });
+        })
+        .catch(error => {
+          resolve({
+            code: 500,
+            result: error && error.toString()
+          });
+        })
     });
   }
 

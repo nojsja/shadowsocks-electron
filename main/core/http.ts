@@ -1,10 +1,11 @@
-import { InnerCallback } from '../types/extention';
-import checkPortInUse from './helpers/port-checker';
-
 import { EventEmitter } from 'events';
 import url from 'url';
 import http from 'http';
 import { Duplex } from 'stream';
+
+import { InnerCallback } from '../types/extention';
+import checkPortInUse from './helpers/port-checker';
+import { i18n } from '../electron';
 
 const socks = require('socks');
 let httpServer: HttpProxyServer | null;
@@ -54,7 +55,7 @@ export class HttpProxyServer extends EventEmitter {
     HttpProxyServer.stopHttpServer(port, host);
     checkPortInUse([port], host).then(results => {
       if (results[0].isInUse) {
-        return callback(new Error(`Port: ${port} is already used.`));
+        return callback(new Error(`${i18n.__('port_already_used')} ${port}`));
       }
       console.log('Start http proxy server...');
       httpServer = new HttpProxyServer({

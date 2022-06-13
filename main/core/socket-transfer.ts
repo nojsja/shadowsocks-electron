@@ -11,24 +11,26 @@ export interface SocketTransferOptions {
   port?: number;
   strategy?: ALGORITHM;
   targets: Target[];
-  heartbeat?: number;
+  heartbeat?: number | number[];
 }
 
 export class SocketTransfer extends EventEmitter {
   public bytesTransfer = 0;
+  public speed = '';
   private port: number;
   private targets: Target[];
-  private timer: NodeJS.Timeout;
+  private timer: NodeJS.Timeout | null;
   private server: net.Server;
   private lb: LoadBalancer;
-  private strategy: ALGORITHM
-  private heartbeat: number
+  private strategy: ALGORITHM;
+  private heartbeat: number[];
 
   constructor(options: SocketTransferOptions) {
     super();
-    this.heartbeat = options.heartbeat || 60e3*5; // 5min
+    this.heartbeat = ([] as number[]).concat(options.heartbeat ?? 60e3*5);
     this.port = options.port || 1080;
     this.server = this.init();
+    this.timer = null;
     this.server.on('error', this.onError);
     this.targets = options.targets;
     this.strategy = options.strategy || ALGORITHM.POLLING;
@@ -36,13 +38,12 @@ export class SocketTransfer extends EventEmitter {
       algorithm: this.strategy,
       targets: this.targets,
     });
-    this.timer = setInterval(this.healthCheck, this.heartbeat);
+    this.setHealthCheckTimer();
   }
 
   private init() {
     return net.createServer((c) => {
       const target = this.lb.pickOne();
-
       console.log('pick target -> ', target?.id);
 
       if (!target || !target.id) {
@@ -63,6 +64,18 @@ export class SocketTransfer extends EventEmitter {
       remote.on('error', (error) => this.onRemoteError(error, +target.id));
 
     });
+  }
+
+  private setHealthCheckTimer = (immediate: boolean = false) => {
+    if (this.heartbeat.length > 1) {
+      immediate && this.healthCheck();
+      this.timer = setTimeout(() => {
+        this.setHealthCheckTimer(true);
+      }, this.heartbeat.shift() as number);
+    } else {
+      immediate && this.healthCheck();
+      this.timer = setInterval(this.healthCheck, this.heartbeat[0]);
+    }
   }
 
   private onLoadBalancerError = (error: Error) => {
@@ -121,7 +134,7 @@ export class SocketTransfer extends EventEmitter {
   }
 
   public stopHealthCheck() {
-    clearInterval(this.timer);
+    this.timer && clearInterval(this.timer);
   }
 
   public listen = (port?: number) => {
@@ -132,7 +145,7 @@ export class SocketTransfer extends EventEmitter {
         if (error && error.code === 'EADDRINUSE') {
           reject(`${i18n.__('port_already_used')}${this.port}`);
         } else {
-          reject(error ?? new Error('Socket Transfer failed to start'));
+          reject(error ?? new Error(i18n.__('failed_to_start_socket_transfer')));
         }
       });
       this.server.listen(this.port, () => {
@@ -164,13 +177,18 @@ export class SocketTransfer extends EventEmitter {
     this.lb.setTargets(this.targets);
   }
 
-  public setHeartBeat = (heartbeat: number) => {
-    if (typeof heartbeat !== 'number' || heartbeat < 15) {
-      throw new Error('SocketTransfer: heartbeat must be an positive number and no less that 15(seconds).');
-    }
-    this.heartbeat = heartbeat; // 5min
-    clearInterval(this.timer);
-    this.timer = setInterval(this.healthCheck, this.heartbeat);
+  public setHeartBeat = (heartbeat: (number[] | number)) => {
+    const value = ([] as number[]).concat(heartbeat);
+    if (!value.length) return;
+
+    value.forEach(val => {
+      if (typeof val !== 'number' || val < 5) {
+        throw new Error('SocketTransfer: heartbeat must be an positive number and no less that 5(seconds).');
+      }
+    });
+    this.heartbeat = value; // 5min
+    this.timer && clearInterval(this.timer);
+    this.setHealthCheckTimer();
   }
 
   public setTargets = (targets: Target[]) => {

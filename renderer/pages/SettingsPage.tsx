@@ -246,7 +246,7 @@ const SettingsPage: React.FC = () => {
               enable: value
             };
             dispatch(setSetting<'httpProxy'>(key, value))
-            setHttpProxy({ ...value, proxyPort: settings.localPort });
+            dispatch(setHttpProxy({ ...value, proxyPort: settings.localPort }));
             return;
           case 'httpProxyPort':
             value = {
@@ -254,7 +254,7 @@ const SettingsPage: React.FC = () => {
               port: value
             };
             dispatch(setSetting<'httpProxy'>('httpProxy', value))
-            setHttpProxy({ ...value, proxyPort: settings.localPort });
+            dispatch(setHttpProxy({ ...value, proxyPort: settings.localPort }));
             return;
           case 'loadBalance':
             value = {

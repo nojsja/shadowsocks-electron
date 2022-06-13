@@ -47,8 +47,8 @@ export const warning = (...args: any) => console.log(chalk.yellow(...args));
 export const error = (...args: any) => console.log(chalk.red(...args));
 export const info = (...args: any) => console.log(chalk.green(...args));
 
-warning.underline = () => (...args: any) => console.log(chalk.underline.yellow(...args));
-warning.bold = () => (...args: any) => console.log(chalk.bold.yellow(...args));
+warning.underline = (...args: any) => console.log(chalk.underline.yellow(...args));
+warning.bold = (...args: any) => console.log(chalk.bold.yellow(...args));
 error.underline = (...args: any) => console.log(chalk.underline.red(...args));
 error.bold = (...args: any) => console.log(chalk.bold.red(...args));
 info.underline = (...args: any) => console.log(chalk.underline.green(...args));
