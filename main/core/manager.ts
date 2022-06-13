@@ -6,17 +6,21 @@ import { BrowserWindow } from "electron";
 import { i18n } from '../electron';
 import logger, { info, warning } from "../logs";
 
-import checkPortInUse from "./helpers/port-checker";
 import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient } from "./client";
 import pickPorts from "./helpers/port-picker";
 import { Proxy } from "./proxy";
 import randomPicker from "./helpers/random-picker";
 import { Target } from "./LoadBalancer/types";
-import { Config, Settings } from "../types/extention";
+import { Config, Settings, ServiceResult } from "../types/extention";
 import { ALGORITHM } from "./LoadBalancer";
+import {
+  StartClientInterceptor, StartClusterInterceptor, Interceptor,
+} from "./helpers/interceptor";
 
 const platform = os.platform();
+const startClientStep = new StartClientInterceptor();
+const startClusterStep = new StartClusterInterceptor();
 
 export class Manager {
   static mode: 'single' | 'cluster' = 'single'; // running mode
@@ -296,100 +300,92 @@ export class Manager {
     Manager.proxy = null;
   }
 
-   /**
-   * @name startClient start single client mode
-   * @param config ss/ssr config
-   * @param settings global settings
-   * @returns Promise<{ code: number, result: any }>
-   *
-   * total steps:
-   *  - change mode to single
-   *  - enable proxy
-   *  - create client
-   *  - connect client
-   *  - init socket transfer
-   *  - sync status
-   */
-  static async startClient(config: Config, settings: Settings): Promise<{ code: number, result: any }> {
-    /* change mode to single */
-    return this.changeMode('single')
-      .then(() => checkPortInUse([settings.localPort], '127.0.0.1'))
-      .then(results => {
-        if (results[0]?.isInUse) {
-          warning(`Port ${settings.localPort} is in use`);
-          throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
-        }
-      })
-      /* enable proxy */
-      .then(async () => {
-        await Manager.enableProxy(settings);
-      })
-      .then(async () => {
-        const ports = await pickPorts(
-          settings.localPort + 1, 1,
-          [settings.pacPort, settings.httpProxy.port]
-        );
-        if (!ports.length) {
-          throw new Error(i18n.__('no_available_ports'));
-        }
-        return ports[0];
-      })
-      /* create client */
-      .then((port: number) => Manager.spawnClient(config, { ...settings, localPort: port }))
-      /* connect client */
-      .then(async (rsp) => {
-        if (rsp.code !== 200) {
-          throw new Error(rsp.result as string);
-        }
-        Manager.ssLocal = rsp.result as (SSRClient | SSClient);
-        return (rsp.result as (SSRClient | SSClient)).connect();
-      })
-      /* init socket transfer */
-      /* sync status */
-      .then(async (rsp) => {
-        if (rsp.code !== 200) {
-          throw new Error(i18n.__('server_connect_failed'));
-        }
-        Manager.socketTransfer = new SocketTransfer({
-          port: settings.localPort,
-          strategy: ALGORITHM.POLLING,
-          targets: [{
-            id: (Manager.ssLocal as (SSClient | SSRClient)).settings.localPort,
-            confId: (Manager.ssLocal as (SSClient | SSRClient)).config.id
-          }],
-          heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3*3, 60e3*5]
+  /**
+  * @name startClient start single client mode
+  * @param config ss/ssr config
+  * @param settings global settings
+  * @returns Promise<ServiceResult>
+  *
+  * total steps:
+  *  - change mode to single
+  *  - enable proxy
+  *  - create client
+  *  - connect client
+  *  - init socket transfer
+  *  - sync status
+  */
+  static startClient = Interceptor.useAsyncSeries(
+    /* worker */
+    async (config: Config, settings: Settings): Promise<ServiceResult> => {
+      return Promise.resolve()
+        .then(async () => {
+          const ports = await pickPorts(
+            settings.localPort + 1, 1,
+            [settings.pacPort, settings.httpProxy.port]
+          );
+          if (!ports.length) {
+            throw new Error(i18n.__('no_available_ports'));
+          }
+          return ports[0];
+        })
+        /* create client */
+        .then((port: number) => Manager.spawnClient(config, { ...settings, localPort: port }))
+        /* connect client */
+        .then(async (rsp) => {
+          if (rsp.code !== 200) {
+            throw new Error(rsp.result as string);
+          }
+          Manager.ssLocal = rsp.result as (SSRClient | SSClient);
+          return (rsp.result as (SSRClient | SSClient)).connect();
+        })
+        /* init socket transfer */
+        /* sync status */
+        .then(async (rsp) => {
+          if (rsp.code !== 200) {
+            throw new Error(i18n.__('server_connect_failed'));
+          }
+          Manager.socketTransfer = new SocketTransfer({
+            port: settings.localPort,
+            strategy: ALGORITHM.POLLING,
+            targets: [{
+              id: (Manager.ssLocal as (SSClient | SSRClient)).settings.localPort,
+              confId: (Manager.ssLocal as (SSClient | SSRClient)).config.id
+            }],
+            heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3 * 3, 60e3 * 5]
+          });
+          Manager.socketTransfer.on('health:check:failed', (targets: Target[]) => {
+            warning.underline('health:check:failed >>', targets[0].id);
+          });
+
+          await Manager.socketTransfer.listen();
+          Manager.syncConnected(!!Manager.ssLocal?.connected);
+
+          clearInterval(Manager.trafficTimer);
+          Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat);
+          Manager.syncTraffic();
+
+          return {
+            code: 200,
+            result: 'success'
+          };
         });
-        Manager.socketTransfer.on('health:check:failed', (targets: Target[]) => {
-          warning.underline('health:check:failed >>', targets[0].id);
-        });
-
-        await Manager.socketTransfer.listen();
-        Manager.syncConnected(!!Manager.ssLocal?.connected);
-
-        clearInterval(Manager.trafficTimer);
-        Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat);
-        Manager.syncTraffic();
-
-        return {
-          code: 200,
-          result: 'success'
-        };
-      })
-      .catch(err => {
-        console.log(err);
-        Manager.disableProxy();
-        Manager.syncConnected(false);
-        return {
-          code: 600,
-          result: err?.toString()
-        };
-      });
-  }
+    },
+    /* interceptors */
+    [startClientStep],
+    /* fallback */
+    (err) => {
+      warning(err);
+      Manager.disableProxy();
+      Manager.syncConnected(false);
+    }
+  )
 
   static async stopClient() {
     await Manager.kill(Manager.ssLocal);
     await Manager.disableProxy();
-    await Manager.socketTransfer?.stop();
+    if (Manager.socketTransfer) {
+      await Manager.socketTransfer?.stop();
+    }
     Manager.socketTransfer = null;
     clearInterval(Manager.trafficTimer);
     Manager.syncConnected(!!Manager.ssLocal?.connected);
@@ -399,7 +395,7 @@ export class Manager {
    * @name startCluster start cluster mode
    * @param configs subscription group
    * @param settings global settings
-   * @returns Promise<{ code: number, result: any }>
+   * @returns Promise<ServiceResult>
    *
    * total steps:
    *  - change mode to cluster
@@ -408,107 +404,99 @@ export class Manager {
    *  - connect clients and init socket transfer
    *  - sync status
    */
-  static startCluster(configs: Config[], settings: Settings): Promise<{ code: number, result: any }> {
-    return new Promise(resolve => {
-      Manager.changeMode('cluster')
-        .then(() => checkPortInUse([settings.localPort], '127.0.0.1'))
-        .then(results => {
-          if (results[0]?.isInUse) {
-            warning(`Port ${settings.localPort} is in use`);
-            throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
-          }
-        })
-        /* enable proxy */
-        .then(async () => {
-          await Manager.enableProxy(settings);
-        })
-        /* pick clients */
-        .then(async () => {
-          if (!configs.length) {
-            throw new Error(i18n.__('no_server_configs_found'));
-          }
-
-          Manager.clusterConfig = configs;
-          const ports = await pickPorts(
-            settings.localPort + 1, settings.loadBalance.count,
-            [settings.pacPort, settings.httpProxy.port]
-          );
-
-          return Promise.all(
-            randomPicker(configs, ports.length)
-              .map((config, i) => {
-                info.underline('>> pick: ', config.remark);
-                return Manager.spawnClient(
-                  config,
-                  { ...settings, localPort: ports[i] }
-                );
-              })
-            );
-        })
-        /* connect clients */
-        /* init socket transfer */
-        .then(async (results) => {
-          Manager.pool =
-            results
-              .filter(results => results.code === 200)
-              .map(rsp => rsp.result as (SSRClient | SSClient));
-
-          if (!Manager.pool.length) {
-            throw new Error(i18n.__('connections_pool_is_empty_tips'))
-          }
-
-          const cons = await Promise.all(Manager.pool.map(client => client.connect()));
-          const targets: {id: number, confId: string}[] = [];
-
-          cons.forEach((con, i) => {
-            if (con.code === 200 && con.result?.port) {
-              targets.push({
-                id: con.result?.port,
-                confId: Manager.pool[i].config.id
-              });
+  static startCluster = Interceptor.useAsyncSeries(
+    /* worker */
+    async (configs: Config[], settings: Settings): Promise<ServiceResult> => {
+      return new Promise(resolve => {
+        return Promise.resolve()
+          /* pick clients */
+          .then(async () => {
+            if (!configs.length) {
+              throw new Error(i18n.__('no_server_configs_found'));
             }
-          });
 
-          if (!targets.length) {
-            throw new Error(i18n.__('cluster_connect_failed'));
-          }
+            Manager.clusterConfig = configs;
+            const ports = await pickPorts(
+              settings.localPort + 1, settings.loadBalance.count,
+              [settings.pacPort, settings.httpProxy.port]
+            );
 
-          Manager.socketTransfer = new SocketTransfer({
-            port: settings.localPort,
-            strategy: settings.loadBalance.strategy,
-            targets,
-            heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3*3, 60e3*5],
-          });
+            return Promise.all(
+              randomPicker(configs, ports.length)
+                .map((config, i) => {
+                  info.underline('>> pick: ', config.remark);
+                  return Manager.spawnClient(
+                    config,
+                    { ...settings, localPort: ports[i] }
+                  );
+                })
+            );
+          })
+          /* connect clients */
+          /* init socket transfer */
+          .then(async (results) => {
+            Manager.pool =
+              results
+                .filter(results => results.code === 200)
+                .map(rsp => rsp.result as (SSRClient | SSClient));
 
-          Manager.socketTransfer.on('health:check:failed', Manager.healCluster);
+            if (!Manager.pool.length) {
+              throw new Error(i18n.__('connections_pool_is_empty_tips'))
+            }
 
-          await Manager.socketTransfer.listen();
-        })
-        /* sync status */
-        .then(() => {
-          Manager.syncConnected(true);
-          clearInterval(Manager.trafficTimer);
-          Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat);
-          Manager.syncTraffic();
-        })
-        .then(() => {
-          resolve({
-            code: 200,
-            result: Manager.pool.map(client => client.port)
-          });
-        })
-        .catch(err => {
-          warning(err);
-          Manager.disableProxy();
-          resolve({
-            code: 500,
-            result: err?.toString()
-          });
-        });
-    });
-  }
+            const cons = await Promise.all(Manager.pool.map(client => client.connect()));
+            const targets: { id: number, confId: string }[] = [];
 
-  static stopCluster(): Promise<{ code: number, result: any }> {
+            cons.forEach((con, i) => {
+              if (con.code === 200 && con.result?.port) {
+                targets.push({
+                  id: con.result?.port,
+                  confId: Manager.pool[i].config.id
+                });
+              }
+            });
+
+            if (!targets.length) {
+              throw new Error(i18n.__('cluster_connect_failed'));
+            }
+
+            Manager.socketTransfer = new SocketTransfer({
+              port: settings.localPort,
+              strategy: settings.loadBalance.strategy,
+              targets,
+              heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3 * 3, 60e3 * 5],
+            });
+
+            Manager.socketTransfer.on('health:check:failed', Manager.healCluster);
+
+            await Manager.socketTransfer.listen();
+          })
+          /* sync status */
+          .then(() => {
+            Manager.syncConnected(true);
+            clearInterval(Manager.trafficTimer);
+            Manager.trafficTimer = setInterval(Manager.syncTraffic, Manager.heartbeat);
+            Manager.syncTraffic();
+          })
+          .then(() => {
+            resolve({
+              code: 200,
+              result: Manager.pool.map(client => client.port)
+            });
+          })
+      });
+    },
+    /* interceptors */
+    [startClusterStep],
+    /* fallback */
+    (err) => {
+      warning(err);
+      Manager.syncConnected(false);
+      Manager.disableProxy();
+    }
+  )
+
+  static stopCluster(): Promise<ServiceResult> {
     return new Promise(resolve => {
       if (Manager?.socketTransfer) {
         Manager.socketTransfer.off('health:check:failed', Manager.healCluster)
@@ -518,7 +506,9 @@ export class Manager {
         .all(Manager.pool.map(client => Manager.kill(client)))
         .then(async () => {
           Manager.pool = [];
-          await Manager.socketTransfer?.stop();
+          if (Manager.socketTransfer) {
+            await Manager.socketTransfer?.stop();
+          }
           Manager.socketTransfer = null;
           Manager.clusterConfig = [];
           Manager.deadMap = {};

@@ -25,7 +25,7 @@ import checkPortInUse from "./port-checker";
       if (ports.length < count) {
         return pickPorts(
           (ports[ports.length - 1] || start) + 1,
-          (ports.length - count),
+          (count - ports.length),
           excludes
         ).then(newPorts => {
           return ports.concat(newPorts);

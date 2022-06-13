@@ -180,20 +180,22 @@ export class SSClient extends Client {
   disconnect() {
     return new Promise<ServiceResult>((resolve, reject) => {
       this.child?.kill("SIGKILL");
-      this.onDebouncedExited((isAlive: boolean) => {
-        if (isAlive) {
-          reject({
-            code: 500,
-            result: 'failed'
-          });
-        } else {
-          this.connected = false;
-          this.emit('connected', false);
-          resolve({
-            code: 200,
-            result: 'success'
-          });
-        }
+      this.child?.once('exit', () => {
+        this.onDebouncedExited((isAlive: boolean) => {
+          if (isAlive) {
+            reject({
+              code: 500,
+              result: 'failed'
+            });
+          } else {
+            this.connected = false;
+            this.emit('connected', false);
+            resolve({
+              code: 200,
+              result: 'success'
+            });
+          }
+        });
       });
     });
   }
@@ -326,21 +328,23 @@ export class SSRClient extends Client {
   disconnect() {
     return new Promise<ServiceResult>((resolve, reject) => {
       this.child?.kill("SIGKILL");
-      this.onDebouncedExited((isAlive: boolean) => {
-        if (isAlive) {
-          reject({
-            code: 500,
-            result: 'failed'
-          });
-        } else {
-          this.connected = false;
-          this.emit('connected', false);
-          resolve({
-            code: 200,
-            result: 'success'
-          });
-        }
-      });
+      this.child?.once("exit", () => {
+        this.onDebouncedExited((isAlive: boolean) => {
+          if (isAlive) {
+            reject({
+              code: 500,
+              result: 'failed'
+            });
+          } else {
+            this.connected = false;
+            this.emit('connected', false);
+            resolve({
+              code: 200,
+              result: 'success'
+            });
+          }
+        });
+      })
     });
   }
 }
