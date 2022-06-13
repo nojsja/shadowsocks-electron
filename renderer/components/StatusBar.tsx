@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
         alignItems: 'center',
         marginLeft: theme.spacing(.2),
         marginRight: theme.spacing(.2),
+        color: grey[400]
       }
     },
   })

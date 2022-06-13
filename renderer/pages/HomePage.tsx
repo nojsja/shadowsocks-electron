@@ -96,7 +96,6 @@ const HomePage: React.FC = () => {
 
   useBus('action:get:reconnect-pac', (event: EventAction) => {
     if (!selectedServer) return;
-
     dispatch(
       setPacServer({
         pacPort: settings.pacPort,
@@ -261,6 +260,7 @@ const HomePage: React.FC = () => {
             className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}
           />,
           <StatusBarNetwork key="status_bar_network" delay={delay}/>,
+          <span>/</span>,
           <StatusBarTraffic key="status_bar_traffic" />
         ]}
         right={[

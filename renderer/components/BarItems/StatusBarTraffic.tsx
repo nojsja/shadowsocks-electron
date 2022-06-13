@@ -21,12 +21,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const getTraffic = (traffic: Traffic) => {
   if (traffic.GB > 1) {
-    return `${traffic.GB.toFixed(2)} GB`;
+    return `${traffic.GB.toFixed(2)} gb`;
   }
   if (traffic.MB > 1) {
-    return `${traffic.MB.toFixed(2)} MB`;
+    return `${traffic.MB.toFixed(2)} mb`;
   }
-  return `${traffic.KB.toFixed(0)} KB`;
+  return `${traffic.KB.toFixed(0)} kb`;
 }
 
 const StatusBarTraffic: React.FC<StatusBarProps> = (props) => {

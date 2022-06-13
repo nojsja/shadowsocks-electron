@@ -168,6 +168,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         break;
       case 'delete':
         handleRemoveButtonClick();
+        break;
       case 'start_cluster':
         dispatch(startClusterAction(config, item.id, settings, {
           success: t('successfully_enabled_load_balance'),

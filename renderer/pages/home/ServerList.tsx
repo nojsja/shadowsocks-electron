@@ -67,7 +67,7 @@ const ServerList: React.FC<ServerListProps> = props => {
   const dragTarget = useRef<string | null>(null);
   const dragSource = useRef<string | null>(null);
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
-  const [removingServerId, setRemovingServerId] = useState<string | null>(null);
+  const removingServerId = useRef<string | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [shareData, setShareData] = useState({ url: '', dataUrl: '' });
   const { t } = useTranslation();
@@ -89,7 +89,7 @@ const ServerList: React.FC<ServerListProps> = props => {
       return enqueueSnackbar(t('cannot_remove_selected_server'), { variant: 'warning' });
     }
 
-    setRemovingServerId(id);
+    removingServerId.current = id;
     showDialog(t('remove_this_server?'), t('this_action_cannot_be_undone'));
   }, [selectedServer]);
 
@@ -112,12 +112,12 @@ const ServerList: React.FC<ServerListProps> = props => {
     dispatch({
       type: REMOVE_CONFIG,
       config: null as any,
-      id: removingServerId!
+      id: removingServerId.current
     });
     enqueueSnackbar(t("removed_a_server"), { variant: 'success' });
 
     closeDialog();
-    setRemovingServerId(null);
+    removingServerId.current = null;
   };
 
   const handleServerSelect = useCallback((id: string) => {
@@ -130,7 +130,7 @@ const ServerList: React.FC<ServerListProps> = props => {
 
   const handleAlertDialogClose = () => {
     closeDialog()
-    setRemovingServerId(null);
+    removingServerId.current = null;
   };
 
   const handleDialogClose = (selection?: CloseOptions) => {

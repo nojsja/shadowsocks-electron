@@ -202,6 +202,7 @@ export class MainService implements MainServiceType {
 
   async startPacServer(params: { pacPort: number }) {
     return new Promise(resolve => {
+      PS.stopPacServer();
       checkPortInUse([params.pacPort], '127.0.0.1')
         .then(results => {
           if (results[0]?.isInUse) {
