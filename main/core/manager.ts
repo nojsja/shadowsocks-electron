@@ -15,7 +15,8 @@ import { Target } from "./LoadBalancer/types";
 import { Config, Settings, ServiceResult } from "../types/extention";
 import { ALGORITHM } from "./LoadBalancer";
 import {
-  StartClientInterceptor, StartClusterInterceptor, Interceptor,
+  StartClientInterceptor, StartClusterInterceptor,
+  Interceptor,
 } from "./helpers/interceptor";
 
 const platform = os.platform();
@@ -267,7 +268,6 @@ export class Manager {
   static async changeMode(mode: 'single' | 'cluster') {
     if (Manager.ssLocal) {
       await Manager.kill(Manager.ssLocal);
-      await new Promise<void>(resolve => setTimeout(() => resolve(), 1000));
     }
 
     if (Manager.pool.length) {

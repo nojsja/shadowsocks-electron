@@ -1,6 +1,6 @@
 {
   "name": "shadowsocks-electron",
-  "version": "1.1.11",
+  "version": "1.2.0",
   "description": "Shadowsocks GUI client with cross-platform desktop support",
   "author": {
     "name": "nojsja",
