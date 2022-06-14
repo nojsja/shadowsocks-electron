@@ -34,7 +34,7 @@ import { getConnectionDelay } from "../../redux/actions/status";
 import { moveDown, moveUp, top } from "../../redux/actions/config";
 import { Config } from "../../types";
 
-import ListItemTextMultibleLine from "../../components/Pices/ListItemTextMultibleLine";
+import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
 import If from "../../components/HOC/IF";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -240,7 +240,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
           />
         </ListItemIcon>
 
-        <ListItemTextMultibleLine
+        <ListItemTextMultipleLine
           primary={
             <StyledBadge
               badgeContent={type} color="primary"

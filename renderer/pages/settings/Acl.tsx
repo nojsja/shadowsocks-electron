@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
-import ListItemTextMultibleLine from "../../components/Pices/ListItemTextMultibleLine";
+import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
 import If from "../../components/HOC/IF";
 
 interface AclProps {
@@ -31,7 +31,7 @@ const Acl: React.FC<AclProps> = ({
   return (
     <>
       <ListItem>
-        <ListItemTextMultibleLine
+        <ListItemTextMultipleLine
           primary={'ACL'}
           secondary={
             <If

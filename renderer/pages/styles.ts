@@ -1,5 +1,6 @@
 import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
+import { grey } from "@material-ui/core/colors";
 
 export const scrollBarStyle = (width: number = 10, radius: number = 5, theme: Theme) => ({
   "&::-webkit-scrollbar": {
@@ -102,11 +103,32 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       display: 'inline-block',
       textAlign: 'left',
       margin: '10px auto',
-      color: 'grey'
+      color: theme.palette.type === 'dark' ? grey[400] : grey[600],
     },
     'link-color__light': {
       color: theme.palette.primary.light,
-    }
+    },
+    'release-drawer__button': {
+      position: 'fixed',
+      bottom: theme.spacing(.5),
+      right: theme.spacing(.5),
+      textAlign: 'right',
+      color: theme.palette.type === 'dark' ? grey[400] : grey[600],
+      cursor: 'pointer',
+      zIndex: 2000,
+      '&:hover': {
+        color: theme.palette.primary.main,
+      }
+    },
+    'release-drawer__wrapper': {
+      '& *': scrollBarStyle(6, 0, theme),
+      '-webkit-app-region': 'none',
+    },
+    'release-drawer__close': {
+      position: 'fixed',
+      top: theme.spacing(1),
+      right: theme.spacing(1),
+    },
   })
 );
 

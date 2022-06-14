@@ -24,7 +24,7 @@ const StatusBarNetwork: React.FC<StatusBarProps> = (props) => {
   const { t } = useTranslation();
 
   return (
-    <span className={styles.text}>{t('delay').toLowerCase()}:{props.delay ? props.delay : 0}ms</span>
+    <span className={styles.text}>{t('delay').toLowerCase()}: {props.delay ? props.delay : 0}ms</span>
   );
 };
 

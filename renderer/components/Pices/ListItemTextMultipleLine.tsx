@@ -1,6 +1,6 @@
 import { createStyles, ListItemText, Theme, withStyles } from '@material-ui/core';
 
-const ListItemTextMultibleLine = withStyles((theme: Theme) =>
+const ListItemTextMultipleLine = withStyles((theme: Theme) =>
   createStyles({
     primary: {
       wordBreak: 'break-all'
@@ -11,4 +11,4 @@ const ListItemTextMultibleLine = withStyles((theme: Theme) =>
   })
 )(ListItemText);
 
-export default ListItemTextMultibleLine;
+export default ListItemTextMultipleLine;

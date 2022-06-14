@@ -34,6 +34,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { SnackbarMessage } from 'notistack';
 import { useDispatch } from "react-redux";
+import clsx from "clsx";
 
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 import { Config, encryptMethods, plugins, serverTypes, protocols, obfs, Notification } from "../../types";
@@ -44,6 +45,9 @@ import If from "../../components/HOC/IF";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    disableDrag: {
+      '-webkit-app-region': 'none',
+    },
     appBar: {
       position: "fixed"
     },
@@ -180,7 +184,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
       open={open}
       onClose={onClose}
     >
-      <AdaptiveAppBar className={fullScreen ? styles.appBar : styles.appBarRelative}>
+      <AdaptiveAppBar className={clsx(fullScreen ? styles.appBar : styles.appBarRelative, styles.disableDrag)}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleCancel}>
             <CloseIcon />
