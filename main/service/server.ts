@@ -180,6 +180,7 @@ export class MainService implements MainServiceType {
 
   async startHttpProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
+      HPS.stopHttpServer(params.port, '127.0.0.1');
       return HPS.createHttpServer({...params, host: '127.0.0.1'}, (error) => {
         resolve({
           code: error ? 500 : 200,

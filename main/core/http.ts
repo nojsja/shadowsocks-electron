@@ -52,7 +52,6 @@ export class HttpProxyServer extends EventEmitter {
   static createHttpServer(options: HttpProxyParams, callback: InnerCallback) {
     const { port, host, proxyPort } = options;
 
-    HttpProxyServer.stopHttpServer(port, host);
     checkPortInUse([port], host).then(results => {
       if (results[0].isInUse) {
         return callback(new Error(`${i18n.__('port_already_used')} ${port}`));

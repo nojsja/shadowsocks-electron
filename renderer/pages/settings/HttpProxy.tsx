@@ -11,6 +11,7 @@ import {
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 import If from "../../components/HOC/IF";
+import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
 import { useStylesOfSettings as useStyles } from "../styles";
 
@@ -30,7 +31,14 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
     <>
       <ListItem>
         <ListItemText
-          primary={t('http_proxy')}
+          primary={
+            <TextWithTooltip
+              text={t('http_proxy')}
+              tooltip={
+                t('restart_when_changed')
+              }
+            />
+          }
         />
         <ListItemSecondaryAction>
           <Field name="httpProxy" valuePropName="checked">
@@ -46,7 +54,6 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
           <ListItem className={styles.sub}>
             <ListItemText
               primary={`↳ ${t('http_proxy_port')}`}
-              secondary={t('restart_when_changed')}
             />
             <ListItemSecondaryAction>
               <Field

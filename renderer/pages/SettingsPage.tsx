@@ -14,7 +14,7 @@ import { SnackbarMessage } from 'notistack';
 import { useTypedDispatch } from "../redux/actions";
 import { useTypedSelector } from "../redux/reducers";
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { getStartupOnBoot, setStartupOnBoot, setHttpProxy, setSetting } from "../redux/actions/settings";
+import { getStartupOnBoot, setStartupOnBoot, setSetting } from "../redux/actions/settings";
 import { setStatus } from "../redux/actions/status";
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
 import { ALGORITHM, Notification } from "../types";
@@ -246,7 +246,6 @@ const SettingsPage: React.FC = () => {
               enable: value
             };
             dispatch(setSetting<'httpProxy'>(key, value))
-            dispatch(setHttpProxy({ ...value, proxyPort: settings.localPort }));
             return;
           case 'httpProxyPort':
             value = {
@@ -254,7 +253,6 @@ const SettingsPage: React.FC = () => {
               port: value
             };
             dispatch(setSetting<'httpProxy'>('httpProxy', value))
-            dispatch(setHttpProxy({ ...value, proxyPort: settings.localPort }));
             return;
           case 'loadBalance':
             value = {

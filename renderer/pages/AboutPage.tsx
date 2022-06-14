@@ -16,7 +16,7 @@ const timeline = [
       'Refactor: Core module of Shadowsocks-Electron main process.',
       'Feat: Server groups load-balancing mode supported - connect to multiple ssr/ss nodes at the same time.',
       'Feat: Network traffic metrics supported.',
-      'Feat: Release nodes display supported.',
+      'Feat: Release notes display supported.',
       'Feat: Acl mode supported, check instructions in github README.',
       'Feat: When regenerate PAC file, GFWList data download processor will detect proxy server automatically.',
       'Perf: Context menu perfomance improvement.',
