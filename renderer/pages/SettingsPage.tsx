@@ -97,6 +97,11 @@ const SettingsPage: React.FC = () => {
       settingKeys.current.forEach(key => {
         if (cachedRef.current[key] !== (settings as any)[key]) {
           switch(key) {
+            case 'acl':
+              Object.assign(obj, {
+                acl: settings.acl.enable,
+                acl_url: settings.acl.url,
+              });
             case 'httpProxy':
               Object.assign(obj, {
                 httpProxy: settings.httpProxy.enable,
