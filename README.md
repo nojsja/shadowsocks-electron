@@ -28,6 +28,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 - __Manual__ Mode (no system-wide proxy set)
 - __HTTP(S)__ Proxy
 - ACL (access control list)
+- Nodes Load-Balancing Mode
 - Clipboard / QR-code Import
 - Subscription Import
 - Language Detecting And Switching (zh-CN / en-US)
