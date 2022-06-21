@@ -7,6 +7,8 @@ import { Target } from './LoadBalancer/types';
 import { info } from '../logs';
 import { i18n } from '../electron';
 
+const udpf = require('node-udp-forwarder');
+
 export interface SocketTransferOptions {
   port?: number;
   strategy?: ALGORITHM;
@@ -14,13 +16,17 @@ export interface SocketTransferOptions {
   heartbeat?: number | number[];
 }
 
+type UdpConf = {[key: string]: any[]};
+
 export class SocketTransfer extends EventEmitter {
   public bytesTransfer = 0;
   public speed = '';
   private port: number;
   private targets: Target[];
   private timer: NodeJS.Timeout | null;
+  private udpConf: UdpConf;
   private server: net.Server;
+  private udpServers: any[];
   private lb: LoadBalancer;
   private strategy: ALGORITHM;
   private heartbeat: number[];
@@ -29,7 +35,13 @@ export class SocketTransfer extends EventEmitter {
     super();
     this.heartbeat = ([] as number[]).concat(options.heartbeat ?? 60e3*5);
     this.port = options.port || 1080;
+    this.udpConf = {
+      bind4: ["127.0.0.1", this.port],
+      bind6: ["::1", this.port],
+      server: ['114.114.114.114', 53]
+    };
     this.server = this.init();
+    this.udpServers = this.forwardUDP(this.udpConf);
     this.timer = null;
     this.server.on('error', this.onError);
     this.targets = options.targets;
@@ -66,6 +78,33 @@ export class SocketTransfer extends EventEmitter {
     });
   }
 
+  private forwardUDP(conf: UdpConf) {
+
+    const optionsV4 = {
+      protocol: 'udp4',
+      forwarderPort: conf.bind4[1],
+      forwarderAddress: conf.bind4[0],
+      created: () => {
+        console.log(`UDP4 listening on ${udpV4.address}:${udpV4.port}`);
+        console.log(`forwarding from ${udpV4.forwarderAddress}:${udpV4.forwarderPort}`);
+      }
+    };
+    const optionsV6 = {
+      protocol: 'udp6',
+      forwarderPort: conf.bind6[1],
+      forwarderAddress: conf.bind6[0],
+      created: () => {
+        console.log(`UDP6 listening on ${udpV6.address}:${udpV6.port}`);
+        console.log(`forwarding from ${udpV6.forwarderAddress}:${udpV6.forwarderPort}`);
+      }
+    };
+
+    const udpV4 = udpf.create(conf.server[1], conf.server[0], optionsV4);
+    const udpV6 = udpf.create(conf.server[1], conf.server[0], optionsV6);
+
+    return [udpV4, udpV6];
+  }
+
   private setHealthCheckTimer = (immediate: boolean = false) => {
     if (this.heartbeat.length > 1) {
       immediate && this.healthCheck();
@@ -85,15 +124,15 @@ export class SocketTransfer extends EventEmitter {
 
   private onLocalError = (error: Error) => {
     console.error('local-error:', error);
-    this.emit('error:server:local', { error });
+    // this.emit('error:server:local', { error });
   }
 
   private onRemoteError = (error: Error, port: number) => {
     console.error('remote-error:', error, port);
-    this.emit('error:server:remote', {
-      error,
-      port
-    });
+    // this.emit('error:server:remote', {
+    //   error,
+    //   port
+    // });
   }
 
   private doCheckWorks = async (targets: Target[]): Promise<Target[]> => {
@@ -158,6 +197,12 @@ export class SocketTransfer extends EventEmitter {
   public unlisten = async () => {
     return new Promise<Error | void>(resolve => {
       if (!this.server) return resolve();
+      try {
+        this.udpServers[0].end();
+        this.udpServers[1].end();
+      } catch (error) {
+        console.log(error);
+      }
       this.server.close((error) => {
         resolve(error);
       });

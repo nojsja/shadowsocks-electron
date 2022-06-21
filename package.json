@@ -52,6 +52,7 @@
     "js-base64": "^2.4.0",
     "jsqr": "^1.4.0",
     "node-fetch": "2.6.0",
+    "node-udp-forwarder": "^0.2.0",
     "open": "7.0.3",
     "qrcode": "^1.4.4",
     "rc-field-form": "^1.26.2",
