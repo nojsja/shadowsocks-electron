@@ -191,6 +191,8 @@ export interface Settings {
   mode: Mode;
   verbose: boolean;
   localPort: number;
+  bind?: string;
+  interface?: string;
   pacPort: number;
   httpProxy: {
     enable: boolean,

@@ -3286,6 +3286,11 @@ binary-extensions@^2.0.0:
   resolved "https://registry.npmmirror.com/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
+"binaryheap@>= 0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/binaryheap/-/binaryheap-0.0.3.tgz#0d6136c84e9f1a5a90c0b97178c3e00df59820d6"
+  integrity sha512-9JFb4Yt5R9FZwbJaxOayF+T5sxn5eiU2NA9/LOeI1g2FUFRTdxpdmWppikO4O5AbNze8s0sL6ZuFxB1y4Ay8GA==
+
 bindings@^1.5.0:
   version "1.5.0"
   resolved "https://registry.npmmirror.com/bindings/-/bindings-1.5.0.tgz#10353c9e945334bc0511a6d90b38fbc7c9c504df"
@@ -3589,6 +3594,13 @@ buffer@^5.1.0:
   dependencies:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
+
+"buffercursor@>= 0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/buffercursor/-/buffercursor-0.0.12.tgz#78a9a7f4343ae7d820a8999acc80de591e25a779"
+  integrity sha512-Z+6Jm/eW6ITeqcFQKVXX7LYIGk7rENqCKHJ4CbWfJMeLpQZJj1v70WehkLmp+1kFN/QyCgpQ3Z0dKUHAwSbf9w==
+  dependencies:
+    verror "^1.4.0"
 
 builder-util-runtime@8.9.2:
   version "8.9.2"
@@ -7584,6 +7596,16 @@ ipaddr.js@1.9.1, ipaddr.js@^1.9.0:
   resolved "https://registry.npmmirror.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
 
+"ipaddr.js@>= 0.1.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-2.0.1.tgz#eca256a7a877e917aeb368b0a7497ddf42ef81c0"
+  integrity sha512-1qTgH9NG+IIJ4yfKs2e6Pp1bZg8wbDbKHT21HrLIeYBTRLgMYKnMTPAuI3Lcs61nfx5h1xlXnbJtH1kX5/d/ng==
+
+ipaddr.js@~0.1.3:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-0.1.9.tgz#a9c78ccc12dc9010f296ab9aef2f61f432d69efa"
+  integrity sha512-dp0C1YYJuZMlFCM9eah1GbCVGRwcvLuCHDWfqUhIS6WqLO6jFK3GJHRQrD+OTID/mS3grl3gqGJ76QsOTpNsRw==
+
 ipv6@*:
   version "3.1.3"
   resolved "https://registry.npmmirror.com/ipv6/-/ipv6-3.1.3.tgz#4d9064f9c2dafa0dd10b8b7d76ffca4aad31b3b9"
@@ -9703,6 +9725,31 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+native-dns-cache@~0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/native-dns-cache/-/native-dns-cache-0.0.2.tgz#ce0998f7fdf6c7990970a33190624b0e98ee959b"
+  integrity sha512-09HXHdb/updxfigaFbR53F8nCKqxM8WuHfTWBsusVlwSSZZ3qwWRdD6Kx2x8HBI1Q5IaycwcJOvBoXZWJNfVEg==
+  dependencies:
+    binaryheap ">= 0.0.3"
+    native-dns-packet ">= 0.0.1"
+
+"native-dns-packet@>= 0.0.1", native-dns-packet@~0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/native-dns-packet/-/native-dns-packet-0.1.1.tgz#97da90570b8438a00194701ce24d011fd3cc109a"
+  integrity sha512-j1XxnFFTUB7mujma468WyAOmyVtkuuLTelxJF13tSTIPO56X7bHALrG0G4jFQnvyTPCt4VnFiZezWpfKbaHc+g==
+  dependencies:
+    buffercursor ">= 0.0.12"
+    ipaddr.js ">= 0.1.1"
+
+native-dns@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/native-dns/-/native-dns-0.7.0.tgz#df418636f08fb29e8fcb7ef142c822a1588ba5b7"
+  integrity sha512-tqpWBqpfeCgjdl3fMuKH0wXTGa9eQtT28H910QHZ1TRMK0pAdet8/LS6xRA5fNfO33u3JYcnc5wggWuHLnb5GQ==
+  dependencies:
+    ipaddr.js "~0.1.3"
+    native-dns-cache "~0.0.2"
+    native-dns-packet "~0.1.1"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -14166,7 +14213,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-verror@^1.10.0:
+verror@^1.10.0, verror@^1.4.0:
   version "1.10.1"
   resolved "https://registry.npmmirror.com/verror/-/verror-1.10.1.tgz#4bf09eeccf4563b109ed4b3d458380c972b0cdeb"
   integrity sha512-veufcmxri4e3XSrT0xwfUR7kguIkaxBeosDg00yDWhk49wdwkSUrvvsm7nc75e1PUyvIeZj6nS8VQRYz2/S4Xg==

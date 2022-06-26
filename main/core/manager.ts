@@ -161,7 +161,10 @@ export class Manager {
               info.underline('>> healer pick: ', `${config.serverHost}:${config.serverPort}`);
               return Manager.spawnClient(
                 config,
-                pendingClients[i].settings
+                {
+                  ...pendingClients[i].settings,
+                  interface: 'eth0'
+                }
               );
             })
         );
@@ -320,7 +323,7 @@ export class Manager {
       return Promise.resolve()
         .then(async () => {
           const ports = await pickPorts(
-            settings.localPort + 1, 1,
+            +settings.localPort + 1, 1,
             [settings.pacPort, settings.httpProxy.port]
           );
           if (!ports.length) {
@@ -329,7 +332,14 @@ export class Manager {
           return ports[0];
         })
         /* create client */
-        .then((port: number) => Manager.spawnClient(config, { ...settings, localPort: port }))
+        .then((port: number) => Manager.spawnClient(
+          config,
+          {
+            ...settings,
+            localPort: port,
+            interface: 'eth0'
+          })
+        )
         /* connect client */
         .then(async (rsp) => {
           if (rsp.code !== 200) {
@@ -346,6 +356,8 @@ export class Manager {
           }
           Manager.socketTransfer = new SocketTransfer({
             port: settings.localPort,
+            address: '127.0.0.1',
+            // bind: '192.168.31.103',
             strategy: ALGORITHM.POLLING,
             targets: [{
               id: (Manager.ssLocal as (SSClient | SSRClient)).settings.localPort,
@@ -417,7 +429,7 @@ export class Manager {
 
             Manager.clusterConfig = configs;
             const ports = await pickPorts(
-              settings.localPort + 1, settings.loadBalance.count,
+              +settings.localPort + 1, settings.loadBalance.count,
               [settings.pacPort, settings.httpProxy.port]
             );
 
@@ -427,7 +439,11 @@ export class Manager {
                   info.underline('>> pick: ', config.remark);
                   return Manager.spawnClient(
                     config,
-                    { ...settings, localPort: ports[i] }
+                    {
+                      ...settings,
+                      localPort: ports[i],
+                      interface: '以太网'
+                    }
                   );
                 })
             );
@@ -462,6 +478,8 @@ export class Manager {
 
             Manager.socketTransfer = new SocketTransfer({
               port: settings.localPort,
+              address: '127.0.0.1',
+              // bind: '192.168.31.103',
               strategy: settings.loadBalance.strategy,
               targets,
               heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3 * 3, 60e3 * 5],

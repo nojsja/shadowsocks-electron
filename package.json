@@ -51,6 +51,7 @@
     "ipv6": "*",
     "js-base64": "^2.4.0",
     "jsqr": "^1.4.0",
+    "native-dns": "^0.7.0",
     "node-fetch": "2.6.0",
     "node-udp-forwarder": "^0.2.0",
     "open": "7.0.3",

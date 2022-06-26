@@ -15,6 +15,8 @@ export class Client extends EventEmitter {
   settings: Settings
   connected: boolean
   port: number
+  bind: string
+  interface: string | null
   onDebouncedExited: (fn?: (isAlive: boolean) => void) => void
 
   constructor(settings: Settings, type: 'ssr' | 'ss') {
@@ -25,6 +27,8 @@ export class Client extends EventEmitter {
     this.error = '';
     this.settings = settings;
     this.port = settings.localPort;
+    this.bind = settings.bind ?? '0.0.0.0';
+    this.interface = settings.interface ?? null;
     this.child = null;
     this.onExited.bind(this);
     this.onConnected.bind(this);
@@ -39,7 +43,7 @@ export class Client extends EventEmitter {
   }
 
   async onExited(cb?: (success: boolean) => void) {
-    checkPortInUse([this.settings.localPort], '127.0.0.1')
+    checkPortInUse([this.settings.localPort], this.bind)
     .then(async results => {
       if (results[0]?.isInUse) {
         this.connected = true;
@@ -72,8 +76,10 @@ export class SSClient extends Client {
       config.serverHost,
       "-p",
       config.serverPort.toString(),
-      "-b",
-      "127.0.0.1",
+      this.bind ? '-b' : '',
+      this.bind ?? '',
+      this.interface ? '-i' : '',
+      this.interface ?? '',
       "-l",
       this.port.toString(),
       "-k",
@@ -217,8 +223,10 @@ export class SSRClient extends Client {
       config.serverHost,
       "-p",
       config.serverPort.toString(),
-      "-b",
-      "127.0.0.1",
+      this.bind ? '-b' : '',
+      this.bind ?? '',
+      this.interface ? '-i' : '',
+      this.interface ?? '',
       "-l",
       this.port.toString(),
       "-k",
@@ -344,7 +352,7 @@ export class SSRClient extends Client {
             });
           }
         });
-      })
+      });
     });
   }
 }

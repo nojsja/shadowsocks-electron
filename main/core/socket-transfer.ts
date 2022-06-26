@@ -8,13 +8,17 @@ import { info } from '../logs';
 import { i18n } from '../electron';
 
 const udpf = require('node-udp-forwarder');
+const TCPWrap = (process as any).binding('tcp_wrap');
+const { TCP } = TCPWrap;
 
 export interface SocketTransferOptions {
   port?: number;
+  address?: string;
+  bind?: string;
   strategy?: ALGORITHM;
   targets: Target[];
   heartbeat?: number | number[];
-}
+};
 
 type UdpConf = {[key: string]: any[]};
 
@@ -22,6 +26,8 @@ export class SocketTransfer extends EventEmitter {
   public bytesTransfer = 0;
   public speed = '';
   private port: number;
+  private address: string;
+  private bind: string;
   private targets: Target[];
   private timer: NodeJS.Timeout | null;
   private udpConf: UdpConf;
@@ -35,6 +41,8 @@ export class SocketTransfer extends EventEmitter {
     super();
     this.heartbeat = ([] as number[]).concat(options.heartbeat ?? 60e3*5);
     this.port = options.port || 1080;
+    this.address = options.address ?? '127.0.0.1';
+    this.bind = options.bind ?? '0.0.0.0';
     this.udpConf = {
       bind4: ["127.0.0.1", this.port],
       bind6: ["::1", this.port],
@@ -68,13 +76,12 @@ export class SocketTransfer extends EventEmitter {
       });
       c.on('error', this.onLocalError);
 
-      const remote = net.createConnection({ port: +target.id }, () => {
+      const remote = net.createConnection({ port: +target.id, host: this.bind }, () => {
         c.pipe(remote);
         remote.pipe(c);
       });
 
       remote.on('error', (error) => this.onRemoteError(error, +target.id));
-
     });
   }
 
@@ -137,7 +144,7 @@ export class SocketTransfer extends EventEmitter {
 
   private doCheckWorks = async (targets: Target[]): Promise<Target[]> => {
     const failed: Target[] = [];
-    const results = await Promise.all(targets.map(target => shadowChecker('127.0.0.1', target.id as number)));
+    const results = await Promise.all(targets.map(target => shadowChecker(this.address, target.id as number)));
     info.bold('>> healthCheck results: ', results);
     results.forEach((pass, i) => {
       if (!pass) {
@@ -178,6 +185,9 @@ export class SocketTransfer extends EventEmitter {
 
   public listen = (port?: number) => {
     if (port) this.port = port;
+    const socket = new TCP(TCPWrap.constants.SERVER); // or .SOCKET
+
+    socket.bind(this.address, this.port);
 
     return new Promise(((resolve, reject) => {
       this.once('error:socket:transfer', ({ error }) => {
@@ -187,7 +197,8 @@ export class SocketTransfer extends EventEmitter {
           reject(error ?? new Error(i18n.__('failed_to_start_socket_transfer')));
         }
       });
-      this.server.listen(this.port, () => {
+    
+      this.server.listen(socket, () => {
         resolve(port);
         info.bold('>> SocketTransfer listening on port: ', this.port);
       });
