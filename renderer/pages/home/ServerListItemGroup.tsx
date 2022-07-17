@@ -121,12 +121,13 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     ];
     if (settings.loadBalance?.enable) {
       items.push(
-        ... (serverMode === 'single' || !serverMode || clusterId !== item.id)
+        ...(serverMode === 'single' || !serverMode || clusterId !== item.id)
         ? [{ label: t('enable_load_balance'), action: 'start_cluster', icon: <ViewComfy fontSize="small" />}]
         : [{ label: t('disable_load_balance'), action: 'stop_cluster', icon: <ViewComfy fontSize="small" />}]
       )
     }
     return items;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serverMode, clusterId]);
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))

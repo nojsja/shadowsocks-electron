@@ -4,6 +4,8 @@
   "invalid_subscription": "Invalid subscription address",
   "show_ui": "Show UI",
   "hide_ui": "Hide UI",
+  "connect": "Connect",
+  "disconnect": "Disconnect",
   "quit": "Quit",
   "port_already_used": "The port is already used: ",
   "action_warning": "Warning",

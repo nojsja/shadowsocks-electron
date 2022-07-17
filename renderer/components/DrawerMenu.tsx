@@ -52,7 +52,7 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
     <>
       { !hideIcon && (
         <>
-          <img className={styles.banner} src={banner}></img>
+          <img className={styles.banner} alt="banner" src={banner}></img>
           <Divider />
         </>
         )

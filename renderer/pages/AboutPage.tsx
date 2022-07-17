@@ -181,7 +181,7 @@ const AboutPage: React.FC = () => {
   return (
     <Container className={styles.container}>
       <div className={styles['author-info__wrapper']}>
-        <img src={authorPic} className={styles['author-info__image']}></img>
+        <img src={authorPic} alt="author" className={styles['author-info__image']}></img>
       </div>
       <div className={styles['text-center']}>
         <Typography className={styles['text-center']} variant="h6" gutterBottom>

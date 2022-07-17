@@ -7,6 +7,7 @@ import windowStateKeeper from 'electron-window-state';
 import { IpcMainWindowType, TrayMenu } from '../types/extention';
 import { getBestWindowPosition } from "../core/helpers";
 import { electronStore, i18n } from "../electron";
+import { Manager } from "../core/manager";
 
 const platform = os.platform();
 
@@ -26,6 +27,8 @@ export default class IpcMainWindow implements IpcMainWindowType {
   minWidth = 420;
   maxHeight = 980;
   maxWidth = 800;
+  serverMode: 'single' | 'cluster';
+  serverStatus: boolean;
 
   constructor(args?: Electron.BrowserWindowConstructorOptions) {
     this.width = args?.width ?? this.width;
@@ -35,9 +38,11 @@ export default class IpcMainWindow implements IpcMainWindowType {
     this.tray = null;
     this.trayMenu = null;
     this.menus = [];
+    this.serverMode = 'single';
+    this.serverStatus = false;
     this.url = isDev
-    ? "http://localhost:3001"
-    : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
+      ? "http://localhost:3001"
+      : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
     this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
     this.trayIcon = path.resolve(app.getAppPath(), "assets/icons/16x16.png");
   }
@@ -122,10 +127,17 @@ export default class IpcMainWindow implements IpcMainWindowType {
         reject(this.win)
       });
 
+      Manager.event.on('manager:server-status', ({ mode, status }) => {
+        this.serverMode = mode;
+        this.serverStatus = status;
+        this.setLocaleTrayMenu();
+      });
+
     });
   }
 
   setLocaleTrayMenu() {
+    const { serverStatus: status } = this;
     this.menus = [
       {
         label: i18n.__('show_ui'),
@@ -134,6 +146,16 @@ export default class IpcMainWindow implements IpcMainWindowType {
       {
         label: i18n.__('hide_ui'),
         click: this.hide.bind(this)
+      },
+      {
+        label: status ? i18n.__('disconnect') : i18n.__('connect'),
+        click: () => {
+          if (status) {
+            (global as any).win.webContents.send('event:stream', { action: 'disconnect-server' });
+          } else {
+            (global as any).win.webContents.send('event:stream', { action: 'reconnect-server' });
+          }
+        }
       },
       { type: "separator" },
       {

@@ -17,7 +17,7 @@ import {
   addConfigFromClipboard, getQrCodeFromScreenResources,
   ADD_CONFIG, EDIT_CONFIG,
   addSubscriptionFromClipboard,
-  startClusterAction, startClientAction, stopClientAction
+  startClusterAction, startClientAction, stopClientAction, stopClusterAction
 } from '../redux/actions/config';
 import { setHttpProxy, setPacServer } from "../redux/actions/settings";
 import { getConnectionDelay } from '../redux/actions/status';
@@ -63,7 +63,7 @@ const HomePage: React.FC = () => {
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
   const { serverMode, clusterId } = settings;
 
-  {/* -------- hooks ------- */}
+  /* -------- hooks ------- */
 
   /* do connect by mode */
   const connectByMode = useCallback((mode?: ServerMode) => {
@@ -78,7 +78,22 @@ const HomePage: React.FC = () => {
     } else {
       selectedServer && connectedToServer(config, selectedServer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, selectedServer, mode, serverMode, clusterId, settings]);
+
+  /* event stream */
+
+  useBus('event:stream:reconnect-server', (event: EventAction) => {
+    connectByMode();
+  }, [connectByMode]);
+
+  useBus('event:stream:disconnect-server', (event: EventAction) => {
+    if (serverMode === 'cluster') {
+      dispatch(stopClusterAction());
+    } else {
+      dispatch(stopClientAction());
+    }
+  }, [connectByMode, serverMode]);
 
   /* reconnect after get event from queue */
   useBus('action:get:reconnect-server', (event: EventAction) => {
@@ -119,12 +134,14 @@ const HomePage: React.FC = () => {
       globalAction.get({ type: 'reconnect-http' });
       globalAction.get({ type: 'reconnect-pac' });
     }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* reconnect when settings/selected update */
   useDidUpdate(() => {
     if (!selectedServer || !connected) return;
     connectByMode('single');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedServer]);
 
   useDidUpdate(() => {
@@ -132,7 +149,7 @@ const HomePage: React.FC = () => {
     connectByMode();
   }, [mode]);
 
-  {/* -------- functions ------- */}
+  /* -------- functions ------- */
 
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
@@ -218,6 +235,7 @@ const HomePage: React.FC = () => {
       });
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedServer, connected, config, settings]);
 
   const handleEditButtonClick = useCallback((id: string) => {

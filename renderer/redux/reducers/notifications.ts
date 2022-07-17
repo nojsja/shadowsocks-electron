@@ -17,6 +17,7 @@ function notificationsReducer(
       });
     case CLOSE_SNACKBAR:
       return produce(state, draft => {
+        // eslint-disable-next-line array-callback-return
         draft.map(notification => {
           if (action.dismissAll || notification.key === action.key) {
             notification.dismissed = true;

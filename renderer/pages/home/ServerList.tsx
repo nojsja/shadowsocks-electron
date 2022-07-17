@@ -91,6 +91,7 @@ const ServerList: React.FC<ServerListProps> = props => {
 
     removingServerId.current = id;
     showDialog(t('remove_this_server?'), t('this_action_cannot_be_undone'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedServer]);
 
   const handleShareButtonClick = useCallback((id: string) => {
@@ -126,6 +127,7 @@ const ServerList: React.FC<ServerListProps> = props => {
       key: "selectedServer",
       value: id
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAlertDialogClose = () => {

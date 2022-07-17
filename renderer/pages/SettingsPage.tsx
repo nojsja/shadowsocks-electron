@@ -68,6 +68,7 @@ const SettingsPage: React.FC = () => {
       /* check settings item */
       calGlobalActions();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -102,6 +103,7 @@ const SettingsPage: React.FC = () => {
                 acl: settings.acl.enable,
                 acl_url: settings.acl.url,
               });
+            break;
             case 'httpProxy':
               Object.assign(obj, {
                 httpProxy: settings.httpProxy.enable,
@@ -126,6 +128,7 @@ const SettingsPage: React.FC = () => {
       (pre, cur) => Object.assign(pre, { [cur]: (settings as any)[cur] }),
       {}
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, settingKeys.current.map(key => (settings as any)[key]));
 
   /* -------------- functions -------------- */
