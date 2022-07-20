@@ -4,19 +4,22 @@ import { useTranslation } from 'react-i18next';
 import { Rule } from 'rc-field-form/es/interface';
 import { MessageChannel } from 'electron-re';
 import { SnackbarMessage } from 'notistack';
+import { FormInstance } from 'rc-field-form';
 
 import useDialogConfirm from '../../hooks/useDialogConfirm';
 import { useTypedDispatch } from "../../redux/actions";
 import { CLEAR_STORE } from "../../redux/reducers";
 import { Notification } from "../../types";
+import defaultStore from '../../redux/defaultStore';
 
 interface ResetDataProps {
   rules?: Rule[] | undefined;
-  enqueueSnackbar: (message: SnackbarMessage, options: Notification) => void
+  enqueueSnackbar: (message: SnackbarMessage, options: Notification) => void;
+  form: FormInstance<any>;
 }
 
 const ResetData: React.FC<ResetDataProps> = ({
-  rules,
+  form,
   enqueueSnackbar
 }) => {
   const { t } = useTranslation();
@@ -32,6 +35,7 @@ const ResetData: React.FC<ResetDataProps> = ({
       params: {}
     });
     closeDialog();
+    form.setFieldsValue(defaultStore.settings);
     enqueueSnackbar(t('cleared_all_data'), { variant: 'success' });
   };
 

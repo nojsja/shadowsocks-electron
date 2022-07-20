@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import Form from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
@@ -50,15 +50,6 @@ const SettingsPage: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
-  // const [aclVisible, setAclVisible] = useState(false);
-  const settingKeys = useRef(
-    ['localPort', 'pacPort', 'gfwListUrl',
-    'httpProxy', 'autoLaunch', 'fixedMenu',
-    'darkMode', 'autoTheme', 'verbose', 'autoHide',
-    'acl', 'loadBalance'
-  ]
-  );
-  const cachedRef = useRef<any>(null);
   const changedFields = useRef<{[key: string]: any}>({});
 
   /* -------------- hooks -------------- */
@@ -90,46 +81,6 @@ const SettingsPage: React.FC = () => {
       });
     }
   }, [settings.darkMode]);
-
-  /* restoreFromFile */
-  useMemo(() => {
-    const obj = {};
-    if (cachedRef.current) {
-      settingKeys.current.forEach(key => {
-        if (cachedRef.current[key] !== (settings as any)[key]) {
-          switch(key) {
-            case 'acl':
-              Object.assign(obj, {
-                acl: settings.acl.enable,
-                acl_url: settings.acl.url,
-              });
-            break;
-            case 'httpProxy':
-              Object.assign(obj, {
-                httpProxy: settings.httpProxy.enable,
-                httpProxyPort: settings.httpProxy.port,
-              });
-            break;
-            case 'loadBalance':
-              Object.assign(obj, {
-                loadBalance: settings.loadBalance?.enable,
-                loadBalanceCount: settings.loadBalance?.count ?? 3,
-                loadBalanceStrategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
-              });
-            break;
-            default:
-              Object.assign(obj, { [key]: (settings as any)[key] });
-          }
-        }
-      });
-      form.setFieldsValue(obj);
-    }
-    cachedRef.current = settingKeys.current.reduce(
-      (pre, cur) => Object.assign(pre, { [cur]: (settings as any)[cur] }),
-      {}
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, settingKeys.current.map(key => (settings as any)[key]));
 
   /* -------------- functions -------------- */
 
@@ -233,7 +184,6 @@ const SettingsPage: React.FC = () => {
         }
       }
     });
-
   }
 
   const checkPortField = (rule: any, value: any) => {
@@ -249,45 +199,20 @@ const SettingsPage: React.FC = () => {
       form.validateFields([key]).then(() => {
         switch (key) {
           case 'httpProxy':
-            value = {
-              ...settings.httpProxy,
-              enable: value
-            };
-            dispatch(setSetting<'httpProxy'>(key, value))
-            return;
-          case 'httpProxyPort':
-            value = {
-              ...settings.httpProxy,
-              port: value
-            };
-            dispatch(setSetting<'httpProxy'>('httpProxy', value))
+            const httpProxy = form.getFieldValue('httpProxy');
+            dispatch(setSetting<'httpProxy'>(key, httpProxy))
             return;
           case 'loadBalance':
-            value = {
-              ...settings.loadBalance,
-              enable: value
-            };
-            dispatch(setSetting<'loadBalance'>(key, value))
-            return;
-          case 'loadBalanceCount':
-            value = {
-              ...settings.loadBalance,
-              count: value
-            };
-            dispatch(setSetting<'loadBalance'>('loadBalance', value))
-            return;
-          case 'loadBalanceStrategy':
-            value = {
-              ...settings.loadBalance,
-              strategy: value
-            };
-            dispatch(setSetting<'loadBalance'>('loadBalance', value))
+            const loadBalance = form.getFieldValue('loadBalance');
+            dispatch(setSetting<'loadBalance'>(key, {
+              strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
+              count: loadBalance?.count ?? 3,
+              enable: loadBalance?.enable ?? false,
+            }));
             return;
           case 'acl':
-            dispatch(setSetting<'acl'>('acl', {
-              ...settings.acl,
-              enable: value
-            }));
+            const acl = form.getFieldValue('acl');
+            dispatch(setSetting<'acl'>('acl', acl));
             return;
           case 'autoLaunch':
             dispatch<any>(setStartupOnBoot(value));
@@ -319,19 +244,19 @@ const SettingsPage: React.FC = () => {
             localPort: settings.localPort,
             pacPort: settings.pacPort,
             gfwListUrl: settings.gfwListUrl,
-            httpProxy: settings.httpProxy.enable,
-            httpProxyPort: settings.httpProxy.port,
-            loadBalance: settings.loadBalance?.enable,
-            loadBalanceCount: settings.loadBalance?.count || 3,
-            loadBalanceStrategy: settings.loadBalance?.strategy || ALGORITHM.POLLING,
+            httpProxy: settings.httpProxy,
+            loadBalance: {
+              strategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
+              count: settings.loadBalance?.count ?? 3,
+              enable: settings.loadBalance?.enable ?? false,
+            },
             autoLaunch: settings.autoLaunch,
             fixedMenu: settings.fixedMenu,
             darkMode: settings.darkMode,
             autoTheme: settings.autoTheme,
             verbose: settings.verbose,
             autoHide: settings.autoHide,
-            acl: settings.acl.enable,
-            acl_url: settings.acl.url
+            acl: settings.acl,
           }
         }
         onValuesChange={onFieldChange}
@@ -356,7 +281,7 @@ const SettingsPage: React.FC = () => {
         />
         <List className={styles.list}>
           <HttpProxy
-            enable={settings.httpProxy.enable}
+            form={form}
             rules={
               [
                 { required: true, message: t('invalid_value') },
@@ -365,23 +290,22 @@ const SettingsPage: React.FC = () => {
             }
           />
           <Acl
-            enable={settings.acl.enable}
-            url={settings?.acl?.url}
             setAclUrl={setAclUrl}
+            form={form}
           />
           <LaunchOnBool />
           <FixedMenu />
           <AutoHide />
           <AutoTheme onAutoThemeChange={onAutoThemeChange} />
-          <DarkMode disabled={settings.autoTheme} />
+          <DarkMode form={form} />
           <Language />
           <Backup />
-          <Restore />
-          <ResetData enqueueSnackbar={enqueueSnackbar} />
+          <Restore form={form} />
+          <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
           <Divider className={styles.margin} />
           <ListSubheader>{t('experimental')}</ListSubheader>
           <LoadBalance
-            enable={!!settings.loadBalance?.enable}
+            form={form}
             rules={
               [
                 { required: true, message: t('invalid_value') },

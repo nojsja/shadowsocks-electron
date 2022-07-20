@@ -45,13 +45,13 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 ### âž£ Comming Soon
 
-- v2ray-plugin
+- Tunnel Mode
 
 ## Supported Platforms & Arch
 
 ![system](https://img.shields.io/badge/system-win%20%7C%20mac%20%7C%20linux-green)
 
-> More architecture will be supported if necessary, just give me an issue.
+> More architectures will be supported if necessary, just give me an issue.
 
 - Ubuntu
   - deb `x64/x86/arm64`

@@ -1,21 +1,21 @@
 import React from 'react';
-import { Field } from "rc-field-form";
+import Form, { Field } from "rc-field-form";
 import { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
+import { FormInstance, Rule } from 'rc-field-form/es/interface';
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 
 interface DarkModeProps {
   rules?: Rule[] | undefined;
-  disabled: boolean;
+  form: FormInstance<any>
 }
 
 const DarkMode: React.FC<DarkModeProps> = ({
-  rules,
-  disabled
+  form
 }) => {
   const { t } = useTranslation();
+  const autoTheme = Form.useWatch(['autoTheme'], form);
 
   return (
     <ListItem>
@@ -26,7 +26,7 @@ const DarkMode: React.FC<DarkModeProps> = ({
         <Field name="darkMode" valuePropName="checked">
           <AdaptiveSwitch
             edge="end"
-            disabled={disabled}
+            disabled={autoTheme}
           />
         </Field>
       </ListItemSecondaryAction>
