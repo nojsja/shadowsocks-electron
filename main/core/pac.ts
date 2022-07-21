@@ -10,6 +10,7 @@ import logger from "../logs";
 import { pacDir } from "../config";
 import { i18n } from "../electron";
 import { request } from "../utils/http-request";
+import { Settings } from "../types/extention";
 
 const socks = require('socks');
 
@@ -69,7 +70,7 @@ export class PacServer {
     }
   }
 
-  static async downloadAndGeneratePac(url: string, text: string) {
+  static async downloadAndGeneratePac(url: string, text: string, settings: Settings) {
     if (!url && !text) {
       throw new Error(i18n.__('invalid_parameter'));
     }
@@ -97,7 +98,7 @@ export class PacServer {
           .catch(() => {
             const agentConf = {
               ipaddress: '127.0.0.1',
-              port: 1080,
+              port: settings.localPort,
               type: 5,
             };
 

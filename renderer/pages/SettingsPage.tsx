@@ -146,7 +146,10 @@ const SettingsPage: React.FC = () => {
     dispatch<any>(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
       action: 'reGeneratePacFile',
-      params
+      params: {
+        ...params,
+        settings,
+      }
     }).then((rsp) => {
       setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
       if (rsp.code === 200) {

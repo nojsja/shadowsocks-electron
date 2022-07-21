@@ -161,9 +161,9 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async reGeneratePacFile(params: { url?: string, text?: string }) {
+  async reGeneratePacFile(params: { url?: string, text?: string, settings: Settings }) {
     return new Promise(resolve => {
-      return PS.downloadAndGeneratePac(params.url ?? '', params.text ?? '').then(() => {
+      return PS.downloadAndGeneratePac(params.url ?? '', params.text ?? '', params.settings).then(() => {
         resolve({
           code: 200,
           result: params.url
