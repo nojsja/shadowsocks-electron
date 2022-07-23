@@ -1,4 +1,5 @@
 {
+  "custom_user_rules": "自定义用户规则",
   "release_notes": "更新日志",
   "traffic": "流量",
   "enable_load_balance": "开启负载均衡",

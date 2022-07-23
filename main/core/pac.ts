@@ -7,7 +7,7 @@ import fsExtra from "fs-extra";
 import URL from 'url';
 
 import logger from "../logs";
-import { pacDir } from "../config";
+import { globalPacConf, pacDir, userPacConf } from "../config";
 import { i18n } from "../electron";
 import { request } from "../utils/http-request";
 import { Settings } from "../types/extention";
@@ -18,6 +18,15 @@ let server: PacServer | null;
 const platform = os.platform();
 
 export class PacServer {
+
+  static updateUserRules(text: string) {
+    return new Promise((resolve) => {
+      fs.writeFile(userPacConf, text, () => {
+        resolve(true);
+      });
+    })
+  }
+
   static startPacServer(pacPort: number) {
     server && server.close();
     server = new PacServer(pacPort, path.resolve(pacDir, "proxy.pac"));
@@ -135,6 +144,9 @@ export class PacServer {
 
   core: http.Server;
   pacPort: number;
+  globalPacConf: string;
+  userPacConf: string;
+  watcher: fs.FSWatcher | null;
 
   constructor(pacPort: number, pacFile: string) {
     this.pacPort = pacPort;
@@ -149,13 +161,44 @@ export class PacServer {
           }
         });
       });
-    this.core.listen(this.pacPort);
     logger.info("Started PAC server");
+    this.core.listen(this.pacPort);
+    this.globalPacConf = globalPacConf;
+    this.userPacConf = userPacConf;
+    this.watcher = this.watch(this.userPacConf);
+  }
+
+  watch(pacFile: string) {
+    if (fs.existsSync(pacFile)) {
+      logger.info(`Watching PAC file ${pacFile}...`);
+      return fs.watch(pacFile, async () => {
+        logger.info(`Regenerating PAC conf from file: ${pacFile}...`);
+        PacServer.generateFullPac(this.pacPort);
+        try {
+          const userData = await fs.promises.readFile(pacFile);
+          const globalData = await fs.promises.readFile(this.globalPacConf);
+          const userText = userData.toString("ascii");
+          const globalText = globalData.toString("ascii");
+          await PacServer.generatePacWithoutPort(`${userText}\n${globalText}`);
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+    return null;
+  }
+
+  unwatch() {
+    logger.info("Unwatching PAC file...");
+    if (this.watcher) {
+      fs.unwatchFile(this.userPacConf);
+    }
   }
 
   close() {
     try {
       this.core.close();
+      this.unwatch();
       server = null;
       logger.info("Closed PAC server");
     } catch(error) {

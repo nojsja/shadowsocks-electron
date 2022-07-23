@@ -5,10 +5,9 @@ import {
 } from "@material-ui/core";
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { grey } from "@material-ui/core/colors";
-import { Settings } from "../../types";
 
 export interface TextAreaProps extends TextareaAutosizeProps {
-  onTextChange?: (attr: keyof Settings, event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onTextChange?: (text: string) => void;
 }
 
 const StyledTextareaAutosize = React.memo((props: TextAreaProps) => {
@@ -18,13 +17,13 @@ const StyledTextareaAutosize = React.memo((props: TextAreaProps) => {
       border: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : 'lightgrey'}`,
       outline: 'none',
       backgroundColor: theme.palette.background.paper,
-      color: theme.palette.type === 'dark' ? grey[500] : grey[900],
+      color: theme.palette.type === 'dark' ? grey[400] : grey[900],
     }
   }));
 
   const onInnerChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (props.onTextChange) {
-      return props.onTextChange("acl", event);
+      return props.onTextChange(event.target.value);
     }
   }
 

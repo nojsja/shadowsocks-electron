@@ -14,6 +14,7 @@ import { ProxyURI } from '../core/helpers/proxy-url';
 import checkPortInUse from "../core/helpers/port-checker";
 import { warning } from '../logs';
 import { i18n } from '../electron';
+import { PacServer } from '../core/pac';
 
 const { Manager } = manager;
 const { HttpProxyServer : HPS } = http;
@@ -236,6 +237,14 @@ export class MainService implements MainServiceType {
         code: 200,
         result: ''
       });
+    });
+  }
+
+  async updateUserPacRules(params: { rules: string }) {
+    await PacServer.updateUserRules(params.rules);
+    return Promise.resolve({
+      code: 200,
+      result: ''
     });
   }
 

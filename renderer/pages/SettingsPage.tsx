@@ -42,6 +42,7 @@ import Verbose from "./settings/Verbose";
 import OpenLogDir from "./settings/OpenLogDir";
 import OpenProcessManager from "./settings/OpenProcessManager";
 import LoadBalance from "./settings/LoadBalance";
+import UserPacEditor from "./settings/UserPacEditor";
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -296,6 +297,7 @@ const SettingsPage: React.FC = () => {
             setAclUrl={setAclUrl}
             form={form}
           />
+          <UserPacEditor />
           <LaunchOnBool />
           <FixedMenu />
           <AutoHide />
