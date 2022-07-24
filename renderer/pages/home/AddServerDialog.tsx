@@ -111,6 +111,7 @@ const AddServerDialog: React.FC<AddServerDialog> = props => {
             <TextWithTooltip
               text={t('import_server_subscription_from_clipboard')}
               tooltip={t('import_server_subscription_from_clipboard_tips')}
+              iconAlign="top"
             />
           }
           />

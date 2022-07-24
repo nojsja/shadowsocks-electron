@@ -14,6 +14,7 @@
   "successfully_enabled_load_balance": "Successfully enabled load-balancing",
   "invalid_value": "Invalid value",
   "readme": "checkout plugins installation instructions on github readme page",
+  "readme_acl": "checkout acl instructions on github readme page",
   "please_confirm_v2ray-plugin_installed_on_your_system": "need to install v2ray-plugin first",
   "please_confirm_kcptun_installed_on_your_system": "need to install kcptun first",
   "not_applicable_to_linux_snap_application": "not applicable to linux snap version",

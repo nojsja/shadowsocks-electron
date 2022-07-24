@@ -109,8 +109,10 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField }) => {
     })
     .then(({ code, result }) => {
       if (code === 200) {
-        contentRef.current = result;
-        setPacContent(result);
+        if (result) {
+          contentRef.current = result;
+          setPacContent(result);
+        }
       } else {
         dispatch(SnackbarAction(result, { variant: 'error' }));
       }

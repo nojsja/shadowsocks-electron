@@ -14,6 +14,7 @@ import Form, { FormInstance } from 'rc-field-form';
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
 import If from "../../components/HOC/IF";
+import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
 interface AclProps {
   rules?: Rule[] | undefined;
@@ -34,7 +35,14 @@ const Acl: React.FC<AclProps> = ({
     <>
       <ListItem>
         <ListItemTextMultipleLine
-          primary={'ACL'}
+          primary={
+            <TextWithTooltip
+              text={'ACL'}
+              tooltip={
+                t('readme_acl')
+              }
+            />
+          }
           secondary={
             <If
               condition={enable}

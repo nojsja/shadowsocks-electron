@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Tray, Menu, shell } from "electron";
+import { app, BrowserWindow, Tray, Menu, shell, nativeImage, nativeTheme } from "electron";
 import isDev from "electron-is-dev";
 import path from "path";
 import os from "os";
@@ -11,16 +11,21 @@ import { Manager } from "../core/manager";
 
 const platform = os.platform();
 
+function getIconByDarkMode(iconName: string, darkMode: boolean) {
+  return path.resolve(app.getAppPath(), `assets/tray/${darkMode ? (iconName+'-dark') : iconName}.png`);
+}
+
 export default class IpcMainWindow implements IpcMainWindowType {
-  win: BrowserWindow | null
-  tray: Tray | null
-  icon: string
-  trayIcon: string
+  win: BrowserWindow | null;
+  tray: Tray | null;
+  icon: string;
+  trayIcon: string;
   trayMenu: Menu | null;
   menus: TrayMenu;
   url: string;
   quitting = false;
   resizable = true;
+  darkMode = nativeTheme.shouldUseDarkColors;
   width = 460;
   height = 540;
   minHeight = 480;
@@ -133,22 +138,31 @@ export default class IpcMainWindow implements IpcMainWindowType {
         this.setLocaleTrayMenu();
       });
 
+      nativeTheme.on('updated', (event: { sender: { shouldUseDarkColors: boolean  } }) => {
+        this.darkMode = event.sender.shouldUseDarkColors;
+        this.setLocaleTrayMenu();
+      });
+
     });
   }
 
   setLocaleTrayMenu() {
-    const { serverStatus: status } = this;
+    const { serverStatus: status, darkMode } = this;
     this.menus = [
       {
         label: i18n.__('show_ui'),
+        icon: nativeImage.createFromPath(getIconByDarkMode('home', darkMode)),
+
         click: this.show.bind(this)
       },
       {
         label: i18n.__('hide_ui'),
+        icon: nativeImage.createFromPath(getIconByDarkMode('hide', darkMode)),
         click: this.hide.bind(this)
       },
       {
         label: status ? i18n.__('disconnect') : i18n.__('connect'),
+        icon: nativeImage.createFromPath(getIconByDarkMode('disconnected', darkMode)),
         click: () => {
           if (status) {
             (global as any).win.webContents.send('event:stream', { action: 'disconnect-server' });
@@ -160,6 +174,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
       { type: "separator" },
       {
         label: i18n.__('quit'),
+        icon: nativeImage.createFromPath(getIconByDarkMode('quit', darkMode)),
         click: this.quit.bind(this)
       }
     ];

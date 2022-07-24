@@ -261,8 +261,8 @@ export class MainService implements MainServiceType {
         })
         .catch((err: Error) => {
           resolve({
-            code: 500,
-            result: err?.message
+            code: 200,
+            result: ''
           });
         });
     });
