@@ -202,9 +202,10 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async startPacServer(params: { pacPort: number }) {
+  async startPacServer(params: { pacPort: number, reload: boolean }) {
     return new Promise(resolve => {
       PS.stopPacServer();
+      Manager.proxy?.start();
       checkPortInUse([params.pacPort], '127.0.0.1')
         .then(results => {
           if (results[0]?.isInUse) {
@@ -233,6 +234,7 @@ export class MainService implements MainServiceType {
   async stopPacServer() {
     return new Promise(resolve => {
       PS.stopPacServer();
+      Manager.proxy?.stop();
       resolve({
         code: 200,
         result: ''

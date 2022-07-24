@@ -29,7 +29,7 @@ import PacPort from "./settings/PacPort";
 import GfwListUrl from "./settings/GfwListUrl";
 import HttpProxy from './settings/HttpProxy';
 import Acl from './settings/Acl';
-import LaunchOnBool from "./settings/LaunchOnBool";
+import LaunchOnBoot from "./settings/LaunchOnBoot";
 import FixedMenu from "./settings/FixedMenu";
 import AutoHide from "./settings/AutoHide";
 import AutoTheme from "./settings/AutoTheme";
@@ -91,7 +91,7 @@ const SettingsPage: React.FC = () => {
         needReconnectPac = false;
     const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url'];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
-    const pacConditions = ['pacPort'];
+    const pacConditions = ['pacPort', 'pac'];
 
     Object.keys(changedFields.current).forEach(key => {
       if (serverConditions.includes(key)) needReconnectServer = true;
@@ -106,6 +106,10 @@ const SettingsPage: React.FC = () => {
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
+
+  const touchField = (field: string) => {
+    changedFields.current[field] = true;
+  }
 
   const setAclUrl = () => {
     dispatch<any>(setAclUrlAction({
@@ -297,8 +301,12 @@ const SettingsPage: React.FC = () => {
             setAclUrl={setAclUrl}
             form={form}
           />
-          <UserPacEditor />
-          <LaunchOnBool />
+          <UserPacEditor touchField={touchField} />
+
+          <Divider className={styles.margin} />
+          <ListSubheader>{t('basic_settings')}</ListSubheader>
+
+          <LaunchOnBoot />
           <FixedMenu />
           <AutoHide />
           <AutoTheme onAutoThemeChange={onAutoThemeChange} />
@@ -318,8 +326,10 @@ const SettingsPage: React.FC = () => {
               ]
             }
           />
+
           <Divider className={styles.margin} />
           <ListSubheader>{t('debugging')}</ListSubheader>
+
           <Verbose />
           <OpenLogDir />
           <OpenProcessManager />

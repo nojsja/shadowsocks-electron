@@ -17,6 +17,7 @@ import StyledTextareaAutosize from '../../components/Pices/TextAreaAutosize';
 import useDidUpdate from '../../hooks/useDidUpdate';
 import { debounce } from '../../utils';
 import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
+import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
 const pacRuleDemos =
 `
@@ -74,7 +75,11 @@ const Editor: React.FC<EditorProps> = React.memo(({ onPacContentChange, defaultV
   );
 });
 
-const UserPacEditor: React.FC = () => {
+interface UserPacEditorProps {
+  touchField: (attr: string) => void;
+}
+
+const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField }) => {
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
   const contentRef = useRef<string>(pacRuleDemos);
@@ -115,6 +120,7 @@ const UserPacEditor: React.FC = () => {
 
   const onPacContentChange = (text: string) => {
     contentRef.current = text;
+    touchField('pac');
   };
 
   useDidUpdate(() => {
@@ -129,7 +135,14 @@ const UserPacEditor: React.FC = () => {
   return (
     <ListItem>
         <ListItemText
-          primary={'PAC'}
+          primary={
+            <TextWithTooltip
+              text={'PAC'}
+              tooltip={
+                t('restart_pac_tips')
+              }
+            />
+          }
           secondary={t('custom_user_rules')}
         />
         <ListItemSecondaryAction>
