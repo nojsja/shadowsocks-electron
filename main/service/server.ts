@@ -248,6 +248,24 @@ export class MainService implements MainServiceType {
     });
   }
 
+  async getUserPacRules() {
+    return new Promise(resolve => {
+      PacServer.getUserPacRules()
+        .then(rules => {
+          resolve({
+            code: 200,
+            result: rules
+          });
+        })
+        .catch((err: Error) => {
+          resolve({
+            code: 500,
+            result: err?.message
+          });
+        });
+    });
+  }
+
   async tcpPing(params: { host: string, port: number }) {
     return new Promise(resolve => {
       tcpPing({

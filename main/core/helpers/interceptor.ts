@@ -165,6 +165,7 @@ export class Interceptor {
       warning(`Port ${settings.localPort} is in use`);
       throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
     }
+    await Manager.disableProxy();
     await Manager.enableProxy(settings);
   }
 
@@ -204,6 +205,7 @@ export class StartClientInterceptor extends Interceptor {
       warning(`Port ${settings.localPort} is in use`);
       throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
     }
+    await Manager.disableProxy();
     await Manager.enableProxy(settings);
   }
 

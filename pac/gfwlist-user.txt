@@ -1,0 +1,40 @@
+
+! Demo[01] -------------
+! *.example.com/*
+! > Links will go through proxy:
+! >> https://www.example.com
+! >> https://image.example.com
+! >> https://image.example.com/abcd
+!
+! Demo[02] -------------
+! @@*.example.com/*
+! > Links will NOT go through proxy:
+! >> https://www.example.com
+! >> https://image.example.com
+! >> https://image.example.com/abcd
+!
+! Demo[03] -------------
+! ||example.com
+! > Links will go through proxy:
+! >> http://example.com/abcd
+! >> https://example.com
+! >> ftp://example.com
+!
+! Demo[04] -------------
+! |https://ab
+! > Links will go through proxy:
+! >> https://ab.com
+! >> https://ab.cn
+!
+! ab.com|
+! > Links will go through proxy:
+! >> https://c.ab.com
+! >> https://d.ab.com
+! >> ftp://d.ab.com
+!
+! Demo[05] -------------
+! The line starts with ! is comment.
+
+
+
+
