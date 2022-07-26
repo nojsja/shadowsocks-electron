@@ -99,7 +99,7 @@ export class SocketTransfer extends EventEmitter {
   private doCheckWorks = async (targets: Target[]): Promise<Target[]> => {
     const failed: Target[] = [];
     const results = await Promise.all(targets.map(target => shadowChecker('127.0.0.1', target.id as number)));
-    info.bold('>> healthCheck results: ', results);
+    info.bold('>> healthCheck result: ', results);
     results.forEach((pass, i) => {
       if (!pass) {
         failed.push(targets[i]);

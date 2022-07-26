@@ -1,6 +1,6 @@
 import React from 'react';
 import { Field } from "rc-field-form";
-import { TextField } from '@material-ui/core';
+import { TextField, Tooltip } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { Rule } from 'rc-field-form/es/interface';
 
@@ -29,8 +29,13 @@ const LocalPort: React.FC<LocalPortProps> = ({
         fullWidth
         size="small"
         type="number"
-        label={t('local_port')}
-        placeholder={t('local_port_tips')}
+        label={
+          <Tooltip arrow placement="right" title={t('local_port_tips') as string}>
+            <span>
+              { t('local_port') }
+            </span>
+          </Tooltip>
+        }
       />
     </Field>
   )

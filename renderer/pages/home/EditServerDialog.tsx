@@ -191,7 +191,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           condition={fullScreen}
           then={<div className={`${styles.toolbar}`} />}
         />
-        <InputLabel required style={{ marginBottom: 0 }}>
+        <InputLabel required style={{ marginBottom: 0 }} shrink>
           {t('server_type')}
         </InputLabel>
         <Select
@@ -230,7 +230,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           onChange={e => handleValueChange("serverPort", e.target.value.trim())}
         />
         <FormControl required fullWidth>
-          <InputLabel htmlFor="password">{t('password')}</InputLabel>
+          <InputLabel shrink htmlFor="password">{t('password')}</InputLabel>
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
@@ -248,7 +248,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             }
           />
         </FormControl>
-        <InputLabel required style={{ marginBottom: 0 }}>
+        <InputLabel shrink required style={{ marginBottom: 0 }}>
           {t('encryption')}
         </InputLabel>
         <Select
@@ -269,7 +269,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           condition={isSSR}
           then={
             <>
-              <InputLabel required style={{ marginBottom: 0 }}>
+              <InputLabel shrink required style={{ marginBottom: 0 }}>
                 {t('protocol')}
               </InputLabel>
               <Select
@@ -299,7 +299,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           condition={isSSR}
           then={
             <>
-              <InputLabel required style={{ marginBottom: 0 }}>
+              <InputLabel shrink required style={{ marginBottom: 0 }}>
                 {t('obfs')}
               </InputLabel>
               <Select
@@ -357,7 +357,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             </ListItemSecondaryAction>
           </ListItem>
         </List>
-        <InputLabel style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
+        <InputLabel shrink style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
         <If
           condition={isSS}
           then={

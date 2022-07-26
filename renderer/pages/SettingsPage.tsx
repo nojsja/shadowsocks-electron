@@ -6,7 +6,9 @@ import {
   Container,
   List,
   ListSubheader,
-  Divider,
+  Theme,
+  withStyles,
+  createStyles,
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
@@ -43,6 +45,15 @@ import OpenLogDir from "./settings/OpenLogDir";
 import OpenProcessManager from "./settings/OpenProcessManager";
 import LoadBalance from "./settings/LoadBalance";
 import UserPacEditor from "./settings/UserPacEditor";
+
+const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
+  root: {
+    backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[100] : '#4e4e4e',
+    lineHeight: '24px',
+    top: '-12px',
+    fontWeight: 'bold',
+  },
+}))(ListSubheader);
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -288,6 +299,7 @@ const SettingsPage: React.FC = () => {
           gfwListUrl={settings.gfwListUrl}
         />
         <List className={styles.list}>
+          <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
           <HttpProxy
             form={form}
             rules={
@@ -303,8 +315,7 @@ const SettingsPage: React.FC = () => {
           />
           <UserPacEditor touchField={touchField} />
 
-          <Divider className={styles.margin} />
-          <ListSubheader>{t('basic_settings')}</ListSubheader>
+          <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
 
           <LaunchOnBoot />
           <FixedMenu />
@@ -315,8 +326,9 @@ const SettingsPage: React.FC = () => {
           <Backup />
           <Restore form={form} />
           <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
-          <Divider className={styles.margin} />
-          <ListSubheader>{t('experimental')}</ListSubheader>
+
+          <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
+
           <LoadBalance
             form={form}
             rules={
@@ -327,8 +339,7 @@ const SettingsPage: React.FC = () => {
             }
           />
 
-          <Divider className={styles.margin} />
-          <ListSubheader>{t('debugging')}</ListSubheader>
+          <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
 
           <Verbose />
           <OpenLogDir />
