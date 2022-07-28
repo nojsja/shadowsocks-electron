@@ -49,9 +49,9 @@ import UserPacEditor from "./settings/UserPacEditor";
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
     backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[100] : '#4e4e4e',
+    color: theme.palette.type === 'light' ? theme.palette.grey[700] : theme.palette.grey[400],
     lineHeight: '24px',
     top: '-12px',
-    fontWeight: 'bold',
   },
 }))(ListSubheader);
 
