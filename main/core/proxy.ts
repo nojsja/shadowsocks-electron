@@ -107,7 +107,6 @@ export class DarwinProxy extends Proxy {
     } else if (this.mode === "PAC") {
       await setupIfFirstRun();
       await PS.generateFullPac(this.localPort ?? 1080);
-      // PS.startPacServer(this.pacPort ?? 1090);
       await networksetup.setPacProxy(
         `http://127.0.0.1:${this.pacPort ?? 1090}/proxy.pac`
       );

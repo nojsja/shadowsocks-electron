@@ -14,10 +14,10 @@ import { useDispatch } from 'react-redux';
 import { DialogTitle } from '../home/AddServerDialog';
 import { AdaptiveDialog } from '../../components/Pices/Dialog';
 import StyledTextareaAutosize from '../../components/Pices/TextAreaAutosize';
-import useDidUpdate from '../../hooks/useDidUpdate';
 import { debounce } from '../../utils';
 import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
+import useLayoutDidUpdate from '../../hooks/useLayoutDidUpdate';
 
 const pacRuleDemos =
 `
@@ -76,10 +76,11 @@ const Editor: React.FC<EditorProps> = React.memo(({ onPacContentChange, defaultV
 });
 
 interface UserPacEditorProps {
-  touchField: (attr: string) => void;
+  touchField: (attr: string, status: boolean) => void;
+  isFieldTouched: (attr: string) => boolean;
 }
 
-const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField }) => {
+const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouched }) => {
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
   const contentRef = useRef<string>(pacRuleDemos);
@@ -100,7 +101,7 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField }) => {
       params: { rules }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, 1e3), []);
+  }, .5e3), []);
 
   const getUserPacContent = useCallback(() => {
     MessageChannel.invoke('main', 'service:main', {
@@ -122,12 +123,13 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField }) => {
 
   const onPacContentChange = (text: string) => {
     contentRef.current = text;
-    touchField('pac');
+    touchField('pac', true);
   };
 
-  useDidUpdate(() => {
-    if (!visible) {
+  useLayoutDidUpdate(() => {
+    if (!visible && isFieldTouched('pac')) {
       onPacContentSubmit(contentRef.current);
+      touchField('pac', false);
     } else {
       getUserPacContent();
     }

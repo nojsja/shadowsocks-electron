@@ -129,7 +129,7 @@ const HomePage: React.FC = () => {
     if (!selectedServer) return;
 
     setTimeout(() => {
-      /* check reconnect event of queue */
+      /* check reconnect event from queue */
       globalAction.get({ type: 'reconnect-server' });
       globalAction.get({ type: 'reconnect-http' });
       globalAction.get({ type: 'reconnect-pac' });

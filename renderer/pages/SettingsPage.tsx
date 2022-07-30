@@ -100,9 +100,9 @@ const SettingsPage: React.FC = () => {
     let needReconnectServer = false,
         needReconnectHttp = false,
         needReconnectPac = false;
-    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url'];
+    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url', 'pac'];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
-    const pacConditions = ['pacPort', 'pac'];
+    const pacConditions = ['pacPort'];
 
     Object.keys(changedFields.current).forEach(key => {
       if (serverConditions.includes(key)) needReconnectServer = true;
@@ -118,9 +118,13 @@ const SettingsPage: React.FC = () => {
     dispatch(enqueueSnackbarAction(message, options))
   };
 
-  const touchField = (field: string) => {
-    changedFields.current[field] = true;
+  const touchField = (field: string, status: boolean) => {
+    changedFields.current[field] = status;
   }
+
+  const isFieldTouched = (field: string) => {
+    return !!changedFields.current[field];
+  };
 
   const setAclUrl = () => {
     dispatch<any>(setAclUrlAction({
@@ -313,7 +317,7 @@ const SettingsPage: React.FC = () => {
             setAclUrl={setAclUrl}
             form={form}
           />
-          <UserPacEditor touchField={touchField} />
+          <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
 
           <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
 

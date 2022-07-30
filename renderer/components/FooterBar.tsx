@@ -5,8 +5,6 @@ import {
   Fab,
   Button
 } from '@material-ui/core';
-import os from 'os';
-import { MessageChannel } from 'electron-re';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useDispatch } from "react-redux";
 import AddIcon from "@material-ui/icons/Add";
@@ -14,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Mode } from "../types";
 import { SET_SETTING } from '../redux/actions/settings';
-import { useTypedSelector } from "../redux/reducers";
 import { dispatchAction } from '../hooks/useGlobalAction';
 
 type StatusBarProps = {
@@ -23,7 +20,6 @@ type StatusBarProps = {
 };
 
 const menuItems = ["Global", "PAC", "Manual"];
-const platform = os.platform();
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -57,24 +53,10 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
   const styles = useStyles();
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const settings = useTypedSelector(state => state.settings);
   const { mode, setDialogOpen } = props;
 
   const handleModeChange = ((value: string) => {
     if (value === mode) return;
-    if (
-      platform === "win32" &&
-      value !== 'Manual' &&
-      !settings.httpProxy.enable
-    ) {
-      MessageChannel.invoke('main', 'service:desktop', {
-        action: 'openNotification',
-        params: {
-          title: t('warning'),
-          body: t('use_pac_and_global_mode_to_turn_on_the_http_proxy_in_the_settings')
-        }
-      });
-    }
     dispatch({
       type: SET_SETTING,
       key: "mode",

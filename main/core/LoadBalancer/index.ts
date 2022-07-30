@@ -154,6 +154,7 @@ class LoadBalancer {
 
   /* update calculate params */
   public updateParams = (object: {[key: string]: any}) => {
+    // eslint-disable-next-line array-callback-return
     Object.entries(object).map(([key, value]) => {
       if (key in this.params) {
         this.params[key] = value;
