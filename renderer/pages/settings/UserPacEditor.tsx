@@ -43,10 +43,10 @@ const pacRuleDemos =
 ! >> ftp://example.com
 !
 ! Demo[04] -------------
-! |https://ab
+! |https://ab.jp
 ! > Links will go through proxy:
-! >> https://ab.com
-! >> https://ab.cn
+! >> https://ab.jp.cn
+! >> https://ab.jp.com
 !
 ! ab.com|
 ! > Links will go through proxy:

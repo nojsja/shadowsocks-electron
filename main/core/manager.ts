@@ -292,7 +292,7 @@ export class Manager {
   static async enableProxy(settings: Settings) {
     Manager.proxy = Proxy.createProxy(
       platform,
-      platform === 'win32' ? settings.httpProxy.port : settings.localPort,
+      settings.localPort,
       settings.pacPort,
       settings.mode
     );

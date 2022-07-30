@@ -82,7 +82,7 @@ export class WinProxy extends Proxy {
       await sysproxy.setGlobalProxy("127.0.0.1", this.localPort ?? 1080);
     } else if (this.mode === "PAC") {
       await setupIfFirstRun();
-      await PS.generateFullPac(this.localPort ?? 1095);
+      await PS.generateFullPac(this.localPort ?? 1080);
       await sysproxy.setPacProxy(
         `http://127.0.0.1:${this.pacPort ?? 1090}/proxy.pac`
       );

@@ -1,7 +1,6 @@
 import http from "http";
 import fs from "fs";
 import path from "path";
-import os from "os";
 import fetch from "node-fetch";
 import fsExtra from "fs-extra";
 import URL from 'url';
@@ -16,7 +15,6 @@ import { debounce } from "../utils/utils";
 const socks = require('socks');
 
 let server: PacServer | null;
-const platform = os.platform();
 
 export class PacServer {
 
@@ -47,16 +45,12 @@ export class PacServer {
 
     try {
       const rules = JSON.stringify(
-        gfwListText.split("\n").filter(i => i && i.trim() && i[0] !== "!" && i[0] !== "["),
+        gfwListText.replace(/[\r\n]/g, '\n').split('\n').filter(i => i && i.trim() && i[0] !== "!" && i[0] !== "["),
         null,
         2
       );
 
-      const data = await fsExtra.readFile(
-        platform === "win32" ?
-        path.resolve(pacDir, "template_win.pac") :
-        path.resolve(pacDir, "template.pac")
-      );
+      const data = await fsExtra.readFile(path.resolve(pacDir, "template.pac"));
       const pac = data.toString("ascii").replace(/__RULES__/g, rules);
 
       await fsExtra.writeFile(path.resolve(pacDir, "pac.txt"), pac);
