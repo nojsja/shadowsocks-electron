@@ -11,6 +11,16 @@ import { useTranslation } from "react-i18next";
 
 const timeline = [
   {
+    title: 'v1.2.1',
+    children: [
+      'Feat: Quick connect/disconnect selected server from tray menu.',
+      'Feat: User PAC rules editor supported.',
+      'Fix: PAC mode bugs on windows.',
+      'Fix: Bugs when restore settings from local backup file.',
+      'Style: UI adjustments for font color, icons, space.',
+    ]
+  },
+  {
     title: 'v1.2.0',
     children: [
       'Refactor: Core module of Shadowsocks-Electron main process.',
