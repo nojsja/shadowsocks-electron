@@ -8,6 +8,7 @@ import {
   Typography,
   Button,
   Container,
+  Dialog,
   ListItem,
   ListItemText,
   Switch,
@@ -24,7 +25,8 @@ import {
   useTheme,
   makeStyles,
   createStyles,
-  Theme
+  Theme,
+  withStyles
 } from "@material-ui/core/styles";
 import { useTranslation } from 'react-i18next';
 import CloseIcon from "@material-ui/icons/Close";
@@ -34,7 +36,6 @@ import { SnackbarMessage } from 'notistack';
 import { useDispatch } from "react-redux";
 import clsx from "clsx";
 
-import { AdaptiveDialog } from '../../components/Pices/Dialog';
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 import { Config, encryptMethods, plugins, serverTypes, protocols, obfs, Notification } from "../../types";
 import { AdaptiveAppBar } from "../../components/Pices/AppBar";
@@ -71,6 +72,14 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
+
+const StyledDialog = withStyles((theme: Theme) => (
+  createStyles({
+    root: {
+      '& *': scrollBarStyle(6, 0, theme)
+    }
+  })
+))(Dialog);
 
 export interface EditServerDialogProps extends DialogProps {
   defaultValues: Config | null | undefined;
@@ -168,7 +177,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
   const isSS = values.type === 'ss';
 
   return (
-    <AdaptiveDialog
+    <StyledDialog
       fullScreen={fullScreen}
       open={open}
       onClose={onClose}
@@ -391,7 +400,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           }
         />
       </Container>
-    </AdaptiveDialog>
+    </StyledDialog>
   );
 };
 

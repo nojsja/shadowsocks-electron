@@ -15,7 +15,7 @@
   "only_for_server_groups": "仅对订阅服务器组有效，在服务器列表右键点击订阅服务器组可弹出功能菜单",
   "invalid_value": "非法值",
   "readme": "请查看 Github 页面中的 - 插件安装说明",
-  "readme_acl": "请查看 Github 页面中的 - ACL 说明",
+  "readme_acl": "修改后回到主页时会自动重启相关服务，请查看 Github 页面中的 - ACL 说明",
   "please_confirm_v2ray-plugin_installed_on_your_system": "需要先安装 v2ray-plugin",
   "please_confirm_kcptun_installed_on_your_system": "需要先安装 kcptun",
   "not_applicable_to_linux_snap_application": "linux snap 版本暂未支持",

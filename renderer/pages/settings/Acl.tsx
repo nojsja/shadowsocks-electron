@@ -9,27 +9,33 @@ import {
   Tooltip,
   Button
 } from "@material-ui/core";
-import Form, { FormInstance } from 'rc-field-form';
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
 import If from "../../components/HOC/IF";
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
+import { ACL } from '../../types';
 
 interface AclProps {
   rules?: Rule[] | undefined;
-  setAclUrl: () => void,
-  form: FormInstance<any>
+  setAclUrl: () => void;
+  touchField: (field: string, status: boolean) => void;
+  acl: ACL;
 }
 
 const Acl: React.FC<AclProps> = ({
   setAclUrl,
-  form,
+  acl,
+  touchField,
 }) => {
   const { t } = useTranslation();
-  const acl = Form.useWatch(['acl'], form);
   const enable = !!acl?.enable;
   const url = acl?.url || '';
+
+  const setAclAction = () => {
+    touchField('acl', true);
+    setAclUrl();
+  };
 
   return (
     <>
@@ -67,7 +73,7 @@ const Acl: React.FC<AclProps> = ({
         <ListItemSecondaryAction>
           <If
             condition={enable}
-            then={<Button onClick={setAclUrl} size="small">{t('select')}</Button>}
+            then={<Button onClick={setAclAction} size="small">{t('select')}</Button>}
           />
           <Field name={["acl", "enable"]} valuePropName="checked">
             <AdaptiveSwitch

@@ -37,7 +37,7 @@ const themes = {
       type: "dark",
       text: {
         primary: grey[200],
-        secondary: grey[500],
+        secondary: grey[400],
       },
       primary: {
         main: indigo[300],

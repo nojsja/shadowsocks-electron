@@ -100,7 +100,7 @@ const SettingsPage: React.FC = () => {
     let needReconnectServer = false,
         needReconnectHttp = false,
         needReconnectPac = false;
-    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url', 'pac'];
+    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'pac'];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
     const pacConditions = ['pacPort'];
 
@@ -315,7 +315,8 @@ const SettingsPage: React.FC = () => {
           />
           <Acl
             setAclUrl={setAclUrl}
-            form={form}
+            acl={settings.acl}
+            touchField={touchField}
           />
           <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
 
