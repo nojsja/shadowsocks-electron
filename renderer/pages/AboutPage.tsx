@@ -11,6 +11,16 @@ import { useTranslation } from "react-i18next";
 
 const timeline = [
   {
+    title: 'v1.2.1',
+    children: [
+      'Feat: Quick connect/disconnect selected server from tray menu.',
+      'Feat: User PAC rules editor supported.',
+      'Fix: PAC mode bugs on windows.',
+      'Fix: Bugs when restore settings from local backup file.',
+      'Style: UI adjustments for font color, icons, space.',
+    ]
+  },
+  {
     title: 'v1.2.0',
     children: [
       'Refactor: Core module of Shadowsocks-Electron main process.',
@@ -181,7 +191,7 @@ const AboutPage: React.FC = () => {
   return (
     <Container className={styles.container}>
       <div className={styles['author-info__wrapper']}>
-        <img src={authorPic} className={styles['author-info__image']}></img>
+        <img src={authorPic} alt="author" className={styles['author-info__image']}></img>
       </div>
       <div className={styles['text-center']}>
         <Typography className={styles['text-center']} variant="h6" gutterBottom>

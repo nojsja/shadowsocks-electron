@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 export default (effect: React.EffectCallback, deps?: React.DependencyList | undefined) => {
   const initSymbol = useRef<boolean|null>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!initSymbol.current) {
       initSymbol.current = true;
     } else {

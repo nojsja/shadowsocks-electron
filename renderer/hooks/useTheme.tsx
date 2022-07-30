@@ -14,6 +14,10 @@ const themes = {
   light: createTheme({
     spacing: 8,
     palette: {
+      text: {
+        primary: grey[900],
+        secondary: grey[600],
+      },
       primary: {
         main: indigo[500],
         light: indigo[400],
@@ -31,6 +35,10 @@ const themes = {
     spacing: 8,
     palette: {
       type: "dark",
+      text: {
+        primary: grey[200],
+        secondary: grey[400],
+      },
       primary: {
         main: indigo[300],
         light: indigo[300],

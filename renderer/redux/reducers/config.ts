@@ -26,6 +26,7 @@ function configReducer(
 
   switch (action.type) {
     case ADD_SUBSCRIPTION:
+      // eslint-disable-next-line array-callback-return
       return produce(state, draft => {
         draft.push({
           ...(action as ASA).config,
@@ -36,6 +37,7 @@ function configReducer(
       });
     case UPDATE_SUBSCRIPTION:
       return produce(state, draft => {
+        // eslint-disable-next-line array-callback-return
         draft.map((config) => {
           if (config.id === action.id) {
             Object.assign(config, {

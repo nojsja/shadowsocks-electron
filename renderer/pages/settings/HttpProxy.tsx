@@ -1,31 +1,33 @@
 import React from 'react';
 import { Field } from "rc-field-form";
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
+import { FormInstance, Rule } from 'rc-field-form/es/interface';
 import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
   TextField
 } from "@material-ui/core";
+import Form from 'rc-field-form';
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
-import If from "../../components/HOC/IF";
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
 import { useStylesOfSettings as useStyles } from "../styles";
+import If from '../../components/HOC/IF';
 
 interface HttpProxyProps {
   rules?: Rule[] | undefined;
-  enable: boolean
+  form: FormInstance<any>
 }
 
 const HttpProxy: React.FC<HttpProxyProps> = ({
   rules,
-  enable
+  form,
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const enable = Form.useWatch(['httpProxy', 'enable'], form);
 
   return (
     <>
@@ -41,7 +43,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
           }
         />
         <ListItemSecondaryAction>
-          <Field name="httpProxy" valuePropName="checked">
+          <Field name={["httpProxy", "enable"]} valuePropName="checked">
             <AdaptiveSwitch
               edge="end"
             />
@@ -57,7 +59,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
             />
             <ListItemSecondaryAction>
               <Field
-                name="httpProxyPort"
+                name={["httpProxy", "port"]}
                 rules={rules}
                 normalize={(value: string) => +(value.trim())}
                 validateTrigger={false}

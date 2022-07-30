@@ -36,6 +36,10 @@ export class Manager {
   static trafficTimer: NodeJS.Timer;
 
   static syncConnected(connected: boolean) {
+    Manager.event.emit('manager:server-status', {
+      status: connected,
+      mode: Manager.mode
+    });
     if ((global as any)?.win?.webContents) {
       (global as any).win.webContents.send("connected", {
         status: connected,
@@ -288,7 +292,7 @@ export class Manager {
   static async enableProxy(settings: Settings) {
     Manager.proxy = Proxy.createProxy(
       platform,
-      platform === 'win32' ? settings.httpProxy.port : settings.localPort,
+      settings.localPort,
       settings.pacPort,
       settings.mode
     );

@@ -14,6 +14,7 @@ import { ProxyURI } from '../core/helpers/proxy-url';
 import checkPortInUse from "../core/helpers/port-checker";
 import { warning } from '../logs';
 import { i18n } from '../electron';
+import { PacServer } from '../core/pac';
 
 const { Manager } = manager;
 const { HttpProxyServer : HPS } = http;
@@ -161,9 +162,9 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async reGeneratePacFile(params: { url?: string, text?: string }) {
+  async reGeneratePacFile(params: { url?: string, text?: string, settings: Settings }) {
     return new Promise(resolve => {
-      return PS.downloadAndGeneratePac(params.url ?? '', params.text ?? '').then(() => {
+      return PS.downloadAndGeneratePac(params.url ?? '', params.text ?? '', params.settings).then(() => {
         resolve({
           code: 200,
           result: params.url
@@ -201,9 +202,10 @@ export class MainService implements MainServiceType {
     });
   }
 
-  async startPacServer(params: { pacPort: number }) {
+  async startPacServer(params: { pacPort: number, reload: boolean }) {
     return new Promise(resolve => {
       PS.stopPacServer();
+      Manager.proxy?.start();
       checkPortInUse([params.pacPort], '127.0.0.1')
         .then(results => {
           if (results[0]?.isInUse) {
@@ -232,10 +234,37 @@ export class MainService implements MainServiceType {
   async stopPacServer() {
     return new Promise(resolve => {
       PS.stopPacServer();
+      Manager.proxy?.stop();
       resolve({
         code: 200,
         result: ''
       });
+    });
+  }
+
+  async updateUserPacRules(params: { rules: string }) {
+    await PacServer.updateUserRules(params.rules);
+    return Promise.resolve({
+      code: 200,
+      result: ''
+    });
+  }
+
+  async getUserPacRules() {
+    return new Promise(resolve => {
+      PacServer.getUserPacRules()
+        .then(rules => {
+          resolve({
+            code: 200,
+            result: rules
+          });
+        })
+        .catch((err: Error) => {
+          resolve({
+            code: 200,
+            result: ''
+          });
+        });
     });
   }
 

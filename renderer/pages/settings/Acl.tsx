@@ -13,26 +13,42 @@ import {
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
 import If from "../../components/HOC/IF";
+import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
+import { ACL } from '../../types';
 
 interface AclProps {
   rules?: Rule[] | undefined;
-  enable: boolean,
-  url: string | undefined,
-  setAclUrl: () => void
+  setAclUrl: () => void;
+  touchField: (field: string, status: boolean) => void;
+  acl: ACL;
 }
 
 const Acl: React.FC<AclProps> = ({
   setAclUrl,
-  enable,
-  url
+  acl,
+  touchField,
 }) => {
   const { t } = useTranslation();
+  const enable = !!acl?.enable;
+  const url = acl?.url || '';
+
+  const setAclAction = () => {
+    touchField('acl', true);
+    setAclUrl();
+  };
 
   return (
     <>
       <ListItem>
         <ListItemTextMultipleLine
-          primary={'ACL'}
+          primary={
+            <TextWithTooltip
+              text={'ACL'}
+              tooltip={
+                t('readme_acl')
+              }
+            />
+          }
           secondary={
             <If
               condition={enable}
@@ -46,7 +62,9 @@ const Acl: React.FC<AclProps> = ({
                     />
                   }
                 >
-                  <span>{path.basename(url || '')}</span>
+                  <Field name={["acl", "url"]}>
+                    <span>{path.basename(url || '')}</span>
+                  </Field>
                 </Tooltip>
               }
             />
@@ -55,9 +73,9 @@ const Acl: React.FC<AclProps> = ({
         <ListItemSecondaryAction>
           <If
             condition={enable}
-            then={<Button onClick={setAclUrl} size="small">{t('select')}</Button>}
+            then={<Button onClick={setAclAction} size="small">{t('select')}</Button>}
           />
-          <Field name="acl" valuePropName="checked">
+          <Field name={["acl", "enable"]} valuePropName="checked">
             <AdaptiveSwitch
               edge="end"
             />

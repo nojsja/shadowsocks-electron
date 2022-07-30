@@ -69,10 +69,10 @@ const GfwListUrl: React.FC<GfwListUrlProps> = ({
               icon={
                 <span>
                   <Tooltip arrow placement="top" title={t<string>('recover_pac_file_with_link')}>
-                    <RestorePage className={styles.cursorPointer} onClick={reGeneratePacFileWithUrl} />
+                    <RestorePage className={`${styles.cursorPointer} ${styles.colorGrey}`} onClick={reGeneratePacFileWithUrl} />
                   </Tooltip>
                   <Tooltip arrow placement="top" title={t<string>('recover_pac_file_with_file')}>
-                    <NoteAdd className={styles.cursorPointer} onClick={reGeneratePacFileWithFile} />
+                    <NoteAdd className={`${styles.cursorPointer} ${styles.colorGrey}`} onClick={reGeneratePacFileWithFile} />
                   </Tooltip>
                 </span>
               }

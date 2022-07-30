@@ -75,3 +75,30 @@ export function findAndModify(server: undefined | (Config | GroupConfig)[], id: 
 
   return server;
 }
+
+export function debounce(fn: Function, delay: number) {
+  let timer: NodeJS.Timeout | undefined;
+
+  return function(this: unknown, ...args: any[]){
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  }
+}
+
+export function throttle(fn: Function, delay: number) {
+  let timer: NodeJS.Timeout | undefined;
+
+  return function(this: unknown, ...args: any[]){
+    if (timer) {
+      return;
+    }
+    timer = setTimeout(() => {
+      fn.apply(this, args);
+      timer = undefined;
+    }, delay);
+  }
+}

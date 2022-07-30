@@ -154,8 +154,12 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
       cursor: 'pointer',
       top: '-2px'
     },
+    colorGrey: {
+      color: 'grey'
+    },
     list: {
-      width: "100%"
+      width: "100%",
+      padding: 0
     },
     sub: {
       marginLeft: '10px'

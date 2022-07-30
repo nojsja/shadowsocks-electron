@@ -1,22 +1,35 @@
 import http from "http";
 import fs from "fs";
 import path from "path";
-import os from "os";
 import fetch from "node-fetch";
 import fsExtra from "fs-extra";
 import URL from 'url';
 
 import logger from "../logs";
-import { pacDir } from "../config";
+import { globalPacConf, pacDir, userPacConf } from "../config";
 import { i18n } from "../electron";
 import { request } from "../utils/http-request";
+import { Settings } from "../types/extention";
+import { debounce } from "../utils/utils";
 
 const socks = require('socks');
 
 let server: PacServer | null;
-const platform = os.platform();
 
 export class PacServer {
+
+  static updateUserRules(text: string) {
+    return new Promise((resolve) => {
+      fs.writeFile(userPacConf, text, () => {
+        resolve(true);
+      });
+    })
+  }
+
+  static async getUserPacRules() {
+    return await fs.promises.readFile(userPacConf, "utf8");
+  }
+
   static startPacServer(pacPort: number) {
     server && server.close();
     server = new PacServer(pacPort, path.resolve(pacDir, "proxy.pac"));
@@ -32,16 +45,12 @@ export class PacServer {
 
     try {
       const rules = JSON.stringify(
-        gfwListText.split("\n").filter(i => i && i[0] !== "!" && i[0] !== "["),
+        gfwListText.replace(/[\r\n]/g, '\n').split('\n').filter(i => i && i.trim() && i[0] !== "!" && i[0] !== "["),
         null,
         2
       );
 
-      const data = await fsExtra.readFile(
-        platform === "win32" ?
-        path.resolve(pacDir, "template_win.pac") :
-        path.resolve(pacDir, "template.pac")
-      );
+      const data = await fsExtra.readFile(path.resolve(pacDir, "template.pac"));
       const pac = data.toString("ascii").replace(/__RULES__/g, rules);
 
       await fsExtra.writeFile(path.resolve(pacDir, "pac.txt"), pac);
@@ -69,7 +78,7 @@ export class PacServer {
     }
   }
 
-  static async downloadAndGeneratePac(url: string, text: string) {
+  static async downloadAndGeneratePac(url: string, text: string, settings: Settings) {
     if (!url && !text) {
       throw new Error(i18n.__('invalid_parameter'));
     }
@@ -97,7 +106,7 @@ export class PacServer {
           .catch(() => {
             const agentConf = {
               ipaddress: '127.0.0.1',
-              port: 1080,
+              port: settings.localPort,
               type: 5,
             };
 
@@ -134,6 +143,8 @@ export class PacServer {
 
   core: http.Server;
   pacPort: number;
+  globalPacConf: string;
+  userPacConf: string;
 
   constructor(pacPort: number, pacFile: string) {
     this.pacPort = pacPort;
@@ -148,13 +159,42 @@ export class PacServer {
           }
         });
       });
-    this.core.listen(this.pacPort);
     logger.info("Started PAC server");
+    this.core.listen(this.pacPort);
+    this.globalPacConf = globalPacConf;
+    this.userPacConf = userPacConf;
+    this.watch(this.userPacConf);
+  }
+
+  async watch(pacFile: string) {
+    this.unwatch(pacFile);
+    if (fs.existsSync(pacFile)) {
+      logger.info(`Watching PAC file ${pacFile}...`);
+      return fs.watch(pacFile, debounce(async () => {
+        logger.info(`Regenerating PAC conf from file: ${pacFile}...`);
+        try {
+          const userData = await fs.promises.readFile(pacFile);
+          const globalData = await fs.promises.readFile(this.globalPacConf);
+          const userText = userData.toString("ascii");
+          const globalText = globalData.toString("ascii");
+          await PacServer.generatePacWithoutPort(`${userText}\n${globalText}`);
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1e3));
+    }
+    return null;
+  }
+
+  unwatch(pacFile: string) {
+    logger.info(`UnWatching PAC file ${pacFile}...`);
+    fs.unwatchFile(this.userPacConf);
   }
 
   close() {
     try {
       this.core.close();
+      this.unwatch(this.userPacConf);
       server = null;
       logger.info("Closed PAC server");
     } catch(error) {

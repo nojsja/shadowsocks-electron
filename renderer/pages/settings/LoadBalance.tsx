@@ -1,7 +1,7 @@
 import React from 'react';
-import { Field } from "rc-field-form";
+import Form, { Field } from "rc-field-form";
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
+import { FormInstance, Rule } from 'rc-field-form/es/interface';
 import {
   ListItem,
   ListItemText,
@@ -20,15 +20,16 @@ import { ALGORITHM } from '../../types';
 
 interface LoadBalanceProps {
   rules?: Rule[] | undefined;
-  enable: boolean;
+  form: FormInstance<any>
 }
 
 const LoadBalance: React.FC<LoadBalanceProps> = ({
   rules,
-  enable
+  form
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const enable = Form.useWatch(['loadBalance', 'enable'], form);
 
   return (
     <>
@@ -43,7 +44,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
           secondary={t('unstable_feature')}
         />
         <ListItemSecondaryAction>
-          <Field name="loadBalance" valuePropName="checked">
+          <Field name={['loadBalance', 'enable']} valuePropName="checked">
             <AdaptiveSwitch
               edge="end"
             />
@@ -64,7 +65,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
             />
             <ListItemSecondaryAction>
               <Field
-                name="loadBalanceCount"
+                name={['loadBalance', 'count']}
                 rules={rules}
                 normalize={(value: string) => +(value.trim())}
                 validateTrigger={false}
@@ -99,7 +100,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
             />
             <ListItemSecondaryAction>
               <Field
-                name="loadBalanceStrategy"
+                name={['loadBalance', 'strategy']}
                 validateTrigger={false}
               >
                 <Select

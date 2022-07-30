@@ -15,6 +15,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ipcRenderer } from "electron";
 import { MessageChannel } from "electron-re";
 import ElectronStore from 'electron-store';
+import { dispatch as dispatchEvent } from "use-bus";
 
 import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from "./utils";
@@ -54,6 +55,13 @@ ipcRenderer.on("traffic", (e, message: { traffic: number }) => {
   const MB = (KB / 1024);
   const GB = (MB / 1024);
   store.dispatch(setStatus('traffic', { KB, MB, GB }));
+});
+
+ipcRenderer.on("event:stream", (e, message: { action: string, args: any }) => {
+  dispatchEvent({
+    type: `event:stream:${message.action}`,
+    payload: message.args,
+  });
 });
 
 prepareForLanguage(getDefaultLang());

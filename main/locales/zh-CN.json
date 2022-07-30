@@ -4,6 +4,8 @@
   "invalid_subscription": "订阅链接格式不正确",
   "show_ui": "打开主页",
   "hide_ui": "隐藏",
+  "connect": "连接",
+  "disconnect": "断开连接",
   "quit": "退出",
   "port_already_used": "端口号被占用：",
   "action_warning": "警告",

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import Form from "rc-field-form";
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
@@ -6,7 +6,9 @@ import {
   Container,
   List,
   ListSubheader,
-  Divider,
+  Theme,
+  withStyles,
+  createStyles,
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
@@ -29,7 +31,7 @@ import PacPort from "./settings/PacPort";
 import GfwListUrl from "./settings/GfwListUrl";
 import HttpProxy from './settings/HttpProxy';
 import Acl from './settings/Acl';
-import LaunchOnBool from "./settings/LaunchOnBool";
+import LaunchOnBoot from "./settings/LaunchOnBoot";
 import FixedMenu from "./settings/FixedMenu";
 import AutoHide from "./settings/AutoHide";
 import AutoTheme from "./settings/AutoTheme";
@@ -42,6 +44,16 @@ import Verbose from "./settings/Verbose";
 import OpenLogDir from "./settings/OpenLogDir";
 import OpenProcessManager from "./settings/OpenProcessManager";
 import LoadBalance from "./settings/LoadBalance";
+import UserPacEditor from "./settings/UserPacEditor";
+
+const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
+  root: {
+    backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[100] : '#4e4e4e',
+    color: theme.palette.type === 'light' ? theme.palette.grey[700] : theme.palette.grey[400],
+    lineHeight: '24px',
+    top: '-12px',
+  },
+}))(ListSubheader);
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -50,15 +62,6 @@ const SettingsPage: React.FC = () => {
   const dispatch = useTypedDispatch();
   const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
-  // const [aclVisible, setAclVisible] = useState(false);
-  const settingKeys = useRef(
-    ['localPort', 'pacPort', 'gfwListUrl',
-    'httpProxy', 'autoLaunch', 'fixedMenu',
-    'darkMode', 'autoTheme', 'verbose', 'autoHide',
-    'acl', 'loadBalance'
-  ]
-  );
-  const cachedRef = useRef<any>(null);
   const changedFields = useRef<{[key: string]: any}>({});
 
   /* -------------- hooks -------------- */
@@ -68,6 +71,7 @@ const SettingsPage: React.FC = () => {
       /* check settings item */
       calGlobalActions();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -90,51 +94,13 @@ const SettingsPage: React.FC = () => {
     }
   }, [settings.darkMode]);
 
-  /* restoreFromFile */
-  useMemo(() => {
-    const obj = {};
-    if (cachedRef.current) {
-      settingKeys.current.forEach(key => {
-        if (cachedRef.current[key] !== (settings as any)[key]) {
-          switch(key) {
-            case 'acl':
-              Object.assign(obj, {
-                acl: settings.acl.enable,
-                acl_url: settings.acl.url,
-              });
-            case 'httpProxy':
-              Object.assign(obj, {
-                httpProxy: settings.httpProxy.enable,
-                httpProxyPort: settings.httpProxy.port,
-              });
-            break;
-            case 'loadBalance':
-              Object.assign(obj, {
-                loadBalance: settings.loadBalance?.enable,
-                loadBalanceCount: settings.loadBalance?.count ?? 3,
-                loadBalanceStrategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
-              });
-            break;
-            default:
-              Object.assign(obj, { [key]: (settings as any)[key] });
-          }
-        }
-      });
-      form.setFieldsValue(obj);
-    }
-    cachedRef.current = settingKeys.current.reduce(
-      (pre, cur) => Object.assign(pre, { [cur]: (settings as any)[cur] }),
-      {}
-    );
-  }, settingKeys.current.map(key => (settings as any)[key]));
-
   /* -------------- functions -------------- */
 
   const calGlobalActions = useCallback(() => {
     let needReconnectServer = false,
         needReconnectHttp = false,
         needReconnectPac = false;
-    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'acl_url'];
+    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'pac'];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
     const pacConditions = ['pacPort'];
 
@@ -150,6 +116,14 @@ const SettingsPage: React.FC = () => {
 
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
+  };
+
+  const touchField = (field: string, status: boolean) => {
+    changedFields.current[field] = status;
+  }
+
+  const isFieldTouched = (field: string) => {
+    return !!changedFields.current[field];
   };
 
   const setAclUrl = () => {
@@ -192,7 +166,10 @@ const SettingsPage: React.FC = () => {
     dispatch<any>(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
       action: 'reGeneratePacFile',
-      params
+      params: {
+        ...params,
+        settings,
+      }
     }).then((rsp) => {
       setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
       if (rsp.code === 200) {
@@ -230,7 +207,6 @@ const SettingsPage: React.FC = () => {
         }
       }
     });
-
   }
 
   const checkPortField = (rule: any, value: any) => {
@@ -246,45 +222,20 @@ const SettingsPage: React.FC = () => {
       form.validateFields([key]).then(() => {
         switch (key) {
           case 'httpProxy':
-            value = {
-              ...settings.httpProxy,
-              enable: value
-            };
-            dispatch(setSetting<'httpProxy'>(key, value))
-            return;
-          case 'httpProxyPort':
-            value = {
-              ...settings.httpProxy,
-              port: value
-            };
-            dispatch(setSetting<'httpProxy'>('httpProxy', value))
+            const httpProxy = form.getFieldValue('httpProxy');
+            dispatch(setSetting<'httpProxy'>(key, httpProxy))
             return;
           case 'loadBalance':
-            value = {
-              ...settings.loadBalance,
-              enable: value
-            };
-            dispatch(setSetting<'loadBalance'>(key, value))
-            return;
-          case 'loadBalanceCount':
-            value = {
-              ...settings.loadBalance,
-              count: value
-            };
-            dispatch(setSetting<'loadBalance'>('loadBalance', value))
-            return;
-          case 'loadBalanceStrategy':
-            value = {
-              ...settings.loadBalance,
-              strategy: value
-            };
-            dispatch(setSetting<'loadBalance'>('loadBalance', value))
+            const loadBalance = form.getFieldValue('loadBalance');
+            dispatch(setSetting<'loadBalance'>(key, {
+              strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
+              count: loadBalance?.count ?? 3,
+              enable: loadBalance?.enable ?? false,
+            }));
             return;
           case 'acl':
-            dispatch(setSetting<'acl'>('acl', {
-              ...settings.acl,
-              enable: value
-            }));
+            const acl = form.getFieldValue('acl');
+            dispatch(setSetting<'acl'>('acl', acl));
             return;
           case 'autoLaunch':
             dispatch<any>(setStartupOnBoot(value));
@@ -316,19 +267,19 @@ const SettingsPage: React.FC = () => {
             localPort: settings.localPort,
             pacPort: settings.pacPort,
             gfwListUrl: settings.gfwListUrl,
-            httpProxy: settings.httpProxy.enable,
-            httpProxyPort: settings.httpProxy.port,
-            loadBalance: settings.loadBalance?.enable,
-            loadBalanceCount: settings.loadBalance?.count || 3,
-            loadBalanceStrategy: settings.loadBalance?.strategy || ALGORITHM.POLLING,
+            httpProxy: settings.httpProxy,
+            loadBalance: {
+              strategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
+              count: settings.loadBalance?.count ?? 3,
+              enable: settings.loadBalance?.enable ?? false,
+            },
             autoLaunch: settings.autoLaunch,
             fixedMenu: settings.fixedMenu,
             darkMode: settings.darkMode,
             autoTheme: settings.autoTheme,
             verbose: settings.verbose,
             autoHide: settings.autoHide,
-            acl: settings.acl.enable,
-            acl_url: settings.acl.url
+            acl: settings.acl,
           }
         }
         onValuesChange={onFieldChange}
@@ -352,8 +303,9 @@ const SettingsPage: React.FC = () => {
           gfwListUrl={settings.gfwListUrl}
         />
         <List className={styles.list}>
+          <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
           <HttpProxy
-            enable={settings.httpProxy.enable}
+            form={form}
             rules={
               [
                 { required: true, message: t('invalid_value') },
@@ -362,23 +314,28 @@ const SettingsPage: React.FC = () => {
             }
           />
           <Acl
-            enable={settings.acl.enable}
-            url={settings?.acl?.url}
             setAclUrl={setAclUrl}
+            acl={settings.acl}
+            touchField={touchField}
           />
-          <LaunchOnBool />
+          <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
+
+          <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
+
+          <LaunchOnBoot />
           <FixedMenu />
           <AutoHide />
           <AutoTheme onAutoThemeChange={onAutoThemeChange} />
-          <DarkMode disabled={settings.autoTheme} />
+          <DarkMode form={form} />
           <Language />
           <Backup />
-          <Restore />
-          <ResetData enqueueSnackbar={enqueueSnackbar} />
-          <Divider className={styles.margin} />
-          <ListSubheader>{t('experimental')}</ListSubheader>
+          <Restore form={form} />
+          <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
+
+          <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
+
           <LoadBalance
-            enable={!!settings.loadBalance?.enable}
+            form={form}
             rules={
               [
                 { required: true, message: t('invalid_value') },
@@ -386,8 +343,9 @@ const SettingsPage: React.FC = () => {
               ]
             }
           />
-          <Divider className={styles.margin} />
-          <ListSubheader>{t('debugging')}</ListSubheader>
+
+          <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
+
           <Verbose />
           <OpenLogDir />
           <OpenProcessManager />

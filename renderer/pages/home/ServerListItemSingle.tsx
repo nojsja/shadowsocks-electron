@@ -149,6 +149,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
         label: t('move_up'), action: 'move_up', icon: <ArrowUpwardIcon fontSize="small" />},
       { label: t('move_down'), action: 'move_down', icon: <ArrowDownwardIcon fontSize="small" /> }] : [],
     ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connected, selected, topable, moveable]);
 
   const handleActionHide = () => {

@@ -25,6 +25,8 @@ export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);
 export const pacDir = getPathRuntime('pac');
 export const binDir = getPathRuntime('bin');
+export const globalPacConf = path.resolve(pacDir, "gfwlist.txt");
+export const userPacConf = path.resolve(pacDir, "gfwlist-user.txt");
 
 export default {
   packageName,

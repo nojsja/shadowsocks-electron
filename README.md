@@ -14,7 +14,7 @@
 
 ## Shadowsocks Electron
 
-> Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina (x64) ● Windows 10/11 (x64)
+> Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina/monterey (x64) ● Windows 10/11 (x64)
 
 Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
 
@@ -45,13 +45,13 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 
 ### ➣ Comming Soon
 
-- v2ray-plugin
+- Tunnel Mode
 
 ## Supported Platforms & Arch
 
 ![system](https://img.shields.io/badge/system-win%20%7C%20mac%20%7C%20linux-green)
 
-> More architecture will be supported if necessary, just give me an issue.
+> More architectures will be supported if necessary, just give me an issue.
 
 - Ubuntu
   - deb `x64/x86/arm64`

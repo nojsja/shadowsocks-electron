@@ -45,7 +45,7 @@ export const backupConfigurationToFile = (params: any, info: ActionRspText): Thu
 }
 
 export const restoreConfigurationFromFile =
-  (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (info: ActionRspText, callback?: (conf: any) => void): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'restoreConfigurationFromFile',
@@ -63,6 +63,7 @@ export const restoreConfigurationFromFile =
         if (rsp.result.settings) {
           dispatch(overrideSetting(rsp.result.settings));
         }
+        callback && callback(rsp.result);
       } else {
         dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
       }
