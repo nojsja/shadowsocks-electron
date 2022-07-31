@@ -86,7 +86,7 @@ export class SSClient extends Client {
       config.plugin ? "--plugin" : "",
       config.plugin ?? "",
       config.pluginOpts ? "--plugin-opts" : "",
-      config.pluginOpts ?? "",
+      `"${config.pluginOpts}"` ?? "",
       this.settings.verbose ? "-v" : "",
       "-t",
       (config.timeout ?? "600").toString(),
