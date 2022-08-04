@@ -19,7 +19,7 @@ export interface MenuContent {
 
 const StyledMenuItem = withStyles((theme) => createStyles({
   root: {
-    // minWidth: 150
+    minHeight: 'auto',
   }
 }))(MenuItem);
 

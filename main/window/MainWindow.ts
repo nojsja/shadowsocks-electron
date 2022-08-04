@@ -49,7 +49,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
       ? "http://localhost:3001"
       : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
     this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
-    this.trayIcon = path.resolve(app.getAppPath(), "assets/icons/16x16.png");
+    this.trayIcon = path.resolve(app.getAppPath(), "assets/icons/icon.png");
   }
 
   create() {

@@ -87,7 +87,7 @@
   "import_server_url_from_clipboard": "从剪贴板导入配置",
   "import_server_subscription_from_clipboard": "从剪贴板解析订阅链接",
   "import_server_url_from_clipboard_tips": "以 ss(r):// 开头的文本。",
-  "import_server_subscription_from_clipboard_tips": "http(s) 开头的链接，用于远程下载由 base64 编码的多行 ss(r):// 文本数据，下载后客户端会进行解析并导入所有服务器。已测试支持的服务商：泡芙云、速蛙云。",
+  "import_server_subscription_from_clipboard_tips": "http(s) 开头的链接，用于远程下载由 base64 编码的多行 ss(r):// 文本数据，下载后客户端会进行解析并导入所有服务器。已测试支持的服务商：泡芙云、monocloud、速蛙云(已跑路)。",
   "add_server_manually": "手动添加",
   "remark": "名称",
   "server_address": "服务器地址",
