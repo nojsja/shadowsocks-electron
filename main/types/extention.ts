@@ -81,7 +81,7 @@ export interface IpcMainProcess {
 
 export type IpcMain = _IpcMain;
 
-export const plugins = ["v2ray-plugin", "kcptun"] as const;
+export const plugins = ["v2ray-plugin", "kcptun", "define"] as const;
 export type Plugin = typeof plugins[number];
 export type ACL = boolean;
 export type Config = SSConfig & SSRConfig;

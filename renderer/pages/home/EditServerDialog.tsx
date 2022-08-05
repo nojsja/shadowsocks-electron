@@ -93,7 +93,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
 
   const { open, onClose, defaultValues, onValues } = props;
 
-
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -125,7 +124,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
   ) => {
     setValues({
       ...values,
-      // [key]: e.target[attr || 'value'].trim()
       [key]: value
     });
   };
@@ -367,38 +365,59 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           </ListItem>
         </List>
         <InputLabel shrink style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
-        <If
-          condition={isSS}
-          then={
-            <>
-              <Select
-                label={t('plugin')}
-                displayEmpty
-                fullWidth
-                value={values.plugin ?? ""}
-                onChange={(e: any) => handleValueChange("plugin", e.target.value.trim())}
-              >
-                <MenuItem key="none" value="">
-                  <em>{t('none')}</em>
-                </MenuItem>
-                {
-                  plugins.map(plugin => (
-                    <MenuItem key={plugin.name} value={plugin.name}>
-                      {plugin.name} {plugin.tips ? `(${t(plugin.tips)})` : ""}
-                    </MenuItem>
-                  ))
-                }
-              </Select>
-              <TextField
-                fullWidth
-                multiline
-                label={t('plugin_options')}
-                value={values.pluginOpts ?? ""}
-                onChange={e => handleValueChange("pluginOpts", e.target.value.trim())}
-              />
-            </>
+        <Select
+          label={t('plugin')}
+          displayEmpty
+          fullWidth
+          value={values.plugin ?? ""}
+          onChange={(e: any) => handleValueChange("plugin", e.target.value.trim())}
+        >
+          <MenuItem key="none" value="">
+            <em>{t('none')}</em>
+          </MenuItem>
+          {
+            isSS && plugins.map(plugin => (
+              <MenuItem key={plugin.name} value={plugin.name}>
+                {plugin.name} {plugin.tips ? `(${t(plugin.tips)})` : ""}
+              </MenuItem>
+            ))
           }
-        />
+          <MenuItem key="define" value="define">
+            <em>{t('customize_plugin')}</em>
+          </MenuItem>
+        </Select>
+        {
+          (values.plugin && (values.plugin !== 'define')) && (
+            <TextField
+              fullWidth
+              multiline
+              label={t('plugin_options')}
+              value={values.pluginOpts ?? ""}
+              onChange={e => handleValueChange("pluginOpts", e.target.value.trim())}
+            />
+          )
+        }
+        {
+          (values.plugin === 'define') && (
+            <TextField
+              fullWidth
+              label={t('plugin_path')}
+              value={values.definedPlugin ?? ""}
+              onChange={e => handleValueChange("definedPlugin", e.target.value.trim())}
+            />
+          )
+        }
+        {
+          (values.plugin === 'define') && (
+            <TextField
+              fullWidth
+              multiline
+              label={t('plugin_options')}
+              value={values.definedPluginOpts ?? ""}
+              onChange={e => handleValueChange("definedPluginOpts", e.target.value.trim())}
+            />
+          )
+        }
       </Container>
     </StyledDialog>
   );

@@ -1,8 +1,8 @@
 import { ChildProcess, fork } from "child_process";
 import { EventEmitter } from "events";
-import fs from 'fs';
 
 import { DefinedPluginProps } from "../types/extention";
+import logger from "../logs";
 import { debounce } from "../utils/utils";
 
 export class DefinedPlugin extends EventEmitter {
@@ -39,37 +39,32 @@ export class DefinedPlugin extends EventEmitter {
   private onError = (err: Error) => {
     this.status = 'error';
     this.emit('error', err);
+    logger.info('DefinedPlugin error:', err);
   }
 
   private onExited = async () => {
     this.status = 'stopped';
     this.emit('exited');
+    logger.info('DefinedPlugin exited:', this.path);
   }
 
   stop = () => {
     try {
       this.child?.kill();
     } catch (error) {
-      console.error(`DefinedPlugin: failed to stop ${this.name}. ${error}`);
+      logger.error(`DefinedPlugin: failed to stop ${this.name}. ${error}`);
     }
   }
 
   start = () => {
-    fs
-      .promises
-      .stat(this.path)
-      .then((stat) => {
-        if (stat.isFile()) {
-          this.child = fork(this.path, this.args.split(" "));
-          this.status = 'running';
-          this.handleEvents();
-        } else {
-          throw new Error(`DefinedPlugin: ${this.path} is not a executable file.`);
-        }
-      })
-      .catch((error) => {
-        this.onError(error);
-      });
+    try {
+      this.child = fork(this.path, this.args.split(" "));
+      this.status = 'running';
+      logger.info('DefinedPlugin running:', this.path);
+      this.handleEvents();
+    } catch (error) {
+      this.onError(new Error(`DefinedPlugin: failed to start ${this.path}. ${error}`));
+    }
   }
 
 }

@@ -96,6 +96,8 @@ export class SSClient extends Client {
   parseParams(config: SSConfig) {
     const { acl } = this.settings;
     const isAclEnabled = acl.enable && acl.url;
+    const embedPluginEnabled = config.plugin && config.plugin !== 'define';
+
     this.params = [
       "-s",
       config.serverHost,
@@ -112,16 +114,16 @@ export class SSClient extends Client {
       config.udp ? "-u" : "",
       config.fastOpen ? "--fast-open" : "",
       config.noDelay ? "--no-delay" : "",
-      config.plugin ? "--plugin" : "",
-      config.plugin ?? "",
-      config.pluginOpts ? "--plugin-opts" : "",
-      `"${config.pluginOpts}"` ?? "",
+      embedPluginEnabled ? "--plugin" : "",
+      embedPluginEnabled ? (config.plugin ?? '') : '',
+      (embedPluginEnabled && config.pluginOpts) ? "--plugin-opts" : "",
+      embedPluginEnabled ? `"${config.pluginOpts ?? ''}"` : "",
       this.settings.verbose ? "-v" : "",
       "-t",
       (config.timeout ?? "600").toString(),
       isAclEnabled ? `--acl` : "",
       isAclEnabled ? `${acl.url}` : ""
-    ].filter(arg => arg !== '');
+    ].filter(arg => arg !== '' && arg !== '""');
   }
 
   connect(config: SSConfig = this.config): Promise<{code: number, result: any}> {

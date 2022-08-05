@@ -1,5 +1,7 @@
 {
+  "customize_plugin": "Customize plugin",
   "custom_user_rules": "Custom user rules",
+  "plugin_path": "Plugin path",
   "release_notes": "release notes",
   "traffic": "traffic",
   "only_for_server_groups": "Only for the subscription server groups (right click groups on the server list and function menu will pop up)",

@@ -66,7 +66,7 @@ export const plugins = [
     tips: "please_confirm_kcptun_installed_on_your_system"
   }] as const;
 
-export type Plugin = typeof plugins[number];
+export type Plugin = 'v2ray-plugin' | 'kcptun' | 'define' | '';
 
 export type ACL = {
   enable: boolean,
@@ -81,7 +81,12 @@ export type NotificationOptions = {
   title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined
 };
 
-export interface SSConfig {
+interface CommonConfig {
+  definedPlugin?: string;
+  definedPluginOpts?: string;
+}
+
+export interface SSConfig extends CommonConfig {
   id: string;
   type: string;
   remark?: string;
@@ -99,8 +104,7 @@ export interface SSConfig {
   pluginOpts?: string;
 }
 
-
-export interface SSRConfig {
+export interface SSRConfig extends CommonConfig {
   id: string;
   type: string;
   remark?: string;
