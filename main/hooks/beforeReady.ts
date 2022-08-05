@@ -9,14 +9,9 @@ import { appDataPath, platform, pathRuntime, pathExecutable } from "../config";
 import { checkEnvFiles as check, copyDir, chmod } from "../utils/utils";
 import { pacDir, binDir } from '../config';
 
-export default (electronApp: ElectronApp) => {
-  checkEnvFiles(electronApp);
-  chmodFiles(electronApp);
-  checkPlatform(electronApp);
-  injectSentryMonitor(electronApp);
-};
+const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
-export const checkEnvFiles = (electronApp: ElectronApp) => {
+const checkEnvFiles = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'checkEnvFiles', (app: Electron.App) => {
     console.log('hooks: >> checkEnvFiles');
     check(
@@ -42,14 +37,14 @@ export const checkEnvFiles = (electronApp: ElectronApp) => {
   });
 }
 
-export const chmodFiles = (electronApp: ElectronApp) => {
+const chmodFiles = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'chmodFiles', (app: Electron.App) => {
     console.log('hooks: >> chmodFiles');
     chmod(path.join(pathRuntime, 'bin'), 0o711);
   });
 };
 
-export const checkPlatform = (electronApp: ElectronApp) => {
+const checkPlatform = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'checkPlatform', (app: Electron.App) => {
     console.log('hooks: >> checkPlatform');
     if (platform === 'linux') {
@@ -62,7 +57,7 @@ export const checkPlatform = (electronApp: ElectronApp) => {
   });
 };
 
-export const injectSentryMonitor = (electronApp: ElectronApp) => {
+const injectSentryMonitor = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'injectSentryMonitor', (app: Electron.App) => {
     if (isDev) {
       console.log('hooks: >> uncaughtException');
@@ -77,5 +72,18 @@ export const injectSentryMonitor = (electronApp: ElectronApp) => {
       console.log('hooks: >> injectSentryMonitor');
       Sentry.init({ dsn: "https://56c8722111c2420e9758a85cd0138c95@o1179966.ingest.sentry.io/6292380" });
     }
+  });
+};
+
+tasks.push(
+  checkEnvFiles,
+  chmodFiles,
+  checkPlatform,
+  injectSentryMonitor,
+);
+
+export default (electronApp: ElectronApp) => {
+  tasks.forEach((task) => {
+    task(electronApp);
   });
 };

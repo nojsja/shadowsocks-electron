@@ -31,6 +31,9 @@ logger.info(`pathExecutable: ${pathExecutable}`);
 
 /* -------------- pre work -------------- */
 
+const gotTheLock = app.requestSingleInstanceLock(); // singleton lock
+if (!gotTheLock) app.quit();
+
 require('v8-compile-cache');
 app.setAppUserModelId(`io.nojsja.${packageName}`);
 app.dock?.hide();

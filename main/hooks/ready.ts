@@ -3,11 +3,9 @@ import path from 'path';
 import { ElectronApp } from "../app";
 import { i18n } from '../electron';
 
-export default (electronApp: ElectronApp) => {
-  configureLanguage(electronApp);
-};
+const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
-export const configureLanguage = (electronApp: ElectronApp) => {
+const configureLanguage = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('ready', 'configureLanguage', (app: Electron.App) => {
     console.log('hooks: >> configureLanguage');
     i18n.configure({
@@ -15,5 +13,13 @@ export const configureLanguage = (electronApp: ElectronApp) => {
       defaultLocale: 'en-US',
       directory: path.join(__dirname, '../', 'locales')
     });
+  });
+};
+
+tasks.push(configureLanguage);
+
+export default (electronApp: ElectronApp) => {
+  tasks.forEach((task) => {
+    task(electronApp);
   });
 };

@@ -3,6 +3,8 @@
   "unknown_subscription": "未知订阅",
   "invalid_subscription": "订阅链接格式不正确",
   "show_ui": "打开主页",
+  "confirm": "确定",
+  "cancel": "取消",
   "hide_ui": "隐藏",
   "connect": "连接",
   "disconnect": "断开连接",
@@ -18,5 +20,6 @@
   "cluster_connect_failed": "集群连接失败",
   "unknown_shadowsocks_client_type": "未知的shadowsocks客户端类型：",
   "server_connect_failed": "服务器连接失败",
-  "failed_to_start_socket_transfer": "启动socket传输器失败"
+  "failed_to_start_socket_transfer": "启动socket传输器失败",
+  "would_you_want_to_add_the_server": "你想添加这个服务器吗？"
 }

@@ -5,6 +5,10 @@ import isDev from 'electron-is-dev';
 
 const electronAppPath = app.getPath('appData');
 
+export const ssrProtocol = 'ssr';
+export const ssProtocol = 'ss';
+export const ssPrefix = `${ssProtocol}:`;
+export const ssrPrefix = `${ssrProtocol}:`;
 export const isInspect = process.env.INSPECT;
 export const platform = os.platform();
 export const isMacOS = platform === 'darwin';

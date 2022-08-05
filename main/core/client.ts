@@ -5,11 +5,13 @@ import checkPortInUse from "./helpers/port-checker";
 import { debounce, getSSLocalBinPath } from "../utils/utils";
 import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types/extention";
 import logger from "../logs";
+import { DefinedPlugin } from "./plugin";
 
 export class Client extends EventEmitter {
   bin: string
   type: 'ss' | 'ssr'
   child: ChildProcessWithoutNullStreams | null
+  definedPlugins: DefinedPlugin[]
   error: null | Error | string
   params: string[]
   settings: Settings
@@ -30,15 +32,42 @@ export class Client extends EventEmitter {
     this.onConnected.bind(this);
     this.connected = false;
     this.onDebouncedExited = debounce(this.onExited, 600);
+    this.definedPlugins = [];
+    this.handleEvents();
   }
 
-  async onConnected() {
+  protected connectPlugin(name: string, path: string, args: string) {
+    this.definedPlugins.push(
+      new DefinedPlugin({
+        name,
+        path,
+        args,
+      })
+    );
+  }
+
+  private handleEvents() {
+    this.on('connected', (isAlive: boolean) => {
+      this.definedPlugins.forEach((plugin) => {
+        if (isAlive) {
+          plugin.start();
+        } else {
+          plugin.stop();
+        }
+      });
+      if (!isAlive) {
+        this.definedPlugins = [];
+      }
+    });
+  }
+
+  protected async onConnected() {
     logger.info(`Started ${this.type}-local`);
     this.connected = true;
     this.emit('connected', true);
   }
 
-  async onExited(cb?: (success: boolean) => void) {
+  protected async onExited(cb?: (success: boolean) => void) {
     checkPortInUse([this.settings.localPort], '127.0.0.1')
     .then(async results => {
       if (results[0]?.isInUse) {
@@ -98,6 +127,9 @@ export class SSClient extends Client {
   connect(config: SSConfig = this.config): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
+      if (config.definedPlugin) {
+        this.connectPlugin(config.definedPlugin, config.definedPlugin, config.definedPluginOpts ?? '');
+      }
       logger.info(`Exec command:${this.bin} ${this.params.join(' ')}`);
 
       this.child = spawn(
@@ -245,6 +277,9 @@ export class SSRClient extends Client {
   connect(config: SSRConfig = this.config): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
+      if (config.definedPlugin) {
+        this.connectPlugin(config.definedPlugin, config.definedPlugin, config.definedPluginOpts ?? '');
+      }
       logger.info(`Exec command: ${this.bin} ${this.params.join(' ')}`);
 
       this.child = spawn(

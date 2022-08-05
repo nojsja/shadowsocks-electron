@@ -37,6 +37,7 @@ import AddServerDialog from "./home/AddServerDialog";
 import EditServerDialog from "./home/EditServerDialog";
 
 import { useStylesOfHome as useStyles } from "./styles";
+import { clipboard } from "electron";
 
 /**
  * HomePage
@@ -86,6 +87,14 @@ const HomePage: React.FC = () => {
   useBus('event:stream:reconnect-server', (event: EventAction) => {
     connectByMode();
   }, [connectByMode]);
+
+  useBus('event:stream:add-server', (event: EventAction) => {
+    clipboard.writeText(event.payload);
+    dispatch(addConfigFromClipboard({
+      success: t('added_a_server'),
+      error: { default: t('invalid_operation') }
+    }));
+  }, []);
 
   useBus('event:stream:disconnect-server', (event: EventAction) => {
     if (serverMode === 'cluster') {

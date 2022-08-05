@@ -140,7 +140,12 @@ export const protocols = [
   "auth_chain_d",
 ];
 
-export interface SSConfig {
+interface CommonConfig {
+  definedPlugin?: string;
+  definedPluginOpts?: string;
+}
+
+export interface SSConfig extends CommonConfig {
   id: string;
   type?: string;
   remark?: string;
@@ -158,7 +163,7 @@ export interface SSConfig {
   pluginOpts?: string;
 }
 
-export interface SSRConfig {
+export interface SSRConfig extends CommonConfig {
   id: string;
   type?: string;
   remark?: string;
@@ -224,4 +229,10 @@ export type contextAction = {
   label: string,
   action: string,
   accelerator: string,
+}
+
+export interface DefinedPluginProps {
+  name: string;
+  args: string;
+  path: string;
 }

@@ -2,6 +2,8 @@
   "invalid_parameter": "Invalid parameter",
   "unknown_subscription": "Unknown subscription",
   "invalid_subscription": "Invalid subscription address",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
   "show_ui": "Show UI",
   "hide_ui": "Hide UI",
   "connect": "Connect",
@@ -18,5 +20,6 @@
   "cluster_connect_failed": "Connect cluster failed",
   "unknown_shadowsocks_client_type": "Unknown shadowsocks client type:",
   "server_connect_failed": "Connect server failed",
-  "failed_to_start_socket_transfer": "Failed to start socket transfer"
+  "failed_to_start_socket_transfer": "Failed to start socket transfer",
+  "would_you_want_to_add_the_server": "Would you want to add the server?"
 }
