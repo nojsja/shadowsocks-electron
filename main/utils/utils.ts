@@ -7,6 +7,7 @@ import { getPathRuntime } from '../config';
 import { i18n } from '../electron';
 import { ProxyURI } from '../core/helpers/proxy-url';
 import { get } from './http-request';
+import { screen } from 'electron';
 
 const archMap = new Map([
   ['aarch64', 'arm64'],
@@ -401,3 +402,25 @@ export const chmod = (target: string, opstr: number) => {
     }
   }
 }
+
+/**
+ * @name getPerfectDevicePixelRatioImage 生成适配屏幕缩放比的图片路径
+ * @param { string } imageFullPath 图片的完整路径
+ * @param { number[] } availableRatio 可用的缩放比例
+ * @returns { string } 适配了屏幕最最佳缩放比例的的图片路径
+ */
+export const getPerfectDevicePixelRatioImage = (imageFullPath: string, availableRatio: number[] = [1]) => {
+  const { scaleFactor } = screen.getPrimaryDisplay();
+  const scaleFactorInteger = scaleFactor >> 0;
+  const imageName = path.normalize(imageFullPath).split(path.sep).pop() ?? imageFullPath;
+  const imageExt = path.extname(imageName);
+  const imageBase = path.basename(imageFullPath, imageExt);
+
+  const perfectFactor = availableRatio.reverse().find(
+    (factor) => (factor === scaleFactor || factor === scaleFactorInteger)
+  ) || availableRatio[0];
+
+  if (perfectFactor === 1) return imageFullPath;
+
+  return imageFullPath.replace(imageName, `${imageBase}@${perfectFactor}x${imageExt}`);
+};

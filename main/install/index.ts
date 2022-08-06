@@ -56,6 +56,6 @@ export const setupIfFirstRun = async () => {
     const text = data.toString("ascii");
     await PS.generatePacWithoutPort(text);
   } catch (err) {
-    logger.error(err as object);
+    logger.error(err?.toString() ?? err);
   }
 };

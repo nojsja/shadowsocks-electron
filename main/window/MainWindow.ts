@@ -8,11 +8,17 @@ import { IpcMainWindowType, TrayMenu } from '../types/extention';
 import { getBestWindowPosition } from "../core/helpers";
 import { electronStore, i18n } from "../electron";
 import { Manager } from "../core/manager";
+import { getPerfectDevicePixelRatioImage } from "../utils/utils";
 
 const platform = os.platform();
 
 function getIconByDarkMode(iconName: string, darkMode: boolean) {
-  return path.resolve(app.getAppPath(), `assets/tray/${darkMode ? (iconName+'-dark') : iconName}.png`);
+  return getPerfectDevicePixelRatioImage(
+    path.resolve(
+      app.getAppPath(), `assets/tray/${darkMode ? (iconName+'-dark') : iconName}.png`
+    ),
+    [1, 2, 3],
+  );
 }
 
 export default class IpcMainWindow implements IpcMainWindowType {
@@ -49,7 +55,9 @@ export default class IpcMainWindow implements IpcMainWindowType {
       ? "http://localhost:3001"
       : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
     this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
-    this.trayIcon = path.resolve(app.getAppPath(), "assets/icons/icon.png");
+    this.trayIcon = getPerfectDevicePixelRatioImage(
+      path.resolve(app.getAppPath(), "assets/icons/icon.png"), [1, 1.5, 2, 3]
+    );
   }
 
   create() {

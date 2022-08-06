@@ -1,4 +1,4 @@
-import { ChildProcess, fork } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import { EventEmitter } from "events";
 
 import { DefinedPluginProps } from "../types/extention";
@@ -39,13 +39,13 @@ export class DefinedPlugin extends EventEmitter {
   private onError = (err: Error) => {
     this.status = 'error';
     this.emit('error', err);
-    logger.info('DefinedPlugin error:', err);
+    logger.info(`DefinedPlugin error: ${err.message}`);
   }
 
   private onExited = async () => {
     this.status = 'stopped';
     this.emit('exited');
-    logger.info('DefinedPlugin exited:', this.path);
+    logger.info(`DefinedPlugin exited:${this.path}`);
   }
 
   stop = () => {
@@ -58,9 +58,9 @@ export class DefinedPlugin extends EventEmitter {
 
   start = () => {
     try {
-      this.child = fork(this.path, this.args.split(" "));
+      this.child = spawn(this.path, this.args.split(' '));
       this.status = 'running';
-      logger.info('DefinedPlugin running:', this.path);
+      logger.info(`DefinedPlugin running: ${this.path}`);
       this.handleEvents();
     } catch (error) {
       this.onError(new Error(`DefinedPlugin: failed to start ${this.path}. ${error}`));

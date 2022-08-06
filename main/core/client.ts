@@ -129,7 +129,7 @@ export class SSClient extends Client {
   connect(config: SSConfig = this.config): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
-      if (config.definedPlugin) {
+      if (config.definedPlugin && config.plugin === 'define') {
         this.connectPlugin(config.definedPlugin, config.definedPlugin, config.definedPluginOpts ?? '');
       }
       logger.info(`Exec command:${this.bin} ${this.params.join(' ')}`);
@@ -162,7 +162,7 @@ export class SSClient extends Client {
       this.child.stderr?.on('data', err => {
         this.error = err || null;
         console.log('child.stderr.on.data >> ');
-        logger.error(err);
+        logger.error(err?.toString());
         this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
@@ -182,7 +182,7 @@ export class SSClient extends Client {
       this.child.on("error", async (err) => {
         this.error = err || null;
         console.log('child.on.error >> ');
-        logger.error(err);
+        logger.error(err?.toString());
         this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
@@ -279,7 +279,7 @@ export class SSRClient extends Client {
   connect(config: SSRConfig = this.config): Promise<{code: number, result: any}> {
     return new Promise(resolve => {
       this.parseParams(config);
-      if (config.definedPlugin) {
+      if (config.definedPlugin && config.plugin === 'define') {
         this.connectPlugin(config.definedPlugin, config.definedPlugin, config.definedPluginOpts ?? '');
       }
       logger.info(`Exec command: ${this.bin} ${this.params.join(' ')}`);
@@ -313,7 +313,7 @@ export class SSRClient extends Client {
       this.child.stderr?.on('data', err => {
         this.error = err || null;
         console.log('child.stderr.on.data >> ');
-        logger.error(err);
+        logger.error(err?.toString());
         this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();
@@ -333,7 +333,7 @@ export class SSRClient extends Client {
       this.child.on("error", async (err) => {
         this.error = err || null;
         console.log('child.on.error >> ');
-        logger.error(err);
+        logger.error(err?.toString());
         this.onDebouncedExited((isAlive: boolean) => {
           if (!isAlive) {
             this.child?.kill();

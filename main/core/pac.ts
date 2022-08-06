@@ -57,7 +57,7 @@ export class PacServer {
 
       logger.info("Generated PAC file without port");
     } catch (err) {
-      logger.error(err);
+      logger.error(err?.toString() ?? err);
     }
   }
 
@@ -74,7 +74,7 @@ export class PacServer {
 
       logger.info("Generated full PAC file");
     } catch (err) {
-      logger.error(err);
+      logger.error(err?.toString() ?? err);
     }
   }
 
@@ -135,8 +135,8 @@ export class PacServer {
       const base64Text = Buffer.from(base64, "base64").toString("ascii");
       return PacServer.generatePacWithoutPort(base64Text);
     })
-    .catch(err => {
-      logger.error(err);
+    .catch((err: any) => {
+      logger.error(err?.toString() ?? err);
       return Promise.reject(err);
     });
   }

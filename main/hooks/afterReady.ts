@@ -86,8 +86,12 @@ const setAsDefaultProtocolClient = (electronApp: ElectronApp) => {
   if (electronIsDev) args.push(path.resolve(process.argv[1]));
   args.push("--");
 
-  app.setAsDefaultProtocolClient(ssrProtocol, process.execPath, args);
-  app.setAsDefaultProtocolClient(ssProtocol, process.execPath, args);
+  if (!app.isDefaultProtocolClient(ssrProtocol)) {
+    app.setAsDefaultProtocolClient(ssrProtocol, process.execPath, args);
+  }
+  if (!app.isDefaultProtocolClient(ssProtocol)) {
+    app.setAsDefaultProtocolClient(ssProtocol, process.execPath, args);
+  }
 
   handleArgv(process.argv);
 
