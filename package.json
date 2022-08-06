@@ -14,7 +14,7 @@
   "scripts": {
     "start:renderer": "cross-env PORT=3001 cross-env BROWSER=none react-app-rewired start",
     "start:main": "nodemon --config nodemon.json",
-    "start:main:inspect": "yarn build:main && cross-env INSPECT=1 electron . --inspect=5222",
+    "start:main:inspect": "yarn build:main && cross-env electron . --inspect=5222",
     "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3001 && yarn start:main\"",
     "build:renderer": "react-app-rewired build",
     "build:main": "yarn tsc -p main/tsconfig.json",

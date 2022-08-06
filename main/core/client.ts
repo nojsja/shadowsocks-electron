@@ -214,6 +214,13 @@ export class SSClient extends Client {
   disconnect() {
     return new Promise<ServiceResult>((resolve, reject) => {
       this.child?.kill("SIGKILL");
+      if (!this.connected) {
+        return resolve({
+          code: 200,
+          result: 'success'
+        });
+      }
+
       this.child?.once('exit', () => {
         this.onDebouncedExited((isAlive: boolean) => {
           if (isAlive) {
@@ -365,6 +372,13 @@ export class SSRClient extends Client {
   disconnect() {
     return new Promise<ServiceResult>((resolve, reject) => {
       this.child?.kill("SIGKILL");
+      if (!this.connected) {
+        return resolve({
+          code: 200,
+          result: 'success'
+        });
+      }
+
       this.child?.once("exit", () => {
         this.onDebouncedExited((isAlive: boolean) => {
           if (isAlive) {
