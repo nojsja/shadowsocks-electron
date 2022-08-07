@@ -407,16 +407,22 @@ export const chmod = (target: string, opstr: number) => {
  * @name getPerfectDevicePixelRatioImage 生成适配屏幕缩放比的图片路径
  * @param { string } imageFullPath 图片的完整路径
  * @param { number[] } availableRatio 可用的缩放比例
+ * @param { boolean } pixelFixedUp 当屏幕缩放比为小数时是否强制向上取整
  * @returns { string } 适配了屏幕最最佳缩放比例的的图片路径
  */
-export const getPerfectDevicePixelRatioImage = (imageFullPath: string, availableRatio: number[] = [1]) => {
+export const getPerfectDevicePixelRatioImage = (
+  imageFullPath: string,
+  availableRatio: number[] = [1],
+  pixelFixedUp: boolean = true
+) => {
   const { scaleFactor } = screen.getPrimaryDisplay();
-  const scaleFactorInteger = scaleFactor >> 0;
+  const scaleFactorInteger = pixelFixedUp ? Math.round(scaleFactor) : Math.floor(scaleFactor);
   const imageName = path.normalize(imageFullPath).split(path.sep).pop() ?? imageFullPath;
   const imageExt = path.extname(imageName);
   const imageBase = path.basename(imageFullPath, imageExt);
+  const availableRatioSorted = pixelFixedUp ? availableRatio.sort() : availableRatio.sort().reverse();
 
-  const perfectFactor = availableRatio.reverse().find(
+  const perfectFactor = availableRatioSorted.find(
     (factor) => (factor === scaleFactor || factor === scaleFactorInteger)
   ) || availableRatio[0];
 
