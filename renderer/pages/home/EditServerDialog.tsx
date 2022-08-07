@@ -383,7 +383,10 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             ))
           }
           <MenuItem key="define" value="define">
-            <em>{t('customize_plugin')}</em>
+            <TextWithTooltip
+              text={<em>{t('customize_plugin')}</em>}
+              tooltip={t('customize_plugin_tips')}
+            />
           </MenuItem>
         </Select>
         {

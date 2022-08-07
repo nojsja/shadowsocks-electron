@@ -1,6 +1,7 @@
 import { IpcMain, app, dialog, Notification, Menu, desktopCapturer } from 'electron';
 import fs from 'fs';
 import os from 'os';
+import open from "open";
 import { ProcessManager } from 'electron-re';
 
 import {
@@ -17,6 +18,7 @@ import {
   getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '../core/helpers';
 import { i18n, ipcMainWindow } from '../electron';
+import { getPluginsPath } from '../utils/utils';
 
 /* main service handler */
 export class DesktopService implements DesktopServiceType {
@@ -293,6 +295,15 @@ export class DesktopService implements DesktopServiceType {
       (global as any).win.reload();
     }
 
+    return Promise.resolve({
+      code: 200,
+      result: {}
+    });
+  }
+
+  async openPluginsDir(params: any): Promise<ServiceResult> {
+    const dir = getPluginsPath();
+    open(dir);
     return Promise.resolve({
       code: 200,
       result: {}

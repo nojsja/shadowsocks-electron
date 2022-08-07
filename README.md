@@ -112,12 +112,12 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 - __kcptun__
   - effect: Use the plugin for ss server speed up. You must install it on you system first and enable it on ss server configuration.
   - [↪ kcptun repo releases](https://github.com/shadowsocks/kcptun/releases/)
-  - install: Download the correct version, unpack and rename it to `kcptun`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR you may need to configure `system variables` on windows.
+  - install: Download a certain version plugin, unpack and rename it to `kcptun`, then put the file into system dir (such as `/usr/bin/`) on unix like systems. OR you may put the file into `plugins dir` on Windows (check "Open Plugins Directory" button from settings page).
 
 - __v2ray-plugin__
   - effect: Use the plugin for traffic obfuscation. You must install it on you system first and enable it on ss server configuration.
   - [↪ v2ray-plugin repo releases](https://github.com/shadowsocks/v2ray-plugin/releases)
-  - install: Download the correct version, unpack and rename it to  `v2ray-plugin`, then put the file into system dir (such as `/usr/local/bin/`) on unix like systems. OR You may need to configure `system variables` on windows.
+  - install: Download a certain version plugin, unpack and rename it to  `v2ray-plugin`, then put the file into system dir (such as `/usr/bin/`) on unix like systems. OR you may put the file into `plugins dir` on Windows (check "Open Plugins Directory" button from settings page).
 
 ## Recommended ACL Files
 

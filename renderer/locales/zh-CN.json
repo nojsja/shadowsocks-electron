@@ -1,5 +1,6 @@
 {
   "customize_plugin": "自定义插件",
+  "customize_plugin_tips": "定制插件的执行文件路径和执行参数",
   "custom_user_rules": "自定义用户规则",
   "release_notes": "更新日志",
   "plugin_path": "插件路径",
@@ -75,6 +76,8 @@
   "unstable_feature": "不稳定功能",
   "load_balance_tips": "客户端会尝试同时连接多个服务器节点，并将流量压力分散到各个服务器",
   "open_log_dir": "打开日志目录",
+  "open_plugins_dir": "打开插件目录",
+  "plugins_dir_tips": "在 Windows 上，某些外部插件 (如 v2ray-plugin) 应该放在此目录中。",
   "open_process_manager": "打开进程管理器",
   "reset_data": "重置数据",
   "offline": "离线",

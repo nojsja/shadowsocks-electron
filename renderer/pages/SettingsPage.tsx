@@ -45,6 +45,7 @@ import OpenLogDir from "./settings/OpenLogDir";
 import OpenProcessManager from "./settings/OpenProcessManager";
 import LoadBalance from "./settings/LoadBalance";
 import UserPacEditor from "./settings/UserPacEditor";
+import OpenPluginsDir from "./settings/OpenPluginsDir";
 
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
@@ -348,6 +349,7 @@ const SettingsPage: React.FC = () => {
 
           <Verbose />
           <OpenLogDir />
+          <OpenPluginsDir />
           <OpenProcessManager />
         </List>
       </Form>

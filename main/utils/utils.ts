@@ -80,6 +80,24 @@ export const getBinPath = (function () {
   }
 })();
 
+export const getPluginsPath = () => {
+  const arch = os.arch();
+  if (archMap.has(arch)) {
+    switch (os.platform()) {
+      case 'linux':
+        return getPathRuntime(`bin/linux/${archMap.get(arch)}/`);
+      case 'darwin':
+        return getPathRuntime(`bin/darwin/x64/`);
+      case 'win32':
+          return getPathRuntime(`bin/win32/${archMap.get(arch)}/`);
+      default:
+        return '';
+    }
+  } else {
+    return '';
+  }
+}
+
 export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
   const binName = `${type}-local`;
   const arch = os.arch();

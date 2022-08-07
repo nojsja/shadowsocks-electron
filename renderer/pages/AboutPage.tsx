@@ -11,11 +11,22 @@ import { useTranslation } from "react-i18next";
 
 const timeline = [
   {
+    title: 'v1.2.2',
+    children: [
+      'Feat: Customize plugin supported.',
+      'Feat: SS/SSR link protocol on Windows/Mac supported, click link like ss://[xxxxx] to wake up client on browser.',
+      'Update: Add plugin installation instructions, quick enter plugins directory.',
+      'Fix: Server reconnection bugs.',
+      'Fix: Bugs on v2ray-plugin.',
+      'Style: UI adjustments for icons and element space.',
+    ]
+  },
+  {
     title: 'v1.2.1',
     children: [
       'Feat: Quick connect/disconnect selected server from tray menu.',
       'Feat: User PAC rules editor supported.',
-      'Fix: PAC mode bugs on windows.',
+      'Fix: PAC mode bugs on Windows.',
       'Fix: Bugs when restore settings from local backup file.',
       'Style: UI adjustments for font color, icons, space.',
     ]
