@@ -80,21 +80,21 @@ export const getBinPath = (function () {
   }
 })();
 
-export const getPluginsPath = () => {
+export const getPluginsPath = (name: string='') => {
   const arch = os.arch();
   if (archMap.has(arch)) {
     switch (os.platform()) {
       case 'linux':
-        return getPathRuntime(`bin/linux/${archMap.get(arch)}/`);
+        return getPathRuntime(`bin/linux/${archMap.get(arch)}/${name}`);
       case 'darwin':
-        return getPathRuntime(`bin/darwin/x64/`);
+        return getPathRuntime(`bin/darwin/x64/${name}`);
       case 'win32':
-          return getPathRuntime(`bin/win32/${archMap.get(arch)}/`);
+          return getPathRuntime(`bin/win32/${archMap.get(arch)}/${name}`);
       default:
-        return '';
+        return name;
     }
   } else {
-    return '';
+    return name;
   }
 }
 

@@ -58,10 +58,12 @@ export type Encryption = typeof encryptMethods[number];
 
 export const plugins = [
   {
+    label: "v2ray-plugin",
     name: "v2ray-plugin",
     tips: "please_confirm_v2ray-plugin_installed_on_your_system"
   },
   {
+    label: "kcptun",
     name: "kcptun",
     tips: "please_confirm_kcptun_installed_on_your_system"
   }] as const;

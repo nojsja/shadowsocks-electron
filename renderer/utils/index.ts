@@ -1,5 +1,6 @@
 import { Config, GroupConfig, NotificationOptions } from '../types';
 import { MessageChannel } from 'electron-re';
+
 import { persistStore } from '../App';
 import { getFirstLanguage } from '../i18n';
 
