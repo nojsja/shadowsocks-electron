@@ -1,0 +1,22 @@
+{
+  "invalid_parameter": "Ошибочный параметр",
+  "unknown_subscription": "Unknown subscription",
+  "invalid_subscription": "Invalid subscription address",
+  "show_ui": "Показать UI",
+  "hide_ui": "Скрыть UI",
+  "connect": "Соединиться",
+  "disconnect": "Отключиться",
+  "quit": "Выход",
+  "port_already_used": "Этот порт уже занят: ",
+  "action_warning": "Внимание",
+  "action_error": "Ошибка",
+  "action_info": "Информация",
+  "port_already_in_use": "Этот порт уже занят:",
+  "no_available_ports": "Нет доступных портов",
+  "no_server_configs_found": "Не найдена конфигурация сервера",
+  "connections_pool_is_empty_tips": "Внимание: Пул подключений пуст, клиент находится в автономном режиме",
+  "cluster_connect_failed": "Сбой подключения кластера",
+  "unknown_shadowsocks_client_type": "Неизвестный тип клиента shadowsocks:",
+  "server_connect_failed": "Сбой подключения к серверу",
+  "failed_to_start_socket_transfer": "Не удалось запустить передачу сокета"
+}

@@ -42,6 +42,7 @@ const Language: React.FC<LanguageProps> = ({
         >
           <MenuItem value={'en-US'}>{t('langEnglish')}</MenuItem>
           <MenuItem value={'zh-CN'}>{t('langZhong')}</MenuItem>
+          <MenuItem value={'ru-RU'}>{t('langRussian')}</MenuItem>
         </Select>
       </ListItemSecondaryAction>
     </ListItem>

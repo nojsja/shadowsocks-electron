@@ -9,7 +9,7 @@ const configureLanguage = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('ready', 'configureLanguage', (app: Electron.App) => {
     console.log('hooks: >> configureLanguage');
     i18n.configure({
-      locales: ['en-US', 'zh-CN'],
+      locales: ['en-US', 'zh-CN', 'ru-RU'],
       defaultLocale: 'en-US',
       directory: path.join(__dirname, '../', 'locales')
     });

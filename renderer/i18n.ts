@@ -1,14 +1,15 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import en_US from './locales/en-US.json'
-import zh_CN from './locales/zh-CN.json'
+import en_US from './locales/en-US.json';
+import zh_CN from './locales/zh-CN.json';
+import ru_RU from './locales/ru-RU.json';
 // don't want to use this?
 // have a look at the Quick start guide
 // for passing in lng and translations on init
 
 export const getFirstLanguage = (lang?: string | null) => {
-  const supported = ['en-US', 'zh-CN'];
+  const supported = ['en-US', 'zh-CN', 'ru-RU'];
   if (lang && supported.includes(lang))
     return lang;
   if (navigator.language && supported.includes(navigator.language))
@@ -28,7 +29,8 @@ export default (lang?: string | null) => {
       debug: true,
       resources: {
         'en-US': { translation: en_US },
-        'zh-CN': { translation: zh_CN }
+        'zh-CN': { translation: zh_CN },
+        'ru-RU': { translation: ru_RU },
       },
       interpolation: {
         escapeValue: false, // not needed for react as it escapes by default
