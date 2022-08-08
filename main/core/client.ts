@@ -296,7 +296,6 @@ export class SSRClient extends Client {
         this.params
       );
 
-
       if (!this.child) return resolve({
         code: 500,
         result: `Failed to exec command [${this.bin}] with args [${JSON.stringify(this.params)}].`

@@ -1,5 +1,8 @@
 {
-  "custom_user_rules": "Пользовательские правила",
+  "customize_plugin": "Настройте плагин",
+  "customize_plugin_tips": "Настроить путь и параметры выполнения плагина и параметры",
+  "plugin_path": "Путь плагина",
+  "custom_user_rules": "Настройте правила",
   "release_notes": "примечания к выпуску",
   "traffic": "трафик",
   "only_for_server_groups": "Only for the subscription server groups (right click groups on the server list and function menu will pop up)",

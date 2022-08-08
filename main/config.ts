@@ -15,13 +15,12 @@ export const isMacOS = platform === 'darwin';
 export const packageName = 'shadowsocks-electron';
 export const appDataPath = path.join(electronAppPath, packageName);
 export const pathRuntime = path.join(appDataPath, 'runtime/');
-export const pathExecutable =
-  isDev ?
-  app.getAppPath() :
-  (
-    isMacOS ?
-      path.join(path.dirname(app.getPath('exe')), '..') :
-      path.dirname(app.getPath('exe'))
+export const pathExecutable = isDev
+  ? app.getAppPath()
+  : (
+    isMacOS
+      ? path.join(path.dirname(app.getPath('exe')), '..')
+      : path.dirname(app.getPath('exe'))
   );
 
 

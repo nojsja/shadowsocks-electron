@@ -6,7 +6,11 @@ import isDev from "electron-is-dev";
 import logger from '../logs';
 import { ElectronApp } from "../app";
 import { appDataPath, platform, pathRuntime, pathExecutable } from "../config";
-import { checkEnvFiles as check, copyDir, chmod } from "../utils/utils";
+import {
+  checkEnvFiles as check, copyDir, chmod,
+  getPluginsPath, getExecutableFilePath,
+  copyFileToPluginDir,
+} from "../utils/utils";
 import { pacDir, binDir } from '../config';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
@@ -21,9 +25,13 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
         { _path: pathRuntime, isDir: true },
         { _path: binDir, isDir: true, checkEmpty: true,
           exec: () => {
-
             logger.info(`copyDir: ${path.join(pathExecutable, 'bin')} -> ${binDir}`);
             copyDir(path.join(pathExecutable, 'bin'), binDir);
+          }
+        },
+        { _path: getPluginsPath('v2ray-plugin'), isDir: false,
+          exec: () => {
+            copyFileToPluginDir('v2ray-plugin', getExecutableFilePath('v2ray-plugin'));
           }
         },
         { _path: pacDir, isDir: true, checkEmpty: true,
@@ -31,7 +39,7 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
             logger.info(`copyDir: ${path.join(pathExecutable, 'pac')} -> ${pacDir}`);
             copyDir(path.join(pathExecutable, 'pac'), pacDir);
           }
-        }
+        },
       ]
     );
   });

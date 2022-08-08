@@ -14,7 +14,7 @@
 
 ## Shadowsocks Electron
 
-> Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina/monterey (x64) ● Windows 10/11 (x64)
+> Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina (x64) / monterey (arm64)  ● Windows 10/11 (x64)
 
 Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
 
@@ -31,7 +31,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 - Nodes Load-Balancing Mode
 - Clipboard / QR-code Import
 - Subscription Import
-- Language Detecting And Switching (zh-CN / en-US)
+- Language Detecting And Switching (zh-CN / en-US / ru-RU)
 - Configuration Backup / Recovery
 - Dark / Light Mode
 - Auto Start
@@ -46,6 +46,14 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 ### ➣ Comming Soon
 
 - Tunnel Mode
+- Support for more plugins
+
+## Problems
+
+- QRCode-Import may not work on some devices.
+- Linux without Gnome-desktop may not work, working for that.
+- Snap package for Linux has some unnormal behavior.
+- If you want to use `v2ray-plugin` on MacOS monterey(arm64), just run `brew install v2ray-plugin` to install the latest plugin version.
 
 ## Supported Platforms & Arch
 

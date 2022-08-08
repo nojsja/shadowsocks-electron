@@ -1,13 +1,17 @@
 import path from 'path';
-import fs from 'fs';
+import fs, { PathLike } from 'fs';
 import os from 'os';
 import { exec, ExecOptions } from "child_process";
-import { Config, SSRConfig, SSConfig, SubscriptionResult, MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig } from '../types/extention';
-import { getPathRuntime } from '../config';
+import {
+  Config, SSRConfig, SSConfig, SubscriptionResult,
+  MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig,
+} from '../types/extention';
+import { getPathRuntime, pathExecutable } from '../config';
 import { i18n } from '../electron';
 import { ProxyURI } from '../core/helpers/proxy-url';
 import { get } from './http-request';
 import { screen } from 'electron';
+import logger from '../logs';
 
 const archMap = new Map([
   ['aarch64', 'arm64'],
@@ -98,6 +102,42 @@ export const getPluginsPath = (name: string='') => {
   }
 }
 
+/**
+ * getExecutableFilePath
+ * @param name fileName
+ * @returns filePath
+ */
+export const getExecutableFilePath = (name: string) => {
+  const arch = os.arch();
+  if (archMap.has(arch)) {
+    switch (os.platform()) {
+      case 'linux':
+        return path.join(pathExecutable, `bin/linux/${archMap.get(arch)}/${name}`);
+      case 'darwin':
+        return path.join(pathExecutable, `bin/darwin/x64/${name}`);
+      case 'win32':
+        return path.join(pathExecutable, `bin/win32/${archMap.get(arch)}/${name}`);
+      default:
+        return name;
+    }
+  } else {
+    return name;
+  }
+};
+
+/**
+ * copyFileToPluginDir
+ * @param name Plugin Name
+ * @param srcFile Plugin File Path
+ */
+export const copyFileToPluginDir = (name: string, srcFile: PathLike) => {
+  fs.copyFile(srcFile, getPluginsPath(name), (err) => {
+    if (err) {
+      logger.error(err);
+    }
+  });
+};
+
 export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
   const binName = `${type}-local`;
   const arch = os.arch();
@@ -136,10 +176,10 @@ export const getEncryptMethod = (config: Config): string => {
     if (!fs.existsSync(params._path)) {
       if (params.isDir) {
         fs.mkdirSync(params._path);
-        params.exec && params.exec();
       } else {
         fs.closeSync(fs.openSync(params._path, 'w'));
       }
+      params.exec && params.exec();
     } else {
       if (params?.checkEmpty) {
         if (fs.readdirSync(params._path).length === 0) {
@@ -152,6 +192,20 @@ export const getEncryptMethod = (config: Config): string => {
   args.forEach(check);
 };
 
+export const copyFileAsync = (src: string, dest: string) => {
+  const readStream = fs.createReadStream(src);
+  const writeStream = fs.createWriteStream(dest);
+  readStream.pipe(writeStream);
+}
+
+export const copyFile = (srcFile: string, destFile: string) => {
+  try {
+    fs.writeFileSync(destFile, fs.readFileSync(srcFile));
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 /*
  * 同步复制目录、子目录，及其中的文件
  * @param src {String} 要复制的目录
@@ -163,8 +217,6 @@ export const copyDir = (src: string, dist: string, callback?: (params: any) => v
     fs.mkdirSync(dist);
   }
 
-  _copy(src, dist);
-
   function _copy(src: string, dist: string) {
     paths = fs.readdirSync(src);
     paths.forEach(function(_path) {
@@ -173,12 +225,18 @@ export const copyDir = (src: string, dist: string, callback?: (params: any) => v
         stat = fs.statSync(_src);
         // 判断是文件还是目录
         if(stat.isFile()) {
-          fs.writeFileSync(_dist, fs.readFileSync(_src));
+          copyFile(_src, _dist);
         } else if(stat.isDirectory()) {
           // 当是目录是，递归复制
           copyDir(_src, _dist, callback)
         }
     })
+  }
+
+  try {
+    _copy(src, dist);
+  } catch (error) {
+    console.error(error);
   }
 }
 
