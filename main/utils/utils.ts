@@ -84,16 +84,16 @@ export const getBinPath = (function () {
   }
 })();
 
-export const getPluginsPath = (name: string='') => {
-  const arch = os.arch();
+export const getPluginsPath = (name: string='', useArch?: string) => {
+  const arch = useArch || os.arch();
   if (archMap.has(arch)) {
     switch (os.platform()) {
       case 'linux':
         return getPathRuntime(`bin/linux/${archMap.get(arch)}/${name}`);
       case 'darwin':
-        return getPathRuntime(`bin/darwin/x64/${name}`);
+        return getPathRuntime(`bin/darwin/${archMap.get(arch)}/${name}`);
       case 'win32':
-          return getPathRuntime(`bin/win32/${archMap.get(arch)}/${name}`);
+          return getPathRuntime(`bin/win32/${archMap.get(arch)}/${name}.exe`);
       default:
         return name;
     }
@@ -114,9 +114,9 @@ export const getExecutableFilePath = (name: string, useArch?: string) => {
       case 'linux':
         return path.join(pathExecutable, `bin/linux/${archMap.get(arch)}/${name}`);
       case 'darwin':
-        return path.join(pathExecutable, `bin/darwin/${arch}/${name}`);
+        return path.join(pathExecutable, `bin/darwin/${archMap.get(arch)}/${name}`);
       case 'win32':
-        return path.join(pathExecutable, `bin/win32/${archMap.get(arch)}/${name}`);
+        return path.join(pathExecutable, `bin/win32/${archMap.get(arch)}/${name}.exe`);
       default:
         return name;
     }
@@ -138,15 +138,15 @@ export const copyFileToPluginDir = (name: string, srcFile: PathLike) => {
   });
 };
 
-export const getSSLocalBinPath = (type: 'ss' | 'ssr') => {
+export const getSSLocalBinPath = (type: 'ss' | 'ssr', useArch?: string) => {
   const binName = `${type}-local`;
-  const arch = os.arch();
+  const arch = useArch || os.arch();
   if (archMap.has(arch)) {
     switch (os.platform()) {
       case 'linux':
         return getPathRuntime(`bin/linux/${archMap.get(arch)}/${binName}`);
       case 'darwin':
-        return getPathRuntime(`bin/darwin/x64/${binName}`);
+        return getPathRuntime(`bin/darwin/${archMap.get(arch)}/${binName}`);
       case 'win32':
           return getPathRuntime(`bin/win32/${archMap.get(arch)}/${binName}.exe`);
       default:

@@ -29,6 +29,7 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
             copyDir(path.join(pathExecutable, 'bin'), binDir);
           }
         },
+        { _path: getPluginsPath(''), isDir: true },
         { _path: getPluginsPath('v2ray-plugin'), isDir: false,
           exec: () => {
             copyFileToPluginDir('v2ray-plugin', getExecutableFilePath('v2ray-plugin'));
