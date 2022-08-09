@@ -58,17 +58,17 @@ export type Encryption = typeof encryptMethods[number];
 
 export const plugins = [
   {
-    label: "v2ray-plugin",
+    label: "v2ray-plugin[SIP003]",
     name: "v2ray-plugin",
     tips: "please_confirm_v2ray-plugin_installed_on_your_system"
   },
   {
-    label: "kcptun",
+    label: "kcptun[SIP003]",
     name: "kcptun",
     tips: "please_confirm_kcptun_installed_on_your_system"
   }] as const;
 
-export type Plugin = 'v2ray-plugin' | 'kcptun' | 'define' | '';
+export type Plugin = 'v2ray-plugin' | 'kcptun' | 'define' | 'define_sip003';
 
 export type ACL = {
   enable: boolean,
@@ -86,6 +86,8 @@ export type NotificationOptions = {
 interface CommonConfig {
   definedPlugin?: string;
   definedPluginOpts?: string;
+  definedPluginSIP003?: string;
+  definedPluginOptsSIP003?: string;
 }
 
 export interface SSConfig extends CommonConfig {

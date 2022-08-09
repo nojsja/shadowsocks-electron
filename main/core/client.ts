@@ -1,11 +1,13 @@
 import { EventEmitter } from "events";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import path from 'path';
 
 import checkPortInUse from "./helpers/port-checker";
-import { debounce, getSSLocalBinPath } from "../utils/utils";
+import { debounce, getPluginsPath, getSSLocalBinPath } from "../utils/utils";
 import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types/extention";
 import logger from "../logs";
 import { DefinedPlugin } from "./plugin";
+import { isWindows } from "../config";
 
 export class Client extends EventEmitter {
   bin: string
@@ -96,7 +98,18 @@ export class SSClient extends Client {
   parseParams(config: SSConfig) {
     const { acl } = this.settings;
     const isAclEnabled = acl.enable && acl.url;
-    const embedPluginEnabled = config.plugin && config.plugin !== 'define';
+    const embedPluginEnabled = config.plugin && config.plugin !== 'define' && config.plugin !== 'define_sip003';
+    const customisedSIP003PluginEnabled = config.plugin && config.plugin === 'define_sip003';
+    const SIP003PluginEnabled = embedPluginEnabled || customisedSIP003PluginEnabled;
+    let { plugin, pluginOpts } = config;
+
+    if (embedPluginEnabled && !isWindows) {
+      plugin = getPluginsPath(config.plugin);
+    }
+    if (customisedSIP003PluginEnabled) {
+      plugin = path.resolve(getPluginsPath(''), config.definedPluginSIP003 || '');
+      pluginOpts = config.definedPluginOptsSIP003;
+    }
 
     this.params = [
       "-s",
@@ -114,10 +127,10 @@ export class SSClient extends Client {
       config.udp ? "-u" : "",
       config.fastOpen ? "--fast-open" : "",
       config.noDelay ? "--no-delay" : "",
-      embedPluginEnabled ? "--plugin" : "",
-      embedPluginEnabled ? (config.plugin ?? '') : '',
-      (embedPluginEnabled && config.pluginOpts) ? "--plugin-opts" : "",
-      embedPluginEnabled ? `"${config.pluginOpts ?? ''}"` : "",
+      SIP003PluginEnabled ? "--plugin" : "",
+      SIP003PluginEnabled ? (plugin ?? '') : '',
+      (SIP003PluginEnabled && pluginOpts) ? "--plugin-opts" : "",
+      SIP003PluginEnabled ? `"${pluginOpts ?? ''}"` : "",
       this.settings.verbose ? "-v" : "",
       "-t",
       (config.timeout ?? "600").toString(),
@@ -269,10 +282,10 @@ export class SSRClient extends Client {
       "-t",
       (config.timeout ?? "600").toString(),
       "-o",
-      config.obfs,
-      "-O",
-      config.protocol,
+      config.obfs || 'plain',
       config.obfsParam ? `-g ${config.obfsParam}` : '',
+      "-O",
+      config.protocol || 'origin',
       config.protocolParam ? `-G ${config.protocolParam}` : '',
       config.udp ? "-u" : "",
       config.fastOpen ? "--fast-open" : "",

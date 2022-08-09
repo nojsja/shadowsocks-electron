@@ -1,9 +1,10 @@
 import { ChildProcess, spawn } from "child_process";
 import { EventEmitter } from "events";
+import { resolve } from 'path';
 
 import { DefinedPluginProps } from "../types/extention";
 import logger from "../logs";
-import { debounce } from "../utils/utils";
+import { debounce, getPluginsPath } from "../utils/utils";
 
 export class DefinedPlugin extends EventEmitter {
   status: "running" | "stopped" | "error" = "stopped";
@@ -18,7 +19,7 @@ export class DefinedPlugin extends EventEmitter {
     super();
     this.name = name;
     this.error = null;
-    this.path = path;
+    this.path = resolve(getPluginsPath(''), path);
     this.args = args;
     this.status = 'stopped';
     this.child = null;
@@ -57,14 +58,10 @@ export class DefinedPlugin extends EventEmitter {
   }
 
   start = () => {
-    try {
-      this.child = spawn(this.path, this.args.split(' '));
-      this.status = 'running';
-      logger.info(`DefinedPlugin running: ${this.path}`);
-      this.handleEvents();
-    } catch (error) {
-      this.onError(new Error(`DefinedPlugin: failed to start ${this.path}. ${error}`));
-    }
+    this.child = spawn(this.path, this.args.split(' '));
+    this.status = 'running';
+    logger.info(`DefinedPlugin running: ${this.path}`);
+    this.handleEvents();
   }
 
 }

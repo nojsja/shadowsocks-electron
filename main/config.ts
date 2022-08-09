@@ -12,6 +12,8 @@ export const ssrPrefix = `${ssrProtocol}:`;
 export const isInspect = process.env.INSPECT;
 export const platform = os.platform();
 export const isMacOS = platform === 'darwin';
+export const isWindows = platform === 'win32';
+export const isLinux = platform === 'linux';
 export const packageName = 'shadowsocks-electron';
 export const appDataPath = path.join(electronAppPath, packageName);
 export const pathRuntime = path.join(appDataPath, 'runtime/');

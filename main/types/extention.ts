@@ -82,7 +82,7 @@ export interface IpcMainProcess {
 export type IpcMain = _IpcMain;
 
 export const plugins = ["v2ray-plugin", "kcptun", "define"] as const;
-export type Plugin = typeof plugins[number];
+export type Plugin = typeof plugins[number] | string;
 export type ACL = boolean;
 export type Config = SSConfig & SSRConfig;
 export type OneOfConfig = SSConfig | SSRConfig;
@@ -143,6 +143,8 @@ export const protocols = [
 interface CommonConfig {
   definedPlugin?: string;
   definedPluginOpts?: string;
+  definedPluginSIP003?: string;
+  definedPluginOptsSIP003?: string;
 }
 
 export interface SSConfig extends CommonConfig {
