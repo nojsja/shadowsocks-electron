@@ -107,14 +107,14 @@ export const getPluginsPath = (name: string='') => {
  * @param name fileName
  * @returns filePath
  */
-export const getExecutableFilePath = (name: string) => {
-  const arch = os.arch();
+export const getExecutableFilePath = (name: string, useArch?: string) => {
+  const arch = useArch || os.arch();
   if (archMap.has(arch)) {
     switch (os.platform()) {
       case 'linux':
         return path.join(pathExecutable, `bin/linux/${archMap.get(arch)}/${name}`);
       case 'darwin':
-        return path.join(pathExecutable, `bin/darwin/x64/${name}`);
+        return path.join(pathExecutable, `bin/darwin/${arch}/${name}`);
       case 'win32':
         return path.join(pathExecutable, `bin/win32/${archMap.get(arch)}/${name}`);
       default:
