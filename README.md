@@ -14,7 +14,7 @@
 
 ## Shadowsocks Electron
 
-> Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina (x64) / monterey (arm64)  ● Windows 10/11 (x64)
+> Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina (x64) / monterey (arm64/x64)  ● Windows 10/11 (x64)
 
 Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
 
@@ -23,10 +23,23 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 ### ➣ Supported
 
 - __SS / SSR__ Protocol
-- __PAC__ Mode (GFWList)
-- __Global__ Mode (socks proxy)
-- __Manual__ Mode (no system-wide proxy set)
+- __PAC__ Mode
+  - Auto proxy mode for browser that use [GFWList](https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt) as default rules.
+  - Allow custom rules.
+- __Global__ Mode
+  - Global socks5 proxy for browser.
+- __Manual__ Mode
+  - Get some tools like SwitchOmega to enable browser proxy on this mode.
 - __HTTP(S)__ Proxy
+  - On Windows, commands for terminal proxy(port 1095 as default):
+    - `$env:HTTPS_PROXY="127.0.0.1:1095"` (powershell)
+    - `$env:HTTP_PROXY="127.0.0.1:1095"` (powershell)
+    - `set http_proxy=127.0.0.1:1095` (cmd)
+    - `set https_proxy=127.0.0.1:1095` (cmd)
+  - On Linux/MacOS, commands for terminal proxy:
+    - `export http_proxy=127.0.0.1:1095`
+    - `export https_proxy=127.0.0.1:1095`
+    - Some tools like `proxychains` is deep recommended.
 - ACL (access control list)
 - Nodes Load-Balancing Mode
 - Clipboard / QR-code Import
@@ -37,23 +50,22 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 - Auto Start
 - Server Share
 - Activity Logs
+- [Process Manager](https://github.com/nojsja/electron-re)
 
 ### ➣ In Testing
 
 - AEAD ciphers
-- SIP003 plugins (v2ray & kcptun)
+- SIP003 plugins (v2ray-plugin,kcptun and more)
 
 ### ➣ Comming Soon
 
 - Tunnel Mode
-- Support for more plugins
 
 ## Problems
 
 - QRCode-Import may not work on some devices.
 - Linux without Gnome-desktop may not work, working for that.
 - Snap package for Linux has some unnormal behavior.
-- If you want to use `v2ray-plugin` on MacOS monterey(arm64), just run `brew install v2ray-plugin` to install the latest plugin version.
 
 ## Supported Platforms & Arch
 
@@ -66,9 +78,10 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
   - AppImage `x64/x86/arm64`
   - snap `x64`
 - MacOS
-  - dmg `x64`
+  - dmg `x64/arm64`
+  - zip `x64/arm64`
 - Windows
-  - exe `x64`
+  - exe `x64/x86`
   - zip `x64/x86`
 
 ## Screenshots

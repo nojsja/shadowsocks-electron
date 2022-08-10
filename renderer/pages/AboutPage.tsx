@@ -2,23 +2,26 @@ import React, { useCallback, useState } from "react";
 import { Container, Typography, SwipeableDrawer, IconButton } from "@material-ui/core";
 import { CloseOutlined } from "@material-ui/icons";
 import os from "os";
+import { useTranslation } from "react-i18next";
 
 import packageJson from "../../package.json";
 import authorPic from '../../assets/icons/256x256.png';
 import { useStylesOfAbout as useStyles } from "./styles";
 import If from "../components/HOC/IF";
-import { useTranslation } from "react-i18next";
 
 const timeline = [
   {
     title: 'v1.2.2',
     children: [
-      'Feat: Customize plugin supported.',
+      'Feat: Support for plugin custimization.',
       'Feat: SS/SSR link protocol on Windows/Mac supported, click link like ss://[xxxxx] to wake up client on browser.',
-      'Update: Add plugin installation instructions, quick enter plugins directory.',
+      'Feat: Add embeded v2ray-plugin.',
+      'Feat: Support for MacOS Monterey(arm64/x64).',
+      'Update: Improved plugin installation instructions and quick enter plugins directory.',
+      'Update: Add icon assets of retina screen.',
       'Fix: Server reconnection bugs.',
-      'Fix: Bugs on v2ray-plugin.',
-      'Style: UI adjustments for icons and element space.',
+      'Fix: Bugs of SIP003 plugin parameters and SSR obfs parameters.',
+      'Style: Small UI changes.',
     ]
   },
   {
