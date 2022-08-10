@@ -100,6 +100,7 @@ const AddServerDialog: React.FC<AddServerDialog> = props => {
             <TextWithTooltip
               text={t('import_server_url_from_clipboard')}
               tooltip={t('import_server_url_from_clipboard_tips')}
+              iconAlign="top"
             />
           } />
         </ListItemButton>
