@@ -1,14 +1,13 @@
 import { EventEmitter } from "events";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import path from 'path';
-import os from 'os';
 
 import checkPortInUse from "./helpers/port-checker";
 import { debounce, getPluginsPath, getSSLocalBinPath } from "../utils/utils";
 import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types/extention";
 import logger from "../logs";
 import { DefinedPlugin } from "./plugin";
-import { isMacOS, isWindows } from "../config";
+import { isWindows } from "../config";
 
 export class Client extends EventEmitter {
   bin: string
@@ -25,7 +24,7 @@ export class Client extends EventEmitter {
   constructor(settings: Settings, type: 'ssr' | 'ss') {
     super();
     this.type = type;
-    this.bin = getSSLocalBinPath(type, isMacOS ? 'x64' : os.arch());
+    this.bin = getSSLocalBinPath(type);
     this.params = [];
     this.error = '';
     this.settings = settings;

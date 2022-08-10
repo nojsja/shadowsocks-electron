@@ -25,6 +25,13 @@ export const pathExecutable = isDev
       : path.dirname(app.getPath('exe'))
   );
 
+export const archMap = new Map([
+  ['aarch64', 'arm64'],
+  ['x86', 'ia32'],
+  ['x64', 'x64'],
+  ['ia32', 'ia32'],
+  ['arm64', 'arm64']
+]);
 
 export const getPathRoot = (p: string) => path.join(appDataPath, p);
 export const getPathRuntime = (p: string) => path.join(pathRuntime, p);

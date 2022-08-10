@@ -6,20 +6,12 @@ import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
   MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig,
 } from '../types/extention';
-import { getPathRuntime, pathExecutable } from '../config';
+import { archMap, getPathRuntime, pathExecutable } from '../config';
 import { i18n } from '../electron';
 import { ProxyURI } from '../core/helpers/proxy-url';
 import { get } from './http-request';
 import { screen } from 'electron';
 import logger from '../logs';
-
-const archMap = new Map([
-  ['aarch64', 'arm64'],
-  ['x86', 'ia32'],
-  ['x64', 'x64'],
-  ['ia32', 'ia32'],
-  ['arm64', 'arm64']
-]);
 
 const subParserStore = subscriptionParserStore([
   {
