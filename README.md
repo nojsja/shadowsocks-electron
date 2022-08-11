@@ -12,6 +12,8 @@
 ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝      ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
 ```
 
+[● Telegram Channel](https://t.me/shadowsocks_electron)
+
 ## Shadowsocks Electron
 
 > Test on Ubuntu20.4/21.04/22.04 (amd64) ● MacOS catalina (x64) / monterey (arm64/x64)  ● Windows 10/11 (x64)
