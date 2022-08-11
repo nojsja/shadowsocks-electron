@@ -12,7 +12,7 @@ import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
 import { ProxyURI } from '../core/helpers/proxy-url';
 import checkPortInUse from "../core/helpers/port-checker";
-import { warning } from '../logs';
+import logger, { warning } from '../logs';
 import { i18n } from '../electron';
 import { PacServer } from '../core/pac';
 
@@ -205,7 +205,11 @@ export class MainService implements MainServiceType {
   async startPacServer(params: { pacPort: number, reload: boolean }) {
     return new Promise(resolve => {
       PS.stopPacServer();
-      Manager.proxy?.start();
+      try {
+        Manager.proxy?.start();
+      } catch (error) {
+        logger.error(`>> Start desktop proxy error: ${error}`);
+      }
       checkPortInUse([params.pacPort], '127.0.0.1')
         .then(results => {
           if (results[0]?.isInUse) {
@@ -234,7 +238,11 @@ export class MainService implements MainServiceType {
   async stopPacServer() {
     return new Promise(resolve => {
       PS.stopPacServer();
-      Manager.proxy?.stop();
+      try {
+        Manager.proxy?.stop();
+      } catch (error) {
+        logger.error(`>> Stop desktop proxy error: ${error}`);
+      }
       resolve({
         code: 200,
         result: ''

@@ -296,11 +296,19 @@ export class Manager {
       settings.pacPort,
       settings.mode
     );
-    await Manager.proxy?.start();
+    try {
+      await Manager.proxy?.start();
+    } catch (error) {
+      logger.error(`>> Enable desktop proxy error: ${error}`);
+    }
   }
 
   static async disableProxy() {
-    await Manager.proxy?.stop();
+    try {
+      await Manager.proxy?.stop();
+    } catch (error) {
+      logger.error(`>> Disable desktop proxy error: ${error}`);
+    }
     Manager.proxy = null;
   }
 
