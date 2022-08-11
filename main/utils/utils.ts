@@ -85,7 +85,7 @@ export const getPluginsPath = (name: string='', useArch?: string) => {
       case 'darwin':
         return getPathRuntime(`bin/darwin/${archMap.get(arch)}/${name}`);
       case 'win32':
-          return getPathRuntime(`bin/win32/${archMap.get(arch)}/${name}.exe`);
+          return getPathRuntime(`bin/win32/${archMap.get(arch)}/${name ? `${name}.exe` : ''}`);
       default:
         return name;
     }
@@ -108,7 +108,7 @@ export const getExecutableFilePath = (name: string, useArch?: string) => {
       case 'darwin':
         return path.join(pathExecutable, `bin/darwin/${archMap.get(arch)}/${name}`);
       case 'win32':
-        return path.join(pathExecutable, `bin/win32/${archMap.get(arch)}/${name}.exe`);
+        return path.join(pathExecutable, `bin/win32/${archMap.get(arch)}/${name ? `${name}.exe` : ''}`);
       default:
         return name;
     }
