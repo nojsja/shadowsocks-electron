@@ -17,10 +17,12 @@ const timeline = [
       'Feat: SS/SSR link protocol on Windows/Mac supported, click link like ss://[xxxxx] to wake up client on browser.',
       'Feat: Add embeded v2ray-plugin.',
       'Feat: Support for MacOS Monterey(arm64/x64).',
+      'Feat: Support for Russian language(@nanCreate).',
       'Update: Improved plugin installation instructions and quick enter plugins directory.',
       'Update: Add icon assets of retina screen.',
       'Fix: Server reconnection bugs.',
       'Fix: Bugs of SIP003 plugin parameters and SSR obfs parameters.',
+      'Fix: Fatal error when using Global/PAC mode on NO-Gnome Linux desktops, please wait for future release to total support.',
       'Style: Small UI changes.',
     ]
   },

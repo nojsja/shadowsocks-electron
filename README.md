@@ -34,13 +34,13 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
   - Get some tools like SwitchOmega to enable browser proxy on this mode.
 - __HTTP(S)__ Proxy
   - On Windows, commands for terminal proxy(port 1095 as default):
-    - `$env:HTTPS_PROXY="127.0.0.1:1095"` (powershell)
-    - `$env:HTTP_PROXY="127.0.0.1:1095"` (powershell)
-    - `set http_proxy=127.0.0.1:1095` (cmd)
-    - `set https_proxy=127.0.0.1:1095` (cmd)
+    - `$env:HTTPS_PROXY="http://127.0.0.1:1095"` (powershell)
+    - `$env:HTTP_PROXY="http://127.0.0.1:1095"` (powershell)
+    - `set http_proxy=http://127.0.0.1:1095` (cmd)
+    - `set https_proxy=http://127.0.0.1:1095` (cmd)
   - On Linux/MacOS, commands for terminal proxy:
-    - `export http_proxy=127.0.0.1:1095`
-    - `export https_proxy=127.0.0.1:1095`
+    - `export http_proxy="127.0.0.1:1095"`
+    - `export https_proxy="127.0.0.1:1095"`
     - Some tools like `proxychains` is deep recommended.
 - ACL (access control list)
 - Nodes Load-Balancing Mode
