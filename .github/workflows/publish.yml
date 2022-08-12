@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-10.15]  # 流水线将分别触发在 macos、ubuntu 系统中
+        os: [ubuntu-20.04, windows-latest, macos-12]  # 流水线将分别触发在 macos/ubuntu/windows 系统中
 
     steps:
       - uses: actions/checkout@v2
