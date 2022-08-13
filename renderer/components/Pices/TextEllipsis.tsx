@@ -18,4 +18,4 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
 export default function TextEllipsis(props: TextEllipsisType) {
   const styles = useStyles();
   return <div className={styles.text}>{ props.text }</div>;
-};
+}

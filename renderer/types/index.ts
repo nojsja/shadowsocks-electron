@@ -13,7 +13,7 @@ export enum ALGORITHM {
 
 export interface Traffic {
   GB: number, MB: number, KB: number
-};
+}
 
 export const encryptMethods = [
   "none",
@@ -138,7 +138,7 @@ export interface GroupConfig {
   servers: Config[],
   type: string,
   url?: string
-};
+}
 
 export type Mode = "PAC" | "Global" | "Manual";
 export type ThemeMode = 'dark' | 'light';

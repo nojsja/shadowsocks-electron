@@ -12,6 +12,7 @@ import { request } from "../utils/http-request";
 import { Settings } from "../types/extention";
 import { debounce } from "../utils/utils";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
 
 let server: PacServer | null;

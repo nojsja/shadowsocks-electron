@@ -19,7 +19,9 @@ export class ThemeService implements ThemeServiceType {
       autoTheme = JSON.parse(
         JSON.parse(electronStore.get('persist:root') as string).settings
       ).autoTheme;
-    } catch(error) {} finally {
+    } catch(error) {
+      console.error(error);
+    } finally {
       if (autoTheme) {
         this.listenForUpdate();
       }
@@ -39,7 +41,7 @@ export class ThemeService implements ThemeServiceType {
         result: null
       });
     });
-  };
+  }
 
   async unlistenForUpdate(): Promise<ServiceResult> {
     return new Promise((resolve, reject) => {
@@ -49,7 +51,7 @@ export class ThemeService implements ThemeServiceType {
         result: null
       });
     });
-  };
+  }
 
   async getSystemThemeInfo(): Promise<ServiceResult> {
     return new Promise((resolve, reject) => {
@@ -62,5 +64,5 @@ export class ThemeService implements ThemeServiceType {
         }
       });
     });
-  };
+  }
 }

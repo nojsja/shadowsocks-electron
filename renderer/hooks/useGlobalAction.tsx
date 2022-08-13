@@ -3,11 +3,11 @@ import { dispatch as dispatchEvent } from 'use-bus';
 export interface GlobalActionItem {
   type: string;
   payload?: any
-};
+}
 
 export interface GlobalActionStore {
   [type: string]: GlobalActionItem;
-};
+}
 
 const store: GlobalActionStore = {};
 

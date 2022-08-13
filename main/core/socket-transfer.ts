@@ -66,7 +66,7 @@ export class SocketTransfer extends EventEmitter {
     });
   }
 
-  private setHealthCheckTimer = (immediate: boolean = false) => {
+  private setHealthCheckTimer = (immediate = false) => {
     if (this.heartbeat.length > 1) {
       immediate && this.healthCheck();
       this.timer = setTimeout(() => {

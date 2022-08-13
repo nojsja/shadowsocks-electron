@@ -16,9 +16,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface GradientDividerProps {}
-
-const GradientDivider: React.FC<GradientDividerProps> = props => {
+const GradientDivider = () => {
   const styles = useStyles();
 
   return (

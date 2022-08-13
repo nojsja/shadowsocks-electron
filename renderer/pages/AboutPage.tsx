@@ -9,6 +9,11 @@ import authorPic from '../../assets/icons/256x256.png';
 import { useStylesOfAbout as useStyles } from "./styles";
 import If from "../components/HOC/IF";
 
+type Timeline = {
+  title: string;
+  children: string[];
+}[];
+
 const timeline = [
   {
     title: 'v1.2.2',
@@ -144,8 +149,9 @@ const timeline = [
   },
 ];
 
-const ReleaseNodes: React.FC<{ timeline: typeof timeline }> = React.memo(({ timeline }) => {
-  const [visible, setVisible] = useState(false);
+// eslint-disable-next-line react/prop-types
+const ReleaseNodes = React.memo(function ReleaseNodes({ timeline }: { timeline: Timeline }) {
+const [visible, setVisible] = useState(false);
   const styles = useStyles();
   const { t } = useTranslation();
 

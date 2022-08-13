@@ -79,12 +79,11 @@ const HomePage: React.FC = () => {
     } else {
       selectedServer && connectedToServer(config, selectedServer);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, selectedServer, mode, serverMode, clusterId, settings]);
 
   /* event stream */
 
-  useBus('event:stream:reconnect-server', (event: EventAction) => {
+  useBus('event:stream:reconnect-server', () => {
     connectByMode();
   }, [connectByMode]);
 
@@ -143,14 +142,12 @@ const HomePage: React.FC = () => {
       globalAction.get({ type: 'reconnect-http' });
       globalAction.get({ type: 'reconnect-pac' });
     }, 500);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* reconnect when settings/selected update */
   useDidUpdate(() => {
     if (!selectedServer || !connected) return;
     connectByMode('single');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedServer]);
 
   useDidUpdate(() => {
@@ -218,7 +215,7 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handleEditServerDialogClose = (event: {}, reason: "backdropClick" | "escapeKeyDown") => {
+  const handleEditServerDialogClose = (event: any, reason: "backdropClick" | "escapeKeyDown") => {
     if (reason === 'backdropClick') return;
 
     setEditServerDialogOpen(false);
@@ -244,7 +241,6 @@ const HomePage: React.FC = () => {
       });
     }
     await new Promise(resolve => setTimeout(resolve, 1000));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedServer, connected, config, settings]);
 
   const handleEditButtonClick = useCallback((id: string) => {
@@ -287,7 +283,7 @@ const HomePage: React.FC = () => {
             className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}
           />,
           <StatusBarNetwork key="status_bar_network" delay={delay}/>,
-          <span>/</span>,
+          <span key="status_bar_splitter">/</span>,
           <StatusBarTraffic key="status_bar_traffic" />
         ]}
         right={[
@@ -301,13 +297,15 @@ const HomePage: React.FC = () => {
 
       {/* -------- dialog ------- */}
 
-      <AddServerDialog open={dialogOpen} onClose={handleDialogClose} children={undefined} />
+      <AddServerDialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+      />
       <EditServerDialog
         open={editServerDialogOpen}
         defaultValues={
           editingServerId ? findAndCallback(config, editingServerId) as Config : null
         }
-        children={undefined}
         onClose={handleEditServerDialogClose}
         onValues={handleEditServer}
       />

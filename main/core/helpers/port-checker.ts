@@ -7,10 +7,10 @@ type ReturnType = {
   error: string | null
 };
 
-const socketConnect = (port: number, host: string, timeout: number = 1e3): Promise<ReturnType> => {
+const socketConnect = (port: number, host: string, timeout = 1e3): Promise<ReturnType> => {
   return new Promise(resolve => {
     const socket = new Socket();
-    let status = '';
+    const status = '';
     let isInUse = false;
 
     socket.setTimeout(timeout)

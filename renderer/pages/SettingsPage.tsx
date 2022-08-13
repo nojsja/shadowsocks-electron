@@ -72,7 +72,6 @@ const SettingsPage: React.FC = () => {
       /* check settings item */
       calGlobalActions();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -217,17 +216,18 @@ const SettingsPage: React.FC = () => {
   const onFieldChange = (fields: { [key: string]: any }, allFields: { [key: string]: any }) => {
     const keys = Object.keys(fields);
     changedFields.current = Object.assign(changedFields.current || {}, fields);
+    let httpProxy, loadBalance, acl;
 
     keys.forEach((key) => {
-      let value = fields[key];
+      const value = fields[key];
       form.validateFields([key]).then(() => {
         switch (key) {
           case 'httpProxy':
-            const httpProxy = form.getFieldValue('httpProxy');
+            httpProxy = form.getFieldValue('httpProxy');
             dispatch(setSetting<'httpProxy'>(key, httpProxy))
             return;
           case 'loadBalance':
-            const loadBalance = form.getFieldValue('loadBalance');
+            loadBalance = form.getFieldValue('loadBalance');
             dispatch(setSetting<'loadBalance'>(key, {
               strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
               count: loadBalance?.count ?? 3,
@@ -235,7 +235,7 @@ const SettingsPage: React.FC = () => {
             }));
             return;
           case 'acl':
-            const acl = form.getFieldValue('acl');
+            acl = form.getFieldValue('acl');
             dispatch(setSetting<'acl'>('acl', acl));
             return;
           case 'autoLaunch':

@@ -107,8 +107,8 @@ export class MainService implements MainServiceType {
   }
 
   async generateUrlFromConfig(params: Config): Promise<ServiceResult> {
-    let url: string = '';
-    let result: {
+    let url = '';
+    const result: {
       code: number
       result: {
         dataUrl: string

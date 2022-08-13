@@ -9,7 +9,6 @@ const useLayoutDidUpdate = (effect: React.EffectCallback, deps?: React.Dependenc
     } else {
       effect();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };
 

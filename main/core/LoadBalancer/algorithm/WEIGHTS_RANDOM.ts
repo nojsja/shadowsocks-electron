@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* weights random algorithm */
-export default function (tasks: Target[], weightTotal: number) {
+export default function WEIGHTS_RANDOM(tasks: Target[], weightTotal: number) {
   let task;
   let weight = Math.ceil(Math.random() * weightTotal);
 
@@ -14,4 +14,4 @@ export default function (tasks: Target[], weightTotal: number) {
   }
 
   return task || null;
-};
+}

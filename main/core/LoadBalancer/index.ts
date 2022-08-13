@@ -64,7 +64,7 @@ class LoadBalancer {
   /* refresh params data */
   public refreshParams = (pidMap: {[key: number]: { pid: any, cpu: any, memory: any}}) => {
     const infos = Object.values(pidMap);
-    for (let info of infos) {
+    for (const info of infos) {
       // this.params.connectionsMap[id] = connections;
       this.params.cpuOccupancyMap[info.pid] = info.cpu;
       this.params.memoryOccupancyMap[info.pid] = info.memory;

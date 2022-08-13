@@ -10,7 +10,7 @@ export interface TextAreaProps extends TextareaAutosizeProps {
   onTextChange?: (text: string) => void;
 }
 
-const StyledTextareaAutosize = React.memo((props: TextAreaProps) => {
+const StyledTextareaAutosize = React.memo(function StyledTextareaAutosize(props: TextAreaProps) {
   const useStyles = makeStyles((theme: Theme) => createStyles({
     textarea: {
       width: '100%',

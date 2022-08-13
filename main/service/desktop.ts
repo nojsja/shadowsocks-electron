@@ -203,7 +203,7 @@ export class DesktopService implements DesktopServiceType {
           code: 404,
           result: null
         });
-      };
+      }
     });
   }
 
@@ -231,7 +231,7 @@ export class DesktopService implements DesktopServiceType {
           code: 404,
           result: null
         });
-      };
+      }
     });
   }
 
@@ -331,7 +331,7 @@ export class DesktopService implements DesktopServiceType {
   async contextMenu(actions: contextAction[]): Promise<ServiceResult> {
     return new Promise(resolve => {
       const templates = actions.map(action => {
-        let a: Electron.MenuItemConstructorOptions = {
+        const a: Electron.MenuItemConstructorOptions = {
           ...action
         };
         a.click = (function(this: any) {

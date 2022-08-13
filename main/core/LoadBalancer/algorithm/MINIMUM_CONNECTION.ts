@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* minimum connections algorithm */
-export default function (tasks: Target[], conMap: {[key: string]: number}={}) {
+export default function MINIMUM_CONNECTION(tasks: Target[], conMap: {[key: string]: number}={}) {
   if (tasks.length < 2) return tasks[0] || null;
 
   let min = conMap[tasks[0].id];
@@ -16,4 +16,4 @@ export default function (tasks: Target[], conMap: {[key: string]: number}={}) {
   }
 
   return tasks[minIndex] || null;
-};
+}

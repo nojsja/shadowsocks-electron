@@ -7,8 +7,6 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useTypedSelector } from '../../redux/reducers';
 import { Traffic } from '../../types';
 
-type StatusBarProps = {}
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     text: {
@@ -29,7 +27,7 @@ const getTraffic = (traffic: Traffic) => {
   return `${traffic.KB.toFixed(0)} kb`;
 }
 
-const StatusBarTraffic: React.FC<StatusBarProps> = (props) => {
+const StatusBarTraffic = () => {
   const styles = useStyles();
   const { t } = useTranslation();
   const { traffic } = useTypedSelector((state) => state.status);

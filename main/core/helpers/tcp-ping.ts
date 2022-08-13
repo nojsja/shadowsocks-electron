@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const net = require('net');
 
 type pingOptions = {
@@ -63,6 +64,7 @@ const tcpPing = (options: pingOptions): Promise<[pingResult, connectResult[]]> =
 
 const tcpConnect = (options: pingOptions, callback: (error: Error | null, delay: number) => void) => {
   const startTime = process.hrtime();
+  // eslint-disable-next-line prefer-const
   let timer: NodeJS.Timeout;
   let isEnd = false;
 

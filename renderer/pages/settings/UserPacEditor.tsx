@@ -65,7 +65,8 @@ interface EditorProps {
   defaultValue: string;
 }
 
-const Editor: React.FC<EditorProps> = React.memo(({ onPacContentChange, defaultValue }) => {
+// eslint-disable-next-line react/prop-types
+const Editor = React.memo<EditorProps>(function Editor({ onPacContentChange, defaultValue }) {
   return (
     <StyledTextareaAutosize
       minRows={20}
@@ -100,7 +101,6 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
       action: 'updateUserPacRules',
       params: { rules }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, .5e3), []);
 
   const getUserPacContent = useCallback(() => {
@@ -118,7 +118,6 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
         dispatch(SnackbarAction(result, { variant: 'error' }));
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPacContentChange = (text: string) => {
@@ -133,7 +132,6 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
     } else {
       getUserPacContent();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   return (

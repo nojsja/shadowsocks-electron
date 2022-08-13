@@ -4,6 +4,7 @@ import fs from 'fs';
 
 export async function startProfiler(name: string, port: number) {
   // 监测对应端口
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const profiler = require('v8-inspect-profiler');
   const profiling = await profiler.startProfiling({port});
   // 返回 stop 方法，以便停止监测

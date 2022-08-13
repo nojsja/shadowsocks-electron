@@ -12,7 +12,7 @@ export function setStatus<T extends keyof Status>(key: T, value: Status[T]) {
     key,
     value
   };
-};
+}
 
 export const getConnectionStatus = (callback: (status: boolean) => void) => {
   MessageChannel.invoke('main','service:main', {

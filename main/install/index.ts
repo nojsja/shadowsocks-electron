@@ -17,6 +17,7 @@ const loadExtensionsManually = (paths: string[]) => {
 }
 
 const loadExtensionsWithInstaller = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const installExtension = require('electron-devtools-installer');
   const { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } = installExtension;
 

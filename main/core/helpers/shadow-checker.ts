@@ -1,5 +1,6 @@
 import { Socket } from 'net';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
 
 /**

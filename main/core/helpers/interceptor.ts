@@ -146,7 +146,7 @@ export class Interceptor {
       return response;
     }
   }
-};
+}
 
 /**
   * StartClusterInterceptor [cluster interceptor on start]
@@ -168,8 +168,6 @@ export class Interceptor {
     await Manager.disableProxy();
     await Manager.enableProxy(settings);
   }
-
-  after = () => {}
 }
 
 /**
@@ -181,10 +179,6 @@ export class StopClusterInterceptor extends Interceptor {
   constructor(env?: any) {
     super(env);
   }
-
-  before = () => {}
-
-  after = () => {}
 }
 
 
@@ -223,8 +217,4 @@ export class StopClientInterceptor extends Interceptor {
   constructor(env?: any) {
     super(env);
   }
-
-  before = () => {}
-
-  after = () => {}
 }

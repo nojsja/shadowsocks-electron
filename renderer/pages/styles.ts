@@ -2,7 +2,7 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
-export const scrollBarStyle = (width: number = 10, radius: number = 5, theme: Theme) => ({
+export const scrollBarStyle = (width = 10, radius = 5, theme: Theme) => ({
   "&::-webkit-scrollbar": {
     width: width,
   },

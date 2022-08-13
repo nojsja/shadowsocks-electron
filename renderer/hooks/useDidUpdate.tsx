@@ -9,6 +9,5 @@ export default (effect: React.EffectCallback, deps?: React.DependencyList | unde
     } else {
       effect();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };

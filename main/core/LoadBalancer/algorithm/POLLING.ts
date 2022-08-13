@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* polling algorithm */
-export default function (tasks: Target[], currentIndex: number, context: { currentIndex: number }) {
+export default function POLLING(tasks: Target[], currentIndex: number, context: { currentIndex: number }) {
   if (!tasks.length) return null;
 
   const task = tasks[currentIndex];
@@ -9,4 +9,4 @@ export default function (tasks: Target[], currentIndex: number, context: { curre
   context.currentIndex %= tasks.length;
 
   return task || null;
-};
+}

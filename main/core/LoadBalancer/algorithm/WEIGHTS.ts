@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* weight algorithm */
-export default function (tasks: Target[], weightTotal: number, context: { weightIndex: number }) {
+export default function WEIGHTS(tasks: Target[], weightTotal: number, context: { weightIndex: number }) {
 
   if (!tasks.length) return null;
 
@@ -19,4 +19,4 @@ export default function (tasks: Target[], weightTotal: number, context: { weight
   context.weightIndex %= (weightTotal + 1);
 
   return tasks[maxIndex];
-};
+}

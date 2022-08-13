@@ -15,7 +15,7 @@ export interface MenuContent {
   label: string | React.ElementType | JSX.Element,
   action: string,
   icon?: string | React.ElementType | JSX.Element,
-};
+}
 
 const StyledMenuItem = withStyles((theme) => createStyles({
   root: {

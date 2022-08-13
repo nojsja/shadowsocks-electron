@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* specify by id algorithm */
-export default function (tasks: Target[], id: any) {
+export default function SPECIFY(tasks: Target[], id: any) {
   let task;
 
   for (let i = 0; i < tasks.length; i++) {
@@ -12,4 +12,4 @@ export default function (tasks: Target[], id: any) {
   }
 
   return task || null;
-};
+}

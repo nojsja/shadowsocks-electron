@@ -5,7 +5,7 @@ import { persistStore } from '../App';
 import { getFirstLanguage } from '../i18n';
 
 export function saveDataURLAsFile(dataUrl: string, fileName: string) {
-  var link = document.createElement("a");
+  const link = document.createElement("a");
   document.body.appendChild(link);
   link.setAttribute("type", "hidden");
   link.href = dataUrl;
@@ -77,7 +77,7 @@ export function findAndModify(server: undefined | (Config | GroupConfig)[], id: 
   return server;
 }
 
-export function debounce(fn: Function, delay: number) {
+export function debounce(fn: (...args: any[]) => any, delay: number) {
   let timer: NodeJS.Timeout | undefined;
 
   return function(this: unknown, ...args: any[]){
@@ -90,7 +90,7 @@ export function debounce(fn: Function, delay: number) {
   }
 }
 
-export function throttle(fn: Function, delay: number) {
+export function throttle(fn: (...args: any[]) => any, delay: number) {
   let timer: NodeJS.Timeout | undefined;
 
   return function(this: unknown, ...args: any[]){

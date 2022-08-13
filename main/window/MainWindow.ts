@@ -101,7 +101,9 @@ export default class IpcMainWindow implements IpcMainWindowType {
         autoHide = JSON.parse(
           JSON.parse(electronStore.get('persist:root') as string).settings
         ).autoHide;
-      } catch(error) {}
+      } catch(error) {
+        console.error(error);
+      }
 
       if (!autoHide) {
         this.win.show();

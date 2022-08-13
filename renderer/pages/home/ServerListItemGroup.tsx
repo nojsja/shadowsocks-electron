@@ -31,7 +31,7 @@ import { useTypedSelector } from "../../redux/reducers";
 import If from "../../components/HOC/IF";
 import { blue, grey } from "@material-ui/core/colors";
 
-const StyledBadge = withStyles((theme: Theme) =>
+const StyledBadge = withStyles(() =>
   createStyles({
     badge: {
       right: -20,
@@ -45,7 +45,7 @@ const StyledBadge = withStyles((theme: Theme) =>
   }),
 )(Badge);
 
-const StyledBadgeInactive = withStyles((theme: Theme) =>
+const StyledBadgeInactive = withStyles(() =>
   createStyles({
     badge: {
       color: grey[400]
@@ -127,7 +127,6 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
       )
     }
     return items;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serverMode, clusterId]);
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))

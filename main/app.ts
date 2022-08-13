@@ -25,7 +25,6 @@ export default class App implements ElectronApp {
     beforeQuit: new SyncHook(['app']),
   }
   lifeCycles: LifeCycles[] = ['beforeReady', 'ready', 'afterReady', 'beforeQuit'];
-  constructor() {}
 
   registryHooksSync(point: LifeCycles, name: string, fn: (args_0: any) => void) {
     this.hooks[point].tap(name, fn);

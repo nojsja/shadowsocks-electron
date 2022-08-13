@@ -16,7 +16,7 @@ interface SnackbarAlertProps {
   vertical?: 'bottom' | 'top',
   horizontal?: 'left' | 'right' | 'center',
   direction?: 'left' | 'right' | 'up' | 'down'
-};
+}
 
 interface SetMessage {
   (msg: string): void
@@ -40,27 +40,30 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const transition = (props: TransitionProps) => <Slide {...props} direction="down" />;
 
-const useSnackbarAlert = (props?: SnackbarAlertProps): [React.FunctionComponent, SetMessage] => {
+function useSnackbarAlert({ vertical, horizontal, duration }: SnackbarAlertProps) {
   const styles = useStyles();
   const [message, setMessage] = useState('');
   return [
     (
-      React.memo((() =>
-        <Snackbar
-          className={styles.snackbar}
-          anchorOrigin={{
-            vertical: props?.vertical || "top",
-            horizontal: props?.horizontal || "right"
-          }}
-          TransitionComponent={transition}
-          open={!!message}
-          autoHideDuration={props?.duration || 1e3}
-          onClose={() => setMessage('')}
-          message={message}
-        />))
+      React.memo(function MemoSnackbar() {
+        return (
+          <Snackbar
+            className={styles.snackbar}
+            anchorOrigin={{
+              vertical: vertical || "top",
+              horizontal: horizontal || "right"
+            }}
+            TransitionComponent={transition}
+            open={!!message}
+            autoHideDuration={duration || 1e3}
+            onClose={() => setMessage('')}
+            message={message}
+          />
+        );
+      })
     ),
     (msg: string) => setTimeout(() => setMessage(msg), .5e3)
   ];
-};
+}
 
 export default useSnackbarAlert;

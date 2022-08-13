@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* weights polling */
-export default function (tasks: Target[], weightIndex: number, weightTotal: number, context: { weightIndex: number }) {
+export default function WEIGHTS_POLLING(tasks: Target[], weightIndex: number, weightTotal: number, context: { weightIndex: number }) {
 
   if (!tasks.length) return null;
 
@@ -20,4 +20,4 @@ export default function (tasks: Target[], weightIndex: number, weightTotal: numb
   context.weightIndex %= (weightTotal + 1);
 
   return task;
-};
+}

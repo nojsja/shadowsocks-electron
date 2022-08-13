@@ -32,7 +32,7 @@ export class Manager {
   static clusterConfig: Config[]; // cluster server configs
   static event: EventEmitter = new EventEmitter(); // event center
   static deadMap: { [key: string]: number } = {}; // dead client records
-  static heartbeat: number = 15e3;
+  static heartbeat = 15e3;
   static trafficTimer: NodeJS.Timer;
 
   static syncConnected(connected: boolean) {
@@ -260,7 +260,7 @@ export class Manager {
         logger.info(`>> Killed ${Manager.ssLocal?.type || 'ss'}-local failed`);
       }
     );
-  };
+  }
 
   static isConnected() {
     if (Manager.mode === 'single') {

@@ -59,7 +59,7 @@ export const getChromeExtensionsPath = (appids: string[]): Promise<any[]> => {
 }
 
 export const getBinPath = (function () {
-  let fullpath = new Map();
+  const fullpath = new Map();
   const paths = (process.env.PATH as string).split(':');
 
   return (name: string) => {
@@ -76,7 +76,7 @@ export const getBinPath = (function () {
   }
 })();
 
-export const getPluginsPath = (name: string='', useArch?: string) => {
+export const getPluginsPath = (name='', useArch?: string) => {
   const arch = useArch || os.arch();
   if (archMap.has(arch)) {
     switch (os.platform()) {
@@ -154,7 +154,7 @@ export const getEncryptMethod = (config: Config): string => {
   if (config.type === 'ssr') {
     if (config.encryptMethod === 'none') return config.protocol ?? '';
     return config.encryptMethod ?? '';
-  };
+  }
   return '';
 }
 
@@ -212,8 +212,8 @@ export const copyDir = (src: string, dist: string, callback?: (params: any) => v
   function _copy(src: string, dist: string) {
     paths = fs.readdirSync(src);
     paths.forEach(function(_path) {
-        let _src = path.join(src, _path);
-        let _dist = path.join(dist, _path);
+        const _src = path.join(src, _path);
+        const _dist = path.join(dist, _path);
         stat = fs.statSync(_src);
         // 判断是文件还是目录
         if(stat.isFile()) {
@@ -255,8 +255,8 @@ export const copyDirAsync = (src: string, dist: string, callback?: (params: any)
           callback && callback(err);
         } else {
           paths.forEach(function(path) {
-            var _src = src + '/' +path;
-            var _dist = dist + '/' +path;
+            const _src = src + '/' +path;
+            const _dist = dist + '/' +path;
             fs.stat(_src, function(err, stat) {
               if(err){
                 callback && callback(err);
@@ -344,7 +344,7 @@ export function parseUrl(text: string) {
 
 export function parseSubscription(text: string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
   return new Promise((resolve, reject) => {
-    const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w\.]+)?\/(.*)/;
+    const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w.]+)?\/(.*)/;
     const httpReg = /^(http|https)/;
     if (httpReg.test(text)) {
       const subHandler = subParserStore(text);
@@ -403,7 +403,7 @@ export function subscriptionParserStore(parsers: SubscriptionParserConfig[]): (l
     map[serviceName] = parser;
     return parser;
   }
-};
+}
 
 /* 泡芙云 paofusub 订阅解析 */
 export function paofuSubscriptionParser(res: { result: string }): OneOfConfig[] {
@@ -412,7 +412,7 @@ export function paofuSubscriptionParser(res: { result: string }): OneOfConfig[] 
   const serversBase64 = Buffer.from(res.result, 'base64').toString();
 
   return parseUrl(serversBase64);
-};
+}
 
 /* mono cloud 订阅解析 */
 export function monoCloudSubscriptionParser (res: SubscriptionResult): OneOfConfig[] {
@@ -481,7 +481,7 @@ export const chmod = (target: string, opstr: number) => {
 export const getPerfectDevicePixelRatioImage = (
   imageFullPath: string,
   availableRatio: number[] = [1],
-  pixelFixedUp: boolean = true
+  pixelFixedUp = true
 ) => {
   const { scaleFactor } = screen.getPrimaryDisplay();
   const scaleFactorInteger = pixelFixedUp ? Math.round(scaleFactor) : Math.floor(scaleFactor);

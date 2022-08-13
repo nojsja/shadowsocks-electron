@@ -13,7 +13,9 @@ export const openLogDir = async () => {
   await open(logDir);
 };
 
-export const cleanLogs = async () => {};
+export const cleanLogs = () => {
+  console.log('clean logs');
+};
 
 const timestamp = format((info, opts) => {
   info.message = `${new Date().toLocaleString()} - ${info.message}`;

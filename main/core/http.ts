@@ -7,6 +7,7 @@ import { InnerCallback } from '../types/extention';
 import checkPortInUse from './helpers/port-checker';
 import { i18n } from '../electron';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
 let httpServer: HttpProxyServer | null;
 
@@ -69,7 +70,7 @@ export class HttpProxyServer extends EventEmitter {
     .catch(error => {
       callback(error);
     });
-  };
+  }
 
   /* Stop Https Server */
   static stopHttpServer(port: number, host: string, callback?: InnerCallback) {

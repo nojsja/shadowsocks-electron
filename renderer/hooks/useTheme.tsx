@@ -59,7 +59,7 @@ export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMo
   const [mode, setMode] = useState<ThemeMode>(theme);
 
   const updateTheme = (e: IpcRendererEvent | EventAction, data: { shouldUseDarkColors: boolean }) => {
-    persistStore.set('darkMode', !!data.shouldUseDarkColors ? 'true' : 'false');
+    persistStore.set('darkMode', data.shouldUseDarkColors ? 'true' : 'false');
     store.dispatch({
       type: SET_SETTING,
       key: "darkMode",

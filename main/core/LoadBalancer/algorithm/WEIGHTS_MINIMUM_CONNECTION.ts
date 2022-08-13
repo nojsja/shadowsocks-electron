@@ -1,7 +1,7 @@
 import { Target } from "../types";
 
 /* weights minimum connections algorithm */
-export default function (tasks: Target[], weightTotal: number, connectionsMap: { [key: string]: number }, context: { weightIndex: number }) {
+export default function WEIGHTS_MINIMUM_CONNECTION(tasks: Target[], weightTotal: number, connectionsMap: { [key: string]: number }, context: { weightIndex: number }) {
 
   if (!tasks.length) return null;
 
@@ -27,4 +27,4 @@ export default function (tasks: Target[], weightTotal: number, connectionsMap: {
   context.weightIndex %= (weightTotal + 1);
 
   return tasks[minIndex];
-};
+}

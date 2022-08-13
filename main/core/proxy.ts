@@ -35,11 +35,11 @@ export class Proxy {
     }
   }
 
-  public async start() {
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public start() {}
 
-  public async stop() {
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public async stop() {}
 
   public async switch(mode: Mode) {
     this.mode = mode;

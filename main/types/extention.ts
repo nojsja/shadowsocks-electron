@@ -214,7 +214,7 @@ export interface Settings {
   }
   gfwListUrl: string;
   autoLaunch: boolean;
-};
+}
 
 export type RectPoint = { x: number, y: number, width: number, height: number };
 

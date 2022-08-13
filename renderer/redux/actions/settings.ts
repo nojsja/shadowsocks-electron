@@ -80,7 +80,7 @@ export const setHttpProxy =
         if (rsp.code !== 200) {
           dispatch(enqueueSnackbar(rsp.result, { variant: 'warning' }));
         }
-      });;
+      });
   };
 }
 

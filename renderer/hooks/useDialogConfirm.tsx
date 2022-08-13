@@ -22,7 +22,7 @@ type message = {
 interface DialogConfirmProps {
   onClose?: () => any
   onConfirm?: () => any
-};
+}
 
 interface SetMessage {
   (title: string, content: string): void
