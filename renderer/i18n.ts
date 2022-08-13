@@ -17,7 +17,7 @@ export const getFirstLanguage = (lang?: string | null) => {
   return 'en-US';
 }
 
-export default (lang?: string | null) => {
+const i18nModule = (lang?: string | null) => {
   i18n
     // pass the i18n instance to react-i18next.
     .use(initReactI18next)
@@ -37,3 +37,5 @@ export default (lang?: string | null) => {
       }
     });
 };
+
+export default i18nModule;

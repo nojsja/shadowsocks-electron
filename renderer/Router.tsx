@@ -11,8 +11,7 @@ import HomePage from "./pages/HomePage";
 import SettingsPage from "./pages/SettingsPage";
 import AboutPage from "./pages/AboutPage";
 
-
-export default () => {
+const Router = () => {
   useNotifier();
   return (
     <Switch>
@@ -29,3 +28,5 @@ export default () => {
     </Switch>
   );
 }
+
+export default Router;

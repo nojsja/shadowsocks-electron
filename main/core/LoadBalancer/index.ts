@@ -21,7 +21,7 @@ class LoadBalancer {
   private algorithm: CONSTS;
   private params: { [key: string]: any };
   private scheduler: Scheduler;
-  private memoParams: { [key: string]: any }
+  private memoParams: { [key: string]: (id?: string|number) => any[] }
   /**
     * @param  {Object} options [ options object ]
     * @param  {Array } options.targets [ targets for load balancing calculation: [{id: 1, weight: 1}, {id: 2, weight: 2}] ]
@@ -50,7 +50,7 @@ class LoadBalancer {
   /* params formatter */
   private memorizedParams = () => {
     return {
-      [RANDOM]: () => [],
+      [RANDOM]: () => [] as any[],
       [POLLING]: () => [this.params.currentIndex, this.params],
       [WEIGHTS]: () => [this.params.weightTotal, this.params],
       [SPECIFY]: (id: any) => [id],

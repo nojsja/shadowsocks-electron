@@ -1,7 +1,19 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { render } from 'react-dom';
 import "typeface-roboto";
 import "./index.css";
-import App from "./App";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+let App;
+const rootDOMNode = document.getElementById("root");
+function renderRoot() {
+  App = require('./App.tsx').default; // we have to re-require this every time it changes otherwise we are rendering the same old app.
+  render(<App/>, rootDOMNode);
+}
+renderRoot();
+
+if (module.hot) {
+  module.hot.accept('./App.tsx', () => {
+    console.log('Accepting the updated module');
+    renderRoot();
+  });
+}

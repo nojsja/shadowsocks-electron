@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 
-export default (effect: React.EffectCallback, deps?: React.DependencyList | undefined) => {
+const useLayoutDidUpdate = (effect: React.EffectCallback, deps?: React.DependencyList | undefined) => {
   const initSymbol = useRef<boolean|null>(null);
 
   useLayoutEffect(() => {
@@ -12,3 +12,5 @@ export default (effect: React.EffectCallback, deps?: React.DependencyList | unde
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };
+
+export default useLayoutDidUpdate;

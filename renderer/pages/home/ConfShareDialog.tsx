@@ -26,14 +26,14 @@ import { withStyles } from "@material-ui/styles";
 import { CloseOptions, Notification } from '../../types';
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 
-export interface ConfShareDialog extends DialogProps, MediaCard {
-  onClose: (selection: CloseOptions) => void
-}
-
-export interface MediaCard {
+export interface MediaCardProps {
   dataUrl: string
   url: string
   onClose: (selection: "qrcode" | "url" | "manual" | "share" | '') => void
+}
+
+export interface ConfShareDialogProps extends DialogProps, MediaCardProps {
+  onClose: (selection: CloseOptions) => void
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -74,7 +74,7 @@ export const StyledCard = withStyles(
   )
 )(Card);
 
-const MediaCard: React.FC<MediaCard> = (props) => {
+const MediaCard: React.FC<MediaCardProps> = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -136,7 +136,7 @@ const MediaCard: React.FC<MediaCard> = (props) => {
   );
 }
 
-const ConfShareDialog: React.FC<ConfShareDialog> = props => {
+const ConfShareDialog: React.FC<ConfShareDialogProps> = props => {
   const { onClose, open } = props;
   // const { t } = useTranslation();
   const classes = useStyles();

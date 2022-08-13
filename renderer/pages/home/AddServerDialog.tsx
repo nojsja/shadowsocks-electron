@@ -25,7 +25,7 @@ import { TextWithTooltip } from "../../components/Pices/TextWithTooltip";
 
 export type onCloseType = (selection: CloseOptions) => void;
 
-export interface AddServerDialog extends DialogProps {
+export interface AddServerDialogProps extends DialogProps {
   onClose: onCloseType
 }
 
@@ -72,7 +72,7 @@ export const DialogTitle = (props: DefineDialogTitleProps) => {
   );
 };
 
-const AddServerDialog: React.FC<AddServerDialog> = props => {
+const AddServerDialog: React.FC<AddServerDialogProps> = props => {
   const { onClose, open } = props;
   const { t } = useTranslation();
 

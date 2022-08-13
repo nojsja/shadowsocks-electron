@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const StatusBarItem: React.FC<{}> = (props) => {
+export const StatusBarItem: React.FC<{ children: React.ReactNode }> = (props) => {
   return (
     <div className="status-bar-item">
       {

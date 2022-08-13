@@ -6,7 +6,7 @@ import { ListItemIcon, Typography } from '@material-ui/core';
 
 import MenuContext from './context';
 
-const initialState = {
+const initialState: { mouseX: null | number; mouseY: null | number; } = {
   mouseX: null,
   mouseY: null,
 };
@@ -23,7 +23,7 @@ const StyledMenuItem = withStyles((theme) => createStyles({
   }
 }))(MenuItem);
 
-const ContextMenu: React.FC<{}> = (props) => {
+const ContextMenu: React.FC<{ children: React.ReactNode }> = (props) => {
   const [state, setState] = useState<{
     mouseX: null | number;
     mouseY: null | number;
@@ -74,9 +74,9 @@ const ContextMenu: React.FC<{}> = (props) => {
               onClick={() => handleMenuClick(content.action)}
             >
               <ListItemIcon>
-                {content.icon}
+                {(content as any).icon}
               </ListItemIcon>
-              <Typography variant="inherit">{content.label}</Typography>
+              <Typography variant="inherit">{(content as any).label}</Typography>
             </StyledMenuItem>
           ))
         }

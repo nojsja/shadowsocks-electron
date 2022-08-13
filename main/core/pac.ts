@@ -57,7 +57,7 @@ export class PacServer {
 
       logger.info("Generated PAC file without port");
     } catch (err) {
-      logger.error(err?.toString() ?? err);
+      logger.error((err as any).message ?? err);
     }
   }
 
@@ -74,7 +74,7 @@ export class PacServer {
 
       logger.info("Generated full PAC file");
     } catch (err) {
-      logger.error(err?.toString() ?? err);
+      logger.error((err as any).message ?? err);
     }
   }
 
