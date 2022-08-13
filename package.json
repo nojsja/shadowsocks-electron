@@ -151,7 +151,9 @@
     "webpack-dev-server": "^3.11.0"
   },
   "husky": {
-    "hooks": {}
+    "hooks": {
+      "pre-commit": "yarn clean && lint-staged && yarn lint"
+    }
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
