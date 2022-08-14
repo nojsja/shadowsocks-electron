@@ -67,7 +67,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 - QRCode-Import may not work on some devices.
 - Linux without Gnome-desktop may not work, working for that.
-- Snap package for Linux has some unnormal behavior.
+- Snap package for Linux has some abnormal behavior.
 
 ## Supported Platforms & Arch
 
