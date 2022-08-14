@@ -19,6 +19,7 @@
 Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
 
 ### ➣ Tested on:
+
 - Ubuntu20.4/21.04/22.04 (amd64)
 - Ubuntu22.10 (arm64)
 - MacOS Catalina (x64)
@@ -26,6 +27,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 - Windows10/11 (x64)
 
 ### ➣ Future test plan
+
 - Linux Kali/Manjaro (x64)
 - Windows7/8 (x64/arm64)
 - MacOS Big Sur/Mojave (x64/arm64)

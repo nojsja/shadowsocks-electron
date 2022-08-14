@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "inline-flex",
       alignItems: "top",
       justifyContent: "center",
-      wordBreak: "break-all"
     },
     symbol: {
       marginLeft: '4px',
