@@ -14,13 +14,23 @@
 
 [â— Telegram Channel](https://t.me/shadowsocks_electron)
 
-## Shadowsocks Electron
-
-> Test on Ubuntu20.4/21.04/22.04 (amd64) â— MacOS catalina (x64) / monterey (arm64/x64)  â— Windows 10/11 (x64)
+## I. Shadowsocks Electron
 
 Shadowsocks GUI client with cross-platform desktop support powered by Electronâš›ï¸, made specially for Linux / Windows users.
 
-## Features
+### âž£ Tested on:
+- Ubuntu20.4/21.04/22.04 (amd64)
+- Ubuntu22.10 (arm64)
+- MacOS Catalina (x64)
+- MacOS Monterey (arm64/x64)
+- Windows10/11 (x64)
+
+### âž£ Future test plan
+- Linux Kali/Manjaro (x64)
+- Windows7/8 (x64/arm64)
+- MacOS Big Sur/Mojave (x64/arm64)
+
+## II. Features
 
 ### âž£ Supported
 
@@ -63,13 +73,13 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 - Tunnel Mode
 
-## Problems
+## III. Problems
 
 - QRCode-Import may not work on some devices.
 - Linux without Gnome-desktop may not work, working for that.
 - Snap package for Linux has some abnormal behavior.
 
-## Supported Platforms & Arch
+## IV. Supported Platforms & Arch
 
 ![system](https://img.shields.io/badge/system-win%20%7C%20mac%20%7C%20linux-green)
 
@@ -86,7 +96,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
   - exe `x64/x86`
   - zip `x64/x86`
 
-## Screenshots
+## V. Screenshots
 
 ### Main Page
 
@@ -116,7 +126,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 ![share.png](./assets/share.png)
 
-## Downloads
+## VI. Downloads
 
 - GitHub Releases
   - ![statistics](https://img.shields.io/github/downloads/nojsja/shadowsocks-electron/total?style=plastic)
@@ -129,7 +139,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
   - [![shadowsocks-electron](https://snapcraft.io/shadowsocks-electron/badge.svg)](https://snapcraft.io/shadowsocks-electron)
   - [â†ª main page ](https://snapcraft.io/shadowsocks-electron)
 
-## Plugins Downloads
+## VII. Plugins Downloads
 > not necessary, just for some advanced users.
 
 - __kcptun__
@@ -142,7 +152,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
   - [â†ª v2ray-plugin repo releases](https://github.com/nojsja/v2ray-plugin/releases)
   - install: Download a certain version plugin, unpack and rename it to  `v2ray-plugin`, then put the file into system dir (such as `/usr/bin/`) on unix like systems. OR you may put the file into `plugins dir` on Windows (check "Open Plugins Directory" button from settings page).
 
-## Recommended ACL Files
+## VIII. Recommended ACL Files
 
 **1. Download ACL file and saved it to local directory.**
 
@@ -152,7 +162,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 **2. Enable ACL Mode and load the file on settings page of client.**
 
-## Why?
+## IX. Why?
 
 - The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.
 - Only [`Shadowsocks-libev`](https://github.com/shadowsocks/shadowsocks-libev) and [`Shadowsocks for Android`](https://github.com/shadowsocks/shadowsocks-android) support ACL (bypass China IPs, etc.)
@@ -161,7 +171,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 It also uses Electron to bring the most powerful cross-platform desktop support with great developing experience.
 
-## Development
+## X. Development
 
 ### 1. Env
 
@@ -216,11 +226,11 @@ $: cp pac/gfwlist.txt ~/Library/Application\ Support/shadowsocks-electron/pac/
 $: npm start
 ```
 
-## Mention
+## XI. Mention
 
 > The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
 
-## Credit
+## XII. Credit
 
 - [tindy2013/shadowsocks-static-binaries](https://github.com/tindy2013/shadowsocks-static-binaries)
 - [robertying/shadowsocks-electron](https://github.com/robertying/shadowsocks-electron)
