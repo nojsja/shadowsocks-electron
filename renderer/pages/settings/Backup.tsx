@@ -11,9 +11,7 @@ interface BackupProps {
   rules?: Rule[] | undefined;
 }
 
-const Backup: React.FC<BackupProps> = ({
-  rules,
-}) => {
+const Backup: React.FC<BackupProps> = () => {
   const { t } = useTranslation();
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);

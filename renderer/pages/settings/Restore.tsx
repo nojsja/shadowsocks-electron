@@ -13,7 +13,6 @@ interface RestoreProps {
 }
 
 const Restore: React.FC<RestoreProps> = ({
-  rules,
   form,
 }) => {
   const { t } = useTranslation();

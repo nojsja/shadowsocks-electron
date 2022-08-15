@@ -114,10 +114,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
   const handleAdd = () => {
     form.validateFields()
     .then((values: Config) => {
-      const { id, ...otherData } = values;
       onValues({
-        id: defaultValues?.id ?? '',
-        ...(otherData),
+        ...values,
+        id: defaultValues?.id ?? ''
       });
     })
     .catch(errors => {

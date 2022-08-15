@@ -10,9 +10,7 @@ interface FixedMenuProps {
   rules?: Rule[] | undefined;
 }
 
-const FixedMenu: React.FC<FixedMenuProps> = ({
-  rules,
-}) => {
+const FixedMenu: React.FC<FixedMenuProps> = () => {
   const { t } = useTranslation();
 
   return (

@@ -10,9 +10,7 @@ interface AutoHideProps {
   rules?: Rule[] | undefined;
 }
 
-const AutoHide: React.FC<AutoHideProps> = ({
-  rules,
-}) => {
+const AutoHide: React.FC<AutoHideProps> = () => {
   const { t } = useTranslation();
 
   return (

@@ -16,7 +16,7 @@ import { pacDir, binDir } from '../config';
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
 const checkEnvFiles = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'checkEnvFiles', (app: Electron.App) => {
+  electronApp.registryHooksSync('beforeReady', 'checkEnvFiles', () => {
     console.log('hooks: >> checkEnvFiles');
     check(
       [
@@ -47,7 +47,7 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
 }
 
 const chmodFiles = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'chmodFiles', (app: Electron.App) => {
+  electronApp.registryHooksSync('beforeReady', 'chmodFiles', () => {
     console.log('hooks: >> chmodFiles');
     chmod(path.join(pathRuntime, 'bin'), 0o711);
   });
@@ -67,7 +67,7 @@ const checkPlatform = (electronApp: ElectronApp) => {
 };
 
 const injectSentryMonitor = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'injectSentryMonitor', (app: Electron.App) => {
+  electronApp.registryHooksSync('beforeReady', 'injectSentryMonitor', () => {
     if (isDev) {
       console.log('hooks: >> uncaughtException');
       // 未捕获的全局错误

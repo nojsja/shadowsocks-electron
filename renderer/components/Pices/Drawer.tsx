@@ -7,7 +7,7 @@ type AdaptiveDrawerProps = DrawerProps & {
   mode?: 'fixed' | 'absolute'
 };
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   drawerAbsolute: {
     width: 58,
     height: 'calc(100vh - 38px)',

@@ -95,7 +95,7 @@ const HomePage: React.FC = () => {
     }));
   }, []);
 
-  useBus('event:stream:disconnect-server', (event: EventAction) => {
+  useBus('event:stream:disconnect-server', () => {
     if (serverMode === 'cluster') {
       dispatch(stopClusterAction());
     } else {
@@ -104,11 +104,11 @@ const HomePage: React.FC = () => {
   }, [connectByMode, serverMode]);
 
   /* reconnect after get event from queue */
-  useBus('action:get:reconnect-server', (event: EventAction) => {
+  useBus('action:get:reconnect-server', () => {
     connectByMode();
   }, [connectByMode]);
 
-  useBus('action:get:reconnect-http', (event: EventAction) => {
+  useBus('action:get:reconnect-http', () => {
     selectedServer && dispatch(
       setHttpProxy({
         ...settings.httpProxy,

@@ -12,7 +12,6 @@ interface AutoThemeProps {
 }
 
 const AutoTheme: React.FC<AutoThemeProps> = ({
-  rules,
   onAutoThemeChange
 }) => {
   const { t } = useTranslation();

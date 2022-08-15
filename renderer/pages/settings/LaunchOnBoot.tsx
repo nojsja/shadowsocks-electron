@@ -10,9 +10,7 @@ interface LaunchOnBoolProps {
   rules?: Rule[] | undefined;
 }
 
-const LaunchOnBoot: React.FC<LaunchOnBoolProps> = ({
-  rules,
-}) => {
+const LaunchOnBoot: React.FC<LaunchOnBoolProps> = () => {
   const { t } = useTranslation();
 
   return (

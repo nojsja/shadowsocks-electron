@@ -3,7 +3,6 @@ import { CssBaseline } from "@material-ui/core";
 import {
   makeStyles,
   createStyles,
-  Theme,
   ThemeProvider
 } from "@material-ui/core/styles";
 import { SnackbarProvider } from 'notistack';
@@ -31,7 +30,7 @@ import { ServerMode } from "./types";
 
 export const persistStore = new ElectronStore();
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: "flex"

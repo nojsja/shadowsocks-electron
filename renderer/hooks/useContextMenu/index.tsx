@@ -17,7 +17,7 @@ export interface MenuContent {
   icon?: string | React.ElementType | JSX.Element,
 }
 
-const StyledMenuItem = withStyles((theme) => createStyles({
+const StyledMenuItem = withStyles(() => createStyles({
   root: {
     minHeight: 'auto',
   }

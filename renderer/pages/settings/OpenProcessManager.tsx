@@ -15,9 +15,7 @@ const handleOpenProcessManager = async () => {
   });
 };
 
-const OpenProcessManager: React.FC<OpenProcessManagerProps> = ({
-  rules,
-}) => {
+const OpenProcessManager: React.FC<OpenProcessManagerProps> = () => {
   const { t } = useTranslation();
 
   return (

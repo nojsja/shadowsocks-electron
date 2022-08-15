@@ -1,6 +1,6 @@
-import { createStyles, ListItemText, Theme, withStyles } from '@material-ui/core';
+import { createStyles, ListItemText, withStyles } from '@material-ui/core';
 
-const ListItemTextMultipleLine = withStyles((theme: Theme) =>
+const ListItemTextMultipleLine = withStyles(() =>
   createStyles({
     root: {
       margin: 0

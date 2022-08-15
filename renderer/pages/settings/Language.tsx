@@ -25,9 +25,7 @@ const onLangChange = (e: React.ChangeEvent<{ name?: string | undefined, value: u
   });
 }
 
-const Language: React.FC<LanguageProps> = ({
-  rules,
-}) => {
+const Language: React.FC<LanguageProps> = () => {
   const { t } = useTranslation();
 
   return (

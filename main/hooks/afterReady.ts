@@ -12,7 +12,7 @@ const tasks: Array<(electronApp: ElectronApp) => void> = [];
 const electronReServiceTest = (electronApp: ElectronApp) => {
   if (!electronIsDev) return;
 
-  electronApp.registryHooksAsyncWhenReady('electronReServiceTest', async (app: Electron.App) => {
+  electronApp.registryHooksAsyncWhenReady('electronReServiceTest', async () => {
     console.log('hooks: >> electronReServiceTest');
     try {
       const testService = new BrowserService('test', path.join(__dirname, '../test/test.service.js'), {
@@ -41,7 +41,7 @@ const electronReServiceTest = (electronApp: ElectronApp) => {
   });
 };
 
-const setAsDefaultProtocolClient = (electronApp: ElectronApp) => {
+const setAsDefaultProtocolClient = () => {
   const args = [];
 
   const addServerConfirm = (url: string) => {

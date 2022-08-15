@@ -343,7 +343,7 @@ export function parseUrl(text: string) {
 }
 
 export function parseSubscription(text: string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w.]+)?\/(.*)/;
     const httpReg = /^(http|https)/;
     if (httpReg.test(text)) {

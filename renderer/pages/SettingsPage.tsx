@@ -213,7 +213,7 @@ const SettingsPage: React.FC = () => {
     return Promise.all([checkPortSame(), checkPortValid(value)]);
   };
 
-  const onFieldChange = (fields: { [key: string]: any }, allFields: { [key: string]: any }) => {
+  const onFieldChange = (fields: { [key: string]: any }) => {
     const keys = Object.keys(fields);
     changedFields.current = Object.assign(changedFields.current || {}, fields);
     let httpProxy, loadBalance, acl;

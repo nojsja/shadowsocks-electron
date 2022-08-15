@@ -28,10 +28,20 @@ const StyledTextareaAutosize = React.memo(function StyledTextareaAutosize(props:
   }
 
   const TextArea = (props: TextAreaProps) => {
-    const { onTextChange, ...rest } = props;
     const classes = useStyles();
 
-    return <TextareaAutosize {...rest} className={classes.textarea} onChange={onInnerChange}/>
+    return (
+      <TextareaAutosize
+        {
+          ...{
+            ...props,
+            onTextChange: undefined
+          }
+        }
+        className={classes.textarea}
+        onChange={onInnerChange}
+      />
+    )
   };
 
   return <TextArea {...props}/>;

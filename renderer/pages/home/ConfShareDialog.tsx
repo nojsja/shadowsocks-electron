@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export const StyledCard = withStyles(
-  (theme) => (
+  () => (
     createStyles({
       root: {
         backgroundColor: 'transparent !important',

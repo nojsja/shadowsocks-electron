@@ -16,9 +16,7 @@ interface OpenLogDirProps {
   rules?: Rule[] | undefined;
 }
 
-const OpenLogDir: React.FC<OpenLogDirProps> = ({
-  rules,
-}) => {
+const OpenLogDir: React.FC<OpenLogDirProps> = () => {
   const { t } = useTranslation();
 
   return (

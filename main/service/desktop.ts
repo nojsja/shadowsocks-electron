@@ -35,7 +35,7 @@ export class DesktopService implements DesktopServiceType {
       urgency?: "normal" | "critical" | "low" | undefined
     }
   ): Promise<ServiceResult> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       new Notification({
         title:
           params.title
@@ -45,6 +45,11 @@ export class DesktopService implements DesktopServiceType {
         body: params.body,
         urgency: params.urgency ?? 'normal'
       }).show();
+
+      resolve({
+        code: 200,
+        result: {}
+      });
     });
   }
 
@@ -289,7 +294,7 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
-  async reloadMainWindow(params: any): Promise<ServiceResult> {
+  async reloadMainWindow(): Promise<ServiceResult> {
     if ((global as any).win) {
       console.log('reload');
       (global as any).win.reload();
@@ -301,7 +306,7 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
-  async openPluginsDir(params: any): Promise<ServiceResult> {
+  async openPluginsDir(): Promise<ServiceResult> {
     const dir = getPluginsPath();
     open(dir);
     return Promise.resolve({
@@ -313,7 +318,7 @@ export class DesktopService implements DesktopServiceType {
   async openLogDir(): Promise<ServiceResult> {
     return new Promise((resolve) => {
       openLogDir()
-        .then(rsp => {
+        .then(() => {
           resolve({
             code: 200,
             result: ''
@@ -347,7 +352,7 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
-  async hideApp(actions: contextAction[]): Promise<void> {
+  async hideApp(): Promise<void> {
     return new Promise(resolve => {
       // dialog.showMessageBoxSync({
       //   message: 'Close server and quit?',
@@ -358,7 +363,7 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
-  async minimumApp(actions: contextAction[]): Promise<void> {
+  async minimumApp(): Promise<void> {
     return new Promise(resolve => {
       ipcMainWindow?.hide();
       resolve();

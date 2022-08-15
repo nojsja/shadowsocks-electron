@@ -48,7 +48,7 @@ export default function shadowChecker(host: string, port: number): Promise<boole
           resolve(false);
         }, 1e3);
       });
-      pSocket.on('error', (error) => {
+      pSocket.on('error', () => {
         resolve(false);
       });
       pSocket.resume();

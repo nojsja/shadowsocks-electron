@@ -18,9 +18,7 @@ interface OpenPluginsDirProps {
   rules?: Rule[] | undefined;
 }
 
-const OpenPluginsDir: React.FC<OpenPluginsDirProps> = ({
-  rules,
-}) => {
+const OpenPluginsDir: React.FC<OpenPluginsDirProps> = () => {
   const { t } = useTranslation();
 
   return (

@@ -48,7 +48,7 @@ export class MainService implements MainServiceType {
             result: null
           });
         })
-        .catch(error => {
+        .catch((error) => {
           resolve({
             code: 500,
             result: error.toString()
@@ -267,7 +267,7 @@ export class MainService implements MainServiceType {
             result: rules
           });
         })
-        .catch((err: Error) => {
+        .catch(() => {
           resolve({
             code: 200,
             result: ''
@@ -294,20 +294,21 @@ export class MainService implements MainServiceType {
   }
 
   async setAclConfFile(params: { text: string }): Promise<ServiceResult> {
-    return new Promise(resolve => {
-      return new Promise((resolve, reject) => {
-        fs.writeFile(
-          getPathRuntime('acl.conf'),
-          params.text,
-          (err => {
-            if (err) reject(err);
-            resolve({
-              code: 200,
-              result: getPathRuntime('acl.conf')
-            });
-          })
-        );
-      });
-    })
+    return new Promise((resolve) => {
+      fs.writeFile(
+        getPathRuntime('acl.conf'),
+        params.text,
+        (err) => {
+          if (err) return resolve({
+            code: 500,
+            result: err.toString()
+          });
+          resolve({
+            code: 200,
+            result: getPathRuntime('acl.conf')
+          });
+        }
+      );
+    });
   }
 }

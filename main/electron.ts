@@ -49,7 +49,7 @@ electronApp.beforeReady(app);
 app.on("ready", async () => {
   let mainProfiler: any;
 
-  electronApp.afterReady(app, (err, app) => { if (err) console.log(err); });
+  electronApp.afterReady(app, (err) => { if (err) console.log(err); });
   electronApp.ready(app);
   isInspect && (mainProfiler = await startProfiler('main', 5222));
   ipcMainProcess = new IpcMainProcess(ipcMain);

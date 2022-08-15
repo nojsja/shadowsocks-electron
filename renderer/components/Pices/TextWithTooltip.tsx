@@ -3,7 +3,6 @@ import {
   createStyles,
   makeStyles,
   Tooltip,
-  Theme
 } from "@material-ui/core";
 import { HelpOutline } from '@material-ui/icons';
 import NotListedLocationIcon from '@material-ui/icons/NotListedLocation';
@@ -15,7 +14,7 @@ export type TextWithTooltipProps = {
   iconAlign?: 'top' | 'bottom' | 'center';
 };
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: "inline-flex",

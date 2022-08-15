@@ -33,7 +33,7 @@ export class ThemeService implements ThemeServiceType {
   }
 
   async listenForUpdate(): Promise<ServiceResult> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       nativeTheme.off('updated', this.updateTheme);
       nativeTheme.on('updated', this.updateTheme);
       resolve({
@@ -44,7 +44,7 @@ export class ThemeService implements ThemeServiceType {
   }
 
   async unlistenForUpdate(): Promise<ServiceResult> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       nativeTheme.off('updated', this.updateTheme);
       resolve({
         code: 200,
@@ -54,7 +54,7 @@ export class ThemeService implements ThemeServiceType {
   }
 
   async getSystemThemeInfo(): Promise<ServiceResult> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve({
         code: 200,
         result: {

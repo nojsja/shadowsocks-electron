@@ -194,14 +194,14 @@ export default class IpcMainWindow implements IpcMainWindowType {
   }
 
   createTray () {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (this.tray && !this.tray.isDestroyed()) return;
 
       this.tray = new Tray(this.trayIcon);
       this.setLocaleTrayMenu();
 
       if (platform !== "linux") {
-        this.tray.on("click", e => {
+        this.tray.on("click", () => {
           if (this.win?.isVisible()) {
             this.win.hide();
           } else {

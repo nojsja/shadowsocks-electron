@@ -8,11 +8,11 @@ export type jsonResult = {
   data: any,
 };
 
-export function get(url: string, headers?: { [key: string]: string }): Promise<jsonResult> {
+export function get(url: string): Promise<jsonResult> {
   const isHttps = /^(https:\/\/)/.test(url);
   const httpLib = isHttps ? https : http;
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const req = httpLib.get(url, (res: IncomingMessage) => {
       let data : any = '';
 
@@ -66,7 +66,7 @@ export function request(
     ...otherOptions
   };
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const req = httpLib
       .request(options, (res: IncomingMessage) => {
         let data = '';

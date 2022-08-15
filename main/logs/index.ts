@@ -17,7 +17,7 @@ export const cleanLogs = () => {
   console.log('clean logs');
 };
 
-const timestamp = format((info, opts) => {
+const timestamp = format((info) => {
   info.message = `${new Date().toLocaleString()} - ${info.message}`;
   return info;
 });

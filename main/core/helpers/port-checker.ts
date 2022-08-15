@@ -17,7 +17,7 @@ const socketConnect = (port: number, host: string, timeout = 1e3): Promise<Retur
     socket.on('timeout', () => {
       socket.destroy();
     });
-    socket.on('error', (err: { code: string }) => {
+    socket.on('error', () => {
       isInUse = false;
     });
 

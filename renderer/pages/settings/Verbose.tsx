@@ -10,9 +10,7 @@ interface VerboseProps {
   rules?: Rule[] | undefined;
 }
 
-const Verbose: React.FC<VerboseProps> = ({
-  rules,
-}) => {
+const Verbose: React.FC<VerboseProps> = () => {
   const { t } = useTranslation();
 
   return (
