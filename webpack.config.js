@@ -1,6 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
+const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const os = require('os');
+
+const cpuLength = os.cpus().length;
 
 module.exports = {
   devtool: 'cheap-module-source-map',
@@ -81,6 +85,11 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
+    new ESLintPlugin({
+      extensions: ['.ts', '.tsx'],
+      context: path.resolve(__dirname, './'),
+      threads: cpuLength > 4 ? 4 : cpuLength,
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './renderer/index.html',
