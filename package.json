@@ -27,6 +27,8 @@
     "publish:win": "electron-builder --win --p always",
     "publish:linux:win": "electron-builder --win --linux --p always",
     "publish:snap": "snapcraft login && snapcraft upload dist/shadowsocks-electron_1.1.2_amd64.snap",
+    "prebuild:renderer": "rimraf build/",
+    "prebuild:main": "rimraf public/",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "clean": "rm -rf dist/linux-*unpacked && rm -rf dist/__snap* && rm -rf dist/win-*unpacked",
     "lint": "eslint --ext .tsx,.ts .",

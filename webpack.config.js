@@ -1,15 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-const os = require('os');
-const HappyPack = require('happypack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 module.exports = {
   devtool: 'cheap-module-source-map',
-  entry: [
-    path.resolve(__dirname, './renderer/index.tsx'),
-  ],
+  entry: path.resolve(__dirname, './renderer/index.tsx'),
   mode: 'development',
   output: {
     filename: 'bundle.js',
@@ -28,21 +23,21 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: ['ts-loader'],
         exclude: /node_modules/,
+        use: ['ts-loader']
       },
       {
         test: /(\.js?|\.jsx?)$/,
         exclude: /(node_modules|bower_components)/,
-        use: ['happypack/loader?id=babel']
+        use: ["babel-loader?cacheDirectory"]
       },
       {
         test: /\.css$/,
-        use: ['happypack/loader?id=css'],
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.less$/,
-        use: ['happypack/loader?id=less'],
+        use: ['style-loader', 'css-loader', 'less-loader']
       },
       {
         test: /\.html$/,
@@ -83,21 +78,6 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
       },
-    }),
-    new HappyPack({
-      id: 'babel',
-      threadPool: happyThreadPool,
-      loaders: ["babel-loader?cacheDirectory"],
-    }),
-    new HappyPack({
-      id: 'css',
-      threadPool: happyThreadPool,
-      loaders: ['style-loader', 'css-loader'],
-    }),
-    new HappyPack({
-      id: 'less',
-      threadPool: happyThreadPool,
-      loaders: ['style-loader', 'css-loader', 'less-loader'],
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),

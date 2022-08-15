@@ -7,9 +7,7 @@ const HappyPack = require('happypack');
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 
 module.exports = {
-  entry: [
-    path.resolve(__dirname, './renderer/index.tsx'),
-  ],
+  entry: path.resolve(__dirname, './renderer/index.tsx'),
   // devtool: 'hidden-source-map',
   mode: 'production',
   output: {
