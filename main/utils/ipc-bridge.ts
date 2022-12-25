@@ -1,4 +1,4 @@
-import { IpcMain, ServiceHandler } from "../types/extention";
+import { IpcMain, ServiceHandler } from "../types";
 import { MessageChannel } from "electron-re";
 
 /**

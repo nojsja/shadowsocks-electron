@@ -5,7 +5,7 @@ import fs from 'fs';
 import {
   MainService as MainServiceType,
   Config, Settings, ServiceResult, ClipboardParseType, SSRConfig
-} from '../types/extention';
+} from '../types';
 import { manager, http, pac } from '../core';
 import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';

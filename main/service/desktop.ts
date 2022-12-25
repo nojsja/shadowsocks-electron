@@ -9,7 +9,7 @@ import {
   DesktopService as DesktopServiceType,
   RectPoint, ServiceResult,
   WindowInfo
-} from '../types/extention';
+} from '../types';
 import { openLogDir } from '../logs';
 import TransparentWindow from '../window/TransparentWindow';
 import {

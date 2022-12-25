@@ -7,7 +7,7 @@ import {
   MainService as MainServiceType,
   DesktopService as DesktopServiceType,
   ThemeService as ThemeServiceType,
-} from '../types/extention';
+} from '../types';
 import { ipcBridge } from '../utils/ipc-bridge';
 import { MainService } from './server';
 import { DesktopService } from './desktop';

@@ -1,7 +1,7 @@
 import { IpcMain, nativeTheme } from 'electron';
 
 import { electronStore, ipcMainWindow } from '../electron';
-import { ServiceResult, ThemeService as ThemeServiceType } from '../types/extention';
+import { ServiceResult, ThemeService as ThemeServiceType } from '../types';
 import { debounce } from '../utils/utils';
 
 const updateTheme = debounce<boolean[]>((shouldUseDarkColors) => {

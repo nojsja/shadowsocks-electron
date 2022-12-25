@@ -4,7 +4,7 @@ import path from "path";
 import os from "os";
 import windowStateKeeper from 'electron-window-state';
 
-import { IpcMainWindowType, TrayMenu } from '../types/extention';
+import { IpcMainWindowType, TrayMenu } from '../types';
 import { getBestWindowPosition } from "../core/helpers";
 import { electronStore, i18n } from "../electron";
 import { Manager } from "../core/manager";

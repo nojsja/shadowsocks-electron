@@ -5,7 +5,7 @@ import { exec, ExecOptions } from "child_process";
 import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
   MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig,
-} from '../types/extention';
+} from '../types';
 import { archMap, getPathRuntime, pathExecutable } from '../config';
 import { i18n } from '../electron';
 import { ProxyURI } from '../core/helpers/proxy-url';

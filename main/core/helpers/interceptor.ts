@@ -2,7 +2,7 @@ import { i18n } from "../../electron";
 import { warning } from "../../logs";
 import { Manager } from "../manager";
 import checkPortInUse from "./port-checker";
-import { Config, Settings } from "../../types/extention";
+import { Config, Settings } from "../../types";
 
 /**
   * Interceptor [拦截器函数]

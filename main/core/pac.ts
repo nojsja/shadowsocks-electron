@@ -9,7 +9,7 @@ import logger from "../logs";
 import { globalPacConf, pacDir, userPacConf } from "../config";
 import { i18n } from "../electron";
 import { request } from "../utils/http-request";
-import { Settings } from "../types/extention";
+import { Settings } from "../types";
 import { debounce } from "../utils/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

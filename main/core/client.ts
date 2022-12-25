@@ -4,7 +4,7 @@ import path from 'path';
 
 import checkPortInUse from "./helpers/port-checker";
 import { debounce, getPluginsPath, getSSLocalBinPath } from "../utils/utils";
-import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types/extention";
+import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types";
 import logger from "../logs";
 import { DefinedPlugin } from "./plugin";
 import { isWindows } from "../config";

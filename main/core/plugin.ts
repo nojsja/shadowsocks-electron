@@ -2,7 +2,7 @@ import { ChildProcess, spawn } from "child_process";
 import { EventEmitter } from "events";
 import { resolve } from 'path';
 
-import { DefinedPluginProps } from "../types/extention";
+import { DefinedPluginProps } from "../types";
 import logger from "../logs";
 import { debounce, getPluginsPath } from "../utils/utils";
 

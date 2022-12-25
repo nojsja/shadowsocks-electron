@@ -9,7 +9,7 @@ import { manager } from "./core";
 import logger from "./logs";
 import { setupAfterInstall } from "./install";
 import { IpcMainProcess } from './service/index';
-import { IpcMainProcess as IpcMainProcessType, IpcMainWindowType } from './types/extention';
+import { IpcMainProcess as IpcMainProcessType, IpcMainWindowType } from './types';
 import IpcMainWindow from './window/MainWindow';
 import { startProfiler } from "./performance/v8-inspect-profiler";
 import registryHooks from './hooks';

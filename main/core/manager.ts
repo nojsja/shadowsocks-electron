@@ -12,7 +12,7 @@ import pickPorts from "./helpers/port-picker";
 import { Proxy } from "./proxy";
 import randomPicker from "./helpers/random-picker";
 import { Target } from "./LoadBalancer/types";
-import { Config, Settings, ServiceResult } from "../types/extention";
+import { Config, Settings, ServiceResult } from "../types";
 import { ALGORITHM } from "./LoadBalancer";
 import {
   StartClientInterceptor, StartClusterInterceptor,
