@@ -1,4 +1,4 @@
-import { IpcMain, app, dialog, Notification, Menu, desktopCapturer } from 'electron';
+import { IpcMain, app, dialog, Notification, Menu, desktopCapturer, NotificationConstructorOptions } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import open from "open";
@@ -29,10 +29,8 @@ export class DesktopService implements DesktopServiceType {
   }
 
   async openNotification(
-    params: {
-      title?: string, action?: 'warning' | 'error' | 'info',
-      body: string, subtitle?: string,
-      urgency?: "normal" | "critical" | "low" | undefined
+    params: NotificationConstructorOptions & {
+      action?: 'warning' | 'error' | 'info',
     }
   ): Promise<ServiceResult> {
     return new Promise((resolve) => {

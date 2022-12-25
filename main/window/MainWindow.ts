@@ -1,10 +1,13 @@
-import { app, BrowserWindow, Tray, Menu, shell, nativeImage, nativeTheme } from "electron";
+import {
+  app, BrowserWindow, Tray, Menu, shell,
+  nativeImage, nativeTheme, MenuItem, MenuItemConstructorOptions,
+} from "electron";
 import isDev from "electron-is-dev";
 import path from "path";
 import os from "os";
 import windowStateKeeper from 'electron-window-state';
 
-import { IpcMainWindowType, TrayMenu } from '../types';
+import { IpcMainWindowType } from '../types';
 import { getBestWindowPosition } from "../core/helpers";
 import { electronStore, i18n } from "../electron";
 import { Manager } from "../core/manager";
@@ -27,7 +30,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
   icon: string;
   trayIcon: string;
   trayMenu: Menu | null;
-  menus: TrayMenu;
+  menus: (MenuItem| MenuItemConstructorOptions)[];
   url: string;
   quitting = false;
   resizable = true;

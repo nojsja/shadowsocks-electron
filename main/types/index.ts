@@ -28,29 +28,31 @@ export const encryptMethods = [
   "chacha20-ietf"
 ] as const;
 
-export type Encryption = typeof encryptMethods[number];
-export type CloseOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
-export type NotificationOptions = {
-  title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined
-};
-
-export type Mode = "PAC" | "Global" | "Manual";
-
 export interface Settings {
   selectedServer?: string | null;
   mode: Mode;
   verbose: boolean;
-  darkMode: boolean;
   localPort: number;
   pacPort: number;
   httpProxy: {
     enable: boolean,
     port: number
   },
+  loadBalance: {
+    enable: boolean,
+    count: number,
+    strategy: CONSTS
+  },
+  acl: {
+    enable: boolean,
+    url: string
+  }
   gfwListUrl: string;
   autoLaunch: boolean;
-  lang: string;
 }
+
+export type Encryption = typeof encryptMethods[number];
+export type Mode = "PAC" | "Global" | "Manual";
 
 export interface Status {
   connected: boolean;
@@ -61,8 +63,6 @@ export interface Status {
 export interface Service {
   ipc: IpcMain
 }
-
-export type TrayMenu = (MenuItem | MenuItemConstructorOptions)[];
 
 export interface TransparentWindowType {
   icon: string
@@ -75,24 +75,24 @@ export interface TransparentWindowType {
 }
 
 export interface IpcMainWindowType {
-  win: null | BrowserWindow
-  tray: null | Tray
-  icon: string
-  trayIcon: string
-  trayMenu: Menu | null
-  menus: TrayMenu
-  width: number
-  height: number
+  win: null | BrowserWindow;
+  tray: null | Tray;
+  icon: string;
+  trayIcon: string;
+  trayMenu: Menu | null;
+  menus: (MenuItem| MenuItemConstructorOptions)[];
+  width: number;
+  height: number;
   url: string;
   quitting: boolean;
   resizable: boolean;
-  create: () => Promise<any>
-  createTray: () => Promise<any>
-  setLocaleTrayMenu: () => void
-  show: () => void
-  quit: () => void
-  hide: () => void
-  beforeQuitting: () => void
+  create: () => Promise<any>;
+  createTray: () => Promise<any>;
+  setLocaleTrayMenu: () => void;
+  show: () => void;
+  quit: () => void;
+  hide: () => void;
+  beforeQuitting: () => void;
 }
 
 export type ServiceResult = {
@@ -244,29 +244,6 @@ export interface SSRConfig extends CommonConfig {
 export type ProxyStatus = "off" | "on";
 
 export type platform = "win32" | "darwin" | "linux";
-
-export interface Settings {
-  selectedServer?: string | null;
-  mode: Mode;
-  verbose: boolean;
-  localPort: number;
-  pacPort: number;
-  httpProxy: {
-    enable: boolean,
-    port: number
-  },
-  loadBalance: {
-    enable: boolean,
-    count: number,
-    strategy: CONSTS
-  },
-  acl: {
-    enable: boolean,
-    url: string
-  }
-  gfwListUrl: string;
-  autoLaunch: boolean;
-}
 
 export type RectPoint = { x: number, y: number, width: number, height: number };
 
