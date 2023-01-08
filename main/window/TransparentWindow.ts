@@ -1,5 +1,5 @@
-import { app, BrowserWindow, screen } from "electron";
-import path from "path";
+import { app, BrowserWindow, screen } from 'electron';
+import path from 'path';
 
 import { TransparentWindowType, RectPoint } from '../types';
 

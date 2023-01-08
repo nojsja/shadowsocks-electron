@@ -11,7 +11,7 @@ import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
 import { ProxyURI } from '../core/helpers/proxy-url';
-import checkPortInUse from "../core/helpers/port-checker";
+import checkPortInUse from '../core/helpers/port-checker';
 import logger, { warning } from '../logs';
 import { i18n } from '../electron';
 import { PacServer } from '../core/pac';

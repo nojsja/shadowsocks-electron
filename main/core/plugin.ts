@@ -1,13 +1,13 @@
-import { ChildProcess, spawn } from "child_process";
-import { EventEmitter } from "events";
+import { ChildProcess, spawn } from 'child_process';
+import { EventEmitter } from 'events';
 import { resolve } from 'path';
 
-import { DefinedPluginProps } from "../types";
-import logger from "../logs";
-import { debounce, getPluginsPath } from "../utils/utils";
+import { DefinedPluginProps } from '../types';
+import logger from '../logs';
+import { debounce, getPluginsPath } from '../utils/utils';
 
 export class DefinedPlugin extends EventEmitter {
-  status: "running" | "stopped" | "error" = "stopped";
+  status: 'running' | 'stopped' | 'error' = 'stopped';
   name: string
   child: ChildProcess | null;
   path: string;

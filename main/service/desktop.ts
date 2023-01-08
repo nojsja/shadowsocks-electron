@@ -1,7 +1,7 @@
 import { IpcMain, app, dialog, Notification, Menu, desktopCapturer, NotificationConstructorOptions } from 'electron';
 import fs from 'fs';
 import os from 'os';
-import open from "open";
+import open from 'open';
 import { ProcessManager } from 'electron-re';
 
 import {

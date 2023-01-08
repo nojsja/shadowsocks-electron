@@ -1,7 +1,7 @@
 import path from 'path';
 import fs, { PathLike } from 'fs';
 import os from 'os';
-import { exec, ExecOptions } from "child_process";
+import { exec, ExecOptions } from 'child_process';
 import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
   MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig,

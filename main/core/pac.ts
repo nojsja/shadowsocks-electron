@@ -1,16 +1,16 @@
-import http from "http";
-import fs from "fs";
-import path from "path";
-import fetch from "node-fetch";
-import fsExtra from "fs-extra";
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
+import fsExtra from 'fs-extra';
 import URL from 'url';
 
-import logger from "../logs";
-import { globalPacConf, pacDir, userPacConf } from "../config";
-import { i18n } from "../electron";
-import { request } from "../utils/http-request";
-import { Settings } from "../types";
-import { debounce } from "../utils/utils";
+import logger from '../logs';
+import { globalPacConf, pacDir, userPacConf } from '../config';
+import { i18n } from '../electron';
+import { request } from '../utils/http-request';
+import { Settings } from '../types';
+import { debounce } from '../utils/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');

@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* weights random algorithm */
 export default function WEIGHTS_RANDOM(tasks: Target[], weightTotal: number) {

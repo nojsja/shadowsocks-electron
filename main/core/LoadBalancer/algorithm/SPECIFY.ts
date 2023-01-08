@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* specify by id algorithm */
 export default function SPECIFY(tasks: Target[], id: any) {

@@ -1,21 +1,21 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import isDev from "electron-is-dev";
+import { app, BrowserWindow, ipcMain } from 'electron';
+import isDev from 'electron-is-dev';
 import { autoUpdater } from'electron-updater';
 import { I18n } from 'i18n';
 import { MessageChannel, ProcessManager } from 'electron-re';
+import ElectronStore from 'electron-store';
 
 import App from './app';
 import { manager } from "./core";
-import logger from "./logs";
-import { setupAfterInstall } from "./install";
+import logger from './logs';
+import { setupAfterInstall } from './install';
 import { IpcMainProcess } from './service/index';
 import { IpcMainProcess as IpcMainProcessType, IpcMainWindowType } from './types';
 import IpcMainWindow from './window/MainWindow';
-import { startProfiler } from "./performance/v8-inspect-profiler";
+import { startProfiler } from './performance/v8-inspect-profiler';
 import registryHooks from './hooks';
 
 import { packageName, platform, isInspect, appDataPath, pathRuntime, pathExecutable } from './config';
-import ElectronStore from "electron-store";
 
 export let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;

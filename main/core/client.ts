@@ -1,13 +1,15 @@
-import { EventEmitter } from "events";
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { EventEmitter } from 'events';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import path from 'path';
 
-import checkPortInUse from "./helpers/port-checker";
-import { debounce, getPluginsPath, getSSLocalBinPath } from "../utils/utils";
-import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types";
-import logger from "../logs";
-import { DefinedPlugin } from "./plugin";
-import { isWindows } from "../config";
+import checkPortInUse from './helpers/port-checker';
+import { debounce, getPluginsPath, getSSLocalBinPath } from '../utils/utils';
+import { Settings, SSRConfig, SSConfig, ServiceResult } from '../types';
+import logger from '../logs';
+import { DefinedPlugin } from './plugin';
+import { isWindows } from '../config';
+
+export type SupportedClient = SSRClient | SSClient;
 
 export class Client extends EventEmitter {
   bin: string

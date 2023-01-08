@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { ElectronApp } from "../app";
+import { ElectronApp } from '../app';
 import { i18n } from '../electron';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];

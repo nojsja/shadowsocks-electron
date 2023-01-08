@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* weights minimum connections algorithm */
 export default function WEIGHTS_MINIMUM_CONNECTION(tasks: Target[], weightTotal: number, connectionsMap: { [key: string]: number }, context: { weightIndex: number }) {

@@ -1,6 +1,6 @@
 import CONSTS from './consts';
 import algorithm from './algorithm';
-import { Target } from "./types";
+import { Target } from './types';
 
 /* Scheduler for LoadBalancer  */
 export default class Scheduler {

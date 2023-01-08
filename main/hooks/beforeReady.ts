@@ -1,16 +1,16 @@
 import path from 'path';
 import os from 'os';
-import * as Sentry from "@sentry/electron";
-import isDev from "electron-is-dev";
+import * as Sentry from '@sentry/electron';
+import isDev from 'electron-is-dev';
 
 import logger from '../logs';
-import { ElectronApp } from "../app";
-import { appDataPath, platform, pathRuntime, pathExecutable } from "../config";
+import { ElectronApp } from '../app';
+import { appDataPath, platform, pathRuntime, pathExecutable } from '../config';
 import {
   checkEnvFiles as check, copyDir, chmod,
   getPluginsPath, getExecutableFilePath,
   copyFileToPluginDir,
-} from "../utils/utils";
+} from '../utils/utils';
 import { pacDir, binDir } from '../config';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];

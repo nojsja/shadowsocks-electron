@@ -1,5 +1,5 @@
-import { IpcMain, ServiceHandler } from "../types";
-import { MessageChannel } from "electron-re";
+import { IpcMain, ServiceHandler } from '../types';
+import { MessageChannel } from 'electron-re';
 
 /**
   * ipcBridge [ipc通信连接桥]

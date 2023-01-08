@@ -1,17 +1,17 @@
 import {
   app, BrowserWindow, Tray, Menu, shell,
   nativeImage, nativeTheme, MenuItem, MenuItemConstructorOptions,
-} from "electron";
-import isDev from "electron-is-dev";
-import path from "path";
-import os from "os";
+} from 'electron';
+import isDev from 'electron-is-dev';
+import path from 'path';
+import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 
 import { IpcMainWindowType } from '../types';
-import { getBestWindowPosition } from "../core/helpers";
-import { electronStore, i18n } from "../electron";
-import { Manager } from "../core/manager";
-import { getPerfectDevicePixelRatioImage } from "../utils/utils";
+import { getBestWindowPosition } from '../core/helpers';
+import { electronStore, i18n } from '../electron';
+import { Manager } from '../core/manager';
+import { getPerfectDevicePixelRatioImage } from '../utils/utils';
 
 const platform = os.platform();
 

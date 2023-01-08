@@ -1,6 +1,6 @@
-import Scheduler from "./scheduler";
+import Scheduler from './scheduler';
 import CONSTS from './consts';
-import { Target } from "./types";
+import { Target } from './types';
 
 export { CONSTS as ALGORITHM } from './consts';
 

@@ -3,7 +3,7 @@ import path from 'path';
 import { BrowserService, ChildProcessPool, MessageChannel, LoadBalancer } from 'electron-re';
 import electronIsDev from 'electron-is-dev';
 
-import { ElectronApp } from "../app";
+import { ElectronApp } from '../app';
 import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '../config';
 import { i18n } from '../electron';
 

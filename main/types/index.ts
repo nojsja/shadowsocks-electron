@@ -3,7 +3,7 @@ import {
   Tray, MenuItem, Menu,
 } from 'electron';
 
-import CONSTS from "../core/LoadBalancer/consts";
+import CONSTS from '../core/LoadBalancer/consts';
 
 export const encryptMethods = [
   "none",
