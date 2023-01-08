@@ -97,7 +97,7 @@ app.on("will-quit", async () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    ipcMainWindow.create();
+    ipcMainWindow?.create();
   }
 });
 

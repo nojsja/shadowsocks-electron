@@ -192,8 +192,12 @@ export default class IpcMainWindow implements IpcMainWindowType {
       }
     ];
 
-    this.trayMenu = Menu.buildFromTemplate(this.menus);
-    this.tray?.setContextMenu(this.trayMenu);
+    try {
+      this.trayMenu = Menu.buildFromTemplate(this.menus);
+      this.tray?.setContextMenu(this.trayMenu);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   createTray () {

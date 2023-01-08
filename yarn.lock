@@ -6226,10 +6226,10 @@ electron-publish@23.4.0:
     lazy-val "^1.0.5"
     mime "^2.5.2"
 
-electron-re@1.2.4:
-  version "1.2.4"
-  resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.2.4.tgz#012b93abbeb5cf83b01385c3de12c2572c13c0f9"
-  integrity sha512-5cJXP5Bq0d/PccAH6biXNRSxpKL5bUTAkzIMpgzt810QU6Mw+PdPu0KR8sThekMB2nfUvrfNGeNYiYLFYn81jw==
+electron-re@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.npmmirror.com/electron-re/-/electron-re-1.2.5.tgz#a1b23f7f3c2bb5a07e47cc6045a21d9f3d586e5a"
+  integrity sha512-aLLDBbg3YnHY3IdiRVKqW/dCEmqKfegG4mwwnEgqU8ciSJ11yL8x5ErunQZIJEHBJsCGWbNEGHbaooyeYQ0qXg==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@electron/remote" "^2.0.1"
@@ -16052,10 +16052,8 @@ watchpack@^1.7.4:
   resolved "https://registry.npmmirror.com/watchpack/-/watchpack-1.7.5.tgz#1267e6c55e0b9b5be44c2023aed5437a2c26c453"
   integrity sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==
   dependencies:
-    chokidar "^3.4.1"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
-    watchpack-chokidar2 "^2.0.1"
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
