@@ -149,6 +149,14 @@ export default class IpcMainWindow implements IpcMainWindowType {
         this.serverMode = mode;
         this.serverStatus = status;
         this.setLocaleTrayMenu();
+        try {
+          this.win?.webContents?.send("connected", {
+            status,
+            mode: mode
+          });
+        } catch (error) {
+          console.error(error);
+        }
       });
 
       nativeTheme.on('updated', (event: { sender: { shouldUseDarkColors: boolean  } }) => {

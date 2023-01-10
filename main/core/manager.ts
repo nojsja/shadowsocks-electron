@@ -40,12 +40,6 @@ export class Manager {
       status: connected,
       mode: Manager.mode
     });
-    if ((global as any)?.win?.webContents) {
-      (global as any).win.webContents.send("connected", {
-        status: connected,
-        mode: Manager.mode
-      });
-    }
   }
 
   static syncTraffic() {
