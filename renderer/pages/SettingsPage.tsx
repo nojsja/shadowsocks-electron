@@ -46,6 +46,7 @@ import OpenProcessManager from "./settings/OpenProcessManager";
 import LoadBalance from "./settings/LoadBalance";
 import UserPacEditor from "./settings/UserPacEditor";
 import OpenPluginsDir from "./settings/OpenPluginsDir";
+import { debounce } from '../utils';
 
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
@@ -117,6 +118,7 @@ const SettingsPage: React.FC = () => {
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
+  const debouncedEnqueueSnackbar = debounce(enqueueSnackbar, 800);
 
   const touchField = (field: string, status: boolean) => {
     changedFields.current[field] = status;
@@ -154,8 +156,9 @@ const SettingsPage: React.FC = () => {
   const checkPortSame = () => {
     const localPort = +form.getFieldValue('localPort');
     const pacPort = +form.getFieldValue('pacPort');
-    const httpPort = +form.getFieldValue('httpProxyPort');
+    const httpPort = +form.getFieldValue(['httpProxy', 'port']);
     const num = localPort ^ pacPort ^ httpPort;
+
     if (num === localPort || num === pacPort || num === httpPort) {
       return Promise.reject(t("the_same_port_is_not_allowed"));
     }
@@ -254,7 +257,10 @@ const SettingsPage: React.FC = () => {
         }
         dispatch(setSetting<any>(key, value));
       }).catch((reason: { errorFields: { errors: string[] }[] }) => {
-        enqueueSnackbar(reason?.errorFields?.map(item => item.errors.join()).join(), { variant: 'error' });
+        const error = reason?.errorFields?.map(item => item.errors.join()).join();
+        if (error) {
+          debouncedEnqueueSnackbar(error, { variant: 'error' });
+        }
       });
     });
   }

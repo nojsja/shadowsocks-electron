@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Field } from "rc-field-form";
 import { useTranslation } from 'react-i18next';
 import { FormInstance, Rule } from 'rc-field-form/es/interface';
@@ -16,6 +16,9 @@ import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import { useStylesOfSettings as useStyles } from "../styles";
 import If from '../../components/HOC/IF';
 
+const MAX_PORT = 65535;
+const MIN_PORT = 1024;
+
 interface HttpProxyProps {
   rules?: Rule[] | undefined;
   form: FormInstance<any>
@@ -28,6 +31,17 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
   const { t } = useTranslation();
   const styles = useStyles();
   const enable = Form.useWatch(['httpProxy', 'enable'], form);
+  const port = Form.useWatch(['httpProxy', 'port'], form);
+
+  useEffect(() => {
+    if (port <= 0) {
+      form.setFieldValue(['httpProxy', 'port'], MIN_PORT);
+    }
+    if (port > MAX_PORT) {
+      form.setFieldValue(['httpProxy', 'port'], MAX_PORT);
+    }
+  }, [port]);
+
 
   return (
     <>
@@ -62,7 +76,6 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
                 name={["httpProxy", "port"]}
                 rules={rules}
                 normalize={(value: string) => +(value.trim())}
-                validateTrigger={false}
               >
                 <TextField
                   className={`${styles.textField} ${styles.indentInput}`}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Form, { Field } from "rc-field-form";
 import { useTranslation } from 'react-i18next';
 import { FormInstance, Rule } from 'rc-field-form/es/interface';
@@ -18,6 +18,9 @@ import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import { useStylesOfSettings as useStyles } from "../styles";
 import { ALGORITHM } from '../../types';
 
+const LOADBALANCE_MAX_NODES = 10;
+const LOADBALANCE_MIN_NODES = 1;
+
 interface LoadBalanceProps {
   rules?: Rule[] | undefined;
   form: FormInstance<any>
@@ -30,6 +33,16 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
   const { t } = useTranslation();
   const styles = useStyles();
   const enable = Form.useWatch(['loadBalance', 'enable'], form);
+  const count = Form.useWatch(['loadBalance', 'count'], form);
+
+  useEffect(() => {
+    if (count < LOADBALANCE_MIN_NODES) {
+      form.setFieldValue(['loadBalance', 'count'], LOADBALANCE_MIN_NODES);
+    }
+    if (count > LOADBALANCE_MAX_NODES) {
+      form.setFieldValue(['loadBalance', 'count'], LOADBALANCE_MAX_NODES);
+    }
+  }, [count]);
 
   return (
     <>

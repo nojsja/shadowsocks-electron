@@ -21,7 +21,6 @@ const LocalPort: React.FC<LocalPortProps> = ({
       name="localPort"
       rules={rules}
       normalize={(value: string) => +(value.trim())}
-      validateTrigger={false}
     >
       <TextField
         className={styles.textField}
