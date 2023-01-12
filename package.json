@@ -36,7 +36,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "@sentry/electron": "^3.0.5",
+    "@sentry/electron": "^4.2.0",
     "@types/i18n": "^0.13.2",
     "chalk": "4.x",
     "clsx": "^1.1.1",
