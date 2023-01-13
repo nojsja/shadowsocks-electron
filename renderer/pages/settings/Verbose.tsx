@@ -1,16 +1,17 @@
 import React from 'react';
 import { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
-import { Field } from "rc-field-form";
+import { Controller, UseFormReturn } from 'react-hook-form';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
+import { Settings } from '../../types';
 
 interface VerboseProps {
-  rules?: Rule[] | undefined;
+  // rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
-const Verbose: React.FC<VerboseProps> = () => {
+const Verbose: React.FC<VerboseProps> = ({ form }) => {
   const { t } = useTranslation();
 
   return (
@@ -20,11 +21,18 @@ const Verbose: React.FC<VerboseProps> = () => {
         secondary={t('verbose_output')}
       />
       <ListItemSecondaryAction>
-        <Field name="verbose" valuePropName="checked">
-          <AdaptiveSwitch
-            edge="end"
-          />
-        </Field>
+        {/* <Field name="verbose" valuePropName="checked"> */}
+        <Controller
+          control={form.control}
+          name="verbose"
+          render={({ field }) => (
+            <AdaptiveSwitch
+              edge="end"
+              checked={field.value}
+            />
+          )}
+        />
+        {/* </Field> */}
       </ListItemSecondaryAction>
     </ListItem>
   )

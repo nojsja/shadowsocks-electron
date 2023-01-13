@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
+import { useForm } from 'react-hook-form';
 import {
   Container,
   List,
@@ -15,10 +16,10 @@ import { SnackbarMessage } from 'notistack';
 import { useTypedDispatch } from '../redux/actions';
 import { useTypedSelector } from '../redux/reducers';
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { getStartupOnBoot, setStartupOnBoot, setSetting } from '../redux/actions/settings';
+import { getStartupOnBoot } from '../redux/actions/settings';
 import { setStatus } from '../redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
-import { ALGORITHM, Notification } from '../types';
+import { ALGORITHM, Notification, Settings } from '../types';
 
 import { useStylesOfSettings as useStyles } from './styles';
 import * as globalAction from '../hooks/useGlobalAction';
@@ -46,7 +47,6 @@ import LoadBalance from './settings/LoadBalance';
 import UserPacEditor from './settings/UserPacEditor';
 import OpenPluginsDir from './settings/OpenPluginsDir';
 import { debounce } from '../utils';
-import { useForm } from 'react-hook-form';
 
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
@@ -65,7 +65,7 @@ const SettingsPage: React.FC = () => {
   // const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
   const changedFields = useRef<{ [key: string]: any }>({});
-  const form = useForm({
+  const form = useForm<Settings>({
     defaultValues: {
       localPort: settings.localPort,
       pacPort: settings.pacPort,
@@ -142,7 +142,7 @@ const SettingsPage: React.FC = () => {
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
-  const debouncedEnqueueSnackbar = debounce(enqueueSnackbar, 800);
+  // const debouncedEnqueueSnackbar = debounce(enqueueSnackbar, 800);
 
   const touchField = (field: string, status: boolean) => {
     changedFields.current[field] = status;
@@ -239,125 +239,129 @@ const SettingsPage: React.FC = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const onFieldChange = (fields: { [key: string]: any }) => {
-    const keys = Object.keys(fields);
-    changedFields.current = Object.assign(changedFields.current || {}, fields);
-    let httpProxy, loadBalance, acl;
+  // const onFieldChange = (fields: { [key: string]: any }) => {
+  //   const keys = Object.keys(fields);
+  //   changedFields.current = Object.assign(changedFields.current || {}, fields);
+  //   let httpProxy, loadBalance, acl;
 
-    keys.forEach((key) => {
-      const value = fields[key];
-      form.trigger(key).then(() => {
-        switch (key) {
-          case 'httpProxy':
-            httpProxy = form.getValues('httpProxy');
-            dispatch(setSetting<'httpProxy'>(key, httpProxy))
-            return;
-          case 'loadBalance':
-            loadBalance = form.getValues('loadBalance');
-            dispatch(setSetting<'loadBalance'>(key, {
-              strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
-              count: loadBalance?.count ?? 3,
-              enable: loadBalance?.enable ?? false,
-            }));
-            return;
-          case 'acl':
-            acl = form.getValues('acl');
-            dispatch(setSetting<'acl'>('acl', acl));
-            return;
-          case 'autoLaunch':
-            dispatch<any>(setStartupOnBoot(value));
-            return;
-          case 'darkMode':
-            dispatchEvent({
-              type: 'theme:update',
-              payload: {
-                shouldUseDarkColors: value
-              }
-            });
-            break;
-          default:
-            break;
-        }
-        dispatch(setSetting<any>(key, value));
-      }).catch((reason: { errorFields: { errors: string[] }[] }) => {
-        const error = reason?.errorFields?.map(item => item.errors.join()).join();
-        if (error) {
-          debouncedEnqueueSnackbar(error, { variant: 'error' });
-        }
-      });
-    });
-  };
+  //   keys.forEach((key) => {
+  //     const value = fields[key];
+  //     form.trigger(key).then(() => {
+  //       switch (key) {
+  //         case 'httpProxy':
+  //           httpProxy = form.getValues('httpProxy');
+  //           dispatch(setSetting<'httpProxy'>(key, httpProxy))
+  //           return;
+  //         case 'loadBalance':
+  //           loadBalance = form.getValues('loadBalance');
+  //           dispatch(setSetting<'loadBalance'>(key, {
+  //             strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
+  //             count: loadBalance?.count ?? 3,
+  //             enable: loadBalance?.enable ?? false,
+  //           }));
+  //           return;
+  //         case 'acl':
+  //           acl = form.getValues('acl');
+  //           dispatch(setSetting<'acl'>('acl', acl));
+  //           return;
+  //         case 'autoLaunch':
+  //           dispatch<any>(setStartupOnBoot(value));
+  //           return;
+  //         case 'darkMode':
+  //           dispatchEvent({
+  //             type: 'theme:update',
+  //             payload: {
+  //               shouldUseDarkColors: value
+  //             }
+  //           });
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //       dispatch(setSetting<any>(key, value));
+  //     }).catch((reason: { errorFields: { errors: string[] }[] }) => {
+  //       const error = reason?.errorFields?.map(item => item.errors.join()).join();
+  //       if (error) {
+  //         debouncedEnqueueSnackbar(error, { variant: 'error' });
+  //       }
+  //     });
+  //   });
+  // };
 
   return (
     <Container className={styles.container}>
-
-      <LocalPort
-        rules={
-          [
-            { required: true, message: t('invalid_value') },
-            { validator: checkPortField },
-          ]
-        }
-      />
-      <PacPort
-        rules={[
-          { required: true, message: t('invalid_value') },
-          { validator: checkPortField }
-        ]}
-      />
-      <GfwListUrl
-        reGeneratePacFile={reGeneratePacFile}
-        gfwListUrl={settings.gfwListUrl}
-      />
-      <List className={styles.list}>
-        <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
-        <HttpProxy
+      <form>
+        <LocalPort
           form={form}
-          rules={
-            [
-              { required: true, message: t('invalid_value') },
-              { validator: checkPortField }
-            ]
-          }
+          // rules={
+          //   [
+          //     { required: true, message: t('invalid_value') },
+          //     { validator: checkPortField },
+          //   ]
+          // }
         />
-        <Acl
-          setAclUrl={setAclUrl}
-          acl={settings.acl}
-          touchField={touchField}
-        />
-        <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
-
-        <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
-
-        <LaunchOnBoot />
-        <FixedMenu />
-        <AutoHide />
-        <AutoTheme onAutoThemeChange={onAutoThemeChange} />
-        <DarkMode form={form} />
-        <Language />
-        <Backup />
-        <Restore form={form} />
-        <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
-
-        <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
-
-        <LoadBalance
+        <PacPort
           form={form}
-          rules={
-            [
-              { required: true, message: t('invalid_value') },
-              { validator: checkLbCountValid },
-            ]
-          }
+          // rules={[
+          //   { required: true, message: t('invalid_value') },
+          //   { validator: checkPortField }
+          // ]}
         />
+        <GfwListUrl
+          form={form}
+          reGeneratePacFile={reGeneratePacFile}
+          gfwListUrl={settings.gfwListUrl}
+        />
+        <List className={styles.list}>
+          <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
+          <HttpProxy
+            form={form}
+            // rules={
+            //   [
+            //     { required: true, message: t('invalid_value') },
+            //     { validator: checkPortField }
+            //   ]
+            // }
+          />
+          <Acl
+            setAclUrl={setAclUrl}
+            touchField={touchField}
+            form={form}
+          />
+          <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
 
-        <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
+          <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
 
-        <Verbose />
-        <OpenLogDir />
-        <OpenPluginsDir />
-        <OpenProcessManager />
-      </List>
+          <LaunchOnBoot form={form} />
+          <FixedMenu form={form} />
+          <AutoHide form={form} />
+          <AutoTheme form={form} onAutoThemeChange={onAutoThemeChange} />
+          <DarkMode form={form} />
+          <Language form={form} />
+          <Backup />
+          <Restore form={form} />
+          <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
+
+          <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
+
+          <LoadBalance
+            form={form}
+            // rules={
+            //   [
+            //     { required: true, message: t('invalid_value') },
+            //     { validator: checkLbCountValid },
+            //   ]
+            // }
+          />
+
+          <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
+
+          <Verbose form={form} />
+          <OpenLogDir />
+          <OpenPluginsDir />
+          <OpenProcessManager />
+        </List>
+      </form>
     </Container>
   );
 };

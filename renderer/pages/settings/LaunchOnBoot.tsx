@@ -1,16 +1,16 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
+import { Settings } from '../../types';
 
 interface LaunchOnBoolProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
-const LaunchOnBoot: React.FC<LaunchOnBoolProps> = () => {
+const LaunchOnBoot: React.FC<LaunchOnBoolProps> = ({ form }) => {
   const { t } = useTranslation();
 
   return (
@@ -20,11 +20,16 @@ const LaunchOnBoot: React.FC<LaunchOnBoolProps> = () => {
         secondary={t('not_applicable_to_linux_snap_application')}
       />
       <ListItemSecondaryAction>
-        <Field name="autoLaunch" valuePropName="checked">
-          <AdaptiveSwitch
-            edge="end"
-          />
-        </Field>
+        <Controller
+          control={form.control}
+          name="autoLaunch"
+          render={({ field }) => (
+            <AdaptiveSwitch
+              checked={field.value}
+              edge="end"
+            />
+          )}
+        />
       </ListItemSecondaryAction>
     </ListItem>
   )

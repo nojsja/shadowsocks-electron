@@ -1,25 +1,25 @@
 import React, { useCallback } from 'react';
-import { Field } from "rc-field-form";
 import { TextField } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 import { Tooltip } from "@material-ui/core";
 import { RestorePage, NoteAdd } from '@material-ui/icons';
 
 import { useStylesOfSettings as useStyles } from "../styles";
 
 import { TextWithTooltip } from "../../components/Pices/TextWithTooltip";
-
+import { UseFormReturn } from 'react-hook-form';
+import { Settings } from '../../types';
 
 interface GfwListUrlProps {
-  rules?: Rule[] | undefined;
   reGeneratePacFile: (params: { url?: string, text?: string }) => void;
   gfwListUrl: string;
+  form: UseFormReturn<Settings>;
 }
 
 const GfwListUrl: React.FC<GfwListUrlProps> = ({
   reGeneratePacFile,
-  gfwListUrl
+  gfwListUrl,
+  form,
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
@@ -53,34 +53,32 @@ const GfwListUrl: React.FC<GfwListUrlProps> = ({
 
   return (
     <>
-      <Field
-        name="gfwListUrl"
-        validateTrigger={false}
-      >
-        <TextField
-          className={styles.textField}
-          required
-          fullWidth
-          type="url"
-          size="small"
-          label={
-            <TextWithTooltip
-              text={t('gfwlist_url')}
-              icon={
-                <span>
-                  <Tooltip arrow placement="top" title={t<string>('recover_pac_file_with_link')}>
-                    <RestorePage className={`${styles.cursorPointer} ${styles.colorGrey}`} onClick={reGeneratePacFileWithUrl} />
-                  </Tooltip>
-                  <Tooltip arrow placement="top" title={t<string>('recover_pac_file_with_file')}>
-                    <NoteAdd className={`${styles.cursorPointer} ${styles.colorGrey}`} onClick={reGeneratePacFileWithFile} />
-                  </Tooltip>
-                </span>
-              }
-            />
-          }
-          placeholder={t('gfwlist_url_tips')}
-        />
-      </Field>
+      <TextField
+        className={styles.textField}
+        {
+        ...form.register('gfwListUrl')
+        }
+        required
+        fullWidth
+        type="url"
+        size="small"
+        label={
+          <TextWithTooltip
+            text={t('gfwlist_url')}
+            icon={
+              <span>
+                <Tooltip arrow placement="top" title={t<string>('recover_pac_file_with_link')}>
+                  <RestorePage className={`${styles.cursorPointer} ${styles.colorGrey}`} onClick={reGeneratePacFileWithUrl} />
+                </Tooltip>
+                <Tooltip arrow placement="top" title={t<string>('recover_pac_file_with_file')}>
+                  <NoteAdd className={`${styles.cursorPointer} ${styles.colorGrey}`} onClick={reGeneratePacFileWithFile} />
+                </Tooltip>
+              </span>
+            }
+          />
+        }
+        placeholder={t('gfwlist_url_tips')}
+      />
       <input onChange={onGFWListFileChange} ref={inputFileRef} type={'file'} multiple={false} style={{ display: 'none' }}></input>
     </>
   )

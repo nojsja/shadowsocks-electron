@@ -2,14 +2,15 @@ import React from 'react';
 import { MessageChannel } from 'electron-re';
 import { ListItem, ListItemText, ListItemSecondaryAction, MenuItem, Select } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 
 import { getDefaultLang } from "../../utils";
 import { persistStore } from "../../App";
 import { getFirstLanguage } from "../../i18n";
+import { Settings } from '../../types';
+import { UseFormReturn } from 'react-hook-form';
 
 interface LanguageProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
 const onLangChange = (e: React.ChangeEvent<{ name?: string | undefined, value: unknown; }>) => {

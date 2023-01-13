@@ -1,16 +1,16 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
+import { Settings } from '../../types';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
 interface FixedMenuProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
-const FixedMenu: React.FC<FixedMenuProps> = () => {
+const FixedMenu: React.FC<FixedMenuProps> = ({ form }) => {
   const { t } = useTranslation();
 
   return (
@@ -19,11 +19,16 @@ const FixedMenu: React.FC<FixedMenuProps> = () => {
         primary={t('fixed_menu')}
       />
       <ListItemSecondaryAction>
-        <Field name="fixedMenu" valuePropName="checked">
-          <AdaptiveSwitch
-            edge="end"
-          />
-        </Field>
+        <Controller
+          control={form.control}
+          name="fixedMenu"
+          render={({ field }) => (
+            <AdaptiveSwitch
+              edge="end"
+              checked={field.value}
+            />
+          )}
+        />
       </ListItemSecondaryAction>
     </ListItem>
   )

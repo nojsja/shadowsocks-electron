@@ -27,6 +27,7 @@ import RouterComp from './Router';
 import useTheme from "./hooks/useTheme";
 import useGlobalAction from "./hooks/useGlobalAction";
 import { ServerMode } from "./types";
+import { FormProvider, useForm } from 'react-hook-form';
 
 export const persistStore = new ElectronStore();
 
@@ -69,6 +70,7 @@ const App: React.FC = () => {
   const styles = useStyles();
   const darkMode = persistStore.get('darkMode') === 'true';
   const [theme] = useTheme(darkMode ? 'dark' : 'light');
+  const methods = useForm();
 
   useGlobalAction({
     'reconnect-server': { type: 'reconnect-server', payload: '' },
@@ -91,22 +93,24 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <SnackbarProvider
-            maxSnack={3}
-            anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
-            autoHideDuration={2e3}
-          >
-            <HashRouter>
-              <div className={styles.root}>
-                <CssBaseline />
-                <AppNav />
-                <main className={styles.content}>
-                  <div className={styles.toolbar} />
-                  <RouterComp />
-                </main>
-              </div>
-            </HashRouter>
-          </SnackbarProvider>
+          <FormProvider {...methods}>
+            <SnackbarProvider
+              maxSnack={3}
+              anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
+              autoHideDuration={2e3}
+            >
+              <HashRouter>
+                <div className={styles.root}>
+                  <CssBaseline />
+                  <AppNav />
+                  <main className={styles.content}>
+                    <div className={styles.toolbar} />
+                    <RouterComp />
+                  </main>
+                </div>
+              </HashRouter>
+            </SnackbarProvider>
+          </FormProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

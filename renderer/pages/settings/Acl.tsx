@@ -1,36 +1,34 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 import path from 'path';
 import {
   ListItem,
   ListItemSecondaryAction,
   Tooltip,
   Button
-} from "@material-ui/core";
+} from '@material-ui/core';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
-import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
-import If from "../../components/HOC/IF";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
+import ListItemTextMultipleLine from '../../components/Pices/ListItemTextMultipleLine';
+import If from '../../components/HOC/IF';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
-import { ACL } from '../../types';
+import { Settings } from '../../types';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
 interface AclProps {
-  rules?: Rule[] | undefined;
   setAclUrl: () => void;
   touchField: (field: string, status: boolean) => void;
-  acl: ACL;
+  form: UseFormReturn<Settings>;
 }
 
 const Acl: React.FC<AclProps> = ({
   setAclUrl,
-  acl,
   touchField,
+  form,
 }) => {
   const { t } = useTranslation();
-  const enable = !!acl?.enable;
-  const url = acl?.url || '';
+  const enable = form.watch('acl.enable');
+  const url = form.watch('acl.url') || '';
 
   const setAclAction = () => {
     touchField('acl', true);
@@ -62,9 +60,11 @@ const Acl: React.FC<AclProps> = ({
                     />
                   }
                 >
-                  <Field name={["acl", "url"]}>
-                    <span>{path.basename(url || '')}</span>
-                  </Field>
+                  <Controller
+                    control={form.control}
+                    name="acl.url"
+                    render={({ field }) => (<span>{path.basename(field.value || '')}</span>)}
+                  />
                 </Tooltip>
               }
             />
@@ -75,11 +75,16 @@ const Acl: React.FC<AclProps> = ({
             condition={enable}
             then={<Button onClick={setAclAction} size="small">{t('select')}</Button>}
           />
-          <Field name={["acl", "enable"]} valuePropName="checked">
-            <AdaptiveSwitch
-              edge="end"
-            />
-          </Field>
+          <Controller
+            control={form.control}
+            name="acl.enable"
+            render={({ field }) => (
+              <AdaptiveSwitch
+                edge="end"
+                checked={field.value}
+              />)
+            }
+          />
           <input style={{ display: 'none' }} type="file"></input>
         </ListItemSecondaryAction>
       </ListItem>

@@ -1,30 +1,36 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { TextField, Tooltip } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
+import { UseFormReturn } from 'react-hook-form';
 
-import { useStylesOfSettings as useStyles } from "../styles";
+import { useStylesOfSettings as useStyles } from '../styles';
+import { Settings } from '../../types';
 
 interface LocalPortProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
 const LocalPort: React.FC<LocalPortProps> = ({
-  rules,
+  form,
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const { formState: { errors } } = form;
 
   return (
-    <Field
-      name="localPort"
-      rules={rules}
-      normalize={(value: string) => +(value.trim())}
-    >
       <TextField
         className={styles.textField}
+        {
+          ...form.register('localPort', {
+            required: true,
+            min: 1024,
+            max: 65535,
+          })
+        }
+        onChange={(e) => +(e.target.value.trim())}
         required
+        error={!!errors.localPort}
+        helperText={errors.localPort?.message as string}
         fullWidth
         size="small"
         type="number"
@@ -36,7 +42,6 @@ const LocalPort: React.FC<LocalPortProps> = ({
           </Tooltip>
         }
       />
-    </Field>
   )
 }
 
