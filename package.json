@@ -54,7 +54,7 @@
     "node-fetch": "2.6.0",
     "open": "7.0.3",
     "qrcode": "^1.4.4",
-    "rc-field-form": "^1.26.2",
+    "react-hook-form": "^7.42.0",
     "react-i18next": "^11.12.0",
     "socks": "1.x",
     "tapable": "^2.2.1",

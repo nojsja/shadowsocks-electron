@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import Form from "rc-field-form";
+import React, { useCallback, useEffect, useRef } from 'react';
 import { MessageChannel } from 'electron-re';
 import { dispatch as dispatchEvent } from 'use-bus';
 import {
@@ -9,44 +8,45 @@ import {
   Theme,
   withStyles,
   createStyles,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
 
-import { useTypedDispatch } from "../redux/actions";
-import { useTypedSelector } from "../redux/reducers";
+import { useTypedDispatch } from '../redux/actions';
+import { useTypedSelector } from '../redux/reducers';
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { getStartupOnBoot, setStartupOnBoot, setSetting } from "../redux/actions/settings";
-import { setStatus } from "../redux/actions/status";
+import { getStartupOnBoot, setStartupOnBoot, setSetting } from '../redux/actions/settings';
+import { setStatus } from '../redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
-import { ALGORITHM, Notification } from "../types";
+import { ALGORITHM, Notification } from '../types';
 
-import { useStylesOfSettings as useStyles } from "./styles";
-import * as globalAction from "../hooks/useGlobalAction";
+import { useStylesOfSettings as useStyles } from './styles';
+import * as globalAction from '../hooks/useGlobalAction';
 
-import { persistStore } from "../App";
+import { persistStore } from '../App';
 
-import LocalPort from "./settings/LocalPort";
-import PacPort from "./settings/PacPort";
-import GfwListUrl from "./settings/GfwListUrl";
+import LocalPort from './settings/LocalPort';
+import PacPort from './settings/PacPort';
+import GfwListUrl from './settings/GfwListUrl';
 import HttpProxy from './settings/HttpProxy';
 import Acl from './settings/Acl';
-import LaunchOnBoot from "./settings/LaunchOnBoot";
-import FixedMenu from "./settings/FixedMenu";
-import AutoHide from "./settings/AutoHide";
-import AutoTheme from "./settings/AutoTheme";
-import DarkMode from "./settings/DarkMode";
+import LaunchOnBoot from './settings/LaunchOnBoot';
+import FixedMenu from './settings/FixedMenu';
+import AutoHide from './settings/AutoHide';
+import AutoTheme from './settings/AutoTheme';
+import DarkMode from './settings/DarkMode';
 import Backup from './settings/Backup';
 import Language from './settings/Language';
-import Restore from "./settings/Restore";
-import ResetData from "./settings/ResetData";
-import Verbose from "./settings/Verbose";
-import OpenLogDir from "./settings/OpenLogDir";
-import OpenProcessManager from "./settings/OpenProcessManager";
-import LoadBalance from "./settings/LoadBalance";
-import UserPacEditor from "./settings/UserPacEditor";
-import OpenPluginsDir from "./settings/OpenPluginsDir";
+import Restore from './settings/Restore';
+import ResetData from './settings/ResetData';
+import Verbose from './settings/Verbose';
+import OpenLogDir from './settings/OpenLogDir';
+import OpenProcessManager from './settings/OpenProcessManager';
+import LoadBalance from './settings/LoadBalance';
+import UserPacEditor from './settings/UserPacEditor';
+import OpenPluginsDir from './settings/OpenPluginsDir';
 import { debounce } from '../utils';
+import { useForm } from 'react-hook-form';
 
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
@@ -62,11 +62,35 @@ const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
 
   const dispatch = useTypedDispatch();
-  const [form] = Form.useForm();
+  // const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
-  const changedFields = useRef<{[key: string]: any}>({});
+  const changedFields = useRef<{ [key: string]: any }>({});
+  const form = useForm({
+    defaultValues: {
+      localPort: settings.localPort,
+      pacPort: settings.pacPort,
+      gfwListUrl: settings.gfwListUrl,
+      httpProxy: settings.httpProxy,
+      loadBalance: {
+        strategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
+        count: settings.loadBalance?.count ?? 3,
+        enable: settings.loadBalance?.enable ?? false,
+      },
+      autoLaunch: settings.autoLaunch,
+      fixedMenu: settings.fixedMenu,
+      darkMode: settings.darkMode,
+      autoTheme: settings.autoTheme,
+      verbose: settings.verbose,
+      autoHide: settings.autoHide,
+      acl: settings.acl,
+    },
+  });
 
   /* -------------- hooks -------------- */
+
+  useEffect(() => {
+    form.reset();
+  }, [settings]);
 
   useEffect(() => {
     return () => {
@@ -99,8 +123,8 @@ const SettingsPage: React.FC = () => {
 
   const calGlobalActions = useCallback(() => {
     let needReconnectServer = false,
-        needReconnectHttp = false,
-        needReconnectPac = false;
+      needReconnectHttp = false,
+      needReconnectPac = false;
     const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'pac'];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
     const pacConditions = ['pacPort'];
@@ -140,7 +164,7 @@ const SettingsPage: React.FC = () => {
 
   const checkPortValid = (parsedValue: number) => {
     if (!(parsedValue && parsedValue > 1024 && parsedValue <= 65535)) {
-          return Promise.reject(t("invalid_port_range"));
+      return Promise.reject(t("invalid_port_range"));
     }
     return Promise.resolve();
   };
@@ -154,9 +178,9 @@ const SettingsPage: React.FC = () => {
   }
 
   const checkPortSame = () => {
-    const localPort = +form.getFieldValue('localPort');
-    const pacPort = +form.getFieldValue('pacPort');
-    const httpPort = +form.getFieldValue(['httpProxy', 'port']);
+    const localPort = +form.getValues('localPort');
+    const pacPort = +form.getValues('pacPort');
+    const httpPort = +form.getValues('httpProxy.port');
     const num = localPort ^ pacPort ^ httpPort;
 
     if (num === localPort || num === pacPort || num === httpPort) {
@@ -197,25 +221,24 @@ const SettingsPage: React.FC = () => {
       action: 'getSystemThemeInfo',
       params: {}
     })
-    .then(rsp => {
-      if (rsp.code === 200) {
-        dispatchEvent({
-          type: 'theme:update',
-          payload: rsp.result
-        });
-        if (!checked) {
-          form.setFieldsValue({
-            darkMode: rsp.result?.shouldUseDarkColors
+      .then(rsp => {
+        if (rsp.code === 200) {
+          dispatchEvent({
+            type: 'theme:update',
+            payload: rsp.result
           });
+          if (!checked) {
+            form.setValue('darkMode', rsp.result?.shouldUseDarkColors);
+          }
         }
-      }
-    });
+      });
   }
 
   const checkPortField = (rule: any, value: any) => {
     return Promise.all([checkPortSame(), checkPortValid(value)]);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const onFieldChange = (fields: { [key: string]: any }) => {
     const keys = Object.keys(fields);
     changedFields.current = Object.assign(changedFields.current || {}, fields);
@@ -223,14 +246,14 @@ const SettingsPage: React.FC = () => {
 
     keys.forEach((key) => {
       const value = fields[key];
-      form.validateFields([key]).then(() => {
+      form.trigger(key).then(() => {
         switch (key) {
           case 'httpProxy':
-            httpProxy = form.getFieldValue('httpProxy');
+            httpProxy = form.getValues('httpProxy');
             dispatch(setSetting<'httpProxy'>(key, httpProxy))
             return;
           case 'loadBalance':
-            loadBalance = form.getFieldValue('loadBalance');
+            loadBalance = form.getValues('loadBalance');
             dispatch(setSetting<'loadBalance'>(key, {
               strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
               count: loadBalance?.count ?? 3,
@@ -238,7 +261,7 @@ const SettingsPage: React.FC = () => {
             }));
             return;
           case 'acl':
-            acl = form.getFieldValue('acl');
+            acl = form.getValues('acl');
             dispatch(setSetting<'acl'>('acl', acl));
             return;
           case 'autoLaunch':
@@ -263,102 +286,78 @@ const SettingsPage: React.FC = () => {
         }
       });
     });
-  }
+  };
 
   return (
     <Container className={styles.container}>
-      <Form
-        form={form}
-        initialValues={
-          {
-            localPort: settings.localPort,
-            pacPort: settings.pacPort,
-            gfwListUrl: settings.gfwListUrl,
-            httpProxy: settings.httpProxy,
-            loadBalance: {
-              strategy: settings.loadBalance?.strategy ?? ALGORITHM.POLLING,
-              count: settings.loadBalance?.count ?? 3,
-              enable: settings.loadBalance?.enable ?? false,
-            },
-            autoLaunch: settings.autoLaunch,
-            fixedMenu: settings.fixedMenu,
-            darkMode: settings.darkMode,
-            autoTheme: settings.autoTheme,
-            verbose: settings.verbose,
-            autoHide: settings.autoHide,
-            acl: settings.acl,
-          }
+
+      <LocalPort
+        rules={
+          [
+            { required: true, message: t('invalid_value') },
+            { validator: checkPortField },
+          ]
         }
-        onValuesChange={onFieldChange}
-      >
-        <LocalPort
+      />
+      <PacPort
+        rules={[
+          { required: true, message: t('invalid_value') },
+          { validator: checkPortField }
+        ]}
+      />
+      <GfwListUrl
+        reGeneratePacFile={reGeneratePacFile}
+        gfwListUrl={settings.gfwListUrl}
+      />
+      <List className={styles.list}>
+        <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
+        <HttpProxy
+          form={form}
           rules={
             [
               { required: true, message: t('invalid_value') },
-              { validator: checkPortField },
+              { validator: checkPortField }
             ]
           }
         />
-        <PacPort
-          rules={[
-            { required: true, message: t('invalid_value') },
-            { validator: checkPortField }
-          ]}
+        <Acl
+          setAclUrl={setAclUrl}
+          acl={settings.acl}
+          touchField={touchField}
         />
-        <GfwListUrl
-          reGeneratePacFile={reGeneratePacFile}
-          gfwListUrl={settings.gfwListUrl}
+        <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
+
+        <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
+
+        <LaunchOnBoot />
+        <FixedMenu />
+        <AutoHide />
+        <AutoTheme onAutoThemeChange={onAutoThemeChange} />
+        <DarkMode form={form} />
+        <Language />
+        <Backup />
+        <Restore form={form} />
+        <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
+
+        <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
+
+        <LoadBalance
+          form={form}
+          rules={
+            [
+              { required: true, message: t('invalid_value') },
+              { validator: checkLbCountValid },
+            ]
+          }
         />
-        <List className={styles.list}>
-          <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
-          <HttpProxy
-            form={form}
-            rules={
-              [
-                { required: true, message: t('invalid_value') },
-                { validator: checkPortField }
-              ]
-            }
-          />
-          <Acl
-            setAclUrl={setAclUrl}
-            acl={settings.acl}
-            touchField={touchField}
-          />
-          <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
 
-          <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
+        <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
 
-          <LaunchOnBoot />
-          <FixedMenu />
-          <AutoHide />
-          <AutoTheme onAutoThemeChange={onAutoThemeChange} />
-          <DarkMode form={form} />
-          <Language />
-          <Backup />
-          <Restore form={form} />
-          <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
-
-          <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
-
-          <LoadBalance
-            form={form}
-            rules={
-              [
-                { required: true, message: t('invalid_value') },
-                { validator: checkLbCountValid },
-              ]
-            }
-          />
-
-          <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
-
-          <Verbose />
-          <OpenLogDir />
-          <OpenPluginsDir />
-          <OpenProcessManager />
-        </List>
-      </Form>
+        <Verbose />
+        <OpenLogDir />
+        <OpenPluginsDir />
+        <OpenProcessManager />
+      </List>
     </Container>
   );
 };
