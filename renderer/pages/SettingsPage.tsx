@@ -12,11 +12,12 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
+import _ from 'lodash';
 
 import { useTypedDispatch } from '../redux/actions';
 import { useTypedSelector } from '../redux/reducers';
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { getStartupOnBoot } from '../redux/actions/settings';
+import { getStartupOnBoot, setSetting, setStartupOnBoot } from '../redux/actions/settings';
 import { setStatus } from '../redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
 import { ALGORITHM, Notification, Settings } from '../types';
@@ -46,7 +47,6 @@ import OpenProcessManager from './settings/OpenProcessManager';
 import LoadBalance from './settings/LoadBalance';
 import UserPacEditor from './settings/UserPacEditor';
 import OpenPluginsDir from './settings/OpenPluginsDir';
-import { debounce } from '../utils';
 
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
@@ -62,10 +62,10 @@ const SettingsPage: React.FC = () => {
   const { t } = useTranslation();
 
   const dispatch = useTypedDispatch();
-  // const [form] = Form.useForm();
   const settings = useTypedSelector(state => state.settings);
   const changedFields = useRef<{ [key: string]: any }>({});
   const form = useForm<Settings>({
+    mode: 'onChange',
     defaultValues: {
       localPort: settings.localPort,
       pacPort: settings.pacPort,
@@ -89,12 +89,12 @@ const SettingsPage: React.FC = () => {
   /* -------------- hooks -------------- */
 
   useEffect(() => {
-    form.reset();
+    form.reset(settings);
   }, [settings]);
 
+  /* check settings item */
   useEffect(() => {
     return () => {
-      /* check settings item */
       calGlobalActions();
     };
   }, []);
@@ -105,10 +105,12 @@ const SettingsPage: React.FC = () => {
 
   /* dark mode */
   useEffect(() => {
+    const darkMode = persistStore.get('darkMode');
+
     if (
-      (persistStore.get('darkMode') === 'true' && !settings.darkMode) ||
-      (persistStore.get('darkMode') === 'false' && !!settings.darkMode) ||
-      (persistStore.get('darkMode') === undefined && !!settings.darkMode)
+      (darkMode === 'true' && !settings.darkMode) ||
+      (darkMode === 'false' && !!settings.darkMode) ||
+      (darkMode === undefined && !!settings.darkMode)
     ) {
       dispatchEvent({
         type: 'theme:update',
@@ -142,7 +144,6 @@ const SettingsPage: React.FC = () => {
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
     dispatch(enqueueSnackbarAction(message, options))
   };
-  // const debouncedEnqueueSnackbar = debounce(enqueueSnackbar, 800);
 
   const touchField = (field: string, status: boolean) => {
     changedFields.current[field] = status;
@@ -161,33 +162,6 @@ const SettingsPage: React.FC = () => {
       }
     }));
   }
-
-  const checkPortValid = (parsedValue: number) => {
-    if (!(parsedValue && parsedValue > 1024 && parsedValue <= 65535)) {
-      return Promise.reject(t("invalid_port_range"));
-    }
-    return Promise.resolve();
-  };
-
-  const checkLbCountValid = (rule: any, value: any) => {
-    const parsedValue = +value;
-    if (!(parsedValue && parsedValue <= 5 && parsedValue >= 2)) {
-      return Promise.reject(t("count_range_2_5"));
-    }
-    return Promise.resolve();
-  }
-
-  const checkPortSame = () => {
-    const localPort = +form.getValues('localPort');
-    const pacPort = +form.getValues('pacPort');
-    const httpPort = +form.getValues('httpProxy.port');
-    const num = localPort ^ pacPort ^ httpPort;
-
-    if (num === localPort || num === pacPort || num === httpPort) {
-      return Promise.reject(t("the_same_port_is_not_allowed"));
-    }
-    return Promise.resolve();
-  };
 
   const reGeneratePacFile = (params: { url?: string, text?: string }) => {
     dispatch<any>(setStatus('waiting', true));
@@ -234,78 +208,67 @@ const SettingsPage: React.FC = () => {
       });
   }
 
-  const checkPortField = (rule: any, value: any) => {
-    return Promise.all([checkPortSame(), checkPortValid(value)]);
+  const onFieldChange = (value: any, key: keyof Settings) => {
+    if (!key) return;
+    let httpProxy, loadBalance, acl;
+    changedFields.current = Object.assign(changedFields.current || {}, { [key]: value });
+
+    console.log(value, key);
+
+    form.trigger(key).then((success) => {
+      if (success) {
+        switch (key) {
+          case 'httpProxy':
+            httpProxy = form.getValues('httpProxy');
+            dispatch(setSetting<'httpProxy'>(key, httpProxy))
+            return;
+          case 'loadBalance':
+            loadBalance = form.getValues('loadBalance');
+            dispatch(setSetting<'loadBalance'>(key, {
+              strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
+              count: loadBalance?.count ?? 3,
+              enable: loadBalance?.enable ?? false,
+            }));
+            return;
+          case 'acl':
+            acl = form.getValues('acl');
+            dispatch(setSetting<'acl'>('acl', acl));
+            return;
+          case 'autoLaunch':
+            dispatch<any>(setStartupOnBoot(value));
+            return;
+          case 'darkMode':
+            dispatchEvent({
+              type: 'theme:update',
+              payload: { shouldUseDarkColors: value }
+            });
+            break;
+          default:
+            break;
+        }
+        dispatch(setSetting<any>(key, value));
+      }
+    });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const onFieldChange = (fields: { [key: string]: any }) => {
-  //   const keys = Object.keys(fields);
-  //   changedFields.current = Object.assign(changedFields.current || {}, fields);
-  //   let httpProxy, loadBalance, acl;
-
-  //   keys.forEach((key) => {
-  //     const value = fields[key];
-  //     form.trigger(key).then(() => {
-  //       switch (key) {
-  //         case 'httpProxy':
-  //           httpProxy = form.getValues('httpProxy');
-  //           dispatch(setSetting<'httpProxy'>(key, httpProxy))
-  //           return;
-  //         case 'loadBalance':
-  //           loadBalance = form.getValues('loadBalance');
-  //           dispatch(setSetting<'loadBalance'>(key, {
-  //             strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
-  //             count: loadBalance?.count ?? 3,
-  //             enable: loadBalance?.enable ?? false,
-  //           }));
-  //           return;
-  //         case 'acl':
-  //           acl = form.getValues('acl');
-  //           dispatch(setSetting<'acl'>('acl', acl));
-  //           return;
-  //         case 'autoLaunch':
-  //           dispatch<any>(setStartupOnBoot(value));
-  //           return;
-  //         case 'darkMode':
-  //           dispatchEvent({
-  //             type: 'theme:update',
-  //             payload: {
-  //               shouldUseDarkColors: value
-  //             }
-  //           });
-  //           break;
-  //         default:
-  //           break;
-  //       }
-  //       dispatch(setSetting<any>(key, value));
-  //     }).catch((reason: { errorFields: { errors: string[] }[] }) => {
-  //       const error = reason?.errorFields?.map(item => item.errors.join()).join();
-  //       if (error) {
-  //         debouncedEnqueueSnackbar(error, { variant: 'error' });
-  //       }
-  //     });
-  //   });
-  // };
+  /* wach fields change */
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (!name) return;
+      const changedValue = _.get(value, name);
+      onFieldChange(changedValue, name?.split('.')?.[0] as keyof Settings);
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
 
   return (
     <Container className={styles.container}>
       <form>
         <LocalPort
           form={form}
-          // rules={
-          //   [
-          //     { required: true, message: t('invalid_value') },
-          //     { validator: checkPortField },
-          //   ]
-          // }
         />
         <PacPort
           form={form}
-          // rules={[
-          //   { required: true, message: t('invalid_value') },
-          //   { validator: checkPortField }
-          // ]}
         />
         <GfwListUrl
           form={form}
@@ -316,12 +279,6 @@ const SettingsPage: React.FC = () => {
           <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
           <HttpProxy
             form={form}
-            // rules={
-            //   [
-            //     { required: true, message: t('invalid_value') },
-            //     { validator: checkPortField }
-            //   ]
-            // }
           />
           <Acl
             setAclUrl={setAclUrl}
@@ -346,12 +303,6 @@ const SettingsPage: React.FC = () => {
 
           <LoadBalance
             form={form}
-            // rules={
-            //   [
-            //     { required: true, message: t('invalid_value') },
-            //     { validator: checkLbCountValid },
-            //   ]
-            // }
           />
 
           <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>

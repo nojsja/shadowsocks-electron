@@ -23,9 +23,10 @@ const LaunchOnBoot: React.FC<LaunchOnBoolProps> = ({ form }) => {
         <Controller
           control={form.control}
           name="autoLaunch"
-          render={({ field }) => (
+          render={({ field: { value, ...other } }) => (
             <AdaptiveSwitch
-              checked={field.value}
+              {...other}
+              checked={value ?? false}
               edge="end"
             />
           )}

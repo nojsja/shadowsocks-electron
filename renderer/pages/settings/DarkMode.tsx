@@ -25,10 +25,11 @@ const DarkMode: React.FC<DarkModeProps> = ({
         <Controller
           control={form.control}
           name="darkMode"
-          render={({ field }) => (
+          render={({ field: { value, ...other } }) => (
             <AdaptiveSwitch
               edge="end"
-              checked={field.value}
+              {...other}
+              checked={value ?? false}
               disabled={autoTheme}
             />
           )}

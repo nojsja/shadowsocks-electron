@@ -15,6 +15,7 @@ const PacPort: React.FC<PacPortProps> = ({
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const { formState: { errors } } = form;
 
   return (
       <TextField
@@ -22,13 +23,23 @@ const PacPort: React.FC<PacPortProps> = ({
         {
           ...form.register('pacPort', {
             required: true,
+            min: 1024,
+            max: 65535,
+            validate: (value, record) => {
+              const pacPort = +value;
+              const localPort = +record.localPort;
+              const httpPort = +record.httpProxy?.port;
+              const num = localPort ^ pacPort ^ httpPort;
+              return (num !== localPort && num !== pacPort && num !== httpPort);
+            },
           })
         }
         required
         fullWidth
         type="number"
         size="small"
-        onChange={(e) => +(e.target.value.trim())}
+        error={!!errors.pacPort}
+        helperText={!!errors.pacPort && t('invalid_value')}
         label={
           <Tooltip arrow placement="right" title={t('pac_port_tips') as string}>
             <span>

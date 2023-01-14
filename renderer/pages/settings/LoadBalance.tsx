@@ -11,7 +11,6 @@ import {
 import { Controller, UseFormReturn } from 'react-hook-form';
 
 import { AdaptiveSwitch } from '../../components/Pices/Switch';
-import If from '../../components/HOC/IF';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
 import { useStylesOfSettings as useStyles } from '../styles';
@@ -57,18 +56,18 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
           <Controller
             control={form.control}
             name="loadBalance.enable"
-            render={({ field }) => (
+            render={({ field: { value, ...other } }) => (
               <AdaptiveSwitch
                 edge="end"
-                checked={field.value}
+                {...other}
+                checked={value ?? false}
               />
             )}
           />
         </ListItemSecondaryAction>
       </ListItem>
-      <If
-        condition={enable}
-        then={
+      {
+        enable && (
           <ListItem className={styles.sub}>
             <ListItemText
               primary={
@@ -82,20 +81,22 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
               <TextField
                 className={`${styles.textField} ${styles.indentInput}`}
                 {
-                  ...form.register('loadBalance.count', { required: true })
+                  ...form.register('loadBalance.count', {
+                    required: true,
+                    min: LOADBALANCE_MIN_NODES,
+                    max: LOADBALANCE_MAX_NODES,
+                  })
                 }
                 required
-                onChange={(e) => e.target.value?.trim()}
                 size="small"
                 type="number"
               />
             </ListItemSecondaryAction>
           </ListItem>
-        }
-      />
-      <If
-        condition={enable}
-        then={
+        )
+      }
+      {
+        enable && (
           <ListItem className={styles.sub}>
             <ListItemText
               primary={
@@ -111,18 +112,22 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
               }
             />
             <ListItemSecondaryAction>
-              <Select
-                {
-                ...form.register('loadBalance.strategy', { required: true })
-                }
-              >
-                <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
-                <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
-              </Select>
+              <Controller
+                control={form.control}
+                name="loadBalance.strategy"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                  >
+                    <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
+                    <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
+                  </Select>
+                )}
+              />
             </ListItemSecondaryAction>
           </ListItem>
-        }
-      />
+        )
+      }
     </>
   )
 }

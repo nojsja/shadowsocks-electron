@@ -10,7 +10,6 @@ import {
 
 import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import ListItemTextMultipleLine from '../../components/Pices/ListItemTextMultipleLine';
-import If from '../../components/HOC/IF';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import { Settings } from '../../types';
 import { Controller, UseFormReturn } from 'react-hook-form';
@@ -48,40 +47,33 @@ const Acl: React.FC<AclProps> = ({
             />
           }
           secondary={
-            <If
-              condition={enable}
-              then={
-                <Tooltip arrow
-                  placement="top"
-                  title={
-                    <If
-                      condition={!!url}
-                      then={url}
-                    />
-                  }
-                >
-                  <Controller
-                    control={form.control}
-                    name="acl.url"
-                    render={({ field }) => (<span>{path.basename(field.value || '')}</span>)}
-                  />
-                </Tooltip>
-              }
-            />
+            enable && (
+              <Controller
+                control={form.control}
+                name="acl.url"
+                render={({ field }) => (
+                  <Tooltip
+                    arrow
+                    placement="top"
+                    title={!!url && url}
+                  >
+                    <span>{path.basename(field.value || '')}</span>
+                  </Tooltip>
+                )}
+              />
+            )
           }
         />
         <ListItemSecondaryAction>
-          <If
-            condition={enable}
-            then={<Button onClick={setAclAction} size="small">{t('select')}</Button>}
-          />
+          { enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>) }
           <Controller
             control={form.control}
             name="acl.enable"
-            render={({ field }) => (
+            render={({ field: { value, ...other } }) => (
               <AdaptiveSwitch
                 edge="end"
-                checked={field.value}
+                {...other}
+                checked={value ?? false}
               />)
             }
           />

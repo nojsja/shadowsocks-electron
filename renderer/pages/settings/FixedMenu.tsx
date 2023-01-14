@@ -22,10 +22,11 @@ const FixedMenu: React.FC<FixedMenuProps> = ({ form }) => {
         <Controller
           control={form.control}
           name="fixedMenu"
-          render={({ field }) => (
+          render={({ field: { value, ...other } }) => (
             <AdaptiveSwitch
               edge="end"
-              checked={field.value}
+              {...other}
+              checked={value ?? false}
             />
           )}
         />

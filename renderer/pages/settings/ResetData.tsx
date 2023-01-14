@@ -25,15 +25,13 @@ const ResetData: React.FC<ResetDataProps> = ({
   const dispatch = useTypedDispatch();
 
   const handleReset = () => {
-    dispatch({
-      type: CLEAR_STORE
-    } as any);
+    dispatch({type: CLEAR_STORE} as any);
+    closeDialog();
+    form.reset(defaultStore.settings);
     MessageChannel.invoke('main', 'service:main', {
       action: 'stopClient',
       params: {}
     });
-    closeDialog();
-    form.reset(defaultStore.settings);
     enqueueSnackbar(t('cleared_all_data'), { variant: 'success' });
   };
 

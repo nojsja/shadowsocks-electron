@@ -25,12 +25,18 @@ const LocalPort: React.FC<LocalPortProps> = ({
             required: true,
             min: 1024,
             max: 65535,
+            validate: (value, record) => {
+              const localPort = +value;
+              const pacPort = +record.pacPort;
+              const httpPort = +record.httpProxy?.port;
+              const num = localPort ^ pacPort ^ httpPort;
+              return (num !== localPort && num !== pacPort && num !== httpPort);
+            },
           })
         }
-        onChange={(e) => +(e.target.value.trim())}
         required
         error={!!errors.localPort}
-        helperText={errors.localPort?.message as string}
+        helperText={!!errors.localPort && t('invalid_value')}
         fullWidth
         size="small"
         type="number"

@@ -29,6 +29,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
   const styles = useStyles();
   const enable = form.watch('httpProxy.enable');
   const port = form.watch('httpProxy.port');
+  const { formState: { errors } } = form;
 
   useEffect(() => {
     if (port <= 0) {
@@ -57,9 +58,10 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
           <Controller
             control={form.control}
             name="httpProxy.enable"
-            render={({ field }) => (
+            render={({ field: { value, ...other } }) => (
               <AdaptiveSwitch
-                checked={field.value}
+                {...other}
+                checked={value ?? false}
                 edge="end"
               />
             )}
@@ -77,10 +79,21 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
               <TextField
                 className={`${styles.textField} ${styles.indentInput}`}
                 {
-                  ...form.register('httpProxy.port', {})
+                  ...form.register('httpProxy.port', {
+                    min: 1024,
+                    max: 65535,
+                    validate: (value, record) => {
+                      const httpPort = +value;
+                      const pacPort = +record.pacPort;
+                      const localPort = +record.localPort;
+                      const num = localPort ^ pacPort ^ httpPort;
+                      return (num !== localPort && num !== pacPort && num !== httpPort);
+                    },
+                  })
                 }
                 required
-                onChange={(e) => +(e.target.value.trim())}
+                error={!!errors.httpProxy?.port}
+                helperText={!!errors.httpProxy?.port && t('invalid_value')}
                 size="small"
                 type="number"
                 placeholder={t('http_proxy_port')}

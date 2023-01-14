@@ -7,7 +7,6 @@ import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import { Settings } from '../../types';
 
 interface VerboseProps {
-  // rules?: Rule[] | undefined;
   form: UseFormReturn<Settings>;
 }
 
@@ -21,18 +20,17 @@ const Verbose: React.FC<VerboseProps> = ({ form }) => {
         secondary={t('verbose_output')}
       />
       <ListItemSecondaryAction>
-        {/* <Field name="verbose" valuePropName="checked"> */}
         <Controller
           control={form.control}
           name="verbose"
-          render={({ field }) => (
+          render={({ field: { value, ...other } }) => (
             <AdaptiveSwitch
               edge="end"
-              checked={field.value}
+              {...other}
+              checked={value ?? false}
             />
           )}
         />
-        {/* </Field> */}
       </ListItemSecondaryAction>
     </ListItem>
   )

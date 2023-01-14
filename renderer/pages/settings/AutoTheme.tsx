@@ -27,11 +27,15 @@ const AutoTheme: React.FC<AutoThemeProps> = ({
         <Controller
           control={form.control}
           name="autoTheme"
-          render={({ field }) => (
+          render={({ field: { value, onChange, ...other } }) => (
             <AdaptiveSwitch
               edge="end"
-              onChange={onAutoThemeChange}
-              checked={field.value}
+              {...other}
+              onChange={(e, checked) => {
+                onAutoThemeChange(e);
+                onChange(e, checked);
+              }}
+              checked={value ?? false}
             />
           )}
         />

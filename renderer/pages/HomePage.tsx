@@ -1,25 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from 'react';
+import { clipboard } from 'electron';
 import useBus, { EventAction } from 'use-bus';
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 import {
   Container,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import SyncIcon from '@material-ui/icons/Sync';
-import uuid from "uuid/v1";
+import uuid from 'uuid/v1';
 import { SnackbarMessage } from 'notistack';
 
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { Config, CloseOptions, GroupConfig, Notification, ServerMode } from "../types";
-import { useTypedSelector } from "../redux/reducers";
-// import useBackDrop from '../hooks/useBackDrop';
+import { Config, CloseOptions, GroupConfig, Notification, ServerMode } from '../types';
+import { useTypedSelector } from '../redux/reducers';
 import {
   addConfigFromClipboard, getQrCodeFromScreenResources,
   ADD_CONFIG, EDIT_CONFIG,
   addSubscriptionFromClipboard,
   startClusterAction, startClientAction, stopClientAction, stopClusterAction
 } from '../redux/actions/config';
-import { setHttpProxy, setPacServer } from "../redux/actions/settings";
+import { setHttpProxy, setPacServer } from '../redux/actions/settings';
 import { getConnectionDelay } from '../redux/actions/status';
 
 import { findAndCallback } from '../utils';
@@ -30,14 +30,13 @@ import FooterBar from '../components/FooterBar';
 import StatusBar from '../components/StatusBar';
 import StatusBarConnection from '../components/BarItems/StatusBarConnection';
 import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
-import StatusBarTraffic from "../components/BarItems/StatusBarTraffic";
+import StatusBarTraffic from '../components/BarItems/StatusBarTraffic';
 
-import ServerList from "./home/ServerList";
-import AddServerDialog from "./home/AddServerDialog";
-import EditServerDialog from "./home/EditServerDialog";
+import ServerList from './home/ServerList';
+import AddServerDialog from './home/AddServerDialog';
+import EditServerDialog from './home/EditServerDialog';
 
-import { useStylesOfHome as useStyles } from "./styles";
-import { clipboard } from "electron";
+import { useStylesOfHome as useStyles } from './styles';
 
 /**
  * HomePage

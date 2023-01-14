@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
   TextField,
@@ -29,6 +29,7 @@ import {
   Theme,
   withStyles
 } from '@material-ui/core/styles';
+import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import Visibility from '@material-ui/icons/Visibility';
@@ -39,12 +40,15 @@ import {
   Config, encryptMethods, plugins,
   serverTypes, protocols, obfs,
   SSRConfig,
+  Notification,
 } from '../../types';
 import { AdaptiveAppBar } from '../../components/Pices/AppBar';
 import { scrollBarStyle } from '../../pages/styles';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import If from '../../components/HOC/IF';
 import OpenPluginsDir from '../settings/OpenPluginsDir';
+import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
+import { SnackbarMessage } from 'notistack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -89,10 +93,11 @@ export interface EditServerDialogProps extends DialogProps {
   onValues: (values: Config | null) => void;
 }
 
-const EditServerDialog: React.FC<EditServerDialogProps> = props => {
+const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
   const styles = useStyles();
   const { t } = useTranslation();
   const { open, onClose, defaultValues, onValues } = props;
+  const dispatch = useDispatch();
   const [values, setValues] = useState<Partial<Config>>(
     defaultValues ?? {
       timeout: 60,
@@ -101,6 +106,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
     }
   );
   const form = useForm<Config>({
+    mode: 'onChange',
     defaultValues: {
       type: values?.type || 'ss',
       remark: values?.remark || '',
@@ -124,12 +130,27 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
       udp: !!values?.udp,
     }
   });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const { formState: { errors } } = form;
   const [showPassword, setShowPassword] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  /* -------------- Computed -------------- */
+
+  const serverType = form.watch('type');
+  const pluginInfo = form.watch('plugin');
+
+  const embededPluginEnabled = pluginInfo && (pluginInfo !== 'define' && pluginInfo !== 'define_sip003');
+  const definedPluginEnabled = pluginInfo && pluginInfo === 'define';
+  const definedSIP003PluginEnabled = pluginInfo && pluginInfo === 'define_sip003';
+  const isSSR = serverType === 'ssr';
+  const isSS = serverType === 'ss';
+
   /* -------------- Functions -------------- */
+
+  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
+    dispatch(enqueueSnackbarAction(message, options))
+  };
 
   const handleCancel = () => {
     onValues(null);
@@ -143,11 +164,10 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
             ...form.getValues(),
             id: defaultValues?.id ?? ''
           });
+        } else {
+          enqueueSnackbar(t('invalid_value'), { variant: 'error' });
         }
       })
-      .catch(errors => {
-        console.error(errors);
-      });
   };
 
   const handleClickShowPassword = () => {
@@ -160,26 +180,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
     event.preventDefault();
   };
 
-  // const onFieldsChange = useCallback((changedValues: FieldData[]) => {
-  //   setErrors(
-  //     changedValues
-  //       .filter((field) => field.errors?.length)
-  //       .reduce<{ [key: string]: string }>((total, cur) => {
-  //         if (cur.errors?.length) {
-  //           total[cur.name.toString()] = cur.errors[0];
-  //         }
-  //         return total;
-  //       }, {}));
-  // }, []);
-
-  /* -------------- Effects -------------- */
-
-  useEffect(() => {
-    if (!open) {
-      setErrors({});
-    }
-  }, [open]);
-
   useLayoutEffect(() => {
     setValues(
       defaultValues ?? {
@@ -188,18 +188,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
         type: 'ss'
       }
     );
+    defaultValues && form.reset(defaultValues);
   }, [defaultValues]);
-
-  /* -------------- Computed -------------- */
-
-  const serverType = form.watch('type');
-  const pluginInfo = form.watch('plugin');
-
-  const embededPluginEnabled = pluginInfo && (pluginInfo !== 'define' && pluginInfo !== 'define_sip003');
-  const definedPluginEnabled = pluginInfo && pluginInfo === 'define';
-  const definedSIP003PluginEnabled = pluginInfo && pluginInfo === 'define_sip003';
-  const isSSR = serverType === 'ssr';
-  const isSS = serverType === 'ss';
 
   return (
     <StyledDialog
@@ -223,78 +213,72 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
 
       <form>
         <Container className={`${styles.container}`}>
-          <If
-            condition={fullScreen}
-            then={<div className={`${styles.toolbar}`} />}
-          />
-
+          {
+            fullScreen && <div className={`${styles.toolbar}`} />
+          }
           <InputLabel required style={{ marginBottom: 0 }} shrink>
             {t('server_type')}
           </InputLabel>
 
-          <Select
-            required
-            {
-            ...form.register('type', {
-              required: true,
-            })
-            }
-            onChange={(e) => ((e.target.value as string)?.trim())}
-            label={t('server_type')}
-            displayEmpty
-            fullWidth
-          >
-            {serverTypes.map(serverType => (
-              <MenuItem key={serverType} value={serverType}>
-                {serverType}
-              </MenuItem>
-            ))}
-          </Select>
+          <Controller
+            control={form.control}
+            name="type"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                required
+                label={t('server_type')}
+                displayEmpty
+                fullWidth
+              >
+                {serverTypes.map(serverType => (
+                  <MenuItem key={serverType} value={serverType}>
+                    {serverType}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
 
           <TextField
-            {
-            ...form.register('remark')
-            }
+            {...form.register('remark')}
             fullWidth
-            onChange={(e) => ((e.target.value as string)?.trim())}
             label={t('remark')}
           />
 
           <TextField
-            {
-            ...form.register('serverHost', {
+            {...form.register('serverHost', {
               required: true,
-            })
-            }
+            })}
             required
             fullWidth
             error={!!errors.serverHost}
+            helperText={!!errors.serverHost && t('invalid_value')}
             label={t('server_address')}
           />
 
           <TextField
-            {
-            ...form.register('serverPort', {
+            {...form.register('serverPort', {
               required: true,
-              min: 1,
+              min: 0,
               max: 65535,
-            })
-            }
+            })}
             placeholder="0-65535"
             required
             fullWidth
             type="number"
             error={!!errors.serverPort}
+            helperText={!!errors.serverPort && '0-65535'}
             label={t('server_port')}
           />
 
-          <FormControl required fullWidth>
+          <FormControl
+            fullWidth
+          >
             <InputLabel shrink htmlFor="password">{t('password')}</InputLabel>
             <Input
-              {
-              ...form.register('password')
-              }
-              onChange={(e) => (e.target.value?.trim())}
+              {...form.register('password')}
               id="password"
               type={showPassword ? "text" : "password"}
               error={!!errors.password}
@@ -314,25 +298,27 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           <InputLabel shrink required style={{ marginBottom: 0 }}>
             {t('encryption')}
           </InputLabel>
-          <Select
-            {
-            ...form.register('encryptMethod', {
-              required: true,
-            })
-            }
-            onChange={(e) => ((e.target.value as string)?.trim())}
-            required
-            label={t('encryption')}
-            displayEmpty
-            error={!!errors.encryptMethod}
-            fullWidth
-          >
-            {encryptMethods.map(method => (
-              <MenuItem key={method} value={method}>
-                {method}
-              </MenuItem>
-            ))}
-          </Select>
+          <Controller
+            control={form.control}
+            name="encryptMethod"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                {...field}
+                required
+                label={t('encryption')}
+                displayEmpty
+                error={!!errors.encryptMethod}
+                fullWidth
+              >
+                {encryptMethods.map(method => (
+                  <MenuItem key={method} value={method}>
+                    {method}
+                  </MenuItem>
+                ))}
+              </Select>
+            )}
+          />
 
           <If
             condition={isSSR}
@@ -341,29 +327,28 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 <InputLabel shrink required style={{ marginBottom: 0 }}>
                   {t('protocol')}
                 </InputLabel>
-                <Select
-                  {
-                  ...form.register('protocol', {
-                    required: true,
-                  })
-                  }
-                  onChange={(e) => ((e.target.value as string)?.trim())}
-                  required
-                  label={t('protocol')}
-                  displayEmpty
-                  fullWidth
-                >
-                  {protocols.map(protocol => (
-                    <MenuItem key={protocol} value={protocol}>
-                      {protocol}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  control={form.control}
+                  name="protocol"
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      required
+                      label={t('protocol')}
+                      displayEmpty
+                      fullWidth
+                    >
+                      {protocols.map(protocol => (
+                        <MenuItem key={protocol} value={protocol}>
+                          {protocol}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
                 <TextField
-                  {
-                  ...form.register('protocolParam')
-                  }
-                  onChange={(e) => (e.target.value?.trim())}
+                  {...form.register('protocolParam')}
                   fullWidth
                   label={t('protocolParam')}
                 />
@@ -378,29 +363,28 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 <InputLabel shrink required style={{ marginBottom: 0 }}>
                   {t('obfs')}
                 </InputLabel>
-                <Select
-                  {
-                  ...form.register('obfs', {
-                    required: true,
-                  })
-                  }
-                  onChange={(e) => ((e.target.value as string)?.trim())}
-                  required
-                  label={t('obfs')}
-                  displayEmpty
-                  fullWidth
-                >
-                  {obfs.map(value => (
-                    <MenuItem key={value} value={value}>
-                      {value}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <Controller
+                  control={form.control}
+                  name="obfs"
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      required
+                      label={t('obfs')}
+                      displayEmpty
+                      fullWidth
+                    >
+                      {obfs.map(value => (
+                        <MenuItem key={value} value={value}>
+                          {value}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
                 <TextField
-                  {
-                  ...form.register('obfsParam')
-                  }
-                  onChange={(e) => (e.target.value?.trim())}
+                  {...form.register('obfsParam')}
                   fullWidth
                   label={t('obfsParam')}
                 />
@@ -409,64 +393,60 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           />
 
           <TextField
-            {
-            ...form.register('timeout', {
-              required: true,
-              min: 1,
-            })
-            }
-            onChange={(e) => (e.target.value?.trim())}
-            required
+            {...form.register('timeout', {
+              min: 60,
+            })}
             fullWidth
+            type="number"
             error={!!errors.timeout}
+            helperText={!!errors.timeout && '>= 60'}
             label={t('timeout')}
           />
 
           <InputLabel shrink style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
-          <Select
-            {
-            ...form.register('plugin')
-            }
-            onChange={(e) => ((e.target.value as string)?.trim())}
-            label={t('plugin')}
-            displayEmpty
-            fullWidth
-          >
-            <MenuItem key="none" value="">
-              <em>{t('none')}</em>
-            </MenuItem>
-            {
-              isSS && plugins.map(plugin => (
-                <MenuItem key={plugin.name} value={plugin.name}>
-                  <TextWithTooltip text={plugin.label} tooltip={t(`${plugin.tips}`)} />
+          <Controller
+            control={form.control}
+            name="plugin"
+            render={({ field }) => (
+              <Select
+                {...field}
+                label={t('plugin')}
+                displayEmpty
+                fullWidth
+              >
+                <MenuItem key="none" value="">
+                  <em>{t('none')}</em>
                 </MenuItem>
-              ))
-            }
-            {
-              isSS && (
-                <MenuItem key="define_sip003" value="define_sip003">
+                {
+                  isSS && plugins.map(plugin => (
+                    <MenuItem key={plugin.name} value={plugin.name}>
+                      <TextWithTooltip text={plugin.label} tooltip={t(`${plugin.tips}`)} />
+                    </MenuItem>
+                  ))
+                }
+                {
+                  isSS && (
+                    <MenuItem key="define_sip003" value="define_sip003">
+                      <TextWithTooltip
+                        text={<em>{t('customize_plugin_sip003')}</em>}
+                        tooltip={t('customize_plugin_tips_sip003')}
+                      />
+                    </MenuItem>
+                  )
+                }
+                <MenuItem key="define" value="define">
                   <TextWithTooltip
-                    text={<em>{t('customize_plugin_sip003')}</em>}
-                    tooltip={t('customize_plugin_tips_sip003')}
+                    text={<em>{t('customize_plugin')}</em>}
+                    tooltip={t('customize_plugin_tips')}
                   />
                 </MenuItem>
-              )
-            }
-            <MenuItem key="define" value="define">
-              <TextWithTooltip
-                text={<em>{t('customize_plugin')}</em>}
-                tooltip={t('customize_plugin_tips')}
-              />
-            </MenuItem>
-          </Select>
-
+              </Select>
+            )}
+          />
           {
             embededPluginEnabled && (
               <TextField
-                {
-                ...form.register('pluginOpts')
-                }
-                onChange={(e) => (e.target.value?.trim())}
+                {...form.register('pluginOpts')}
                 fullWidth
                 multiline
                 label={t('plugin_options')}
@@ -476,10 +456,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           {
             definedPluginEnabled && (
               <TextField
-                {
-                ...form.register('definedPlugin')
-                }
-                onChange={(e) => (e.target.value?.trim())}
+                {...form.register('definedPlugin')}
                 fullWidth
                 label={`${t('plugin_path')}[define]`}
               />
@@ -488,10 +465,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           {
             definedPluginEnabled && (
               <TextField
-                {
-                ...form.register('definedPluginOpts')
-                }
-                onChange={(e) => (e.target.value?.trim())}
+                {...form.register('definedPluginOpts')}
                 fullWidth
                 multiline
                 label={`${t('plugin_options')}[define]`}
@@ -501,10 +475,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           {
             definedSIP003PluginEnabled && (
               <TextField
-                {
-                ...form.register('definedPluginSIP003')
-                }
-                onChange={(e) => (e.target.value?.trim())}
+                {...form.register('definedPluginSIP003')}
                 fullWidth
                 label={`${t('plugin_path')}[define_sip003]`}
               />
@@ -513,10 +484,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
           {
             definedSIP003PluginEnabled && (
               <TextField
-                {
-                ...form.register('definedPluginOptsSIP003')
-                }
-                onChange={(e) => (e.target.value?.trim())}
+                {...form.register('definedPluginOptsSIP003')}
                 fullWidth
                 multiline
                 label={`${t('plugin_options')}[define_sip003]`}
@@ -532,11 +500,12 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 <Controller
                   control={form.control}
                   name="fastOpen"
-                  render={({ field }) => (
+                  render={({ field: { value, ...other } }) => (
                     <Switch
                       edge="end"
                       color="primary"
-                      checked={field.value}
+                      {...other}
+                      checked={value ?? false}
                     />
                   )}
                 />
@@ -551,11 +520,12 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                     <Controller
                       control={form.control}
                       name="noDelay"
-                      render={({ field }) => (
+                      render={({ field: { value, ...other } }) => (
                         <Switch
                           edge="end"
                           color="primary"
-                          checked={field.value}
+                          {...other}
+                          checked={value ?? false}
                         />
                       )}
                     />
@@ -569,11 +539,12 @@ const EditServerDialog: React.FC<EditServerDialogProps> = props => {
                 <Controller
                   control={form.control}
                   name="udp"
-                  render={({ field }) => (
+                  render={({ field: { value, ...other } }) => (
                     <Switch
                       edge="end"
                       color="primary"
-                      checked={field.value}
+                      {...other}
+                      checked={value ?? false}
                     />
                   )}
                 />

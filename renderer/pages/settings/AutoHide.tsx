@@ -1,17 +1,16 @@
 import React from 'react';
 import { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
 import { AdaptiveSwitch } from "../../components/Pices/Switch";
 import { Settings } from '../../types';
-import { Controller, UseFormReturn } from 'react-hook-form';
 
 interface AutoHideProps {
-  // rules?: Rule[] | undefined;
   form: UseFormReturn<Settings>;
 }
 
-const AutoHide: React.FC<AutoHideProps> = () => {
+const AutoHide: React.FC<AutoHideProps> = ({ form }) => {
   const { t } = useTranslation();
 
   return (
@@ -23,10 +22,12 @@ const AutoHide: React.FC<AutoHideProps> = () => {
       <ListItemSecondaryAction>
         <Controller
           name="autoHide"
-          render={({ field }) => (
+          control={form.control}
+          render={({ field: { value, ...other } }) => (
             <AdaptiveSwitch
               edge="end"
-              checked={field.value}
+              {...other}
+              checked={value ?? false}
             />
           )}
         />
