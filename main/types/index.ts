@@ -10,6 +10,7 @@ export const encryptMethods = [
   "aes-128-gcm",
   "aes-192-gcm",
   "aes-256-gcm",
+  "rc4",
   "rc4-md5",
   "aes-128-cfb",
   "aes-192-cfb",

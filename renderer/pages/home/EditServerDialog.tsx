@@ -295,17 +295,15 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             />
           </FormControl>
 
-          <InputLabel shrink required style={{ marginBottom: 0 }}>
+          <InputLabel shrink style={{ marginBottom: 0 }}>
             {t('encryption')}
           </InputLabel>
           <Controller
             control={form.control}
             name="encryptMethod"
-            rules={{ required: true }}
             render={({ field }) => (
               <Select
                 {...field}
-                required
                 label={t('encryption')}
                 displayEmpty
                 error={!!errors.encryptMethod}
@@ -324,17 +322,15 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             condition={isSSR}
             then={
               <>
-                <InputLabel shrink required style={{ marginBottom: 0 }}>
+                <InputLabel shrink style={{ marginBottom: 0 }}>
                   {t('protocol')}
                 </InputLabel>
                 <Controller
                   control={form.control}
                   name="protocol"
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      required
                       label={t('protocol')}
                       displayEmpty
                       fullWidth
@@ -360,17 +356,15 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             condition={isSSR}
             then={
               <>
-                <InputLabel shrink required style={{ marginBottom: 0 }}>
+                <InputLabel shrink style={{ marginBottom: 0 }}>
                   {t('obfs')}
                 </InputLabel>
                 <Controller
                   control={form.control}
                   name="obfs"
-                  rules={{ required: true }}
                   render={({ field }) => (
                     <Select
                       {...field}
-                      required
                       label={t('obfs')}
                       displayEmpty
                       fullWidth

@@ -326,7 +326,7 @@ export class Manager {
       return Promise.resolve()
         .then(async () => {
           const ports = await pickPorts(
-            settings.localPort + 1, 1,
+            +(settings.localPort) + 1, 1,
             [settings.pacPort, settings.httpProxy.port]
           );
           if (!ports.length) {
@@ -423,7 +423,7 @@ export class Manager {
 
             Manager.clusterConfig = configs;
             const ports = await pickPorts(
-              settings.localPort + 1, settings.loadBalance.count,
+              +(settings.localPort) + 1, settings.loadBalance.count,
               [settings.pacPort, settings.httpProxy.port]
             );
 
