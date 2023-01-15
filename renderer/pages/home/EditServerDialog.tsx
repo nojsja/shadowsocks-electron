@@ -1,5 +1,6 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { SnackbarMessage } from 'notistack';
 import {
   TextField,
   DialogProps,
@@ -18,8 +19,6 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  InputAdornment,
-  Input,
   FormControl
 } from '@material-ui/core';
 import {
@@ -32,9 +31,12 @@ import {
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import clsx from 'clsx';
+
+import If from '../../components/HOC/IF';
+import { AdaptiveAppBar } from '../../components/Pices/AppBar';
+import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
+import InputPassword from '../../components/Pices/InputPassword';
 
 import {
   Config, encryptMethods, plugins,
@@ -42,13 +44,10 @@ import {
   SSRConfig,
   Notification,
 } from '../../types';
-import { AdaptiveAppBar } from '../../components/Pices/AppBar';
-import { scrollBarStyle } from '../../pages/styles';
-import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
-import If from '../../components/HOC/IF';
+
 import OpenPluginsDir from '../settings/OpenPluginsDir';
 import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
-import { SnackbarMessage } from 'notistack';
+import { scrollBarStyle } from '../../pages/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -131,7 +130,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
     }
   });
   const { formState: { errors } } = form;
-  const [showPassword, setShowPassword] = useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -158,7 +156,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
 
   const handleAdd = () => {
     form
-      .trigger().then((sucess) => {
+      .trigger(undefined, { shouldFocus: true }).then((sucess) => {
         if (sucess) {
           onValues({
             ...form.getValues(),
@@ -167,17 +165,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
         } else {
           enqueueSnackbar(t('invalid_value'), { variant: 'error' });
         }
-      })
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(v => !v);
-  };
-
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
+      });
   };
 
   useLayoutEffect(() => {
@@ -263,13 +251,15 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
               required: true,
               min: 0,
               max: 65535,
+              valueAsNumber: true,
+              validate: (value) => !Number.isNaN(+value) || t('invalid_value'),
             })}
             placeholder="0-65535"
             required
             fullWidth
             type="number"
             error={!!errors.serverPort}
-            helperText={!!errors.serverPort && '0-65535'}
+            helperText={!!errors.serverPort && (errors.serverPort?.message || '0-65535')}
             label={t('server_port')}
           />
 
@@ -277,21 +267,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             fullWidth
           >
             <InputLabel shrink htmlFor="password">{t('password')}</InputLabel>
-            <Input
+            <InputPassword
               {...form.register('password')}
-              id="password"
-              type={showPassword ? "text" : "password"}
               error={!!errors.password}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
             />
           </FormControl>
 
@@ -389,6 +367,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
           <TextField
             {...form.register('timeout', {
               min: 60,
+              valueAsNumber: true,
+              validate: (value) => !!value && (value >= 60),
             })}
             fullWidth
             type="number"

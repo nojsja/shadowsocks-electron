@@ -30,13 +30,13 @@ const LocalPort: React.FC<LocalPortProps> = ({
               const pacPort = +record.pacPort;
               const httpPort = +record.httpProxy?.port;
               const num = localPort ^ pacPort ^ httpPort;
-              return (num !== localPort && num !== pacPort && num !== httpPort);
+              return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
             },
           })
         }
         required
         error={!!errors.localPort}
-        helperText={!!errors.localPort && t('invalid_value')}
+        helperText={!!errors.localPort && ( errors.localPort?.message || t('invalid_value'))}
         fullWidth
         size="small"
         type="number"

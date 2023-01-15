@@ -87,13 +87,13 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
                       const pacPort = +record.pacPort;
                       const localPort = +record.localPort;
                       const num = localPort ^ pacPort ^ httpPort;
-                      return (num !== localPort && num !== pacPort && num !== httpPort);
+                      return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
                     },
                   })
                 }
                 required
                 error={!!errors.httpProxy?.port}
-                helperText={!!errors.httpProxy?.port && t('invalid_value')}
+                helperText={!!errors.httpProxy?.port && ( errors.httpProxy?.port?.message || t('invalid_value'))}
                 size="small"
                 type="number"
                 placeholder={t('http_proxy_port')}

@@ -30,7 +30,7 @@ const PacPort: React.FC<PacPortProps> = ({
               const localPort = +record.localPort;
               const httpPort = +record.httpProxy?.port;
               const num = localPort ^ pacPort ^ httpPort;
-              return (num !== localPort && num !== pacPort && num !== httpPort);
+              return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
             },
           })
         }
@@ -39,7 +39,7 @@ const PacPort: React.FC<PacPortProps> = ({
         type="number"
         size="small"
         error={!!errors.pacPort}
-        helperText={!!errors.pacPort && t('invalid_value')}
+        helperText={!!errors.pacPort && (errors.pacPort?.message || t('invalid_value'))}
         label={
           <Tooltip arrow placement="right" title={t('pac_port_tips') as string}>
             <span>

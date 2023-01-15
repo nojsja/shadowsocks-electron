@@ -94,7 +94,7 @@
   "import_server_url_from_clipboard": "Import Server URL from Clipboard",
   "import_server_subscription_from_clipboard": "Import subscription server group from clipboard data",
   "import_server_url_from_clipboard_tips": "Text begins with ss(r)://.",
-  "import_server_subscription_from_clipboard_tips": "HTTP(S) url that used to download multiple ss(r) config data, data will be parsed and import by client. Tested & Supported service: paofu,monocloud,fast-frog(not recommended).",
+  "import_server_subscription_from_clipboard_tips": "HTTP(S) url that used to download multiple ss(r) config data, data will be parsed and import by client. The supported cloud platforms: paofu,monocloud,fast-frog(not recommended)...",
   "add_server_manually": "Add Server Manually",
   "remark": "Remark",
   "server_address": "Server Address",
