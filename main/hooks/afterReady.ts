@@ -95,9 +95,9 @@ const setAsDefaultProtocolClient = () => {
 
   handleArgv(process.argv);
 
-  // Windows & Linux
+  // Windows, Not supported on Linux
   app.on("second-instance", (event, argv) => {
-    if (process.platform === "win32" || process.platform === "linux") {
+    if (process.platform === "win32") {
       handleArgv(argv);
     }
   });

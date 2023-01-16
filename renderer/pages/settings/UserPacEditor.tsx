@@ -22,7 +22,7 @@ import useLayoutDidUpdate from '../../hooks/useLayoutDidUpdate';
 const pacRuleDemos =
 `
 ! Demo[01] -------------
-! *.example.com/*
+! .example.com/*
 ! > Links will go through proxy:
 ! >> https://www.example.com
 ! >> https://image.example.com
