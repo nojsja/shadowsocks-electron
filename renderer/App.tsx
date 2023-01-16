@@ -1,33 +1,34 @@
-import React, { useEffect } from "react";
-import { CssBaseline } from "@material-ui/core";
+import React, { useEffect } from 'react';
+import { CssBaseline } from '@material-ui/core';
 import {
   makeStyles,
   createStyles,
   ThemeProvider
-} from "@material-ui/core/styles";
+} from '@material-ui/core/styles';
 import { SnackbarProvider } from 'notistack';
 import {
   HashRouter,
-} from "react-router-dom";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { ipcRenderer } from "electron";
-import { MessageChannel } from "electron-re";
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { ipcRenderer } from 'electron';
+import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
-import { dispatch as dispatchEvent } from "use-bus";
+import { dispatch as dispatchEvent } from 'use-bus';
+import { FormProvider, useForm } from 'react-hook-form';
+
+import RouterComp from './Router';
+import AppNav from './components/AppNav';
+import Loading from './components/Loading';
+import useTheme from './hooks/useTheme';
+import useGlobalAction from './hooks/useGlobalAction';
 
 import prepareForLanguage, { getFirstLanguage } from './i18n';
-import { getDefaultLang } from "./utils";
-import { store, persistor } from "./redux/store";
-import { getConnectionStatus, setStatus } from "./redux/actions/status";
-import { setSetting } from "./redux/actions/settings";
-import AppNav from "./components/AppNav";
-import Loading from "./components/Loading";
-import RouterComp from './Router';
-import useTheme from "./hooks/useTheme";
-import useGlobalAction from "./hooks/useGlobalAction";
-import { ServerMode } from "./types";
-import { FormProvider, useForm } from 'react-hook-form';
+import { getDefaultLang } from './utils';
+import { store, persistor } from './redux/store';
+import { getConnectionStatus, setStatus } from './redux/actions/status';
+import { setSetting } from './redux/actions/settings';
+import { ServerMode } from './types';
 
 export const persistStore = new ElectronStore();
 
