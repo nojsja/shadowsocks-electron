@@ -42,7 +42,7 @@
     "chalk": "4.x",
     "clsx": "^1.1.1",
     "electron-is-dev": "1.1.0",
-    "electron-re": "^1.2.5",
+    "electron-re": "^1.2.7",
     "electron-store": "^8.0.1",
     "electron-updater": "^4.6.5",
     "electron-window-state": "^5.0.3",
