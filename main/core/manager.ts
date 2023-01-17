@@ -3,25 +3,88 @@ import { EventEmitter } from 'events';
 import os from 'os';
 import { BrowserWindow } from 'electron';
 
-import { i18n } from '../electron';
-import logger, { info, warning } from '../logs';
-
 import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient, type SupportedClient } from './client';
 import pickPorts from './helpers/port-picker';
 import { Proxy } from './proxy';
 import randomPicker from './helpers/random-picker';
+import checkPortInUse from './helpers/port-checker';
 import { Target } from './LoadBalancer/types';
-import { Config, Settings, ServiceResult } from '../types';
 import { ALGORITHM } from './LoadBalancer';
-import {
-  StartClientInterceptor, StartClusterInterceptor,
-  Interceptor,
-} from './helpers/interceptor';
+import { Interceptor } from './helpers/interceptor';
+import { i18n } from '../electron';
+import logger, { info, warning } from '../logs';
+
+import { type Config, type Settings, type ServiceResult } from '../types';
 
 const platform = os.platform();
-const startClientStep = new StartClientInterceptor();
-const startClusterStep = new StartClusterInterceptor();
+
+/**
+  * StartClusterInterceptor [cluster interceptor on start]
+  * @author nojsja
+  */
+export class StartClusterInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+
+  before = async (config: Config, settings: Settings) => {
+    await Manager.changeMode('cluster');
+    const results = await checkPortInUse([settings.localPort], '127.0.0.1');
+    if (results[0]?.isInUse) {
+      warning(`Port ${settings.localPort} is in use`);
+      throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
+    }
+    await Manager.disableProxy();
+    await Manager.enableProxy(settings);
+  }
+}
+
+/**
+  * StopClusterInterceptor [cluster interceptor on stop]
+  * @author nojsja
+  */
+export class StopClusterInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+}
+
+
+/**
+  * StartClientInterceptor [client interceptor on start]
+  * @author nojsja
+  */
+export class StartClientInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+
+  before = async (config: Config, settings: Settings) => {
+    await Manager.changeMode('single');
+    const results = await checkPortInUse([settings.localPort], '127.0.0.1');
+    if (results[0]?.isInUse) {
+      warning(`Port ${settings.localPort} is in use`);
+      throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
+    }
+    await Manager.disableProxy();
+    await Manager.enableProxy(settings);
+  }
+
+  after = () => {
+    console.log('StartClusterInterceptor: after');
+  }
+}
+
+/**
+  * StopClientInterceptor [client interceptor on stop]
+  * @author nojsja
+  */
+export class StopClientInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+}
 
 export class Manager {
   static mode: 'single' | 'cluster' = 'single'; // running mode
@@ -377,7 +440,7 @@ export class Manager {
         });
     },
     /* interceptors */
-    [startClientStep],
+    [new StartClientInterceptor()],
     /* fallback */
     (err) => {
       warning(err);
@@ -493,7 +556,7 @@ export class Manager {
       });
     },
     /* interceptors */
-    [startClusterStep],
+    [new StartClusterInterceptor()],
     /* fallback */
     (err) => {
       warning(err);
