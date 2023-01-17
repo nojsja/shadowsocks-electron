@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import LoadBalancer, { ALGORITHM } from './LoadBalancer';
 import shadowChecker from './helpers/shadow-checker';
 import { Target } from './LoadBalancer/types';
-import { info } from '../logs';
+import { info, error as errorLog } from '../logs';
 import { i18n } from '../electron';
 
 export interface SocketTransferOptions {
@@ -99,7 +99,7 @@ export class SocketTransfer extends EventEmitter {
   private doCheckWorks = async (targets: Target[]): Promise<Target[]> => {
     const failed: Target[] = [];
     const results = await Promise.all(targets.map(target => shadowChecker('127.0.0.1', target.id as number)));
-    info.bold('>> healthCheck result: ', results);
+    info.bold('>> health check result: ', results);
     results.forEach((pass, i) => {
       if (!pass) {
         failed.push(targets[i]);
@@ -123,13 +123,13 @@ export class SocketTransfer extends EventEmitter {
         }
       })
       .catch(error => {
-        console.error('healthCheck:', error);
+        console.error('health check error: ', error);
         this.emit('error:health:heck', { error });
       });
   }
 
   private onError = (error: Error) => {
-    console.error('server-error:', error);
+    errorLog.bold('socket transfer error:', error);
     this.emit('error:socket:transfer', { error });
   }
 

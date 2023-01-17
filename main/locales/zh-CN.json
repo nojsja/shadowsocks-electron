@@ -18,8 +18,8 @@
   "no_server_configs_found": "未找到服务器配置文件",
   "connections_pool_is_empty_tips": "连接池为空，服务已经断开",
   "cluster_connect_failed": "集群连接失败",
-  "unknown_shadowsocks_client_type": "未知的shadowsocks客户端类型：",
+  "unknown_shadowsocks_client_type": "未知的 Shadowsocks 客户端类型：",
   "server_connect_failed": "服务器连接失败",
-  "failed_to_start_socket_transfer": "启动socket传输器失败",
+  "failed_to_start_socket_transfer": "启动 Socket 传输器失败",
   "would_you_want_to_add_the_server": "你想添加这个服务器吗？"
 }
