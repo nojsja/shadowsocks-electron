@@ -21,7 +21,7 @@ const timeline = [
       'Feat: Use the new form component - react-hook-form.',
       'Feat: Add input status indicator on content editing page such as settings/server-conf page.',
       'Feat: Add new encryption method - rc4.',
-      'Fix: Error when synchronize server status from main process when window destroyed.',
+      'Fix: Error of server status synchronization after window destroyed.',
       'Chore: Upgrade electron-re to v1.2.7.',
       'Chore: Upgrade sentry to v4.2.0.',
       'Chore: Upgrade electron-updater to v5.3.0.'

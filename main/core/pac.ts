@@ -18,6 +18,10 @@ const socks = require('socks');
 let server: PacServer | null;
 
 export class PacServer {
+  core: http.Server;
+  pacPort: number;
+  globalPacConf: string;
+  userPacConf: string;
 
   static updateUserRules(text: string) {
     return new Promise((resolve) => {
@@ -50,12 +54,9 @@ export class PacServer {
         null,
         2
       );
-
       const data = await fsExtra.readFile(path.resolve(pacDir, "template.pac"));
       const pac = data.toString("ascii").replace(/__RULES__/g, rules);
-
       await fsExtra.writeFile(path.resolve(pacDir, "pac.txt"), pac);
-
       logger.info("Generated PAC file without port");
     } catch (err) {
       logger.error((err as any).message ?? err);
@@ -70,9 +71,7 @@ export class PacServer {
       const pac = data
         .toString("ascii")
         .replace(/__PORT__/g, localPort.toString());
-
       await fsExtra.writeFile(path.resolve(pacDir, "proxy.pac"), pac);
-
       logger.info("Generated full PAC file");
     } catch (err) {
       logger.error((err as any).message ?? err);
@@ -97,6 +96,7 @@ export class PacServer {
         const host = parsedUrl.hostname;
         const protocol = parsedUrl.protocol;
         const port = parsedUrl.port ?? (protocol === 'https:' ? 443 : 80);
+
         return fetch(url)
           .then(response => {
               return response.text();
@@ -141,11 +141,6 @@ export class PacServer {
       return Promise.reject(err);
     });
   }
-
-  core: http.Server;
-  pacPort: number;
-  globalPacConf: string;
-  userPacConf: string;
 
   constructor(pacPort: number, pacFile: string) {
     this.pacPort = pacPort;
