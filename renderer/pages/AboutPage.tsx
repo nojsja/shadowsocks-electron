@@ -23,7 +23,8 @@ const timeline = [
       'Feat: Add new encryption method - rc4.',
       'Fix: Error when synchronize server status from main process when window destroyed.',
       'Chore: Upgrade electron-re to v1.2.7.',
-      'Chore: Upgrade sentry to v4.2.0.'
+      'Chore: Upgrade sentry to v4.2.0.',
+      'Chore: Upgrade electron-updater to v5.3.0.'
     ]
   },
   {
