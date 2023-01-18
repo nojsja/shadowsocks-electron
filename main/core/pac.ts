@@ -21,14 +21,23 @@ export class PacServer {
   pacPort: number;
   globalPacConf: string;
   userPacConf: string;
-  confWatcher: fs.FSWatcher | null;
+  userConfWatcher: fs.FSWatcher | null;
+  globalConfWatcher: fs.FSWatcher | null;
 
-  static updateUserRules(text: string) {
+  static updateUserPacRules(text: string) {
     return fs.promises.writeFile(userPacConf, text);
   }
 
   static async getUserPacRules() {
     return await fs.promises.readFile(userPacConf, "utf8");
+  }
+
+  static updateGlobalPacRules(text: string) {
+    return fs.promises.writeFile(globalPacConf, text);
+  }
+
+  static async getGlobalPacRules() {
+    return await fs.promises.readFile(globalPacConf, "utf8");
   }
 
   static startPacServer(pacPort: number) {
@@ -158,7 +167,8 @@ export class PacServer {
     this.core.listen(this.pacPort);
     this.globalPacConf = globalPacConf;
     this.userPacConf = userPacConf;
-    this.confWatcher = this.watch(this.userPacConf);
+    this.userConfWatcher = this.watch(this.userPacConf);
+    this.globalConfWatcher = this.watch(this.globalPacConf);
   }
 
   watch(pacFile: string) {
@@ -181,7 +191,8 @@ export class PacServer {
 
   unwatch() {
     logger.info(`UnWatching PAC file ${this.userPacConf}...`);
-    this.confWatcher?.close();
+    this.userConfWatcher?.close();
+    this.globalConfWatcher?.close();
   }
 
   close() {

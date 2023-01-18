@@ -47,6 +47,7 @@ import OpenProcessManager from './settings/OpenProcessManager';
 import LoadBalance from './settings/LoadBalance';
 import UserPacEditor from './settings/UserPacEditor';
 import OpenPluginsDir from './settings/OpenPluginsDir';
+import GlobalPacEditor from './settings/GlobalPacEditor';
 
 const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
   root: {
@@ -287,6 +288,7 @@ const SettingsPage: React.FC = () => {
             form={form}
           />
           <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
+          <GlobalPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
 
           <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
 

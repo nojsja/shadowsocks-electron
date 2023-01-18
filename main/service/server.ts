@@ -252,7 +252,7 @@ export class MainService implements MainServiceType {
 
   async updateUserPacRules(params: { rules: string }) {
     return new Promise(resolve => {
-      PacServer.updateUserRules(params.rules)
+      PacServer.updateUserPacRules(params.rules)
         .then(() => {
           resolve({
             code: 200,
@@ -271,6 +271,42 @@ export class MainService implements MainServiceType {
   async getUserPacRules() {
     return new Promise(resolve => {
       PacServer.getUserPacRules()
+        .then(rules => {
+          resolve({
+            code: 200,
+            result: rules
+          });
+        })
+        .catch(() => {
+          resolve({
+            code: 200,
+            result: ''
+          });
+        });
+    });
+  }
+
+  async updateGlobalPacRules(params: { rules: string }) {
+    return new Promise(resolve => {
+      PacServer.updateGlobalPacRules(params.rules)
+        .then(() => {
+          resolve({
+            code: 200,
+            result: '',
+          });
+        })
+        .catch((error) => {
+          resolve({
+            code: 500,
+            result: error?.toString() || i18n.__('invalid_parameter'),
+          });
+        });
+    });
+  }
+
+  async getGlobalPacRules() {
+    return new Promise(resolve => {
+      PacServer.getGlobalPacRules()
         .then(rules => {
           resolve({
             code: 200,
