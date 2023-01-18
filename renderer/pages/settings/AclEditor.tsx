@@ -3,7 +3,7 @@ import React, {
   useRef, useState,
 } from 'react';
 import {
-  DialogContent,
+  DialogContent, IconButton,
 } from "@material-ui/core";
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { MessageChannel } from 'electron-re';
@@ -11,7 +11,6 @@ import { useDispatch } from 'react-redux';
 
 import { DialogTitle } from '../home/AddServerDialog';
 import { AdaptiveDialog } from '../../components/Pices/Dialog';
-import IconButtonSmaller from '../../components/Pices/IconButtonSmaller';
 import TextEditor from '../../components/Pices/TextEditor';
 
 import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
@@ -82,9 +81,9 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
 
   return (
     <>
-      <IconButtonSmaller onClick={handleOpen} >
-        <BorderColorIcon fontSize="small" />
-      </IconButtonSmaller>
+      <IconButton onClick={handleOpen} >
+        <BorderColorIcon />
+      </IconButton>
       <AdaptiveDialog fullWidth color="primary" onClose={handleClose} open={visible}>
         <DialogTitle onClose={handleClose} attr='share'></DialogTitle>
         <DialogContent>

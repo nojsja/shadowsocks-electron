@@ -136,7 +136,7 @@ const GlobalPacEditor: React.FC<GlobalPacEditorProps> = ({ touchField, isFieldTo
             }
           />
         }
-        secondary={t('custom_global_rules')}
+        secondary={t('customize_global_rules')}
       />
       <ListItemSecondaryAction>
         <IconButton onClick={handleOpen} >

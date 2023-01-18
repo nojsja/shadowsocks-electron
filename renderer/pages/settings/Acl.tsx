@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import path from 'path';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import {
   Button,
   ListItem,
@@ -12,8 +13,9 @@ import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import ListItemTextMultipleLine from '../../components/Pices/ListItemTextMultipleLine';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import { Settings } from '../../types';
-import { Controller, UseFormReturn } from 'react-hook-form';
 import AclEditor from './AclEditor';
+
+import { useStylesOfSettings as useStyles } from '../styles';
 
 interface AclProps {
   form: UseFormReturn<Settings>;
@@ -31,6 +33,7 @@ const Acl: React.FC<AclProps> = ({
   const { t } = useTranslation();
   const enable = form.watch('acl.enable');
   const url = form.watch('acl.url') || '';
+  const styles = useStyles();
 
   const setAclAction = () => {
     touchField('acl', true);
@@ -43,35 +46,14 @@ const Acl: React.FC<AclProps> = ({
         <ListItemTextMultipleLine
           primary={
             <TextWithTooltip
-              text={'ACL'}
+              text="ACL"
               tooltip={
                 t('readme_acl')
               }
             />
           }
-          secondary={
-            enable && (
-              <Controller
-                control={form.control}
-                name="acl.url"
-                render={({ field }) => (
-                  <>
-                    <Tooltip
-                      arrow
-                      placement="top"
-                      title={!!url && url}
-                    >
-                      <span>{path.basename(field.value || '')}</span>
-                    </Tooltip>
-                    { enable && url && (<AclEditor url={url} touchField={touchField} isFieldTouched={isFieldTouched} />) }
-                  </>
-                )}
-              />
-            )
-          }
         />
         <ListItemSecondaryAction>
-          { enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>) }
           <Controller
             control={form.control}
             name="acl.enable"
@@ -86,6 +68,35 @@ const Acl: React.FC<AclProps> = ({
           <input style={{ display: 'none' }} type="file"></input>
         </ListItemSecondaryAction>
       </ListItem>
+      {
+        enable && (
+          <ListItem className={styles.sub}>
+            <ListItemTextMultipleLine
+              primary={
+                <Controller
+                    control={form.control}
+                    name="acl.url"
+                    render={({ field }) => (
+                      <>
+                        <Tooltip
+                          arrow
+                          placement="top"
+                          title={!!url && url}
+                        >
+                          <span>└─ {path.basename(field.value || '(none)')}</span>
+                        </Tooltip>
+                      </>
+                    )}
+                  />
+              }
+            />
+            <ListItemSecondaryAction>
+              { enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>) }
+              { url && (<AclEditor url={url} touchField={touchField} isFieldTouched={isFieldTouched} />) }
+            </ListItemSecondaryAction>
+          </ListItem>
+        )
+      }
     </>
   )
 }

@@ -72,7 +72,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
             <ListItemText
               primary={
                 <TextWithTooltip
-                  text={`↳ ${t('nodes_count_limit')}`}
+                  text={`├── ${t('nodes_count_limit')}`}
                   tooltip={t('load_balance_tips')}
                 />
               }
@@ -101,7 +101,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
             <ListItemText
               primary={
                 <TextWithTooltip
-                  text={`↳ ${t('load_balance_strategy')}`}
+                  text={`└─ ${t('load_balance_strategy')}`}
                   tooltip={
                     <div>
                       <div>{t('polling')} - {t('polling_tips')}</div>

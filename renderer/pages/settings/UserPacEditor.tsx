@@ -136,7 +136,7 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
             }
           />
         }
-        secondary={t('custom_user_rules')}
+        secondary={t('customize_user_rules')}
       />
       <ListItemSecondaryAction>
         <IconButton onClick={handleOpen} >

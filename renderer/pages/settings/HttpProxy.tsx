@@ -73,7 +73,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
         then={
           <ListItem className={styles.sub}>
             <ListItemText
-              primary={`↳ ${t('http_proxy_port')}`}
+              primary={`└─ ${t('http_proxy_port')}`}
             />
             <ListItemSecondaryAction>
               <TextField
