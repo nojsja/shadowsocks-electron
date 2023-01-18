@@ -89,6 +89,10 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
   const dispatch = useDispatch();
 
   const handleClose = () => {
+    if (isFieldTouched('pac')) {
+      onPacContentSubmit(contentRef.current);
+      touchField('pac', false);
+    }
     setVisible(false);
   };
 
@@ -100,7 +104,12 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
     MessageChannel.invoke('main', 'service:main', {
       action: 'updateUserPacRules',
       params: { rules }
-    });
+    })
+      .then(({ code, result }) => {
+        if (code === 500) {
+          dispatch(SnackbarAction(result, { variant: 'error' }));
+        }
+      });
   }, .5e3), []);
 
   const getUserPacContent = useCallback(() => {
@@ -108,16 +117,16 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
       action: 'getUserPacRules',
       params: {}
     })
-    .then(({ code, result }) => {
-      if (code === 200) {
-        if (result) {
-          contentRef.current = result;
-          setPacContent(result);
+      .then(({ code, result }) => {
+        if (code === 200) {
+          if (result) {
+            contentRef.current = result;
+            setPacContent(result);
+          }
+        } else {
+          dispatch(SnackbarAction(result, { variant: 'error' }));
         }
-      } else {
-        dispatch(SnackbarAction(result, { variant: 'error' }));
-      }
-    });
+      });
   }, []);
 
   const onPacContentChange = (text: string) => {
@@ -126,38 +135,35 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
   };
 
   useLayoutDidUpdate(() => {
-    if (!visible && isFieldTouched('pac')) {
-      onPacContentSubmit(contentRef.current);
-      touchField('pac', false);
-    } else {
+    if (visible) {
       getUserPacContent();
     }
   }, [visible]);
 
   return (
     <ListItem>
-        <ListItemText
-          primary={
-            <TextWithTooltip
-              text={'PAC'}
-              tooltip={
-                t('restart_pac_tips')
-              }
-            />
-          }
-          secondary={t('custom_user_rules')}
-        />
-        <ListItemSecondaryAction>
-          <IconButton onClick={handleOpen} >
-            <BorderColorIcon />
-          </IconButton>
-          <AdaptiveDialog fullWidth color="primary" onClose={handleClose} open={visible}>
-            <DialogTitle onClose={handleClose} attr='share'></DialogTitle>
-            <DialogContent>
+      <ListItemText
+        primary={
+          <TextWithTooltip
+            text={'PAC'}
+            tooltip={
+              t('restart_pac_tips')
+            }
+          />
+        }
+        secondary={t('custom_user_rules')}
+      />
+      <ListItemSecondaryAction>
+        <IconButton onClick={handleOpen} >
+          <BorderColorIcon />
+        </IconButton>
+        <AdaptiveDialog fullWidth color="primary" onClose={handleClose} open={visible}>
+          <DialogTitle onClose={handleClose} attr='share'></DialogTitle>
+          <DialogContent>
             <Editor onPacContentChange={onPacContentChange} defaultValue={pacContent} />
-            </DialogContent>
-          </AdaptiveDialog>
-        </ListItemSecondaryAction>
+          </DialogContent>
+        </AdaptiveDialog>
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };

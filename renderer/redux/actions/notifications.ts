@@ -1,5 +1,5 @@
-import { SnackbarKey, SnackbarMessage } from "notistack";
-import { Notification } from "../../types";
+import { SnackbarKey, SnackbarMessage } from 'notistack';
+import { Notification } from '../../types';
 
 export const ENQUEUE_SNACKBAR = 'ENQUEUE_SNACKBAR';
 export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';

@@ -184,7 +184,7 @@ export class PacServer {
 
   unwatch(pacFile: string) {
     logger.info(`UnWatching PAC file ${pacFile}...`);
-    fs.unwatchFile(this.userPacConf);
+    fs.unwatchFile(pacFile);
   }
 
   close() {

@@ -10,7 +10,7 @@ export interface TextAreaProps extends TextareaAutosizeProps {
   onTextChange?: (text: string) => void;
 }
 
-const StyledTextareaAutosize = React.memo(function StyledTextareaAutosize(props: TextAreaProps) {
+const StyledTextareaAutosize = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(function StyledTextareaAutosize(props: TextAreaProps, ref) {
   const { onTextChange, ...other } = props;
   const useStyles = makeStyles((theme: Theme) => createStyles({
     textarea: {
@@ -32,6 +32,7 @@ const StyledTextareaAutosize = React.memo(function StyledTextareaAutosize(props:
     return (
       <TextareaAutosize
         {...props}
+        ref={ref}
         className={classes.textarea}
         onChange={onInnerChange}
       />

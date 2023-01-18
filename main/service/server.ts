@@ -276,6 +276,40 @@ export class MainService implements MainServiceType {
     });
   }
 
+  async updateLocalFileContent(params: { path: string, content: string, }) {
+    try {
+      await fs.promises.writeFile(params.path, params.content);
+    } catch (error: any) {
+      return Promise.resolve({
+        code: 500,
+        result: error?.toString() || i18n.__('invalid_parameter'),
+      });
+    }
+
+    return Promise.resolve({
+      code: 200,
+      result: params.path,
+    });
+  }
+
+  async getLocalFileContent(params: { path: string }) {
+    let content = '';
+
+    try {
+      content = await fs.promises.readFile(params.path, 'utf-8');
+    } catch (error: any) {
+      return Promise.resolve({
+        code: 500,
+        result: error?.toString() || i18n.__('invalid_parameter'),
+      });
+    }
+
+    return Promise.resolve({
+      code: 200,
+      result: content,
+    });
+  }
+
   async tcpPing(params: { host: string, port: number }) {
     return new Promise(resolve => {
       tcpPing({
