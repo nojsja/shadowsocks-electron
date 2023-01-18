@@ -1,5 +1,5 @@
 import React, {
-  useCallback, useLayoutEffect,
+  useCallback,
   useRef, useState,
 } from 'react';
 import {
@@ -11,35 +11,11 @@ import { useDispatch } from 'react-redux';
 
 import { DialogTitle } from '../home/AddServerDialog';
 import { AdaptiveDialog } from '../../components/Pices/Dialog';
-import StyledTextareaAutosize from '../../components/Pices/TextAreaAutosize';
-import { debounce } from '../../utils';
-import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
 import IconButtonSmaller from '../../components/Pices/IconButtonSmaller';
+import TextEditor from '../../components/Pices/TextEditor';
 
-interface EditorProps {
-  onPacContentChange: (content: string) => void;
-  defaultValue: string;
-}
-
-// eslint-disable-next-line react/prop-types
-const Editor = React.memo<EditorProps>(function Editor({ onPacContentChange, defaultValue }) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useLayoutEffect(() => {
-    if (ref.current) {
-      ref.current.value = defaultValue;
-    }
-  }, [defaultValue]);
-
-  return (
-    <StyledTextareaAutosize
-      minRows={20}
-      defaultValue={defaultValue}
-      ref={ref}
-      onTextChange={onPacContentChange}
-    />
-  );
-});
+import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
+import { debounce } from '../../utils';
 
 interface AclEditorProps {
   touchField: (attr: string, status: boolean) => void;
@@ -53,20 +29,7 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
   const [aclContent, setAclContent] = useState('');
   const dispatch = useDispatch();
 
-  const handleClose = () => {
-    if (isFieldTouched('aclRules')) {
-      onAclContentSubmit(contentRef.current, url);
-    }
-    setVisible(false);
-  };
-
-  const handleOpen = () => {
-    getUserPacContent(url);
-    setVisible(true);
-  };
-
   const onAclContentSubmit = useCallback(debounce((rules: string, url: string) => {
-    console.log('set', url, rules.length);
     MessageChannel.invoke('main', 'service:main', {
       action: 'updateLocalFileContent',
       params: {
@@ -81,7 +44,7 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
     });
   }, .5e3), []);
 
-  const getUserPacContent = useCallback((url: string) => {
+  const getAclContent = useCallback((url: string) => {
     MessageChannel.invoke('main', 'service:main', {
       action: 'getLocalFileContent',
       params: {
@@ -89,7 +52,6 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
       }
     })
     .then(({ code, result }) => {
-      console.log('get', url, result.length);
       if (code === 200) {
         if (result) {
           contentRef.current = result;
@@ -106,6 +68,18 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
     touchField('aclRules', true);
   };
 
+  const handleClose = () => {
+    if (isFieldTouched('aclRules')) {
+      onAclContentSubmit(contentRef.current, url);
+    }
+    setVisible(false);
+  };
+
+  const handleOpen = () => {
+    getAclContent(url);
+    setVisible(true);
+  };
+
   return (
     <>
       <IconButtonSmaller onClick={handleOpen} >
@@ -114,7 +88,7 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
       <AdaptiveDialog fullWidth color="primary" onClose={handleClose} open={visible}>
         <DialogTitle onClose={handleClose} attr='share'></DialogTitle>
         <DialogContent>
-          <Editor onPacContentChange={onAclContentChange} defaultValue={aclContent} />
+          <TextEditor onChange={onAclContentChange} defaultValue={aclContent} />
         </DialogContent>
       </AdaptiveDialog>
     </>

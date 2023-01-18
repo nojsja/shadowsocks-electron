@@ -13,11 +13,12 @@ import { useDispatch } from 'react-redux';
 
 import { DialogTitle } from '../home/AddServerDialog';
 import { AdaptiveDialog } from '../../components/Pices/Dialog';
-import StyledTextareaAutosize from '../../components/Pices/TextAreaAutosize';
-import { debounce } from '../../utils';
-import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
-import useLayoutDidUpdate from '../../hooks/useLayoutDidUpdate';
+import TextEditor from '../../components/Pices/TextEditor';
+
+import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
+import { debounce } from '../../utils';
+import useDidUpdate from '../../hooks/useDidUpdate';
 
 const pacRuleDemos =
 `
@@ -59,22 +60,6 @@ const pacRuleDemos =
 
 
 `;
-
-interface EditorProps {
-  onPacContentChange: (content: string) => void;
-  defaultValue: string;
-}
-
-// eslint-disable-next-line react/prop-types
-const Editor = React.memo<EditorProps>(function Editor({ onPacContentChange, defaultValue }) {
-  return (
-    <StyledTextareaAutosize
-      minRows={20}
-      defaultValue={defaultValue}
-      onTextChange={onPacContentChange}
-    />
-  );
-});
 
 interface UserPacEditorProps {
   touchField: (attr: string, status: boolean) => void;
@@ -134,7 +119,7 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
     touchField('pac', true);
   };
 
-  useLayoutDidUpdate(() => {
+  useDidUpdate(() => {
     if (visible) {
       getUserPacContent();
     }
@@ -160,7 +145,7 @@ const UserPacEditor: React.FC<UserPacEditorProps> = ({ touchField, isFieldTouche
         <AdaptiveDialog fullWidth color="primary" onClose={handleClose} open={visible}>
           <DialogTitle onClose={handleClose} attr='share'></DialogTitle>
           <DialogContent>
-            <Editor onPacContentChange={onPacContentChange} defaultValue={pacContent} />
+            <TextEditor onChange={onPacContentChange} defaultValue={pacContent} />
           </DialogContent>
         </AdaptiveDialog>
       </ListItemSecondaryAction>

@@ -14,7 +14,6 @@ import { debounce } from '../utils/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
-
 let server: PacServer | null;
 
 export class PacServer {
@@ -22,13 +21,10 @@ export class PacServer {
   pacPort: number;
   globalPacConf: string;
   userPacConf: string;
+  confWatcher: fs.FSWatcher | null;
 
   static updateUserRules(text: string) {
-    return new Promise((resolve) => {
-      fs.writeFile(userPacConf, text, () => {
-        resolve(true);
-      });
-    })
+    return fs.promises.writeFile(userPacConf, text);
   }
 
   static async getUserPacRules() {
@@ -36,19 +32,20 @@ export class PacServer {
   }
 
   static startPacServer(pacPort: number) {
-    server && server.close();
+    server?.close();
     server = new PacServer(pacPort, path.resolve(pacDir, "proxy.pac"));
   }
 
   static stopPacServer() {
-    server && server.close();
-    logger.info("Closed PAC server");
+    logger.info("Closing PAC server");
+    server?.close();
   }
 
   static async generatePacWithoutPort(gfwListText: string) {
     logger.info("Generating PAC file without port...");
 
     try {
+      // remove useless chars
       const rules = JSON.stringify(
         gfwListText.replace(/[\r\n]/g, '\n').split('\n').filter(i => i && i.trim() && i[0] !== "!" && i[0] !== "["),
         null,
@@ -56,8 +53,9 @@ export class PacServer {
       );
       const data = await fsExtra.readFile(path.resolve(pacDir, "template.pac"));
       const pac = data.toString("ascii").replace(/__RULES__/g, rules);
+
       await fsExtra.writeFile(path.resolve(pacDir, "pac.txt"), pac);
-      logger.info("Generated PAC file without port");
+      logger.info("Generated done.");
     } catch (err) {
       logger.error((err as any).message ?? err);
     }
@@ -71,8 +69,9 @@ export class PacServer {
       const pac = data
         .toString("ascii")
         .replace(/__PORT__/g, localPort.toString());
+
       await fsExtra.writeFile(path.resolve(pacDir, "proxy.pac"), pac);
-      logger.info("Generated full PAC file");
+      logger.info("Generated done.");
     } catch (err) {
       logger.error((err as any).message ?? err);
     }
@@ -143,6 +142,7 @@ export class PacServer {
   }
 
   constructor(pacPort: number, pacFile: string) {
+    logger.info("Starting PAC server");
     this.pacPort = pacPort;
     this.core =
       http.createServer((req, res) => {
@@ -155,44 +155,41 @@ export class PacServer {
           }
         });
       });
-    logger.info("Started PAC server");
     this.core.listen(this.pacPort);
     this.globalPacConf = globalPacConf;
     this.userPacConf = userPacConf;
-    this.watch(this.userPacConf);
+    this.confWatcher = this.watch(this.userPacConf);
   }
 
-  async watch(pacFile: string) {
-    this.unwatch(pacFile);
-    if (fs.existsSync(pacFile)) {
-      logger.info(`Watching PAC file ${pacFile}...`);
-      return fs.watch(pacFile, debounce(async () => {
-        logger.info(`Regenerating PAC conf from file: ${pacFile}...`);
-        try {
-          const userData = await fs.promises.readFile(pacFile);
-          const globalData = await fs.promises.readFile(this.globalPacConf);
-          const userText = userData.toString("ascii");
-          const globalText = globalData.toString("ascii");
-          await PacServer.generatePacWithoutPort(`${userText}\n${globalText}`);
-        } catch (error) {
-          console.log(error);
-        }
-      }, 1e3));
-    }
-    return null;
+  watch(pacFile: string) {
+    if (!fs.existsSync(pacFile)) return null;
+    logger.info(`Watching PAC file ${pacFile}...`);
+
+    return fs.watch(pacFile, debounce(async () => {
+      logger.info(`Regenerating PAC conf from file: ${pacFile}...`);
+      try {
+        const userData = await fs.promises.readFile(pacFile);
+        const globalData = await fs.promises.readFile(this.globalPacConf);
+        const userText = userData.toString("ascii");
+        const globalText = globalData.toString("ascii");
+        await PacServer.generatePacWithoutPort(`${userText}\n${globalText}`);
+      } catch (error) {
+        console.log(error);
+      }
+    }, 1e3));
   }
 
-  unwatch(pacFile: string) {
-    logger.info(`UnWatching PAC file ${pacFile}...`);
-    fs.unwatchFile(pacFile);
+  unwatch() {
+    logger.info(`UnWatching PAC file ${this.userPacConf}...`);
+    this.confWatcher?.close();
   }
 
   close() {
+    logger.info("Closing PAC server");
     try {
       this.core.close();
-      this.unwatch(this.userPacConf);
+      this.unwatch();
       server = null;
-      logger.info("Closed PAC server");
     } catch(error) {
       console.log(error);
     }
