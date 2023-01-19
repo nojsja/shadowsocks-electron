@@ -1,7 +1,5 @@
-import React from 'react';
-import Form, { Field } from "rc-field-form";
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormInstance, Rule } from 'rc-field-form/es/interface';
 import {
   ListItem,
   ListItemText,
@@ -10,26 +8,37 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
+import { Controller, UseFormReturn } from 'react-hook-form';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
-import If from "../../components/HOC/IF";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
-import { useStylesOfSettings as useStyles } from "../styles";
-import { ALGORITHM } from '../../types';
+import { useStylesOfSettings as useStyles } from '../styles';
+import { ALGORITHM, Settings } from '../../types';
+
+const LOADBALANCE_MAX_NODES = 10;
+const LOADBALANCE_MIN_NODES = 1;
 
 interface LoadBalanceProps {
-  rules?: Rule[] | undefined;
-  form: FormInstance<any>
+  form: UseFormReturn<Settings>;
 }
 
 const LoadBalance: React.FC<LoadBalanceProps> = ({
-  rules,
   form
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
-  const enable = Form.useWatch(['loadBalance', 'enable'], form);
+  const enable = form.watch('loadBalance.enable');
+  const count = form.watch('loadBalance.count');
+
+  useEffect(() => {
+    if (count < LOADBALANCE_MIN_NODES) {
+      form.setValue('loadBalance.count', LOADBALANCE_MIN_NODES);
+    }
+    if (count > LOADBALANCE_MAX_NODES) {
+      form.setValue('loadBalance.count', LOADBALANCE_MAX_NODES);
+    }
+  }, [count]);
 
   return (
     <>
@@ -44,51 +53,55 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
           secondary={t('unstable_feature')}
         />
         <ListItemSecondaryAction>
-          <Field name={['loadBalance', 'enable']} valuePropName="checked">
-            <AdaptiveSwitch
-              edge="end"
-            />
-          </Field>
+          <Controller
+            control={form.control}
+            name="loadBalance.enable"
+            render={({ field: { value, ...other } }) => (
+              <AdaptiveSwitch
+                edge="end"
+                {...other}
+                checked={value ?? false}
+              />
+            )}
+          />
         </ListItemSecondaryAction>
       </ListItem>
-      <If
-        condition={enable}
-        then={
+      {
+        enable && (
           <ListItem className={styles.sub}>
             <ListItemText
               primary={
                 <TextWithTooltip
-                  text={`↳ ${t('nodes_count_limit')}`}
+                  text={`├── ${t('nodes_count_limit')}`}
                   tooltip={t('load_balance_tips')}
                 />
               }
             />
             <ListItemSecondaryAction>
-              <Field
-                name={['loadBalance', 'count']}
-                rules={rules}
-                normalize={(value: string) => +(value.trim())}
-                validateTrigger={false}
-              >
-                <TextField
-                  className={`${styles.textField} ${styles.indentInput}`}
-                  required
-                  size="small"
-                  type="number"
-                />
-              </Field>
+              <TextField
+                className={`${styles.textField} ${styles.indentInput}`}
+                {
+                  ...form.register('loadBalance.count', {
+                    required: true,
+                    min: LOADBALANCE_MIN_NODES,
+                    max: LOADBALANCE_MAX_NODES,
+                  })
+                }
+                required
+                size="small"
+                type="number"
+              />
             </ListItemSecondaryAction>
           </ListItem>
-        }
-      />
-      <If
-        condition={enable}
-        then={
+        )
+      }
+      {
+        enable && (
           <ListItem className={styles.sub}>
             <ListItemText
               primary={
                 <TextWithTooltip
-                  text={`↳ ${t('load_balance_strategy')}`}
+                  text={`└─ ${t('load_balance_strategy')}`}
                   tooltip={
                     <div>
                       <div>{t('polling')} - {t('polling_tips')}</div>
@@ -99,20 +112,22 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
               }
             />
             <ListItemSecondaryAction>
-              <Field
-                name={['loadBalance', 'strategy']}
-                validateTrigger={false}
-              >
-                <Select
-                >
-                  <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
-                  <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
-                </Select>
-              </Field>
+              <Controller
+                control={form.control}
+                name="loadBalance.strategy"
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                  >
+                    <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
+                    <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
+                  </Select>
+                )}
+              />
             </ListItemSecondaryAction>
           </ListItem>
-        }
-      />
+        )
+      }
     </>
   )
 }

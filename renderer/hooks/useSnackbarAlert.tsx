@@ -18,10 +18,6 @@ interface SnackbarAlertProps {
   direction?: 'left' | 'right' | 'up' | 'down'
 }
 
-interface SetMessage {
-  (msg: string): void
-}
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     snackbar: {

@@ -1,33 +1,45 @@
-import React from 'react';
-import { Field } from "rc-field-form";
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormInstance, Rule } from 'rc-field-form/es/interface';
 import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
   TextField
 } from "@material-ui/core";
-import Form from 'rc-field-form';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
-import { useStylesOfSettings as useStyles } from "../styles";
+import { useStylesOfSettings as useStyles } from '../styles';
 import If from '../../components/HOC/IF';
+import { Settings } from '../../types';
+import { Controller, UseFormReturn } from 'react-hook-form';
+
+const MAX_PORT = 65535;
+const MIN_PORT = 1024;
 
 interface HttpProxyProps {
-  rules?: Rule[] | undefined;
-  form: FormInstance<any>
+  form: UseFormReturn<Settings>;
 }
 
 const HttpProxy: React.FC<HttpProxyProps> = ({
-  rules,
   form,
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
-  const enable = Form.useWatch(['httpProxy', 'enable'], form);
+  const enable = form.watch('httpProxy.enable');
+  const port = form.watch('httpProxy.port');
+  const { formState: { errors } } = form;
+
+  useEffect(() => {
+    if (port <= 0) {
+      form.setValue('httpProxy.port', MIN_PORT);
+    }
+    if (port > MAX_PORT) {
+      form.setValue('httpProxy.port', MAX_PORT);
+    }
+  }, [port]);
+
 
   return (
     <>
@@ -43,11 +55,17 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
           }
         />
         <ListItemSecondaryAction>
-          <Field name={["httpProxy", "enable"]} valuePropName="checked">
-            <AdaptiveSwitch
-              edge="end"
-            />
-          </Field>
+          <Controller
+            control={form.control}
+            name="httpProxy.enable"
+            render={({ field: { value, ...other } }) => (
+              <AdaptiveSwitch
+                {...other}
+                checked={value ?? false}
+                edge="end"
+              />
+            )}
+          />
         </ListItemSecondaryAction>
       </ListItem>
       <If
@@ -55,23 +73,31 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
         then={
           <ListItem className={styles.sub}>
             <ListItemText
-              primary={`↳ ${t('http_proxy_port')}`}
+              primary={`└─ ${t('http_proxy_port')}`}
             />
             <ListItemSecondaryAction>
-              <Field
-                name={["httpProxy", "port"]}
-                rules={rules}
-                normalize={(value: string) => +(value.trim())}
-                validateTrigger={false}
-              >
-                <TextField
-                  className={`${styles.textField} ${styles.indentInput}`}
-                  required
-                  size="small"
-                  type="number"
-                  placeholder={t('http_proxy_port')}
-                />
-              </Field>
+              <TextField
+                className={`${styles.textField} ${styles.indentInput}`}
+                {
+                  ...form.register('httpProxy.port', {
+                    min: 1024,
+                    max: 65535,
+                    validate: (value, record) => {
+                      const httpPort = +value;
+                      const pacPort = +record.pacPort;
+                      const localPort = +record.localPort;
+                      const num = localPort ^ pacPort ^ httpPort;
+                      return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
+                    },
+                  })
+                }
+                required
+                error={!!errors.httpProxy?.port}
+                helperText={!!errors.httpProxy?.port && ( errors.httpProxy?.port?.message || t('invalid_value'))}
+                size="small"
+                type="number"
+                placeholder={t('http_proxy_port')}
+              />
             </ListItemSecondaryAction>
           </ListItem>
         }

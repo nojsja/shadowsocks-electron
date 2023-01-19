@@ -1,31 +1,42 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { TextField, Tooltip } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
+import { UseFormReturn } from 'react-hook-form';
 
-import { useStylesOfSettings as useStyles } from "../styles";
+import { useStylesOfSettings as useStyles } from '../styles';
+import { Settings } from '../../types';
 
 interface LocalPortProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
 const LocalPort: React.FC<LocalPortProps> = ({
-  rules,
+  form,
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const { formState: { errors } } = form;
 
   return (
-    <Field
-      name="localPort"
-      rules={rules}
-      normalize={(value: string) => +(value.trim())}
-      validateTrigger={false}
-    >
       <TextField
         className={styles.textField}
+        {
+          ...form.register('localPort', {
+            required: true,
+            min: 1024,
+            max: 65535,
+            validate: (value, record) => {
+              const localPort = +value;
+              const pacPort = +record.pacPort;
+              const httpPort = +record.httpProxy?.port;
+              const num = localPort ^ pacPort ^ httpPort;
+              return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
+            },
+          })
+        }
         required
+        error={!!errors.localPort}
+        helperText={!!errors.localPort && ( errors.localPort?.message || t('invalid_value'))}
         fullWidth
         size="small"
         type="number"
@@ -37,7 +48,6 @@ const LocalPort: React.FC<LocalPortProps> = ({
           </Tooltip>
         }
       />
-    </Field>
   )
 }
 

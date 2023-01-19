@@ -20,6 +20,7 @@ export const encryptMethods = [
   "aes-128-gcm",
   "aes-192-gcm",
   "aes-256-gcm",
+  "rc4",
   "rc4-md5",
   "aes-128-cfb",
   "aes-192-cfb",
@@ -92,7 +93,7 @@ interface CommonConfig {
 
 export interface SSConfig extends CommonConfig {
   id: string;
-  type: string;
+  type: 'ss';
   remark?: string;
   serverHost: string;
   serverPort: number;
@@ -104,13 +105,13 @@ export interface SSConfig extends CommonConfig {
   noDelay?: boolean;
   maxOpenFile?: number;
   udp?: boolean;
-  plugin?: Plugin;
+  plugin?: Plugin | '';
   pluginOpts?: string;
 }
 
 export interface SSRConfig extends CommonConfig {
   id: string;
-  type: string;
+  type: 'ssr';
   remark?: string;
   serverHost: string;
   serverPort: number;
@@ -126,11 +127,11 @@ export interface SSRConfig extends CommonConfig {
   noDelay?: boolean;
   maxOpenFile?: number;
   udp?: boolean;
-  plugin?: Plugin;
+  plugin?: Plugin | '';
   pluginOpts?: string;
 }
 
-export type Config = SSConfig & SSRConfig;
+export type Config = SSConfig | SSRConfig;
 
 export interface GroupConfig {
   id: string,

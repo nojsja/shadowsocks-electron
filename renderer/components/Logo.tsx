@@ -3,7 +3,7 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 // import { ReactComponent as LogoSrc } from "../../assets/logo.svg";
 import LogoSrc from "../../assets/logo.svg";
 
-const useStyles = makeStyles(theme =>
+const useStyles = makeStyles(() =>
   createStyles({
     logo: {
       '& > svg': {

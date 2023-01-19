@@ -23,14 +23,14 @@ const useStyles = makeStyles((theme: Theme) =>
       // backgroundColor: grey[800],
       fontSize: '12px',
       color: 'white',
-      '& > .left-pannel': {
+      '& > .left-panel': {
         display: 'inline-flex',
         height: '100%',
         width: '50%',
         alignItems: 'center',
         verticalAlign: 'top'
       },
-      '& > .right-pannel': {
+      '& > .right-panel': {
         display: 'inline-flex',
         height: '100%',
         width: '50%',
@@ -65,10 +65,10 @@ const StatusBar: React.FC<StatusBarProps> =  (props) => {
 
   return (
     <div className={styles['status-bar-wrapper']}>
-      <div className={'left-pannel'}>
+      <div className={'left-panel'}>
         { left.map(item => <StatusBarItem key={item.key as string}>{item}</StatusBarItem>) }
       </div>
-      <div className={'right-pannel'}>
+      <div className={'right-panel'}>
         { right.map(item => <StatusBarItem key={item.key as string}>{item}</StatusBarItem>) }
       </div>
     </div>

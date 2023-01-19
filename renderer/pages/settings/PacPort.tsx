@@ -1,34 +1,45 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { TextField, Tooltip } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 
-import { useStylesOfSettings as useStyles } from "../styles";
+import { useStylesOfSettings as useStyles } from '../styles';
+import { UseFormReturn } from 'react-hook-form';
+import { Settings } from '../../types';
 
 interface PacPortProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
 }
 
 const PacPort: React.FC<PacPortProps> = ({
-  rules,
+  form,
 }) => {
   const { t } = useTranslation();
   const styles = useStyles();
+  const { formState: { errors } } = form;
 
   return (
-    <Field
-      name="pacPort"
-      rules={rules}
-      normalize={(value: string) => +(value.trim())}
-      validateTrigger={false}
-    >
       <TextField
         className={styles.textField}
+        {
+          ...form.register('pacPort', {
+            required: true,
+            min: 1024,
+            max: 65535,
+            validate: (value, record) => {
+              const pacPort = +value;
+              const localPort = +record.localPort;
+              const httpPort = +record.httpProxy?.port;
+              const num = localPort ^ pacPort ^ httpPort;
+              return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
+            },
+          })
+        }
         required
         fullWidth
         type="number"
         size="small"
+        error={!!errors.pacPort}
+        helperText={!!errors.pacPort && (errors.pacPort?.message || t('invalid_value'))}
         label={
           <Tooltip arrow placement="right" title={t('pac_port_tips') as string}>
             <span>
@@ -37,7 +48,6 @@ const PacPort: React.FC<PacPortProps> = ({
           </Tooltip>
         }
       />
-    </Field>
   )
 }
 

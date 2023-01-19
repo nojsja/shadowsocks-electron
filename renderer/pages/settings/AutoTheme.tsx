@@ -1,19 +1,19 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
+import { Settings } from '../../types';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
 interface AutoThemeProps {
-  rules?: Rule[] | undefined;
-  onAutoThemeChange: (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => void
+  onAutoThemeChange: (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => void;
+  form: UseFormReturn<Settings>;
 }
 
 const AutoTheme: React.FC<AutoThemeProps> = ({
-  rules,
-  onAutoThemeChange
+  onAutoThemeChange,
+  form,
 }) => {
   const { t } = useTranslation();
 
@@ -24,12 +24,21 @@ const AutoTheme: React.FC<AutoThemeProps> = ({
         secondary={t('autoThemeTips')}
       />
       <ListItemSecondaryAction>
-        <Field name="autoTheme" valuePropName="checked">
-          <AdaptiveSwitch
-            edge="end"
-            onChange={onAutoThemeChange}
-          />
-        </Field>
+        <Controller
+          control={form.control}
+          name="autoTheme"
+          render={({ field: { value, onChange, ...other } }) => (
+            <AdaptiveSwitch
+              edge="end"
+              {...other}
+              onChange={(e, checked) => {
+                onAutoThemeChange(e);
+                onChange(e, checked);
+              }}
+              checked={value ?? false}
+            />
+          )}
+        />
       </ListItemSecondaryAction>
     </ListItem>
   )

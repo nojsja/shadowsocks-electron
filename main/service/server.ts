@@ -5,20 +5,20 @@ import fs from 'fs';
 import {
   MainService as MainServiceType,
   Config, Settings, ServiceResult, ClipboardParseType, SSRConfig
-} from '../types/extention';
+} from '../types';
 import { manager, http, pac } from '../core';
 import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';
 import { parseSubscription, parseUrl } from '../utils/utils';
 import { ProxyURI } from '../core/helpers/proxy-url';
-import checkPortInUse from "../core/helpers/port-checker";
+import checkPortInUse from '../core/helpers/port-checker';
 import logger, { warning } from '../logs';
 import { i18n } from '../electron';
 import { PacServer } from '../core/pac';
 
 const { Manager } = manager;
-const { HttpProxyServer : HPS } = http;
-const { PacServer : PS } = pac;
+const { HttpProxyServer: HPS } = http;
+const { PacServer: PS } = pac;
 
 /* main service handler */
 export class MainService implements MainServiceType {
@@ -48,7 +48,7 @@ export class MainService implements MainServiceType {
             result: null
           });
         })
-        .catch(error => {
+        .catch((error) => {
           resolve({
             code: 500,
             result: error.toString()
@@ -170,19 +170,19 @@ export class MainService implements MainServiceType {
           result: params.url
         });
       })
-      .catch((err: Error) => {
-        resolve({
-          code: 500,
-          result: err?.toString()
+        .catch((err: Error) => {
+          resolve({
+            code: 500,
+            result: err?.toString()
+          });
         });
-      });
     });
   }
 
   async startHttpProxyServer(params: { port: number, proxyPort: number }) {
     return new Promise(resolve => {
       HPS.stopHttpServer(params.port, '127.0.0.1');
-      return HPS.createHttpServer({...params, host: '127.0.0.1'}, (error) => {
+      return HPS.createHttpServer({ ...params, host: '127.0.0.1' }, (error) => {
         resolve({
           code: error ? 500 : 200,
           result: (error && error.toString()) ?? ''
@@ -245,16 +245,26 @@ export class MainService implements MainServiceType {
       }
       resolve({
         code: 200,
-        result: ''
+        result: '',
       });
     });
   }
 
   async updateUserPacRules(params: { rules: string }) {
-    await PacServer.updateUserRules(params.rules);
-    return Promise.resolve({
-      code: 200,
-      result: ''
+    return new Promise(resolve => {
+      PacServer.updateUserPacRules(params.rules)
+        .then(() => {
+          resolve({
+            code: 200,
+            result: '',
+          });
+        })
+        .catch((error) => {
+          resolve({
+            code: 500,
+            result: error?.toString() || i18n.__('invalid_parameter'),
+          });
+        });
     });
   }
 
@@ -267,12 +277,82 @@ export class MainService implements MainServiceType {
             result: rules
           });
         })
-        .catch((err: Error) => {
+        .catch(() => {
           resolve({
             code: 200,
             result: ''
           });
         });
+    });
+  }
+
+  async updateGlobalPacRules(params: { rules: string }) {
+    return new Promise(resolve => {
+      PacServer.updateGlobalPacRules(params.rules)
+        .then(() => {
+          resolve({
+            code: 200,
+            result: '',
+          });
+        })
+        .catch((error) => {
+          resolve({
+            code: 500,
+            result: error?.toString() || i18n.__('invalid_parameter'),
+          });
+        });
+    });
+  }
+
+  async getGlobalPacRules() {
+    return new Promise(resolve => {
+      PacServer.getGlobalPacRules()
+        .then(rules => {
+          resolve({
+            code: 200,
+            result: rules
+          });
+        })
+        .catch(() => {
+          resolve({
+            code: 200,
+            result: ''
+          });
+        });
+    });
+  }
+
+  async updateLocalFileContent(params: { path: string, content: string, }) {
+    try {
+      await fs.promises.writeFile(params.path, params.content);
+    } catch (error: any) {
+      return Promise.resolve({
+        code: 500,
+        result: error?.toString() || i18n.__('invalid_parameter'),
+      });
+    }
+
+    return Promise.resolve({
+      code: 200,
+      result: params.path,
+    });
+  }
+
+  async getLocalFileContent(params: { path: string }) {
+    let content = '';
+
+    try {
+      content = await fs.promises.readFile(params.path, 'utf-8');
+    } catch (error: any) {
+      return Promise.resolve({
+        code: 500,
+        result: error?.toString() || i18n.__('invalid_parameter'),
+      });
+    }
+
+    return Promise.resolve({
+      code: 200,
+      result: content,
     });
   }
 
@@ -294,20 +374,21 @@ export class MainService implements MainServiceType {
   }
 
   async setAclConfFile(params: { text: string }): Promise<ServiceResult> {
-    return new Promise(resolve => {
-      return new Promise((resolve, reject) => {
-        fs.writeFile(
-          getPathRuntime('acl.conf'),
-          params.text,
-          (err => {
-            if (err) reject(err);
-            resolve({
-              code: 200,
-              result: getPathRuntime('acl.conf')
-            });
-          })
-        );
-      });
-    })
+    return new Promise((resolve) => {
+      fs.writeFile(
+        getPathRuntime('acl.conf'),
+        params.text,
+        (err) => {
+          if (err) return resolve({
+            code: 500,
+            result: err.toString()
+          });
+          resolve({
+            code: 200,
+            result: getPathRuntime('acl.conf')
+          });
+        }
+      );
+    });
   }
 }

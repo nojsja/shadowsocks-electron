@@ -1,14 +1,17 @@
-import { app, BrowserWindow, Tray, Menu, shell, nativeImage, nativeTheme } from "electron";
-import isDev from "electron-is-dev";
-import path from "path";
-import os from "os";
+import {
+  app, BrowserWindow, Tray, Menu, shell,
+  nativeImage, nativeTheme, MenuItem, MenuItemConstructorOptions,
+} from 'electron';
+import isDev from 'electron-is-dev';
+import path from 'path';
+import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 
-import { IpcMainWindowType, TrayMenu } from '../types/extention';
-import { getBestWindowPosition } from "../core/helpers";
-import { electronStore, i18n } from "../electron";
-import { Manager } from "../core/manager";
-import { getPerfectDevicePixelRatioImage } from "../utils/utils";
+import { IpcMainWindowType } from '../types';
+import { getBestWindowPosition } from '../core/helpers';
+import { electronStore, i18n } from '../electron';
+import { Manager } from '../core/manager';
+import { getPerfectDevicePixelRatioImage } from '../utils/utils';
 
 const platform = os.platform();
 
@@ -27,7 +30,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
   icon: string;
   trayIcon: string;
   trayMenu: Menu | null;
-  menus: TrayMenu;
+  menus: (MenuItem| MenuItemConstructorOptions)[];
   url: string;
   quitting = false;
   resizable = true;
@@ -146,6 +149,14 @@ export default class IpcMainWindow implements IpcMainWindowType {
         this.serverMode = mode;
         this.serverStatus = status;
         this.setLocaleTrayMenu();
+        try {
+          this.win?.webContents?.send("connected", {
+            status,
+            mode: mode
+          });
+        } catch (error) {
+          console.error(error);
+        }
       });
 
       nativeTheme.on('updated', (event: { sender: { shouldUseDarkColors: boolean  } }) => {
@@ -189,19 +200,23 @@ export default class IpcMainWindow implements IpcMainWindowType {
       }
     ];
 
-    this.trayMenu = Menu.buildFromTemplate(this.menus);
-    this.tray?.setContextMenu(this.trayMenu);
+    try {
+      this.trayMenu = Menu.buildFromTemplate(this.menus);
+      this.tray?.setContextMenu(this.trayMenu);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   createTray () {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (this.tray && !this.tray.isDestroyed()) return;
 
       this.tray = new Tray(this.trayIcon);
       this.setLocaleTrayMenu();
 
       if (platform !== "linux") {
-        this.tray.on("click", e => {
+        this.tray.on("click", () => {
           if (this.win?.isVisible()) {
             this.win.hide();
           } else {

@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Theme,
   Badge
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +12,7 @@ type StatusBarConnectionProps = {
   status: 'online' | 'offline' | 'cluster'
 };
 
-const StyledBadge = withStyles((theme: Theme) =>
+const StyledBadge = withStyles(() =>
   createStyles({
     badge: {
       left: -8,
@@ -24,7 +23,7 @@ const StyledBadge = withStyles((theme: Theme) =>
   }),
 )(Badge);
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     offline: {
       '& .MuiBadge-badge': {

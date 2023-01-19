@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* weight algorithm */
 export default function WEIGHTS(tasks: Target[], weightTotal: number, context: { weightIndex: number }) {

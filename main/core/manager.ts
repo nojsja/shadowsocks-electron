@@ -1,33 +1,96 @@
-import electronIsDev from "electron-is-dev";
-import { EventEmitter } from "events";
+import electronIsDev from 'electron-is-dev';
+import { EventEmitter } from 'events';
 import os from 'os';
-import { BrowserWindow } from "electron";
-
-import { i18n } from '../electron';
-import logger, { info, warning } from "../logs";
+import { BrowserWindow } from 'electron';
 
 import { SocketTransfer } from './socket-transfer';
-import { SSClient, SSRClient } from "./client";
-import pickPorts from "./helpers/port-picker";
-import { Proxy } from "./proxy";
-import randomPicker from "./helpers/random-picker";
-import { Target } from "./LoadBalancer/types";
-import { Config, Settings, ServiceResult } from "../types/extention";
-import { ALGORITHM } from "./LoadBalancer";
-import {
-  StartClientInterceptor, StartClusterInterceptor,
-  Interceptor,
-} from "./helpers/interceptor";
+import { SSClient, SSRClient, type SupportedClient } from './client';
+import pickPorts from './helpers/port-picker';
+import { Proxy } from './proxy';
+import randomPicker from './helpers/random-picker';
+import checkPortInUse from './helpers/port-checker';
+import { Target } from './LoadBalancer/types';
+import { ALGORITHM } from './LoadBalancer';
+import { Interceptor } from './helpers/interceptor';
+import { i18n } from '../electron';
+import logger, { info, warning } from '../logs';
+
+import { type Config, type Settings, type ServiceResult } from '../types';
 
 const platform = os.platform();
-const startClientStep = new StartClientInterceptor();
-const startClusterStep = new StartClusterInterceptor();
+
+/**
+  * StartClusterInterceptor [cluster interceptor on start]
+  * @author nojsja
+  */
+export class StartClusterInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+
+  before = async (config: Config, settings: Settings) => {
+    await Manager.changeMode('cluster');
+    const results = await checkPortInUse([settings.localPort], '127.0.0.1');
+    if (results[0]?.isInUse) {
+      warning(`Port ${settings.localPort} is in use`);
+      throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
+    }
+    await Manager.disableProxy();
+    await Manager.enableProxy(settings);
+  }
+}
+
+/**
+  * StopClusterInterceptor [cluster interceptor on stop]
+  * @author nojsja
+  */
+export class StopClusterInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+}
+
+
+/**
+  * StartClientInterceptor [client interceptor on start]
+  * @author nojsja
+  */
+export class StartClientInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+
+  before = async (config: Config, settings: Settings) => {
+    await Manager.changeMode('single');
+    const results = await checkPortInUse([settings.localPort], '127.0.0.1');
+    if (results[0]?.isInUse) {
+      warning(`Port ${settings.localPort} is in use`);
+      throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
+    }
+    await Manager.disableProxy();
+    await Manager.enableProxy(settings);
+  }
+
+  after = () => {
+    console.log('StartClusterInterceptor: after');
+  }
+}
+
+/**
+  * StopClientInterceptor [client interceptor on stop]
+  * @author nojsja
+  */
+export class StopClientInterceptor extends Interceptor {
+  constructor(env?: any) {
+    super(env);
+  }
+}
 
 export class Manager {
   static mode: 'single' | 'cluster' = 'single'; // running mode
   static proxy: Proxy | null; // proxy
-  static ssLocal: SSRClient | SSClient | null; // single mode client
-  static pool: (SSRClient | SSClient)[] = []; // cluster clients pool
+  static ssLocal: SupportedClient | null; // single mode client
+  static pool: SupportedClient[] = []; // cluster clients pool
   static socketTransfer: SocketTransfer | null; // cluster tcp gateway
   static clusterConfig: Config[]; // cluster server configs
   static event: EventEmitter = new EventEmitter(); // event center
@@ -40,12 +103,6 @@ export class Manager {
       status: connected,
       mode: Manager.mode
     });
-    if ((global as any)?.win?.webContents) {
-      (global as any).win.webContents.send("connected", {
-        status: connected,
-        mode: Manager.mode
-      });
-    }
   }
 
   static syncTraffic() {
@@ -76,8 +133,8 @@ export class Manager {
    */
   static async healCluster(targets: Target[]) {
     const abnormalPorts: (number | string)[] = [];
-    const abnormalClients: (SSRClient | SSClient)[] = [];
-    const normalClients: (SSRClient | SSClient)[] = [];
+    const abnormalClients: SupportedClient[] = [];
+    const normalClients: SupportedClient[] = [];
 
     targets.forEach(target => {
       if (Manager.deadMap[target.confId as string] !== undefined) {
@@ -125,7 +182,7 @@ export class Manager {
     return Promise
       .all(abnormalClients.map(client => client.disconnect()))
       .then((results) => {
-        const pendingClients: (SSRClient | SSClient)[] = [];
+        const pendingClients: SupportedClient[] = [];
         results.forEach((result, i) => {
           if (result.code === 200) {
             pendingClients.push(abnormalClients[i]);
@@ -146,7 +203,7 @@ export class Manager {
         return pendingClients;
       })
       /* recreate some nodes from configs */
-      .then((pendingClients: (SSRClient | SSClient)[]) => {
+      .then((pendingClients: SupportedClient[]) => {
         info.underline(
           '>> pending clients: ',
           pendingClients.map(client => `${client.config.serverHost}:${client.config.serverPort}`)
@@ -172,17 +229,17 @@ export class Manager {
       })
       /* connect those nodes */
       .then(async (results) => {
-        const failedClients: (SSRClient | SSClient)[] = [];
+        const failedClients: SupportedClient[] = [];
         const createdClients = results
           .filter(rsp => {
             if (rsp.code === 200) {
               return true;
             } else {
-              failedClients.push(rsp.result as (SSRClient | SSClient))
+              failedClients.push(rsp.result as SupportedClient)
               return false;
             }
           })
-          .map(rsp => rsp.result as (SSRClient | SSClient));
+          .map(rsp => rsp.result as SupportedClient);
         const cons = await Promise.all(createdClients.map(client => client.connect()));
         let hasSuccess = 0;
 
@@ -225,10 +282,10 @@ export class Manager {
       });
   }
 
-  static async spawnClient(config: Config, settings: Settings): Promise<{ code: number, result: unknown }> {
+  static async spawnClient(config: Config, settings: Settings) {
     if (electronIsDev && Manager.mode === 'single') console.log(config);
 
-    return new Promise(resolve => {
+    return new Promise<{ code: number, result: unknown }>(resolve => {
       if (config.type === 'ssr') {
         resolve({
           code: 200,
@@ -248,7 +305,7 @@ export class Manager {
     });
   }
 
-  static async kill(client: SSRClient | SSClient | null) {
+  static async kill(client: SupportedClient | null) {
     if (!client) return Promise.resolve();
 
     Manager.ssLocal = null;
@@ -332,7 +389,7 @@ export class Manager {
       return Promise.resolve()
         .then(async () => {
           const ports = await pickPorts(
-            settings.localPort + 1, 1,
+            +(settings.localPort) + 1, 1,
             [settings.pacPort, settings.httpProxy.port]
           );
           if (!ports.length) {
@@ -347,8 +404,8 @@ export class Manager {
           if (rsp.code !== 200) {
             throw new Error(rsp.result as string);
           }
-          Manager.ssLocal = rsp.result as (SSRClient | SSClient);
-          return (rsp.result as (SSRClient | SSClient)).connect();
+          Manager.ssLocal = rsp.result as SupportedClient;
+          return (rsp.result as SupportedClient).connect();
         })
         /* init socket transfer */
         /* sync status */
@@ -360,8 +417,8 @@ export class Manager {
             port: settings.localPort,
             strategy: ALGORITHM.POLLING,
             targets: [{
-              id: (Manager.ssLocal as (SSClient | SSRClient)).settings.localPort,
-              confId: (Manager.ssLocal as (SSClient | SSRClient)).config.id
+              id: (Manager.ssLocal as SupportedClient).settings.localPort,
+              confId: (Manager.ssLocal as SupportedClient).config.id
             }],
             heartbeat: [10e3, 15e3, 30e3, 60e3, 60e3 * 3, 60e3 * 5]
           });
@@ -383,7 +440,7 @@ export class Manager {
         });
     },
     /* interceptors */
-    [startClientStep],
+    [new StartClientInterceptor()],
     /* fallback */
     (err) => {
       warning(err);
@@ -429,7 +486,7 @@ export class Manager {
 
             Manager.clusterConfig = configs;
             const ports = await pickPorts(
-              settings.localPort + 1, settings.loadBalance.count,
+              +(settings.localPort) + 1, settings.loadBalance.count,
               [settings.pacPort, settings.httpProxy.port]
             );
 
@@ -450,7 +507,7 @@ export class Manager {
             Manager.pool =
               results
                 .filter(results => results.code === 200)
-                .map(rsp => rsp.result as (SSRClient | SSClient));
+                .map(rsp => rsp.result as SupportedClient);
 
             if (!Manager.pool.length) {
               throw new Error(i18n.__('connections_pool_is_empty_tips'))
@@ -499,7 +556,7 @@ export class Manager {
       });
     },
     /* interceptors */
-    [startClusterStep],
+    [new StartClusterInterceptor()],
     /* fallback */
     (err) => {
       warning(err);

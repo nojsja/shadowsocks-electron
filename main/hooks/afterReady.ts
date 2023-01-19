@@ -3,7 +3,7 @@ import path from 'path';
 import { BrowserService, ChildProcessPool, MessageChannel, LoadBalancer } from 'electron-re';
 import electronIsDev from 'electron-is-dev';
 
-import { ElectronApp } from "../app";
+import { ElectronApp } from '../app';
 import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '../config';
 import { i18n } from '../electron';
 
@@ -12,7 +12,7 @@ const tasks: Array<(electronApp: ElectronApp) => void> = [];
 const electronReServiceTest = (electronApp: ElectronApp) => {
   if (!electronIsDev) return;
 
-  electronApp.registryHooksAsyncWhenReady('electronReServiceTest', async (app: Electron.App) => {
+  electronApp.registryHooksAsyncWhenReady('electronReServiceTest', async () => {
     console.log('hooks: >> electronReServiceTest');
     try {
       const testService = new BrowserService('test', path.join(__dirname, '../test/test.service.js'), {
@@ -41,7 +41,7 @@ const electronReServiceTest = (electronApp: ElectronApp) => {
   });
 };
 
-const setAsDefaultProtocolClient = (electronApp: ElectronApp) => {
+const setAsDefaultProtocolClient = () => {
   const args = [];
 
   const addServerConfirm = (url: string) => {
@@ -95,7 +95,7 @@ const setAsDefaultProtocolClient = (electronApp: ElectronApp) => {
 
   handleArgv(process.argv);
 
-  // Windows
+  // Windows, Not supported on Linux
   app.on("second-instance", (event, argv) => {
     if (process.platform === "win32") {
       handleArgv(argv);

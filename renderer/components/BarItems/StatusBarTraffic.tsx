@@ -1,13 +1,10 @@
 import React from 'react';
-import {
-  Theme
-} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useTypedSelector } from '../../redux/reducers';
 import { Traffic } from '../../types';
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     text: {
       display: 'inline-block',

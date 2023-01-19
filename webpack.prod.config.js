@@ -1,15 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const os = require('os');
-const HappyPack = require('happypack');
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
+const ESLintPlugin = require('eslint-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const cpuLength = os.cpus().length;
 
 module.exports = {
-  entry: [
-    path.resolve(__dirname, './renderer/index.tsx'),
-  ],
+  entry: path.resolve(__dirname, './renderer/index.tsx'),
   // devtool: 'hidden-source-map',
   mode: 'production',
   output: {
@@ -35,7 +34,7 @@ module.exports = {
       {
         test: /(\.js?|\.jsx?)$/,
         exclude: /(node_modules|bower_components)/,
-        use: ['happypack/loader?id=babel']
+        use: ['babel-loader?cacheDirectory']
       },
       {
         test: /\.css$/,
@@ -112,10 +111,9 @@ module.exports = {
         NODE_ENV: JSON.stringify('production'),
       },
     }),
-    new HappyPack({
-      id: 'babel',
-      threadPool: happyThreadPool,
-      loaders: ['babel-loader?cacheDirectory'],
+    new ESLintPlugin({
+      extensions: ['.ts', '.tsx'],
+      context: path.resolve(__dirname, './'),
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',

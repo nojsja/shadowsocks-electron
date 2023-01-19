@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* random algorithm */
 export default function RANDOM(tasks: Target[]) {

@@ -1,19 +1,18 @@
 import React from 'react';
 import { ListItem, ListItemText } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
-import { FormInstance } from 'rc-field-form';
 
 import { restoreConfigurationFromFile } from '../../redux/actions/config';
 import { useTypedDispatch } from "../../redux/actions";
+import { UseFormReturn } from 'react-hook-form';
+import { Settings } from '../../types';
 
 interface RestoreProps {
-  rules?: Rule[] | undefined;
-  form: FormInstance<any>,
+  // rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>,
 }
 
 const Restore: React.FC<RestoreProps> = ({
-  rules,
   form,
 }) => {
   const { t } = useTranslation();
@@ -30,7 +29,7 @@ const Restore: React.FC<RestoreProps> = ({
           }
         },
         (data) => {
-          form.setFieldsValue(data.settings ?? {});
+          form.reset(data.settings ?? {})
         }
     ));
   }

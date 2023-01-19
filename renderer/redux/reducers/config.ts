@@ -68,15 +68,15 @@ function configReducer(
     case WIPE_CONFIG:
       return [];
     case TOP:
-      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      sourceIndex = state.findIndex((config) => config.id === action.id);
       newState = [...state];
       if (sourceIndex > 0) {
         newState = [newState.splice(sourceIndex, 1)[0], ...newState];
       }
       return newState;
     case MOVE_TO:
-      sourceIndex = state.findIndex((config, index) => config.id === action.id);
-      targetIndex  = state.findIndex((config, index) => config.id === (action as MCA).target);
+      sourceIndex = state.findIndex((config) => config.id === action.id);
+      targetIndex  = state.findIndex((config) => config.id === (action as MCA).target);
       newState = [...state];
       if (sourceIndex !== -1 && targetIndex !== -1) {
         const newConfig = {...newState[sourceIndex]};
@@ -89,14 +89,14 @@ function configReducer(
       }
       return newState;
     case MOVE_UP:
-      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      sourceIndex = state.findIndex((config) => config.id === action.id);
       newState = [...state];
       if (sourceIndex >= 0) {
         newState.splice((sourceIndex === 0) ? 0 : (sourceIndex - 1), 0, newState.splice(sourceIndex, 1)[0]);
       }
       return newState;
     case MOVE_DOWN:
-      sourceIndex = state.findIndex((config, index) => config.id === action.id);
+      sourceIndex = state.findIndex((config) => config.id === action.id);
       newState = [...state];
       if (sourceIndex >= 0) {
         newState.splice(sourceIndex + 1, 0, newState.splice(sourceIndex, 1)[0]);

@@ -4,12 +4,12 @@ import { Socket } from 'net';
 const socks = require('socks');
 
 /**
- * @name shadowChecker 检查从ss-local到ss-server的链路是否联通
- * @param {string} host ss代理本地地址 ep. 127.0.0.1
- * @param {string} port ss代理本地端口 ep. 1081
+ * @name shadowChecker check connection between ss-local and ss-server
+ * @param {string} host ss local address, ep. 127.0.0.1
+ * @param {string} port ss local port, ep. 1081
  * @returns Promise<boolean>
  */
-export default function shadowChecker(host: string, port: number): Promise<boolean> {
+export default function shadowChecker(host: string, port: number) {
   const agentConf = {
     ipaddress: host,
     port: port,
@@ -29,7 +29,7 @@ export default function shadowChecker(host: string, port: number): Promise<boole
     },
   };
 
-  return new Promise(resolve => {
+  return new Promise<boolean>(resolve => {
     socks.createConnection(options, (error: Error | null, pSocket: Socket) => {
       if (error) {
         return resolve(false);
@@ -48,7 +48,7 @@ export default function shadowChecker(host: string, port: number): Promise<boole
           resolve(false);
         }, 1e3);
       });
-      pSocket.on('error', (error) => {
+      pSocket.on('error', () => {
         resolve(false);
       });
       pSocket.resume();

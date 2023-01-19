@@ -1,9 +1,9 @@
-import path from "path";
-import { app } from "electron";
-import winston, { format } from "winston";
-import open from "open";
+import path from 'path';
+import { app } from 'electron';
+import winston, { format } from 'winston';
+import open from 'open';
 import  DailyRotateFile from 'winston-daily-rotate-file';
-import chalk from "chalk";
+import chalk from 'chalk';
 
 const { combine, simple, colorize } = format;
 
@@ -17,7 +17,7 @@ export const cleanLogs = () => {
   console.log('clean logs');
 };
 
-const timestamp = format((info, opts) => {
+const timestamp = format((info) => {
   info.message = `${new Date().toLocaleString()} - ${info.message}`;
   return info;
 });

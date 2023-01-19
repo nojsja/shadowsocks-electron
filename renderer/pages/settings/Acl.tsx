@@ -1,36 +1,39 @@
 import React from 'react';
-import { Field } from "rc-field-form";
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 import path from 'path';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import {
+  Button,
   ListItem,
   ListItemSecondaryAction,
   Tooltip,
-  Button
-} from "@material-ui/core";
+} from '@material-ui/core';
 
-import { AdaptiveSwitch } from "../../components/Pices/Switch";
-import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
-import If from "../../components/HOC/IF";
+import { AdaptiveSwitch } from '../../components/Pices/Switch';
+import ListItemTextMultipleLine from '../../components/Pices/ListItemTextMultipleLine';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
-import { ACL } from '../../types';
+import { Settings } from '../../types';
+import AclEditor from './AclEditor';
+
+import { useStylesOfSettings as useStyles } from '../styles';
 
 interface AclProps {
-  rules?: Rule[] | undefined;
+  form: UseFormReturn<Settings>;
   setAclUrl: () => void;
   touchField: (field: string, status: boolean) => void;
-  acl: ACL;
+  isFieldTouched: (attr: string) => boolean;
 }
 
 const Acl: React.FC<AclProps> = ({
   setAclUrl,
-  acl,
   touchField,
+  isFieldTouched,
+  form,
 }) => {
   const { t } = useTranslation();
-  const enable = !!acl?.enable;
-  const url = acl?.url || '';
+  const enable = form.watch('acl.enable');
+  const url = form.watch('acl.url') || '';
+  const styles = useStyles();
 
   const setAclAction = () => {
     touchField('acl', true);
@@ -43,46 +46,57 @@ const Acl: React.FC<AclProps> = ({
         <ListItemTextMultipleLine
           primary={
             <TextWithTooltip
-              text={'ACL'}
+              text="ACL"
               tooltip={
                 t('readme_acl')
               }
             />
           }
-          secondary={
-            <If
-              condition={enable}
-              then={
-                <Tooltip arrow
-                  placement="top"
-                  title={
-                    <If
-                      condition={!!url}
-                      then={url}
-                    />
-                  }
-                >
-                  <Field name={["acl", "url"]}>
-                    <span>{path.basename(url || '')}</span>
-                  </Field>
-                </Tooltip>
-              }
-            />
-          }
         />
         <ListItemSecondaryAction>
-          <If
-            condition={enable}
-            then={<Button onClick={setAclAction} size="small">{t('select')}</Button>}
+          <Controller
+            control={form.control}
+            name="acl.enable"
+            render={({ field: { value, ...other } }) => (
+              <AdaptiveSwitch
+                edge="end"
+                {...other}
+                checked={value ?? false}
+              />)
+            }
           />
-          <Field name={["acl", "enable"]} valuePropName="checked">
-            <AdaptiveSwitch
-              edge="end"
-            />
-          </Field>
           <input style={{ display: 'none' }} type="file"></input>
         </ListItemSecondaryAction>
       </ListItem>
+      {
+        enable && (
+          <ListItem className={styles.sub}>
+            <ListItemTextMultipleLine
+              primary={
+                <Controller
+                    control={form.control}
+                    name="acl.url"
+                    render={({ field }) => (
+                      <>
+                        <Tooltip
+                          arrow
+                          placement="top"
+                          title={!!url && url}
+                        >
+                          <span>└─ {path.basename(field.value || '(none)')}</span>
+                        </Tooltip>
+                      </>
+                    )}
+                  />
+              }
+            />
+            <ListItemSecondaryAction>
+              { enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>) }
+              { url && (<AclEditor url={url} touchField={touchField} isFieldTouched={isFieldTouched} />) }
+            </ListItemSecondaryAction>
+          </ListItem>
+        )
+      }
     </>
   )
 }

@@ -1,13 +1,14 @@
-import React, { useCallback, useState } from "react";
-import { Container, Typography, SwipeableDrawer, IconButton } from "@material-ui/core";
-import { CloseOutlined } from "@material-ui/icons";
-import os from "os";
-import { useTranslation } from "react-i18next";
+import React, { useCallback, useState } from 'react';
+import { Container, Typography, SwipeableDrawer, IconButton } from '@material-ui/core';
+import { CloseOutlined } from '@material-ui/icons';
+import os from 'os';
+import { useTranslation } from 'react-i18next';
 
-import packageJson from "../../package.json";
+import If from '../components/HOC/IF';
+import packageJson from '../../package.json';
+
 import authorPic from '../../assets/icons/256x256.png';
-import { useStylesOfAbout as useStyles } from "./styles";
-import If from "../components/HOC/IF";
+import { useStylesOfAbout as useStyles } from './styles';
 
 type Timeline = {
   title: string;
@@ -16,135 +17,149 @@ type Timeline = {
 
 const timeline = [
   {
+    title: 'v1.2.3',
+    children: [
+      'Feat: Move to new form component - react-hook-form.',
+      'Feat: Support Input state indicator on content editing page, such as settings page and server-conf page.',
+      'Feat: Support ACL rules editor.',
+      'Feat: Support global PAC rules editor.',
+      'Feat: Add new encryption method - rc4.',
+      'Fix: Error of server status synchronization, it occurs when window closed.',
+      'Fix: Bugs of PAC conf regenerating.',
+      'Chore: Upgrade electron-re to v1.2.7.',
+      'Chore: Upgrade sentry to v4.2.0.',
+      'Chore: Upgrade electron-updater to v5.3.0.'
+    ]
+  },
+  {
     title: 'v1.2.2',
     children: [
-      'Feat: Support for plugin custimization.',
-      'Feat: SS/SSR link protocol on Windows/Mac supported, click link like ss://[xxxxx] to wake up client on browser.',
+      'Feat: Support plugin custimization.',
+      'Feat: SS/SSR link protocol on Windows/Mac has supported, visit link like ss://[xxxxx] to wake up client on your browser.',
       'Feat: Add embeded v2ray-plugin.',
       'Feat: Support for MacOS Monterey(arm64/x64).',
       'Feat: Support for Russian language(@nanCreate).',
-      'Update: Improved plugin installation instructions and quick enter plugins directory.',
-      'Update: Add icon assets of retina screen.',
+      'Feat: Improved plugin installation instructions and quick enter plugins directory.',
+      'Feat: Small UI improvements.',
       'Fix: Server reconnection bugs.',
       'Fix: Bugs of SIP003 plugin parameters and SSR obfs parameters.',
-      'Fix: Fatal error when using Global/PAC mode on NO-Gnome Linux desktops, please wait for future release to total support.',
-      'Style: Small UI changes.',
+      'Fix: Fatal error when using Global/PAC mode on NO-Gnome Linux desktops, wait for future release to total support.',
+      'Chore: Add icon assets of retina screen.',
     ]
   },
   {
     title: 'v1.2.1',
     children: [
       'Feat: Quick connect/disconnect selected server from tray menu.',
-      'Feat: User PAC rules editor supported.',
+      'Feat: Support User PAC rules editor.',
+      'Feat: Small UI improvements, such as font color, icons, space.',
       'Fix: PAC mode bugs on Windows.',
       'Fix: Bugs when restore settings from local backup file.',
-      'Style: UI adjustments for font color, icons, space.',
     ]
   },
   {
     title: 'v1.2.0',
     children: [
-      'Refactor: Core module of Shadowsocks-Electron main process.',
-      'Feat: Server groups load-balancing mode supported - connect to multiple ssr/ss nodes at the same time.',
-      'Feat: Network traffic metrics supported.',
-      'Feat: Release notes display supported.',
-      'Feat: Acl mode supported, check instructions in github README.',
-      'Feat: When regenerate PAC file, GFWList data download processor will detect proxy server automatically.',
+      'Refactor: Core modules of Shadowsocks-Electron main process.',
+      'Feat: Load-balancing mode for server groups has supported - connect to multiple ssr/ss nodes at the same time.',
+      'Feat: Support Network traffic metrics.',
+      'Feat: Support Release notes display.',
+      'Feat: Acl mode has supported, check instructions in github README.',
+      'Feat: Small UI changes and user friendly adjustments.',
+      'Feat: When regenerate PAC file, GFWList data downloader will detect proxy server automatically.',
       'Perf: Context menu perfomance improvement.',
       'Perf: Reduce useless server reconnection.',
-      'Update: Small ui change and user friendly adjustment.',
       'Fix: Pac/Global mode bugs of IPv6 server.',
-      'Style: Text color adjustment of status bar.',
     ]
   },
   {
     title: 'v1.1.1',
     children: [
-      'Feat: Auto Theme mode in settings supported - dark/light mode, it depends on your system.',
-      'Feat: Auto Hide mode in settings supported - auto hide window on startup.',
-      'Feat: Subscription regeneration.',
-      'Update: Notification element.',
-      'Update: Theme switching performance improvement.',
+      'Feat: Support auto theme mode - dark/light mode, it depends on your system.',
+      'Feat: Support auto hide mode - client starts without window popup.',
+      'Feat: Support subscription regeneration.',
+      'Feat: Import new notification component.',
+      'Perf: Theme switching performance improvement.',
       'Fix: Get wrong parsed conf info when re importing a server item sharing link from subscription group.',
       'Fix: Restore config from file but UI do not refresh.',
-      'Style: Long text display of server items info.',
-      'Style: Server group header height.'
+      'Fix: Long text display of server items info.',
+      'Fix: Server group header height.'
     ],
   },
   {
     title: 'v1.1.10',
     children: [
-      'Feat: new web-based context menu.',
-      'Feat: Ubuntu22.04 supported.',
-      'Feat: server items dragging and sort.',
-      'Update: upgrade electron to v18.0.3.',
-      'Style: header bar and other small ui change.'
+      'Feat: Import new web-based context menu.',
+      'Feat: Support for Ubuntu22.04.',
+      'Feat: Server items dragging and sorting.',
+      'Feat: Small UI changes.',
+      'Chore: Upgrade electron to v18.0.3.',
     ],
   },
   {
     title: 'v1.1.9',
     children: [
-      'Feat: import sentry monitor system for error auto catching and reporting.',
-      'Feat: PAC file regeneration supported.',
-      'Update: plugins tips on ss-server configaration page.',
-      'Update: plugins installation instruction in readme.',
-      'Update: upgrade process-manager tool to v1.2.0.',
-      'Update: app startup hooks order.',
-      'Fix: darkMode bugs when recover setting from local backup file.',
-      'Style: server loading effect and other little ui adjustments.',
+      'Feat: Import sentry monitor tool for error catching and reporting.',
+      'Feat: Support PAC file regeneration.',
+      'Feat: Add plugins tips on ss-server configaration page.',
+      'Feat: New improved loading effect and some other UI adjustments.',
+      'Perf: Improvements of app startup hooks.',
+      'Chore: Upgrade process-manager tool to v1.2.0.',
+      'Fix: DarkMode bugs when recover setting from local backup file.',
+      'Docs: plugins installation instruction in readme.',
     ],
   },
   {
     title: 'v1.1.8',
     children: [
-      'Feat: mac os catalina (x64) supported.',
-      'Feat: electron app bootstrap hooks based on tapable.',
-      'Style: mac os title bar.'
+      'Feat: Support for MAC OS catalina (x64) system.',
+      'Feat: Add client bootstrap hooks based on tapable.',
+      'Feat: Add new title bar for Mac OS.'
     ],
   },
   {
     title: 'v1.1.7',
     children: [
-      'Feat: fixed menu supported.',
-      'Feat: multi language support for tray menu.',
-      'Feat: ssr/ss subscription links import supported.',
-      'Feat: server sort supported.',
-      'Feat: window resize supported.',
-      'Update: dark/light mode.',
-      'Update: server connecting actions.',
-      'Fix: dark theme bugs.'
+      'Feat: Support fixed menu.',
+      'Feat: Support multi language of tray menu.',
+      'Feat: Support SSR/SS subscription links import.',
+      'Feat: Support server list sorting.',
+      'Feat: Support Window resizing.',
+      'Perf: Improvements of dark/light mode.',
+      'Perf: Improvements of server connecting actions.',
+      'Fix: Bugs of dark theme.'
     ],
   },
   {
     title: 'v1.1.6',
     children: [
-      'Fixed: server manually addition error.',
-      'Update: tips will show when scan QR code from screen failed.',
-      'Style: ui widgets style changed.',
-      'Feat: electron-updater supported.'
+      'Feat: Add tips when failed to scan QR code from screen.',
+      'Feat: UI widgets style adjustments.',
+      'Feat: Import electron-updater.',
+      'Fix: Fatal error on server add.',
     ],
   },
   {
     title: 'v1.1.5',
     children: [
       'Feat: Using frameless window.',
-      'Update: Light & Dark Mode adjustment.',
+      'Feat: Adjustments of light/dark mode.',
     ],
   },
   {
     title: 'v1.1.4',
     children: [
-      'Feat: Windows platform supported.',
-      'Style: UI change.',
-      'Fix: Bugs fixed.'
+      'Feat: Support for Windows platform.',
+      'Feat: Small UI changes.',
+      'Fix: Bugs.'
     ],
   },
   {
     title: 'v1.1.3',
     children: [
-      'Feat: Dark Mode supported.',
-      'Style: Some UI widget style change.',
-      'Fix: Bugs fixed.'
+      'Feat: Support dark mode.',
+      'Feat: Some UI widgets style changes.',
+      'Fix: Bugs.'
     ],
   },
 ];
@@ -252,7 +267,7 @@ const AboutPage: React.FC = () => {
           </div>
           <div>
               <Typography variant="caption" gutterBottom>
-                © 2021 nojsja
+                © 2021-{new Date().getFullYear()} nojsja
               </Typography>
             </div>
         </div>

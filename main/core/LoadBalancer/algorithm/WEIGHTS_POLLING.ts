@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* weights polling */
 export default function WEIGHTS_POLLING(tasks: Target[], weightIndex: number, weightTotal: number, context: { weightIndex: number }) {

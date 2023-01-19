@@ -1,11 +1,11 @@
 import path from 'path';
 import fs, { PathLike } from 'fs';
 import os from 'os';
-import { exec, ExecOptions } from "child_process";
+import { exec, ExecOptions } from 'child_process';
 import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
   MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig,
-} from '../types/extention';
+} from '../types';
 import { archMap, getPathRuntime, pathExecutable } from '../config';
 import { i18n } from '../electron';
 import { ProxyURI } from '../core/helpers/proxy-url';
@@ -343,7 +343,7 @@ export function parseUrl(text: string) {
 }
 
 export function parseSubscription(text: string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w.]+)?\/(.*)/;
     const httpReg = /^(http|https)/;
     if (httpReg.test(text)) {

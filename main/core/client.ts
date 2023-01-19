@@ -1,13 +1,15 @@
-import { EventEmitter } from "events";
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { EventEmitter } from 'events';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import path from 'path';
 
-import checkPortInUse from "./helpers/port-checker";
-import { debounce, getPluginsPath, getSSLocalBinPath } from "../utils/utils";
-import { Settings, SSRConfig, SSConfig, ServiceResult } from "../types/extention";
-import logger from "../logs";
-import { DefinedPlugin } from "./plugin";
-import { isWindows } from "../config";
+import checkPortInUse from './helpers/port-checker';
+import { debounce, getPluginsPath, getSSLocalBinPath } from '../utils/utils';
+import { Settings, SSRConfig, SSConfig, ServiceResult } from '../types';
+import logger from '../logs';
+import { DefinedPlugin } from './plugin';
+import { isWindows } from '../config';
+
+export type SupportedClient = SSRClient | SSClient;
 
 export class Client extends EventEmitter {
   bin: string
@@ -112,30 +114,30 @@ export class SSClient extends Client {
     }
 
     this.params = [
-      "-s",
+      '-s',
       config.serverHost,
-      "-p",
+      '-p',
       config.serverPort.toString(),
-      "-b",
-      "127.0.0.1",
-      "-l",
+      '-b',
+      '127.0.0.1',
+      '-l',
       this.port.toString(),
-      "-k",
+      '-k',
       config.password,
-      "-m",
+      '-m',
       config.encryptMethod,
-      config.udp ? "-u" : "",
-      config.fastOpen ? "--fast-open" : "",
-      config.noDelay ? "--no-delay" : "",
-      SIP003PluginEnabled ? "--plugin" : "",
+      config.udp ? '-u' : '',
+      config.fastOpen ? '--fast-open' : '',
+      config.noDelay ? '--no-delay' : '',
+      SIP003PluginEnabled ? '--plugin' : '',
       SIP003PluginEnabled ? (plugin ?? '') : '',
-      (SIP003PluginEnabled && pluginOpts) ? "--plugin-opts" : "",
-      SIP003PluginEnabled ? `"${pluginOpts ?? ''}"` : "",
-      this.settings.verbose ? "-v" : "",
+      (SIP003PluginEnabled && pluginOpts) ? '--plugin-opts' : '',
+      SIP003PluginEnabled ? `"${pluginOpts ?? ''}"` : '',
+      this.settings.verbose ? '-v' : '',
       "-t",
       (config.timeout ?? "600").toString(),
-      isAclEnabled ? `--acl` : "",
-      isAclEnabled ? `${acl.url}` : ""
+      isAclEnabled ? '--acl' : '',
+      isAclEnabled ? `${acl.url}` : ''
     ].filter(arg => arg !== '' && arg !== '""');
   }
 
@@ -267,32 +269,32 @@ export class SSRClient extends Client {
     const { acl } = this.settings;
     const isAclEnabled = acl.enable && acl.url;
     this.params = [
-      "-s",
+      '-s',
       config.serverHost,
-      "-p",
+      '-p',
       config.serverPort.toString(),
-      "-b",
-      "127.0.0.1",
-      "-l",
+      '-b',
+      '127.0.0.1',
+      '-l',
       this.port.toString(),
-      "-k",
-      config.password,
-      "-m",
-      config.encryptMethod,
-      "-t",
-      (config.timeout ?? "600").toString(),
-      "-o",
+      '-k',
+      config.password ?? '""',
+      '-m',
+      config.encryptMethod ?? '""',
+      '-t',
+      (config.timeout ?? '600').toString(),
+      '-o',
       config.obfs || 'plain',
-      config.obfsParam ? `-g ${config.obfsParam}` : '',
-      "-O",
+      ...config.obfsParam ? ['-g', config.obfsParam] : [],
+      '-O',
       config.protocol || 'origin',
-      config.protocolParam ? `-G ${config.protocolParam}` : '',
-      config.udp ? "-u" : "",
-      config.fastOpen ? "--fast-open" : "",
-      // config.noDelay ? "--no-delay" : "",
-      this.settings.verbose ? "-v" : "",
-      isAclEnabled ? `--acl` : "",
-      isAclEnabled ? `${acl.url}` : ""
+      ...config.protocolParam ? ['-G', config.protocolParam] : [],
+      config.udp ? '-u' : '',
+      config.fastOpen ? '--fast-open' : '',
+      // config.noDelay ? '--no-delay' : '',
+      this.settings.verbose ? '-v' : '',
+      isAclEnabled ? '--acl' : '',
+      isAclEnabled ? `${acl.url}` : ''
     ].filter(arg => arg !== '');
   }
 

@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* minimum connections algorithm */
 export default function MINIMUM_CONNECTION(tasks: Target[], conMap: {[key: string]: number}={}) {

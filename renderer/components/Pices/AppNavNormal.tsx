@@ -4,7 +4,6 @@ import {
   useTheme,
   Toolbar,
   IconButton,
-  Theme,
   LinearProgress
 } from "@material-ui/core";
 import { makeStyles, createStyles } from "@material-ui/core/styles";
@@ -22,7 +21,7 @@ export type AppNavNormalProps = {
   title: string | React.ReactElement;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     appNavWrapper: {
 

@@ -1,4 +1,4 @@
-import { Target } from "../types";
+import { Target } from '../types';
 
 /* polling algorithm */
 export default function POLLING(tasks: Target[], currentIndex: number, context: { currentIndex: number }) {

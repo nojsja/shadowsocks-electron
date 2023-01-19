@@ -1,37 +1,38 @@
-import React, { useEffect } from "react";
-import { CssBaseline } from "@material-ui/core";
+import React, { useEffect } from 'react';
+import { CssBaseline } from '@material-ui/core';
 import {
   makeStyles,
   createStyles,
-  Theme,
   ThemeProvider
-} from "@material-ui/core/styles";
+} from '@material-ui/core/styles';
 import { SnackbarProvider } from 'notistack';
 import {
   HashRouter,
-} from "react-router-dom";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import { ipcRenderer } from "electron";
-import { MessageChannel } from "electron-re";
+} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { ipcRenderer } from 'electron';
+import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
-import { dispatch as dispatchEvent } from "use-bus";
+import { dispatch as dispatchEvent } from 'use-bus';
+import { FormProvider, useForm } from 'react-hook-form';
+
+import RouterComp from './Router';
+import AppNav from './components/AppNav';
+import Loading from './components/Loading';
+import useTheme from './hooks/useTheme';
+import useGlobalAction from './hooks/useGlobalAction';
 
 import prepareForLanguage, { getFirstLanguage } from './i18n';
-import { getDefaultLang } from "./utils";
-import { store, persistor } from "./redux/store";
-import { getConnectionStatus, setStatus } from "./redux/actions/status";
-import { setSetting } from "./redux/actions/settings";
-import AppNav from "./components/AppNav";
-import Loading from "./components/Loading";
-import RouterComp from './Router';
-import useTheme from "./hooks/useTheme";
-import useGlobalAction from "./hooks/useGlobalAction";
-import { ServerMode } from "./types";
+import { getDefaultLang } from './utils';
+import { store, persistor } from './redux/store';
+import { getConnectionStatus, setStatus } from './redux/actions/status';
+import { setSetting } from './redux/actions/settings';
+import { ServerMode } from './types';
 
 export const persistStore = new ElectronStore();
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       display: "flex"
@@ -70,6 +71,7 @@ const App: React.FC = () => {
   const styles = useStyles();
   const darkMode = persistStore.get('darkMode') === 'true';
   const [theme] = useTheme(darkMode ? 'dark' : 'light');
+  const methods = useForm();
 
   useGlobalAction({
     'reconnect-server': { type: 'reconnect-server', payload: '' },
@@ -92,22 +94,24 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <SnackbarProvider
-            maxSnack={3}
-            anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
-            autoHideDuration={2e3}
-          >
-            <HashRouter>
-              <div className={styles.root}>
-                <CssBaseline />
-                <AppNav />
-                <main className={styles.content}>
-                  <div className={styles.toolbar} />
-                  <RouterComp />
-                </main>
-              </div>
-            </HashRouter>
-          </SnackbarProvider>
+          <FormProvider {...methods}>
+            <SnackbarProvider
+              maxSnack={3}
+              anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
+              autoHideDuration={2e3}
+            >
+              <HashRouter>
+                <div className={styles.root}>
+                  <CssBaseline />
+                  <AppNav />
+                  <main className={styles.content}>
+                    <div className={styles.toolbar} />
+                    <RouterComp />
+                  </main>
+                </div>
+              </HashRouter>
+            </SnackbarProvider>
+          </FormProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

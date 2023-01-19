@@ -1,21 +1,19 @@
 import React from 'react';
 import { ListItem, ListItemText } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { Rule } from 'rc-field-form/es/interface';
 import { MessageChannel } from 'electron-re';
 import { SnackbarMessage } from 'notistack';
-import { FormInstance } from 'rc-field-form';
 
 import useDialogConfirm from '../../hooks/useDialogConfirm';
-import { useTypedDispatch } from "../../redux/actions";
-import { CLEAR_STORE } from "../../redux/reducers";
-import { Notification } from "../../types";
+import { useTypedDispatch } from '../../redux/actions';
+import { CLEAR_STORE } from '../../redux/reducers';
+import { Notification, Settings } from '../../types';
 import defaultStore from '../../redux/defaultStore';
+import { UseFormReturn } from 'react-hook-form';
 
 interface ResetDataProps {
-  rules?: Rule[] | undefined;
   enqueueSnackbar: (message: SnackbarMessage, options: Notification) => void;
-  form: FormInstance<any>;
+  form: UseFormReturn<Settings>;
 }
 
 const ResetData: React.FC<ResetDataProps> = ({
@@ -27,15 +25,13 @@ const ResetData: React.FC<ResetDataProps> = ({
   const dispatch = useTypedDispatch();
 
   const handleReset = () => {
-    dispatch({
-      type: CLEAR_STORE
-    } as any);
+    dispatch({type: CLEAR_STORE} as any);
+    closeDialog();
+    form.reset(defaultStore.settings);
     MessageChannel.invoke('main', 'service:main', {
       action: 'stopClient',
       params: {}
     });
-    closeDialog();
-    form.setFieldsValue(defaultStore.settings);
     enqueueSnackbar(t('cleared_all_data'), { variant: 'success' });
   };
 

@@ -1,11 +1,11 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core';
 import React from 'react';
 
 export type TextEllipsisType = {
   text: string;
 };
 
-const useStyles = makeStyles((theme: Theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   text: {
     display: 'inline-block',
     overflow: 'hidden',

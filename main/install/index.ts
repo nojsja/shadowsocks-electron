@@ -1,12 +1,12 @@
-import fs from "fs-extra";
-import path from "path";
-import { session } from "electron";
-import isDev from "electron-is-dev";
+import fs from 'fs-extra';
+import path from 'path';
+import { session } from 'electron';
+import isDev from 'electron-is-dev';
 
-import logger from "../logs";
-import { pac } from "../core";
+import logger from '../logs';
+import { pac } from '../core';
 import { getChromeExtensionsPath } from '../utils/utils';
-import { pacDir } from "../config";
+import { pacDir } from '../config';
 
 const loadExtensionsManually = (paths: string[]) => {
   paths.forEach(async (_path) => {
