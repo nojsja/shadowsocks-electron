@@ -267,7 +267,7 @@ const AboutPage: React.FC = () => {
           </div>
           <div>
               <Typography variant="caption" gutterBottom>
-                © 2021 nojsja
+                © 2021-{new Date().getFullYear()} nojsja
               </Typography>
             </div>
         </div>

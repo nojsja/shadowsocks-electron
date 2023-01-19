@@ -63,7 +63,7 @@
   "http_proxy": "HTTP Proxy",
   "https_proxy": "HTTPS Proxy",
   "http_proxy_port": "Proxy Port",
-  "restart_when_changed": "Proxy server will reload when back to main page",
+  "restart_when_changed": "Proxy server will reload when back to home page",
   "restart_pac_tips": "PAC server will reload when back to home page. And you might need to restart your web browsers for PAC rules to take effect",
   "customize_global_pac_tips": "The global rules will be covered when use 'GFWLIST URL' to re-generate PAC file, usually it's recommended to customize user rules.",
   "https_proxy_port": "HTTPS Proxy Port",

@@ -100,7 +100,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
 
 ## V. Screenshots
 
-### Main Page
+### Home Page
 
 ![main.png](./assets/main.png)
 
@@ -135,11 +135,11 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electron�
   - [↪ releases page ](https://github.com/nojsja/shadowsocks-electron/releases/latest)
 
 - ElectronJs Website
-  - [↪ main page ](https://www.electronjs.org/apps/shadowsocks-electron)
+  - [↪ home page ](https://www.electronjs.org/apps/shadowsocks-electron)
 
 - Snapcraft Store (linux)
   - [![shadowsocks-electron](https://snapcraft.io/shadowsocks-electron/badge.svg)](https://snapcraft.io/shadowsocks-electron)
-  - [↪ main page ](https://snapcraft.io/shadowsocks-electron)
+  - [↪ home page ](https://snapcraft.io/shadowsocks-electron)
 
 ## VII. Plugins Downloads
 > not necessary, just for some advanced users.
