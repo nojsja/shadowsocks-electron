@@ -1,4 +1,4 @@
-![GitHub repo size](https://img.shields.io/github/repo-size/nojsja/shadowsocks-electron) ![Lines of code](https://img.shields.io/tokei/lines/github/nojsja/shadowsocks-electron) ![GitHub](https://img.shields.io/github/license/nojsja/shadowsocks-electron)
+[![Build & Release](https://github.com/nojsja/shadowsocks-electron/actions/workflows/publish.yml/badge.svg)](https://github.com/nojsja/shadowsocks-electron/actions/workflows/publish.yml) ![GitHub repo size](https://img.shields.io/github/repo-size/nojsja/shadowsocks-electron) ![Lines of code](https://img.shields.io/tokei/lines/github/nojsja/shadowsocks-electron) ![GitHub](https://img.shields.io/github/license/nojsja/shadowsocks-electron)
 
 ![GitHub issues](https://img.shields.io/github/issues/nojsja/shadowsocks-electron) ![GitHub contributors](https://img.shields.io/github/contributors-anon/nojsja/shadowsocks-electron)
 
