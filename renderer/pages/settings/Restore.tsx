@@ -8,12 +8,13 @@ import { UseFormReturn } from 'react-hook-form';
 import { Settings } from '../../types';
 
 interface RestoreProps {
-  // rules?: Rule[] | undefined;
-  form: UseFormReturn<Settings>,
+  form: UseFormReturn<Settings>;
+  touchField: (attr: string, status: boolean) => void;
 }
 
 const Restore: React.FC<RestoreProps> = ({
   form,
+  touchField,
 }) => {
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
@@ -29,6 +30,7 @@ const Restore: React.FC<RestoreProps> = ({
           }
         },
         (data) => {
+          touchField('$settings', true);
           form.reset(data.settings ?? {})
         }
     ));

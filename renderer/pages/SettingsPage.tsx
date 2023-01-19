@@ -61,7 +61,6 @@ const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
   const { t } = useTranslation();
-
   const dispatch = useTypedDispatch();
   const settings = useTypedSelector(state => state.settings);
   const changedFields = useRef<{ [key: string]: any }>({});
@@ -131,12 +130,14 @@ const SettingsPage: React.FC = () => {
     const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'aclRules', 'pac'];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
     const pacConditions = ['pacPort'];
+    const settingsCondition = '$settings';
 
     Object.keys(changedFields.current).forEach(key => {
-      if (serverConditions.includes(key)) needReconnectServer = true;
-      if (httpConditions.includes(key)) needReconnectHttp = true;
-      if (pacConditions.includes(key)) needReconnectPac = true;
+      if (serverConditions.includes(key) || key === settingsCondition) needReconnectServer = true;
+      if (httpConditions.includes(key) || key === settingsCondition) needReconnectHttp = true;
+      if (pacConditions.includes(key) || key === settingsCondition) needReconnectPac = true;
     });
+
     if (needReconnectServer) globalAction.set({ type: 'reconnect-server' });
     if (needReconnectHttp) globalAction.set({ type: 'reconnect-http' });
     if (needReconnectPac) globalAction.set({ type: 'reconnect-pac' });
@@ -212,9 +213,8 @@ const SettingsPage: React.FC = () => {
   const onFieldChange = (value: any, key: keyof Settings) => {
     if (!key) return;
     let httpProxy, loadBalance, acl;
-    changedFields.current = Object.assign(changedFields.current || {}, { [key]: value });
 
-    console.log(value, key);
+    changedFields.current = Object.assign(changedFields.current || {}, { [key]: value });
 
     form.trigger(key).then((success) => {
       if (success) {
@@ -299,7 +299,7 @@ const SettingsPage: React.FC = () => {
           <DarkMode form={form} />
           <Language form={form} />
           <Backup />
-          <Restore form={form} />
+          <Restore form={form} touchField={touchField} />
           <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
 
           <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
