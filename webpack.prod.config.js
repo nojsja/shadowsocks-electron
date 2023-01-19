@@ -114,7 +114,6 @@ module.exports = {
     new ESLintPlugin({
       extensions: ['.ts', '.tsx'],
       context: path.resolve(__dirname, './'),
-      threads: cpuLength > 4 ? 4 : cpuLength,
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',

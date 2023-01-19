@@ -31,7 +31,7 @@
   "recover_pac_file_with_link": "使用填入的 GFWList 链接重新生成 PAC 文件",
   "recover_pac_file_with_file": "使用本地 GFWList 文件重新生成 PAC 文件",
   "fixed_menu": "固定菜单",
-  "auto_hide": "自动隐藏",
+  "auto_hide": "静默启动",
   "minimize_on_start": "最小化窗口启动",
   "top": "置顶",
   "server_url_not_set": "服务器地址未设置，请尝试删除订阅后重新添加",
