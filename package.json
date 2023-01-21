@@ -55,6 +55,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "2.6.0",
     "open": "7.0.3",
+    "puppeteer": "^19.5.2",
     "qrcode": "^1.4.4",
     "react-hook-form": "^7.42.0",
     "react-i18next": "^11.12.0",

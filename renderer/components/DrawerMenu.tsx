@@ -13,6 +13,7 @@ import { useTranslation } from  'react-i18next';
 import HomeIcon from "@material-ui/icons/Home";
 import SettingsIcon from "@material-ui/icons/Settings";
 import InfoIcon from "@material-ui/icons/Info";
+import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { Link } from "react-router-dom";
 
 import banner from '../../assets/banner.png';
@@ -47,6 +48,7 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
   const matchHomePath = getMatchedClasses(!!useRouteMatch('/home'));
   const matchSettingsPath = getMatchedClasses(!!useRouteMatch('/settings'));
   const matchAboutPath = getMatchedClasses(!!useRouteMatch('/about'));
+  const matchUserScriptPath = getMatchedClasses(!!useRouteMatch('/user-script'));
 
   return (
     <>
@@ -80,6 +82,14 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
               <InfoIcon />
             </ListItemIcon>
             <ListItemText primary={t('about')} className={matchAboutPath} />
+          </ListItem>
+        </Link>
+        <Link to="/user-script" onClick={props.onClick} >
+          <ListItem button>
+            <ListItemIcon className={matchUserScriptPath}>
+              <DeveloperBoardIcon />
+            </ListItemIcon>
+            <ListItemText primary={t('user_script')} className={matchUserScriptPath} />
           </ListItem>
         </Link>
       </List>

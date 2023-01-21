@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import SyncIcon from '@material-ui/icons/Sync';
-import uuid from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 import { SnackbarMessage } from 'notistack';
 
 import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
@@ -199,7 +199,7 @@ const HomePage: React.FC = () => {
     if (!values) return;
 
     if (!editingServerId) {
-      const id = uuid.v4();
+      const id = uuidV4();
       dispatch({ type: ADD_CONFIG, config: values, id });
       selectedServer === id && connectedToServer(config, id, values);
       enqueueSnackbar(t("added_a_server"), { variant: 'success' });

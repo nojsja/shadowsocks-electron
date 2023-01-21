@@ -1,7 +1,7 @@
 import { AnyAction } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import jsqr from 'jsqr';
-import uuid from "uuid";
+import { v4 as uuidV4 } from 'uuid';
 import { MessageChannel } from 'electron-re';
 
 import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
@@ -91,7 +91,7 @@ export const updateSubscription = (id: string, url: string, info: ActionRspText)
             config: {
               name: rsp.result.name || 'new subscription',
               servers: (rsp.result.result as Config[]).map(server => {
-                server.id = uuid.v4();
+                server.id = uuidV4();
                 return server;
               }),
             }
@@ -222,10 +222,10 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
       if (rsp.code === 200) {
         if ((type === 'subscription')) {
           if (rsp.result?.result?.length) {
-            dispatch(addSubscription(uuid.v4(), rsp.result.url, {
+            dispatch(addSubscription(uuidV4(), rsp.result.url, {
               name: rsp.result.name || 'new subscription',
               servers: (rsp.result.result as Config[]).map(server => {
-                server.id = uuid.v4();
+                server.id = uuidV4();
                 return server;
               }),
             }))
@@ -233,7 +233,7 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
           }
         } else {
           if (rsp.result?.length) {
-            dispatch(addConfig(uuid.v4(), rsp.result[0]));
+            dispatch(addConfig(uuidV4(), rsp.result[0]));
             return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
           }
         }

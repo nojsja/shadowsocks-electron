@@ -1,7 +1,9 @@
 import React, { useLayoutEffect, useRef } from 'react';
+import { TextareaAutosizeProps } from '@material-ui/core';
+
 import StyledTextareaAutosize from './TextAreaAutosize';
 
-interface EditorProps {
+interface EditorProps extends Omit<TextareaAutosizeProps, 'onChange' | 'value'> {
   onChange: (content: string) => void;
   defaultValue: string;
 }

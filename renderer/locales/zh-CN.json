@@ -57,6 +57,7 @@
   "home": "主页",
   "settings": "设置",
   "about": "关于",
+  "user_script": "用户脚本",
   "local_port": "本地端口",
   "local_port_tips": "socks 服务监听端口",
   "pac_port": "PAC 服务端口",

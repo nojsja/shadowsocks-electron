@@ -56,6 +56,7 @@
   "home": "Главная",
   "settings": "Настройки",
   "about": "О приложении",
+  "user_script": "User Script",
   "local_port": "Локальный Порт",
   "local_port_tips": "Порт для socks сервера",
   "pac_port": "PAC Порт",
