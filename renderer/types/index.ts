@@ -215,9 +215,6 @@ export interface WorkflowRunner {
   id: string;
   enable: boolean;
   status: WorkflowTaskStatus;
-  timer: {
-    enable: boolean;
-    interval?: number;
-  };
+  timer: WorkflowTaskTimer;
   tasks: WorkflowTask[];
 }
