@@ -175,3 +175,34 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     }
   })
 );
+
+export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
+  pageWrapper: {
+    padding: theme.spacing(.5),
+  },
+  headerActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: theme.spacing(1),
+    padding: `0 ${theme.spacing(.5)}px`,
+  },
+  headerActionButton: {
+    cursor: 'pointer',
+  },
+  scriptWrapper: {
+
+  },
+  textEditorWrapper: {
+    maxHeight: '30vh',
+    overflowY: 'scroll',
+  },
+  textEditorActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  textEditorActionButton: {
+    marginTop: theme.spacing(.5),
+    marginRight: theme.spacing(1),
+    cursor: 'pointer',
+  }
+}));

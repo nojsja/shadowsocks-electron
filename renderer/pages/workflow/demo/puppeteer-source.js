@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const { clipboard } = require('electron');
 
-async function main(puppeteer, clipboard) {
+module.exports = async function main(puppeteer, clipboard) {
   const browser = await puppeteer.launch({
     headless: false,
     timeout: 30000,
@@ -13,6 +13,6 @@ async function main(puppeteer, clipboard) {
   await browser.close();
   const result = clipboard.readText('clipboard');
   console.log(result);
-}
+};
 
 main(puppeteer, clipboard);

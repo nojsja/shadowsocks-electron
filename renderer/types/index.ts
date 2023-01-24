@@ -198,3 +198,26 @@ export interface RootState {
 }
 
 export interface ActionRspText { success: string, error: { [key: string]: string } }
+
+export type WorkflowTaskType = 'puppeteer-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
+export interface WorkflowTaskTimer {
+  enable: boolean;
+  interval?: number;
+}
+
+export interface WorkflowTask {
+  id: string;
+  type: WorkflowTaskType;
+}
+
+export interface WorkflowRunner {
+  id: string;
+  enable: boolean;
+  status: WorkflowTaskStatus;
+  timer: {
+    enable: boolean;
+    interval?: number;
+  };
+  tasks: WorkflowTask[];
+}
