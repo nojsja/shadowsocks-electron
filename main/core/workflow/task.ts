@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { AbortController } from 'node-abort-controller';
 
 import { Workflow } from './base';
-import { WorkflowTaskOptions, WorkflowTaskStatus, WorkflowTaskType } from './types';
+import { TaskExecutionError, TaskIsAbortedError, TaskIsNotRunningError, TaskIsRunningError, WorkflowTaskOptions, WorkflowTaskStatus, WorkflowTaskType } from './types';
 
 export class WorkflowTask extends Workflow {
   constructor(options: Partial<WorkflowTaskOptions>) {
@@ -14,6 +15,7 @@ export class WorkflowTask extends Workflow {
     this.taskPath = path.resolve(this.taskDir, this.id);
     this.scriptPath = path.resolve(this.taskPath, 'index.js');
     this.metaPath = path.resolve(this.taskPath, 'meta.json');
+    this.abortCtrl = null;
   }
 
   id: string;
@@ -22,6 +24,7 @@ export class WorkflowTask extends Workflow {
   scriptPath: string;
   taskPath: string;
   metaPath: string;
+  abortCtrl: AbortController | null = null;
 
   static getMetaPath(id: string) {
     return path.resolve(Workflow.taskDir, id, 'meta.json');
@@ -73,30 +76,70 @@ export class WorkflowTask extends Workflow {
       metaPath: this.metaPath,
     });
 
-    try {
-      await fs.promises.writeFile(this.metaPath, metaData, 'utf-8'),
-        this.emit('init:succeed', this.id);
-    } catch (error) {
-      console.log(error);
-      this.emit('init:failed', this.id, error);
-    }
+    await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
   }
 
   async writeToScriptFile(script: string) {
-    try {
-      await fs.promises.writeFile(this.scriptPath, script, 'utf-8');
-      this.emit('write:succeed', this.id);
-    } catch (error) {
-      console.log(error);
-      this.emit('write:failed', this.id, error);
+    await fs.promises.writeFile(this.scriptPath, script, 'utf-8');
+  }
+
+  /**
+   * @name start
+   * @description Start the task
+   * @returns [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]
+   *
+   */
+  async start(): Promise<[TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]> {
+    if (this.status === 'running') {
+      console.warn('Task is already running: ', this.id);
+      return [new TaskIsRunningError(this.id), null];
     }
-  }
+    this.status = 'running';
+    this.abortCtrl = new AbortController();
 
-  async start() {
-    console.log('start');
-  }
+    return new Promise(async (resolve) => {
+      const abortCallback = async () => {
+        resolve([new TaskIsAbortedError(this.id), null]);
+      };
+      this.abortCtrl?.signal.addEventListener('abort', abortCallback);
 
-  async stop() {
-    console.log('stop');
+      try {
+        const scriptModule = require(this.scriptPath);
+        if (this.abortCtrl?.signal.aborted) return;
+
+        const result = await scriptModule.default();
+        if (this.abortCtrl?.signal.aborted) return;
+
+        this.status = 'success';
+        resolve([null, result]);
+      } catch (error: unknown) {
+        console.error(error);
+        this.status = 'failed';
+        resolve([new TaskExecutionError(this.id, (error as Error).message), null])
+      }
+
+      this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
+    });
+  };
+
+  /**
+   * @name stop
+   * @description Stop the task
+   * @returns [TaskIsNotRunningError | null, boolean]
+   */
+  async stop(): Promise<[TaskIsNotRunningError | null, boolean]> {
+    return new Promise((resolve) => {
+      if (this.status !== 'running') {
+        console.warn('Task is not running: ', this.id);
+        return resolve([new TaskIsNotRunningError(this.id), false]);
+      }
+      const abortCallback = () => {
+        this.status = 'idle';
+        resolve([null, true])
+        this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
+      };
+      this.abortCtrl?.signal.addEventListener('abort', abortCallback);
+      this.abortCtrl?.abort();
+    });
   }
 }

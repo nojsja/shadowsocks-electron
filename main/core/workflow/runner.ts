@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import schedule from 'node-schedule';
 
 import { Workflow } from './base';
 import { WorkflowTask } from './task';
@@ -15,13 +16,14 @@ export class WorkflowRunner extends Workflow {
   constructor(options: Partial<WorkflowRunnerOptions>) {
     super();
     this.id = options.id ?? uuidv4();
-    this.metaPath = path.resolve(this.rootDir, `${this.id}.workflow.json`)
+    this.metaPath = path.resolve(this.rootDir, `${this.id}.workflow.json`);
     this.enable = options.enable ?? true;
     this.status = options.status ?? 'idle';
     this.timerOption = options.timer ?? { enable: false };
     this.tasks = options.tasks ?? [];
     this.queue = [];
     this.timer = null;
+    this.schedule = null;
   }
 
   id: string;
@@ -32,6 +34,7 @@ export class WorkflowRunner extends Workflow {
   tasks: string[];
   queue: WorkflowTask[];
   timer: NodeJS.Timer | null;
+  schedule: schedule.Job | null;
 
   static getMetaPath(id: string) {
     return path.resolve(Workflow.rootDir, `${id}.workflow.json`);
@@ -141,16 +144,30 @@ export class WorkflowRunner extends Workflow {
     return targetTask || false;
   }
 
-  startTimer(timerOption: WorkflowTaskTimer) {
-    if (timerOption.enable && timerOption.interval) {
+  startTimer() {
+    const timerOption = this.timerOption;
+    const minute = 60 * 1000;
+    if (!timerOption.enable) return;
+
+    if (timerOption.type === 'timer') {
+      if (!timerOption.interval) return;
       this.timer = setInterval(() => {
         this.start();
-      }, timerOption.interval);
+      }, (+timerOption.interval) * minute);
+      return;
+    }
+
+    if (timerOption.type === 'schedule') {
+      if (!timerOption.schedule) return;
+      this.schedule = schedule.scheduleJob(timerOption.schedule, () => {
+        this.start();
+      });
     }
   }
 
   stopTimer() {
     this.timer && clearInterval(this.timer);
+    this.schedule && this.schedule.cancel();
   }
 
   async start() {

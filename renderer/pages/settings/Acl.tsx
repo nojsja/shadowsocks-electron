@@ -74,10 +74,11 @@ const Acl: React.FC<AclProps> = ({
             <ListItemTextMultipleLine
               primary={
                 <Controller
-                    control={form.control}
-                    name="acl.url"
-                    render={({ field }) => (
-                      <>
+                  control={form.control}
+                  name="acl.url"
+                  render={({ field }) => (
+                    url ?
+                      (
                         <Tooltip
                           arrow
                           placement="top"
@@ -85,14 +86,17 @@ const Acl: React.FC<AclProps> = ({
                         >
                           <span>└─ {path.basename(field.value || '(none)')}</span>
                         </Tooltip>
-                      </>
-                    )}
-                  />
+                      )
+                      : (
+                        <span>└─ {path.basename(field.value || '(none)')}</span>
+                      )
+                  )}
+                />
               }
             />
             <ListItemSecondaryAction>
-              { enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>) }
-              { url && (<AclEditor url={url} touchField={touchField} isFieldTouched={isFieldTouched} />) }
+              {enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>)}
+              {url && (<AclEditor url={url} touchField={touchField} isFieldTouched={isFieldTouched} />)}
             </ListItemSecondaryAction>
           </ListItem>
         )

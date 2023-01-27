@@ -36,6 +36,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@material-ui/pickers": "^3.3.10",
     "@sentry/electron": "^4.2.0",
     "@types/i18n": "^0.13.2",
     "@types/lodash": "^4.14.191",
@@ -53,7 +54,9 @@
     "js-base64": "^2.4.0",
     "jsqr": "^1.4.0",
     "lodash": "^4.17.21",
+    "node-abort-controller": "^3.1.1",
     "node-fetch": "2.6.0",
+    "node-schedule": "^2.1.1",
     "open": "7.0.3",
     "puppeteer": "^19.5.2",
     "qrcode": "^1.4.4",
@@ -84,6 +87,7 @@
     "@types/js-base64": "^2.3.0",
     "@types/node": "^16.11.11",
     "@types/node-fetch": "2.5.5",
+    "@types/node-schedule": "^2.1.0",
     "@types/qrcode": "^1.4.1",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
@@ -175,5 +179,6 @@
   },
   "browserslist": [
     "Electron >= 8"
-  ]
+  ],
+  "__npminstall_done": false
 }

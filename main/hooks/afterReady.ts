@@ -4,10 +4,13 @@ import { BrowserService, ChildProcessPool, MessageChannel, LoadBalancer } from '
 import electronIsDev from 'electron-is-dev';
 
 import { ElectronApp } from '../app';
+import { WorkflowManager } from '../core/workflow/manager';
 import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '../config';
 import { i18n } from '../electron';
+import { warning } from '../logs';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
+const workflowManager = new WorkflowManager();
 
 const electronReServiceTest = (electronApp: ElectronApp) => {
   if (!electronIsDev) return;
@@ -108,9 +111,19 @@ const setAsDefaultProtocolClient = () => {
   });
 };
 
+const initWorkflow = async () => {
+  console.log('hooks: >> initWorkflow');
+  await workflowManager.bootstrap();
+  const [succeed, failedTasks] = await workflowManager.init();
+  if (!succeed) {
+    warning(`workflow init failed: ${failedTasks.join()}`);
+  }
+};
+
 tasks.push(
   electronReServiceTest,
   setAsDefaultProtocolClient,
+  initWorkflow,
 );
 
 export default (electronApp: ElectronApp) => {

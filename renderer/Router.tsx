@@ -25,7 +25,7 @@ const Router = () => {
       <Route path="/about">
         <AboutPage />
       </Route>
-      <Route path="/user-script">
+      <Route path="/workflow">
         <Workflow />
       </Route>
       <Redirect to="/home" />

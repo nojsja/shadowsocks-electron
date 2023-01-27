@@ -15,7 +15,8 @@ const AppNav: React.FC = () => {
   const titleMap = new Map([
     ['home', t('home')],
     ['settings', t('settings')],
-    ['about', t('about')]
+    ['about', t('about')],
+    ['workflow', t('workflow')]
   ]);
 
   const location = useLocation();

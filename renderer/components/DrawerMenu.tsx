@@ -48,7 +48,7 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
   const matchHomePath = getMatchedClasses(!!useRouteMatch('/home'));
   const matchSettingsPath = getMatchedClasses(!!useRouteMatch('/settings'));
   const matchAboutPath = getMatchedClasses(!!useRouteMatch('/about'));
-  const matchUserScriptPath = getMatchedClasses(!!useRouteMatch('/user-script'));
+  const matchWorkflowPath = getMatchedClasses(!!useRouteMatch('/workflow'));
 
   return (
     <>
@@ -76,20 +76,20 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
             <ListItemText primary={t('settings')} className={matchSettingsPath}/>
           </ListItem>
         </Link>
+        <Link to="/workflow" onClick={props.onClick} >
+          <ListItem button>
+            <ListItemIcon className={matchWorkflowPath}>
+              <DeveloperBoardIcon />
+            </ListItemIcon>
+            <ListItemText primary={t('user_script')} className={matchWorkflowPath} />
+          </ListItem>
+        </Link>
         <Link to="/about" onClick={props.onClick} >
           <ListItem button>
             <ListItemIcon className={matchAboutPath}>
               <InfoIcon />
             </ListItemIcon>
             <ListItemText primary={t('about')} className={matchAboutPath} />
-          </ListItem>
-        </Link>
-        <Link to="/user-script" onClick={props.onClick} >
-          <ListItem button>
-            <ListItemIcon className={matchUserScriptPath}>
-              <DeveloperBoardIcon />
-            </ListItemIcon>
-            <ListItemText primary={t('user_script')} className={matchUserScriptPath} />
           </ListItem>
         </Link>
       </List>

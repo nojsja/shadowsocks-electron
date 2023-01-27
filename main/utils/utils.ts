@@ -498,3 +498,28 @@ export const getPerfectDevicePixelRatioImage = (
 
   return imageFullPath.replace(imageName, `${imageBase}@${perfectFactor}x${imageExt}`);
 };
+
+/**
+ * @name dateToCronTable [transform date to cron table]
+ * @param { object } schedule
+ * @param { number } schedule.seconds
+ * @param { number } schedule.minutes
+ * @param { number } schedule.hours
+ * @param { number } schedule.date
+ * @param { number } schedule.month
+ * @param { number } schedule.day
+ * @returns { string } cron table
+ * @example
+ * dateToCronTable({ seconds: 0, minutes: 0, hours: 0, date: 1, month: 1, day: 1 })
+ * => '0 0 0 1 1 1'
+ * */
+export function dateToCronTable(date: {
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  date?: number;
+  month?: number;
+  day?: number;
+}) {
+  return `${date.seconds ?? ''} ${date.minutes ?? '*'} ${date.hours ?? '*'} ${date.date ?? '*'} ${date.month ?? '*'} ${date.day ?? '*'}`.trim();
+}
