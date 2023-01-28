@@ -95,13 +95,13 @@ export class WorkflowManager extends Workflow {
       targetRunner.timerOption = {
         ...(cloneRunner?.timerOption ?? {}),
         type: timerType,
-        enable: !!options!.timer!.enable ?? cloneRunner?.enable ?? false,
+        enable: !!options.timer?.enable ?? cloneRunner?.enable ?? false,
         ...(
           timerType === 'schedule' && 'schedule' in (options!.timer || {})
-        ) ? { schedule: dateToCronTable(options!.timer!.schedule as CronTableObject) } : {},
+        ) ? { schedule: dateToCronTable(options.timer?.schedule as CronTableObject) } : {},
         ...(
-          timerType === 'timer' && 'interval' in (options!.timer || {})
-        ) ? { interval: options!.timer?.interval } : {},
+          timerType === 'timer' && 'interval' in (options.timer || {})
+        ) ? { interval: options.timer?.interval } : {},
       };
     }
 

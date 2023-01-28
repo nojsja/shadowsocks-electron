@@ -89,45 +89,63 @@ export class WorkflowTask extends Workflow {
    * @returns [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]
    *
    */
-  async start(): Promise<[TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]> {
+  start(): Promise<[TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]> {
     if (this.status === 'running') {
       console.warn('Task is already running: ', this.id);
-      return [new TaskIsRunningError(this.id), null];
+      return Promise.resolve([new TaskIsRunningError(this.id), null]);
     }
+    const tuple: [TaskExecutionError | TaskIsAbortedError | null, unknown | null] = [null, null];
+
     this.status = 'running';
     this.abortCtrl = new AbortController();
 
-    return new Promise(async (resolve) => {
-      const abortCallback = async () => {
-        resolve([new TaskIsAbortedError(this.id), null]);
+    return new Promise((resolve) => {
+      const abortCallback = () => {
+        tuple[0] = new TaskIsAbortedError(this.id);
+        tuple[1] = null;
+        return resolve(tuple);
       };
       this.abortCtrl?.signal.addEventListener('abort', abortCallback);
 
-      try {
-        const scriptModule = require(this.scriptPath);
-        if (this.abortCtrl?.signal.aborted) return;
-
-        const result = await scriptModule.default();
-        if (this.abortCtrl?.signal.aborted) return;
-
-        this.status = 'success';
-        resolve([null, result]);
-      } catch (error: unknown) {
-        console.error(error);
-        this.status = 'failed';
-        resolve([new TaskExecutionError(this.id, (error as Error).message), null])
-      }
-
-      this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
+      Promise
+        .resolve(() => {
+          if (this.abortCtrl?.signal.aborted) {
+            throw new TaskIsAbortedError(this.id);
+          }
+        })
+        .then(() => {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const scriptModule = require(this.scriptPath);
+          return scriptModule.default();
+        })
+        .then((moduleResults: unknown) => {
+          if (this.abortCtrl?.signal.aborted) {
+            throw new TaskIsAbortedError(this.id);
+          }
+          this.status = 'success';
+          tuple[0] = null;
+          tuple[1] = moduleResults;
+          resolve(tuple);
+        })
+        .catch((err: unknown) => {
+          this.status = err instanceof TaskIsAbortedError ? 'idle' : 'failed';
+          tuple[0] = new TaskExecutionError(this.id, (err as Error).message);
+          tuple[1] = null;
+          resolve(tuple);
+        })
+        .finally(() => {
+          tuple[0] && console.error(tuple[0]);
+          this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
+        });
     });
-  };
+  }
 
   /**
    * @name stop
    * @description Stop the task
    * @returns [TaskIsNotRunningError | null, boolean]
    */
-  async stop(): Promise<[TaskIsNotRunningError | null, boolean]> {
+  stop(): Promise<[TaskIsNotRunningError | null, boolean]> {
     return new Promise((resolve) => {
       if (this.status !== 'running') {
         console.warn('Task is not running: ', this.id);
@@ -135,9 +153,10 @@ export class WorkflowTask extends Workflow {
       }
       const abortCallback = () => {
         this.status = 'idle';
-        resolve([null, true])
         this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
+        resolve([null, true]);
       };
+
       this.abortCtrl?.signal.addEventListener('abort', abortCallback);
       this.abortCtrl?.abort();
     });
