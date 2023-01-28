@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
-  const { serverMode, clusterId } = settings;
+  const {serverMode, clusterId} = settings;
 
   /* -------- hooks ------- */
 

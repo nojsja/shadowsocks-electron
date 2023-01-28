@@ -179,6 +179,7 @@ export class DesktopService implements DesktopServiceType {
       defaultPath: `${app.getPath('downloads')}/gui-config.json`,
       properties: ['openFile', 'showHiddenFiles']
     });
+
     return new Promise(resolve => {
       if (filePath && filePath.length) {
         fs.readFile(filePath[0], 'utf-8', (err, data) => {
@@ -214,6 +215,7 @@ export class DesktopService implements DesktopServiceType {
     const filePath = dialog.showSaveDialogSync((global as any).win, {
       defaultPath: `${app.getPath('downloads')}/gui-config.json`
     });
+
     return new Promise(resolve => {
       if (filePath) {
         fs.writeFile(filePath, JSON.stringify(params, null, 2), (err) => {
@@ -268,7 +270,6 @@ export class DesktopService implements DesktopServiceType {
   }
 
   async getScreenCapturedResources(params: WindowInfo): Promise<ServiceResult> {
-
     const { devicePixelRatio, width, height, types } = params;
 
     return new Promise(resolve => {

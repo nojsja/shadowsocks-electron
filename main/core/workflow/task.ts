@@ -83,23 +83,46 @@ export class WorkflowTask extends Workflow {
     await fs.promises.writeFile(this.scriptPath, script, 'utf-8');
   }
 
+  get isRunning() {
+    return this.status === 'running';
+  }
+
+  get isIdle() {
+    return this.status === 'idle';
+  }
+
+  get isSuccess() {
+    return this.status === 'success';
+  }
+
+  get isFailed() {
+    return this.status === 'failed';
+  }
+
+  setStatus(status: WorkflowTaskStatus) {
+    this.status = status;
+  }
+
   /**
    * @name start
    * @description Start the task
    * @returns [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]
    *
    */
-  start(): Promise<[TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]> {
+  start(payload: unknown, options: object) {
+    const tuple: [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null] = [null, null];
+
     if (this.status === 'running') {
       console.warn('Task is already running: ', this.id);
-      return Promise.resolve([new TaskIsRunningError(this.id), null]);
+      tuple[0] = new TaskIsRunningError(this.id);
+      tuple[1] = null;
+      return Promise.resolve(tuple);
     }
-    const tuple: [TaskExecutionError | TaskIsAbortedError | null, unknown | null] = [null, null];
 
     this.status = 'running';
     this.abortCtrl = new AbortController();
 
-    return new Promise((resolve) => {
+    return new Promise<typeof tuple>((resolve) => {
       const abortCallback = () => {
         tuple[0] = new TaskIsAbortedError(this.id);
         tuple[1] = null;
@@ -116,7 +139,7 @@ export class WorkflowTask extends Workflow {
         .then(() => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const scriptModule = require(this.scriptPath);
-          return scriptModule.default();
+          return scriptModule.default(payload, options);
         })
         .then((moduleResults: unknown) => {
           if (this.abortCtrl?.signal.aborted) {
@@ -125,12 +148,19 @@ export class WorkflowTask extends Workflow {
           this.status = 'success';
           tuple[0] = null;
           tuple[1] = moduleResults;
+
           resolve(tuple);
         })
         .catch((err: unknown) => {
-          this.status = err instanceof TaskIsAbortedError ? 'idle' : 'failed';
-          tuple[0] = new TaskExecutionError(this.id, (err as Error).message);
+          if (err instanceof TaskIsAbortedError) {
+            this.status = 'idle';
+            tuple[0] = err;
+          } else {
+            this.status = 'failed';
+            tuple[0] = new TaskExecutionError(this.id, (err as Error).message);
+          }
           tuple[1] = null;
+
           resolve(tuple);
         })
         .finally(() => {

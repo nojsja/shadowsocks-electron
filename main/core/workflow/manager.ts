@@ -5,6 +5,8 @@ import { Workflow } from './base';
 import { WorkflowRunner } from './runner';
 import {
   CronTableObject,
+  RunnerCreateError,
+  RunnerNotFoundError,
   WorkflowManagerStatus,
   WorkflowTaskOptions,
   WorkflowTaskTimer,
@@ -54,7 +56,7 @@ export class WorkflowManager extends Workflow {
     this.emit('ready');
 
     // [suceed, failedTasks]
-    return [!!failedTasks.length, failedTasks] as [boolean, string[]];
+    return [!failedTasks.length, failedTasks] as [boolean, string[]];
   }
 
   async ready() {
@@ -71,6 +73,26 @@ export class WorkflowManager extends Workflow {
     return this.runners;
   }
 
+  async runWorkflowRunner(runnerId: string) {
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    await this.ready();
+    const error = await targetRunner.start();
+
+    return error;
+  }
+
+  async stopWorkflowRunner(runnerId: string) {
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    await this.ready();
+    const error = await targetRunner.stop();
+
+    return error;
+  }
+
   async editWorkflowRunner(runnerId: string, options: {
     enable?: boolean;
     timer?: {
@@ -81,10 +103,11 @@ export class WorkflowManager extends Workflow {
     };
   }) {
     const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
     const cloneRunner = _.clone(targetRunner);
     const timerType = options.timer?.type ?? cloneRunner?.timerOption?.type;
     const timerTouched = 'timer' in options;
-    if (!targetRunner) return false;
 
     await this.ready();
 
@@ -110,7 +133,7 @@ export class WorkflowManager extends Workflow {
     } catch (error) {
       console.error(error);
       Object.assign(targetRunner, cloneRunner);
-      return false;
+      return error as Error;
     }
 
     if (targetRunner.enable && timerTouched) {
@@ -118,7 +141,7 @@ export class WorkflowManager extends Workflow {
       targetRunner.startTimer();
     }
 
-    return true;
+    return null;
   }
 
   async generateTaskOfRunner(task: Partial<WorkflowTaskOptions>, runnerId?: string) {
@@ -128,26 +151,26 @@ export class WorkflowManager extends Workflow {
 
     if (runnerId) {
       targetRunner = this.runners.find((runner) => runner.id === runnerId) || null;
-      if (!targetRunner) return false;
+      if (!targetRunner) return new RunnerNotFoundError(runnerId);
     } else {
       targetRunner = await WorkflowRunner.generate();
-      if (!targetRunner) return false;
+      if (!targetRunner) return new RunnerCreateError();
       this.runners.push(targetRunner);
     }
 
-    const newTask = await targetRunner.pushTask(task);
+    const error = await targetRunner.pushTask(task);
 
-    return newTask || false;
+    return error;
   }
 
   async removeTaskOfRunner(taskId: string, runnerId: string) {
     await this.ready();
+
     const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+    const error = await targetRunner.removeTask(taskId);
 
-    if (!targetRunner) return false;
-    const removed = await targetRunner.removeTask(taskId);
-
-    return removed;
+    return error;
   }
 
   async unload() {
@@ -158,5 +181,4 @@ export class WorkflowManager extends Workflow {
     this.runnerIds = [];
     this.status = 'unloaded';
   }
-
 }

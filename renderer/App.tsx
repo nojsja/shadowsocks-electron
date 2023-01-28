@@ -5,7 +5,7 @@ import {
   createStyles,
   ThemeProvider
 } from '@material-ui/core/styles';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarMessage, SnackbarProvider } from 'notistack';
 import {
   HashRouter,
 } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ipcRenderer } from 'electron';
 import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
-import { dispatch as dispatchEvent } from 'use-bus';
+import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import RouterComp from './Router';
@@ -28,7 +28,9 @@ import { getDefaultLang } from './utils';
 import { store, persistor } from './redux/store';
 import { getConnectionStatus, setStatus } from './redux/actions/status';
 import { setSetting } from './redux/actions/settings';
-import { ServerMode } from './types';
+import { ServerMode, Notification } from './types';
+
+import { enqueueSnackbar } from './redux/actions/notifications';
 
 export const persistStore = new ElectronStore();
 
@@ -46,19 +48,19 @@ const useStyles = makeStyles(() =>
   })
 );
 
-ipcRenderer.on("connected", (e, message : { status: boolean, mode: ServerMode }) => {
+ipcRenderer.on('connected', (e, message : { status: boolean, mode: ServerMode }) => {
   store.dispatch(setStatus('connected', message.status));
   store.dispatch(setSetting('serverMode', message.mode));
 });
 
-ipcRenderer.on("traffic", (e, message: { traffic: number }) => {
+ipcRenderer.on('traffic', (e, message: { traffic: number }) => {
   const KB = (message.traffic / 1024);
   const MB = (KB / 1024);
   const GB = (MB / 1024);
   store.dispatch(setStatus('traffic', { KB, MB, GB }));
 });
 
-ipcRenderer.on("event:stream", (e, message: { action: string, args: any }) => {
+ipcRenderer.on('event:stream', (e, message: { action: string, args: any }) => {
   dispatchEvent({
     type: `event:stream:${message.action}`,
     payload: message.args,
@@ -88,6 +90,17 @@ const App: React.FC = () => {
       action: 'setLocale',
       params: getFirstLanguage(persistStore.get('lang') as string)
     });
+  }, []);
+
+  useBus('event:stream:notifycation', (event: EventAction) => {
+    const {
+      message,
+      type,
+    } = event.payload as { message: string; type: Notification['variant'] };
+
+    store.dispatch(enqueueSnackbar(message, {
+      variant: type || 'default',
+    }));
   }, []);
 
   return (

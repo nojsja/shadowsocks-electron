@@ -24,6 +24,7 @@ export const pathExecutable = isDev
       ? path.join(path.dirname(app.getPath('exe')), '..')
       : path.dirname(app.getPath('exe'))
   );
+export const pathWorkflow = path.join(pathRuntime, 'workflow');
 
 export const archMap = new Map([
   ['aarch64', 'arm64'],
@@ -50,6 +51,7 @@ export default {
   appDataPath,
   pathRuntime,
   pathExecutable,
+  pathWorkflow,
   getPathRoot,
   getPathRuntime
 };

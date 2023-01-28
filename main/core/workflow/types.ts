@@ -1,5 +1,12 @@
 
-export type WorkflowTaskType = 'puppeteer-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export enum WorkflowTaskTypes {
+  'puppeteer-source' = 0,
+  'crawler-source' = 1,
+  'node-source' = 2,
+  'processor-pipe' = 3,
+  'effect-pipe' = 4,
+}
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowManagerStatus = 'uninitialized' | 'initialized' | 'unloaded';
@@ -34,6 +41,27 @@ export interface WorkflowRunnerOptions {
   status: WorkflowRunnerStatus;
   timer: WorkflowTaskTimer;
   tasks: string[];
+}
+
+export class RunnerNotFoundError extends Error {
+  constructor(id: string) {
+    super(`Workflow Runner ${id} not found.`);
+    this.name = 'RunnerNotFoundError';
+  }
+}
+
+export class RunnerIsRunningError extends Error {
+  constructor(id: string) {
+    super(`Workflow Runner ${id} is already running.`);
+    this.name = 'RunnerIsRunningError';
+  }
+}
+
+export class RunnerCreateError extends Error {
+  constructor() {
+    super(`Workflow Runner create failed.`);
+    this.name = 'RunnerCreateError';
+  }
 }
 
 export class TaskIsRunningError extends Error {

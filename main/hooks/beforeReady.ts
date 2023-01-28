@@ -5,7 +5,13 @@ import isDev from 'electron-is-dev';
 
 import logger from '../logs';
 import { ElectronApp } from '../app';
-import { appDataPath, platform, pathRuntime, pathExecutable } from '../config';
+import {
+  appDataPath,
+  platform,
+  pathRuntime,
+  pathExecutable,
+  pathWorkflow,
+} from '../config';
 import {
   checkEnvFiles as check, copyDir, chmod,
   getPluginsPath, getExecutableFilePath,
@@ -23,6 +29,7 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
         { _path: appDataPath, isDir: true },
         ...(platform === 'linux' ? [{ _path: `${os.homedir}/.config/autostart`, isDir: true }] : []),
         { _path: pathRuntime, isDir: true },
+        { _path: pathWorkflow, isDir: true },
         { _path: binDir, isDir: true, checkEmpty: true,
           exec: () => {
             logger.info(`copyDir: ${path.join(pathExecutable, 'bin')} -> ${binDir}`);
