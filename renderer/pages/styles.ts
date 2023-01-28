@@ -177,8 +177,17 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
 );
 
 export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
-  pageWrapper: {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    height: `calc(100vh - 56px)`,
     padding: theme.spacing(.5),
+    paddingTop: 0,
+    [theme.breakpoints.up('sm')]: {
+      height: `calc(100vh - 64px)`,
+    },
+    overflowY: 'auto',
+    ...scrollBarStyle(6, 0, theme),
   },
   headerActions: {
     display: 'flex',
@@ -188,21 +197,33 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   },
   headerActionButton: {
     cursor: 'pointer',
+    marginTop: theme.spacing(.5),
+    color: theme.palette.primary.light,
   },
   scriptWrapper: {
-
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(.5),
+    paddingRight: theme.spacing(.5),
+    margin: theme.spacing(1),
+    '& *': scrollBarStyle(6, 0, theme),
   },
   textEditorWrapper: {
-    maxHeight: '30vh',
+    maxHeight: '20vh',
+    width: '85%',
     overflowY: 'scroll',
   },
   textEditorActions: {
+    flex: 1,
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
   },
   textEditorActionButton: {
-    marginTop: theme.spacing(.5),
-    marginRight: theme.spacing(1),
     cursor: 'pointer',
+    color: theme.palette.secondary.main,
+    transition: 'color .3s',
+    '&:hover': {
+      color: theme.palette.type === 'dark' ? theme.palette.secondary.light : theme.palette.secondary.dark,
+    },
   }
 }));

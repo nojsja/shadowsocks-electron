@@ -10,7 +10,7 @@ import useNotifier from './hooks/useNotifier';
 import HomePage from './pages/HomePage';
 import SettingsPage from './pages/SettingsPage';
 import AboutPage from './pages/AboutPage';
-import Workflow from './pages/WorkflowPage';
+import WorkflowPage from './pages/WorkflowPage';
 
 const Router = () => {
   useNotifier();
@@ -26,7 +26,7 @@ const Router = () => {
         <AboutPage />
       </Route>
       <Route path="/workflow">
-        <Workflow />
+        <WorkflowPage />
       </Route>
       <Redirect to="/home" />
     </Switch>

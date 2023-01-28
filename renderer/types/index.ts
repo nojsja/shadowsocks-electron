@@ -199,22 +199,29 @@ export interface RootState {
 
 export interface ActionRspText { success: string, error: { [key: string]: string } }
 
-export type WorkflowTaskType = 'puppeteer-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
+export type WorkflowTaskTimerType = 'schedule' | 'timer';
+
 export interface WorkflowTaskTimer {
   enable: boolean;
-  interval?: number;
+  type?: WorkflowTaskTimerType;
+  interval?: number; // minutes
+  schedule?: string; // time schedule, unix cron format, such as '1 * * * * *'
 }
 
 export interface WorkflowTask {
   id: string;
+  status: WorkflowTaskStatus;
   type: WorkflowTaskType;
+  scriptPath: string;
 }
 
 export interface WorkflowRunner {
   id: string;
   enable: boolean;
-  status: WorkflowTaskStatus;
-  timer: WorkflowTaskTimer;
-  tasks: WorkflowTask[];
+  status: WorkflowRunnerStatus;
+  timerOption: WorkflowTaskTimer;
+  queue: WorkflowTask[];
 }
