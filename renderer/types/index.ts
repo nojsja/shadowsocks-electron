@@ -1,4 +1,4 @@
-import { OptionsObject } from "notistack";
+import { OptionsObject } from 'notistack';
 
 export enum ALGORITHM {
   POLLING = 'POLLING', // 轮询

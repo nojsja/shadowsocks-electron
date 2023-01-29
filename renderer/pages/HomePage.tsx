@@ -10,27 +10,33 @@ import SyncIcon from '@material-ui/icons/Sync';
 import { v4 as uuidV4 } from 'uuid';
 import { SnackbarMessage } from 'notistack';
 
-import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { Config, CloseOptions, GroupConfig, Notification, ServerMode } from '../types';
-import { useTypedSelector } from '../redux/reducers';
+import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { useTypedSelector } from '@renderer/redux/reducers';
 import {
-  addConfigFromClipboard, getQrCodeFromScreenResources,
-  ADD_CONFIG, EDIT_CONFIG,
+  addConfigFromClipboard,
+  getQrCodeFromScreenResources,
+  ADD_CONFIG,
+  EDIT_CONFIG,
   addSubscriptionFromClipboard,
-  startClusterAction, startClientAction, stopClientAction, stopClusterAction
-} from '../redux/actions/config';
-import { setHttpProxy, setPacServer } from '../redux/actions/settings';
-import { getConnectionDelay } from '../redux/actions/status';
+  startClusterAction,
+  startClientAction,
+  stopClientAction,
+  stopClusterAction
+} from '@renderer/redux/actions/config';
+import { setHttpProxy, setPacServer } from '@renderer/redux/actions/settings';
+import { getConnectionDelay } from '@renderer/redux/actions/status';
 
-import { findAndCallback } from '../utils';
-import * as globalAction from '../hooks/useGlobalAction';
-import useDidUpdate from '../hooks/useDidUpdate';
+import * as globalAction from '@renderer/hooks/useGlobalAction';
+import useDidUpdate from '@renderer/hooks/useDidUpdate';
 
-import FooterBar from '../components/FooterBar';
-import StatusBar from '../components/StatusBar';
-import StatusBarConnection from '../components/BarItems/StatusBarConnection';
-import StatusBarNetwork from '../components/BarItems/StatusBarNetwork';
-import StatusBarTraffic from '../components/BarItems/StatusBarTraffic';
+import { Config, CloseOptions, GroupConfig, Notification, ServerMode } from '@renderer/types';
+import { findAndCallback } from '@renderer/utils';
+
+import FooterBar from '@renderer/components/FooterBar';
+import StatusBar from '@renderer/components/StatusBar';
+import StatusBarConnection from '@renderer/components/BarItems/StatusBarConnection';
+import StatusBarNetwork from '@renderer/components/BarItems/StatusBarNetwork';
+import StatusBarTraffic from '@renderer/components/BarItems/StatusBarTraffic';
 
 import ServerList from './home/ServerList';
 import AddServerDialog from './home/AddServerDialog';

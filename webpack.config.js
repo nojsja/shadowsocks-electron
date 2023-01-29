@@ -2,9 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const os = require('os');
-
-const cpuLength = os.cpus().length;
 
 module.exports = {
   devtool: 'cheap-module-source-map',
@@ -18,7 +15,9 @@ module.exports = {
   resolve: {
     alias: {
       // dir
-      src: path.resolve(__dirname, 'renderer'),
+      '@': __dirname,
+      '@main': path.resolve(__dirname, 'main'),
+      '@renderer': path.resolve(__dirname, 'renderer'),
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },

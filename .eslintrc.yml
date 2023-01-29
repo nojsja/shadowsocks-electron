@@ -20,3 +20,13 @@ rules:
 settings:
   react:
     version: detect
+  'import/resolver':
+    alias:
+      map:
+        - ['@', './']
+        - ['@main', './main']
+        - ['@renderer', './renderer']
+      extensions:
+        - .ts
+        - .tsx
+        - .json

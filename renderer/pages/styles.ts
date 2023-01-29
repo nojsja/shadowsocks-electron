@@ -204,8 +204,8 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     display: 'flex',
     alignItems: 'center',
     paddingLeft: theme.spacing(.5),
-    paddingRight: theme.spacing(.5),
-    margin: theme.spacing(1),
+    // paddingRight: theme.spacing(.5),
+    margin: `${theme.spacing(1)}px 0px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
     '& *': scrollBarStyle(6, 0, theme),
   },
   textEditorWrapper: {
@@ -216,7 +216,8 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   textEditorActions: {
     flex: 1,
     display: 'flex',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   textEditorActionButton: {
     cursor: 'pointer',

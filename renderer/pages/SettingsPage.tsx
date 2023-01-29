@@ -14,18 +14,18 @@ import { useTranslation } from 'react-i18next';
 import { SnackbarMessage } from 'notistack';
 import _ from 'lodash';
 
-import { useTypedDispatch } from '../redux/actions';
-import { useTypedSelector } from '../redux/reducers';
-import { enqueueSnackbar as enqueueSnackbarAction } from '../redux/actions/notifications';
-import { getStartupOnBoot, setSetting, setStartupOnBoot } from '../redux/actions/settings';
-import { setStatus } from '../redux/actions/status';
-import { setAclUrl as setAclUrlAction } from '../redux/actions/settings';
-import { ALGORITHM, Notification, Settings } from '../types';
+import { useTypedDispatch } from '@renderer/redux/actions';
+import { useTypedSelector } from '@renderer/redux/reducers';
+import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { getStartupOnBoot, setSetting, setStartupOnBoot } from '@renderer/redux/actions/settings';
+import { setStatus } from '@renderer/redux/actions/status';
+import { setAclUrl as setAclUrlAction } from '@renderer/redux/actions/settings';
+
+import * as globalAction from '@renderer/hooks/useGlobalAction';
+import { ALGORITHM, Notification, Settings } from '@renderer/types';
+import { persistStore } from '@renderer/App';
 
 import { useStylesOfSettings as useStyles } from './styles';
-import * as globalAction from '../hooks/useGlobalAction';
-
-import { persistStore } from '../App';
 
 import LocalPort from './settings/LocalPort';
 import PacPort from './settings/PacPort';

@@ -1,19 +1,29 @@
 import React from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@material-ui/icons/Save';
+import LaunchIcon from '@material-ui/icons/Launch';
+import { Tooltip } from '@material-ui/core';
+import open from 'open';
 
 import TextEditor from '../../../components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '../../styles';
-import { Tooltip } from '@material-ui/core';
+import { WorkflowTask } from '../../../types';
 
-const CrawlerSourceTask = () => {
+interface Props extends WorkflowTask {
+  onTaskDelete: (taskId: string) => void;
+}
+
+const CrawlerSourceTask: React.FC<Props> = ({ scriptPath }) => {
   const styles = useStylesOfWorkflow();
   const onScriptChange = (content: string) => {
     console.log(content);
   };
+  const onScriptOpen = () => {
+    open(scriptPath);
+  };
 
   return (
     <>
+      crawler
       <div className={styles.scriptWrapper}>
         <div className={styles.textEditorWrapper}>
           <TextEditor placeholder="" onChange={onScriptChange} defaultValue="" />
@@ -22,8 +32,8 @@ const CrawlerSourceTask = () => {
           <Tooltip title="Delete">
             <DeleteIcon className={styles.textEditorActionButton} color="action" />
           </Tooltip>
-          <Tooltip title="Save">
-            <SaveIcon className={styles.textEditorActionButton} color="action" />
+          <Tooltip title="Open with external editor">
+            <LaunchIcon className={styles.textEditorActionButton} onClick={onScriptOpen} color="action" />
           </Tooltip>
         </div>
       </div>
@@ -31,6 +41,6 @@ const CrawlerSourceTask = () => {
   );
 };
 
-CrawlerSourceTask.type = 'crawler-source';
+export const type = 'crawler-source';
 
 export default CrawlerSourceTask;

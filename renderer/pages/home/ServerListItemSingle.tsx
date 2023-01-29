@@ -1,6 +1,6 @@
-import React, { useState, memo, useContext, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { clipboard } from "electron";
+import React, { useState, memo, useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { clipboard } from 'electron';
 import {
   ListItem,
   ListItemSecondaryAction,
@@ -9,9 +9,9 @@ import {
   ListItemIcon,
   Badge,
   Tooltip
-} from "@material-ui/core";
-import { useDispatch } from "react-redux";
-import { makeStyles, createStyles, Theme, withStyles } from "@material-ui/core/styles";
+} from '@material-ui/core';
+import { useDispatch } from 'react-redux';
+import { makeStyles, createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { red } from '@material-ui/core/colors';
 
 import {
@@ -27,15 +27,15 @@ import {
   ArrowDownward as ArrowDownwardIcon,
   Wifi as WifiIcon,
   WifiOff as WifiOffIcon,
-} from "@material-ui/icons";
+} from '@material-ui/icons';
 
-import menuContext from '../../hooks/useContextMenu/context';
-import { getConnectionDelay } from "../../redux/actions/status";
-import { moveDown, moveUp, top } from "../../redux/actions/config";
-import { Config } from "../../types";
+import { getConnectionDelay } from '@renderer/redux/actions/status';
+import { moveDown, moveUp, top } from '@renderer/redux/actions/config';
 
-import ListItemTextMultipleLine from "../../components/Pices/ListItemTextMultipleLine";
-import If from "../../components/HOC/IF";
+import ListItemTextMultipleLine from '@renderer/components/Pices/ListItemTextMultipleLine';
+import If from '@renderer/components/HOC/IF';
+import menuContext from '@renderer/hooks/useContextMenu/context';
+import { Config } from '@renderer/types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

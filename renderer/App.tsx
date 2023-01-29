@@ -5,10 +5,8 @@ import {
   createStyles,
   ThemeProvider
 } from '@material-ui/core/styles';
-import { SnackbarMessage, SnackbarProvider } from 'notistack';
-import {
-  HashRouter,
-} from 'react-router-dom';
+import {  SnackbarProvider } from 'notistack';
+import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ipcRenderer } from 'electron';
@@ -16,6 +14,11 @@ import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
 import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
 import { FormProvider, useForm } from 'react-hook-form';
+
+import { store, persistor } from './redux/store';
+import { getConnectionStatus, setStatus } from './redux/actions/status';
+import { setSetting } from './redux/actions/settings';
+import { enqueueSnackbar } from './redux/actions/notifications';
 
 import RouterComp from './Router';
 import AppNav from './components/AppNav';
@@ -25,12 +28,7 @@ import useGlobalAction from './hooks/useGlobalAction';
 
 import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from './utils';
-import { store, persistor } from './redux/store';
-import { getConnectionStatus, setStatus } from './redux/actions/status';
-import { setSetting } from './redux/actions/settings';
 import { ServerMode, Notification } from './types';
-
-import { enqueueSnackbar } from './redux/actions/notifications';
 
 export const persistStore = new ElectronStore();
 

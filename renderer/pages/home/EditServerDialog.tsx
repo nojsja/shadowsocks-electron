@@ -33,21 +33,23 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 
-import If from '../../components/HOC/IF';
-import { AdaptiveAppBar } from '../../components/Pices/AppBar';
-import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
-import InputPassword from '../../components/Pices/InputPassword';
+import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+
+import If from '@renderer/components/HOC/IF';
+import { AdaptiveAppBar } from '@renderer/components/Pices/AppBar';
+import { TextWithTooltip } from '@renderer/components/Pices/TextWithTooltip';
+import InputPassword from '@renderer/components/Pices/InputPassword';
+
+import { scrollBarStyle } from '@renderer/pages/styles';
 
 import {
   Config, encryptMethods, plugins,
   serverTypes, protocols, obfs,
   SSRConfig,
   Notification,
-} from '../../types';
+} from '@renderer/types';
 
 import OpenPluginsDir from '../settings/OpenPluginsDir';
-import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
-import { scrollBarStyle } from '../../pages/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

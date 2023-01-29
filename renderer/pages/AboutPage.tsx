@@ -4,10 +4,10 @@ import { CloseOutlined } from '@material-ui/icons';
 import os from 'os';
 import { useTranslation } from 'react-i18next';
 
-import If from '../components/HOC/IF';
-import packageJson from '../../package.json';
+import authorPic from '@/assets/icons/256x256.png';
+import packageJson from '@/package.json';
 
-import authorPic from '../../assets/icons/256x256.png';
+import If from '@renderer/components/HOC/IF';
 import { useStylesOfAbout as useStyles } from './styles';
 
 type Timeline = {

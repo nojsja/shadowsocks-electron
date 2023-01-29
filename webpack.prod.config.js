@@ -1,11 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const os = require('os');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-
-const cpuLength = os.cpus().length;
 
 module.exports = {
   entry: path.resolve(__dirname, './renderer/index.tsx'),
@@ -19,7 +16,9 @@ module.exports = {
   resolve: {
     alias: {
       // dir
-      src: path.resolve(__dirname, 'renderer'),
+      '@': __dirname,
+      '@main': path.resolve(__dirname, 'main'),
+      '@renderer': path.resolve(__dirname, 'renderer'),
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },

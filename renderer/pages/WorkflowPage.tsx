@@ -2,11 +2,12 @@ import React from 'react';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container } from '@material-ui/core';
 
-import MenuButton from '../components/Pices/MenuButton';
+import { WorkflowTaskTimer, type WorkflowRunner as WorkflowRunnerType } from '@renderer/types';
+
+import MenuButton from '@renderer/components/Pices/MenuButton';
 import WorkflowRunner from './workflow/WorkflowRunner';
 
 import { useStylesOfWorkflow } from './styles';
-import { WorkflowTask, WorkflowTaskTimer, type WorkflowRunner as WorkflowRunnerType } from '../types';
 
 const Workflow: React.FC= () => {
   const styles = useStylesOfWorkflow();
@@ -81,14 +82,14 @@ const Workflow: React.FC= () => {
       }, 1000);
     });
   };
-  const putTaskIntoRunner = (id: string, task: WorkflowTask) => {
+  const putTaskIntoRunner = (runnerId: string, taskId: string) => {
     return new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(true);
       }, 1000);
     });
   };
-  const removeTaskFromRunner = (id: string, task: WorkflowTask) => {
+  const removeTaskFromRunner = (runnerId: string, taskId: string) => {
     return new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(true);
@@ -158,8 +159,10 @@ const Workflow: React.FC= () => {
             <WorkflowRunner
               {...runner}
               key={runner.id}
-              run={startRunner}
+              start={startRunner}
               stop={stopRunner}
+              removeTaskFromRunner={removeTaskFromRunner}
+              putTaskIntoRunner={putTaskIntoRunner}
             />
           ))
         }

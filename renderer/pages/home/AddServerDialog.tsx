@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   List,
   ListItem,
@@ -10,18 +10,19 @@ import {
   DialogTitleProps,
   Typography,
   IconButton,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import { useTranslation } from 'react-i18next';
-import CameraIcon from "@material-ui/icons/PhotoCamera";
+import CameraIcon from '@material-ui/icons/PhotoCamera';
 import CloseIcon from '@material-ui/icons/Close';
-import CopyIcon from "@material-ui/icons/Code";
-import CreateIcon from "@material-ui/icons/Create";
-import { AdaptiveDialog } from "../../components/Pices/Dialog";
+import CopyIcon from '@material-ui/icons/Code';
+import CreateIcon from '@material-ui/icons/Create';
 
-import { CloseOptions } from '../../types';
-import { TextWithTooltip } from "../../components/Pices/TextWithTooltip";
+import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
+import { TextWithTooltip } from '@renderer/components/Pices/TextWithTooltip';
+
+import { CloseOptions } from '@renderer/types';
 
 export type onCloseType = (selection: CloseOptions) => void;
 

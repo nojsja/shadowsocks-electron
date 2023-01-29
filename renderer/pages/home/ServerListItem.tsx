@@ -1,18 +1,18 @@
-import React, { DragEvent, memo, useRef } from "react";
+import React, { DragEvent, memo, useRef } from 'react';
 import {
   ListItemProps,
   Theme
-} from "@material-ui/core";
-import { makeStyles, createStyles, useTheme } from "@material-ui/styles";
-import clsx from "clsx";
+} from '@material-ui/core';
+import { makeStyles, createStyles, useTheme } from '@material-ui/styles';
+import clsx from 'clsx';
 
-import { Config, GroupConfig } from "../../types";
+import { Config, GroupConfig } from '@renderer/types';
 
-import If from "../../components/HOC/IF";
+import If from '@renderer/components/HOC/IF';
+import GradientDivider from '@renderer/components/Pices/GradientDivider';
 
-import ServerListItemGroup from "./ServerListItemGroup";
-import ServerListItemSingle from "./ServerListItemSingle";
-import GradientDivider from "../../components/Pices/GradientDivider";
+import ServerListItemGroup from './ServerListItemGroup';
+import ServerListItemSingle from './ServerListItemSingle';
 
 const img = new Image();
 img.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII= ';

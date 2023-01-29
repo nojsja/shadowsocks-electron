@@ -1,13 +1,13 @@
-import React, { useState, useMemo, memo, useLayoutEffect, useContext } from "react";
-import { useTranslation } from "react-i18next";
-import { clipboard } from "electron";
+import React, { useState, useMemo, memo, useLayoutEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { clipboard } from 'electron';
 import {
   Accordion,
   AccordionDetails,
   ListItemProps,
   AccordionSummary,
   Badge
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   ExpandMore,
   FileCopy as CopyIcon,
@@ -18,18 +18,20 @@ import {
   Refresh,
   ViewComfy
 } from '@material-ui/icons';
-import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
-import { useDispatch } from "react-redux";
-import { SnackbarMessage } from "notistack";
-
-import { moveDown, moveUp, startClusterAction, stopClusterAction, top, updateSubscription } from "../../redux/actions/config";
-import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
-import ServerListItemSingle from "./ServerListItemSingle";
-import { GroupConfig, Notification } from "../../types";
-import menuContext from '../../hooks/useContextMenu/context';
-import { useTypedSelector } from "../../redux/reducers";
-import If from "../../components/HOC/IF";
+import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
+import { useDispatch } from 'react-redux';
+import { SnackbarMessage } from 'notistack';
 import { blue, grey } from "@material-ui/core/colors";
+
+import { moveDown, moveUp, startClusterAction, stopClusterAction, top, updateSubscription } from '@renderer/redux/actions/config';
+import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { useTypedSelector } from '@renderer/redux/reducers';
+
+import menuContext from '@renderer/hooks/useContextMenu/context';
+import If from '@renderer/components/HOC/IF';
+import { GroupConfig, Notification } from '@renderer/types';
+
+import ServerListItemSingle from './ServerListItemSingle';
 
 const StyledBadge = withStyles(() =>
   createStyles({

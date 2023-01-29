@@ -1,6 +1,7 @@
 import React from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
-import SaveIcon from '@material-ui/icons/Save';
+import LaunchIcon from '@material-ui/icons/Launch';
+
 
 import TextEditor from '../../../components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '../../styles';
@@ -22,8 +23,8 @@ const EffectTask = () => {
           <Tooltip title="Delete">
             <DeleteIcon className={styles.textEditorActionButton} color="action" />
           </Tooltip>
-          <Tooltip title="Save">
-            <SaveIcon className={styles.textEditorActionButton} color="action" />
+          <Tooltip title="Open with external editor">
+            <LaunchIcon className={styles.textEditorActionButton} color="action" />
           </Tooltip>
         </div>
       </div>

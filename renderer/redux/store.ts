@@ -1,11 +1,13 @@
-import { createStore, applyMiddleware, compose } from "redux";
+import { createStore, applyMiddleware, compose } from 'redux';
 import Store from 'electron-store';
 import thunk from 'redux-thunk';
-import { persistReducer, persistStore, PersistConfig } from "redux-persist";
-import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
-import createElectronStorage from "redux-persist-electron-storage";
-import rootReducer from "./reducers";
-import { RootState } from "../types";
+import { persistReducer, persistStore, PersistConfig } from 'redux-persist';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+import createElectronStorage from 'redux-persist-electron-storage';
+
+import { RootState } from '@renderer/types';
+
+import rootReducer from './reducers';
 
 const persistConfig: PersistConfig<RootState> = {
   key: "root",

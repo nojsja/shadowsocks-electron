@@ -1,4 +1,4 @@
-import { ALGORITHM, RootState } from "../types";
+import { ALGORITHM, RootState } from '@renderer/types';
 
 const defaultStore: RootState = {
   notifications: [],

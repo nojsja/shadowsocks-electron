@@ -1,10 +1,11 @@
-import React from "react";
-import { clipboard } from "electron";
+import React from 'react';
+import { clipboard } from 'electron';
 import {
   DialogProps,
   DialogContent,
   Divider
-} from "@material-ui/core";
+} from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import Card from '@material-ui/core/Card';
@@ -17,14 +18,14 @@ import Typography from '@material-ui/core/Typography';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { SnackbarMessage } from 'notistack';
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux';
 
-import { saveDataURLAsFile } from '../../utils';
+import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
+import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { saveDataURLAsFile } from '@renderer/utils';
+import { CloseOptions, Notification } from '@renderer/types';
+
 import { DialogTitle } from './AddServerDialog';
-import { AdaptiveDialog } from "../../components/Pices/Dialog";
-import { withStyles } from "@material-ui/styles";
-import { CloseOptions, Notification } from '../../types';
-import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
 
 export interface MediaCardProps {
   dataUrl: string

@@ -1,32 +1,32 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ListItemProps,
   List,
   Typography
-} from "@material-ui/core";
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
+} from '@material-ui/core';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { SnackbarMessage } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 
-import { Config, GroupConfig, Notification, CloseOptions } from "../../types/";
+import { Config, GroupConfig, Notification, CloseOptions } from '@renderer/types';
 
-import { useDispatch } from "react-redux";
-import { moveConfig, generateUrlFromConfig } from "../../redux/actions/config";
-import { enqueueSnackbar as enqueueSnackbarAction } from '../../redux/actions/notifications';
-import { SET_SETTING } from "../../redux/actions/settings";
-import { REMOVE_CONFIG } from "../../redux/actions/config";
+import { moveConfig, generateUrlFromConfig } from '@renderer/redux/actions/config';
+import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { SET_SETTING } from '@renderer/redux/actions/settings';
+import { REMOVE_CONFIG } from '@renderer/redux/actions/config';
 
-import ContextMenuProvider from "../../hooks/useContextMenu";
-import useDialogConfirm from '../../hooks/useDialogConfirm';
-import If from '../../components/HOC/IF';
+import ContextMenuProvider from '@renderer/hooks/useContextMenu';
+import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
+import If from '@renderer/components/HOC/IF';
+import GradientDivider from '@renderer/components/Pices/GradientDivider';
 
-import GradientDivider from "../../components/Pices/GradientDivider";
-import ServerListItem from "./ServerListItem";
+import { scrollBarStyle } from '@renderer/pages/styles';
+
+import ServerListItem from './ServerListItem';
 import ConfShareDialog from './ConfShareDialog';
 
-import { findAndCallback } from '../../utils';
-
-import { scrollBarStyle } from "../../pages/styles";
+import { findAndCallback } from '@renderer/utils';
 
 const useStyles = makeStyles((theme: Theme) =>
 

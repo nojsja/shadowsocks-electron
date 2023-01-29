@@ -1,7 +1,7 @@
 {
   "name": "shadowsocks-electron",
-  "version": "1.2.3",
-  "description": "Shadowsocks GUI client with cross-platform desktop support",
+  "version": "1.2.4",
+  "description": "Shadowsocks GUI client with cross-platform desktop support.",
   "author": {
     "name": "nojsja",
     "email": "yangwei13@outlook.com"
@@ -14,11 +14,11 @@
   "scripts": {
     "start:renderer": "cross-env NODE_ENV=development cross-env PORT=3001 cross-env BROWSER=none webpack serve",
     "start:main": "nodemon --config nodemon.json",
-    "start:main:inspect": "yarn build:main && cross-env electron . --inspect=5222",
-    "start": "concurrently \"yarn start:renderer\" \"wait-on http://localhost:3001 && yarn start:main\"",
+    "start:main:inspect": "npm run build:main && cross-env electron . --inspect=5222",
+    "start": "concurrently \"npm run start:renderer\" \"wait-on http://localhost:3001 && npm run start:main\"",
     "build:renderer": "webpack --config webpack.prod.config.js --progress",
-    "build:main": "yarn tsc -p main/tsconfig.json",
-    "build": "yarn build:main && yarn build:renderer",
+    "build:main": "npx tsc -p main/tsconfig.json",
+    "build": "npm run build:main && npm run build:renderer",
     "pack:linux": "electron-builder --linux",
     "pack:mac": "electron-builder --mac",
     "pack:win": "electron-builder --win",
@@ -58,7 +58,6 @@
     "node-abort-controller": "^3.1.1",
     "node-fetch": "2.6.0",
     "node-schedule": "^2.1.1",
-    "open": "7.0.3",
     "puppeteer": "^19.5.2",
     "qrcode": "^1.4.4",
     "react-hook-form": "^7.42.0",
@@ -116,6 +115,7 @@
     "eslint": "^8.21.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-react-app": "^7.0.1",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
     "eslint-plugin-node": "^11.1.0",
