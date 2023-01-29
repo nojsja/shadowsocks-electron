@@ -2,7 +2,11 @@ import React from 'react';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container } from '@material-ui/core';
 
-import { WorkflowTaskTimer, type WorkflowRunner as WorkflowRunnerType } from '@renderer/types';
+import {
+  type WorkflowTaskTimer,
+  type WorkflowTaskType,
+  type WorkflowRunner as WorkflowRunnerType,
+} from '@renderer/types';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import WorkflowRunner from './workflow/WorkflowRunner';
@@ -11,9 +15,6 @@ import { useStylesOfWorkflow } from './styles';
 
 const Workflow: React.FC= () => {
   const styles = useStylesOfWorkflow();
-  const onScriptChange = (content: string) => {
-    console.log(content);
-  };
   const runners: WorkflowRunnerType[] = [
     {
       id: '1',
@@ -42,7 +43,7 @@ const Workflow: React.FC= () => {
       ],
     },
   ];
-  const createRunner = (type: string) => {
+  const createRunner = (type: WorkflowTaskType) => {
     return new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(true);
@@ -56,7 +57,7 @@ const Workflow: React.FC= () => {
       }, 1000);
     });
   };
-  const putTaskIntoRunner = (runnerId: string, taskId: string) => {
+  const putTaskIntoRunner = (runnerId: string, taskId: string, taskType: WorkflowTaskType) => {
     return new Promise<boolean>((resolve) => {
       setTimeout(() => {
         resolve(true);
@@ -115,14 +116,17 @@ const Workflow: React.FC= () => {
             {
               label: 'Source Task (puppeteer)', // puppeteer headless browser (data source)
               key: 'puppeteer',
+              onClick: () => createRunner('puppeteer-source'),
             },
             {
               label: 'Source Task (crawler)', // web crawler (data source)
               key: 'crawler',
+              onClick: () => createRunner('crawler-source'),
             },
             {
               label: 'Source Task (node)', // node script, generate data from local script or remote request (data source)
               key: 'pipe',
+              onClick: () => createRunner('node-source'),
             },
           ]}
         />
@@ -135,8 +139,12 @@ const Workflow: React.FC= () => {
               key={runner.id}
               start={startRunner}
               stop={stopRunner}
+              removeRunner={removeRunner}
               removeTaskFromRunner={removeTaskFromRunner}
               putTaskIntoRunner={putTaskIntoRunner}
+              enableRunner={enableRunner}
+              disableRunner={disableRunner}
+              adjustTimerOfRunner={adjustTimerOfRunner}
             />
           ))
         }

@@ -204,9 +204,12 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     display: 'flex',
     alignItems: 'center',
     paddingLeft: theme.spacing(.5),
-    // paddingRight: theme.spacing(.5),
     margin: `${theme.spacing(1)}px 0px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
-    // '& *': scrollBarStyle(6, 0, theme),
+  },
+  textEditorTitle: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    fontSize: 12,
   },
   textEditorWrapper: {
     position: 'relative',

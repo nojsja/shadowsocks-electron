@@ -1,19 +1,18 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { createStyles, IconButton, LinearProgress, makeStyles, Tooltip } from '@material-ui/core';
+import { createStyles, IconButton, LinearProgress, makeStyles, Switch, Tooltip } from '@material-ui/core';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
-import { type WorkflowRunner, type WorkflowTaskType } from '@renderer/types';
+import { WorkflowTaskTimer, type WorkflowRunner, type WorkflowTaskType } from '@renderer/types';
 
 import EffectTask, { type as EffectTaskType } from './tasks/EffectTask';
 import NodeSourceTask, { type as NodeSourceTaskType } from './tasks/NodeSourceTask';
 import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask';
 import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
-
 
 export const useStyles = makeStyles((theme) => createStyles({
   runnerWrapper: {
@@ -27,10 +26,16 @@ export const useStyles = makeStyles((theme) => createStyles({
     },
   },
   footerAction: {
+    position: 'relative',
     display: 'flex',
     justifyContent: 'center',
     paddingLeft: theme.spacing(1),
     paddingRight: theme.spacing(1),
+  },
+  footerActionFixed: {
+    position: 'absolute',
+    bottom: theme.spacing(.4),
+    left: theme.spacing(1),
   },
   footerActionButton: {
     cursor: 'pointer',
@@ -51,15 +56,24 @@ interface Props extends WorkflowRunner {
   start: (id: string) => Promise<boolean>;
   stop: (id: string) => Promise<boolean>;
   removeTaskFromRunner: (runnerId: string, taskId: string) => Promise<boolean>;
-  putTaskIntoRunner: (runnerId: string, taskId: string) => Promise<boolean>;
+  putTaskIntoRunner: (runnerId: string, taskId: string, taskType: WorkflowTaskType) => Promise<boolean>;
+  adjustTimerOfRunner: (runnerId: string, timer: WorkflowTaskTimer) => Promise<boolean>;
+  enableRunner: (runnerId: string) => Promise<boolean>;
+  disableRunner: (runnerId: string) => Promise<boolean>;
+  removeRunner: (runnerId: string) => Promise<boolean>;
 }
 
 const WorkflowRunner: React.FC<Props> = ({
+  enable,
   id,
   queue,
   status,
+  start,
   removeTaskFromRunner,
   putTaskIntoRunner,
+  removeRunner,
+  disableRunner,
+  enableRunner,
 }) => {
   const styles = useStyles();
 
@@ -67,7 +81,14 @@ const WorkflowRunner: React.FC<Props> = ({
     removeTaskFromRunner(id, taskId);
   };
   const onTaskAdd = (taskType: WorkflowTaskType) => {
-    putTaskIntoRunner(id, uuidv4());
+    putTaskIntoRunner(id, uuidv4(), taskType);
+  };
+  const toggleEnable = () => {
+    if (enable) {
+      disableRunner(id);
+    } else {
+      enableRunner(id);
+    }
   };
 
   return (
@@ -85,9 +106,14 @@ const WorkflowRunner: React.FC<Props> = ({
         })
       }
       <div className={styles.footerAction} >
+        <div className={styles.footerActionFixed}>
+          <Tooltip title="Enabled">
+            <Switch onClick={toggleEnable} checked={enable} size="small" color="primary" className={styles.footerActionButton} />
+          </Tooltip>
+        </div>
         <Tooltip title="Delete">
           <IconButton size="small">
-            <DeleteIcon className={styles.footerActionButton} color="action" />
+            <DeleteIcon onClick={() => removeRunner(id)} className={styles.footerActionButton} color="action" />
           </IconButton>
         </Tooltip>
         <MenuButton
@@ -128,7 +154,7 @@ const WorkflowRunner: React.FC<Props> = ({
         />
         <Tooltip title="Run">
           <IconButton size="small">
-            <PlayCircleFilledWhiteIcon color="action" className={styles.footerActionButton} />
+            <PlayCircleFilledWhiteIcon onClick={() => start(id)} color="action" className={styles.footerActionButton} />
           </IconButton>
         </Tooltip>
       </div>
