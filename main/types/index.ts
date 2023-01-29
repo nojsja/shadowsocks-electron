@@ -4,6 +4,34 @@ import {
 } from 'electron';
 
 import CONSTS from '../core/LoadBalancer/consts';
+import { CronTableObject, WorkflowTaskOptions } from '../core/workflow/types';
+
+export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
+export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
+export type WorkflowTaskTimerType = 'schedule' | 'timer';
+
+export interface WorkflowTaskTimer {
+  enable: boolean;
+  type?: WorkflowTaskTimerType;
+  interval?: number; // minutes
+  schedule?: string; // time schedule, unix cron format, such as '1 * * * * *'
+}
+
+export interface WorkflowTask {
+  id: string;
+  status: WorkflowTaskStatus;
+  type: WorkflowTaskType;
+  scriptPath: string;
+}
+
+export interface WorkflowRunner {
+  id: string;
+  enable: boolean;
+  status: WorkflowRunnerStatus;
+  timerOption: WorkflowTaskTimer;
+  queue: WorkflowTask[];
+}
 
 export const encryptMethods = [
   "none",
@@ -124,6 +152,25 @@ export interface ThemeService extends Service {
   listenForUpdate: () => Promise<ServiceResult>
   unlistenForUpdate: () => Promise<ServiceResult>
   getSystemThemeInfo: () => Promise<ServiceResult>
+}
+
+export interface WorkflowService extends Service {
+  [attr: string]: IpcMain | ServiceHandler | any
+  getWorkflowRunners: () => Promise<ServiceResult>;
+  getWorkflowRunner: (id: string) => Promise<ServiceResult>;
+  runWorkflowRunner: (id: string) => Promise<ServiceResult>;
+  stopWorkflowRunner: (id: string) => Promise<ServiceResult>;
+  editWorkflowRunner: (id: string, options: {
+    enable?: boolean;
+    timer?: {
+      enable?: boolean;
+      type?: WorkflowTaskTimer['type'];
+      interval?: number;
+      schedule?: CronTableObject;
+    };
+  }) => Promise<ServiceResult>;
+  generateTaskOfRunner: (task: Partial<WorkflowTaskOptions>, runnerId?: string) => Promise<ServiceResult>;
+  removeTaskOfRunner: (taskId: string, runnerId: string) => Promise<ServiceResult>;
 }
 
 export type ServiceHandler = (params: any) => Promise<ServiceResult>

@@ -73,6 +73,11 @@ export class WorkflowManager extends Workflow {
     return this.runners;
   }
 
+  async getWorkflowRunner(runnerId: string) {
+    await this.ready();
+    return this.runners.find((runner) => runner.id === runnerId) ?? null;
+  }
+
   async runWorkflowRunner(runnerId: string) {
     const targetRunner = this.runners.find((runner) => runner.id === runnerId);
     if (!targetRunner) return new RunnerNotFoundError(runnerId);

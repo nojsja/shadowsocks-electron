@@ -129,7 +129,7 @@ const TaskEditor: React.FC<Props> = ({
             color="action"
           />
         </Tooltip>
-        <Tooltip title="Load template script">
+        <Tooltip title="Load template code">
           <CodeIcon
             className={styles.textEditorActionButton}
             onClick={onTemplateScriptLoad}

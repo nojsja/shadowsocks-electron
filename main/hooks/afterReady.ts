@@ -1,16 +1,20 @@
 import { app, BrowserWindow, dialog } from 'electron';
 import path from 'path';
-import { BrowserService, ChildProcessPool, MessageChannel, LoadBalancer } from 'electron-re';
+import {
+  BrowserService,
+  ChildProcessPool,
+  MessageChannel,
+  LoadBalancer,
+} from 'electron-re';
 import electronIsDev from 'electron-is-dev';
 
 import { ElectronApp } from '../app';
-import { WorkflowManager } from '../core/workflow/manager';
 import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '../config';
 import { i18n } from '../electron';
 import { warning } from '../logs';
+import { workflowManager } from '../service';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
-const workflowManager = new WorkflowManager();
 
 const electronReServiceTest = (electronApp: ElectronApp) => {
   if (!electronIsDev) return;
