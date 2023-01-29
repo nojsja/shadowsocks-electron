@@ -4,10 +4,13 @@ import {
   TextareaAutosizeProps
 } from "@material-ui/core";
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { grey } from "@material-ui/core/colors";
+import { grey } from '@material-ui/core/colors';
+import classNames from 'classnames';
+import { scrollBarStyle } from '@/renderer/pages/styles';
 
 export interface TextAreaProps extends TextareaAutosizeProps {
   onTextChange?: (text: string) => void;
+  noAutosize?: boolean;
 }
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
@@ -17,11 +20,19 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     outline: 'none',
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.type === 'dark' ? grey[400] : grey[900],
+    overflowX: 'hidden',
+    ...scrollBarStyle(6, 0, theme),
+  },
+  nowrap: {
+    whiteSpace: 'nowrap',
+  },
+  noAutosize: {
+    height: 'unset !important',
   }
 }));
 
 const StyledTextareaAutosize = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(function StyledTextareaAutosize(props: TextAreaProps, ref) {
-  const { onTextChange, ...other } = props;
+  const { onTextChange, wrap, noAutosize, ...other } = props;
 
   const onInnerChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     onTextChange?.(event.target.value)
@@ -34,7 +45,11 @@ const StyledTextareaAutosize = React.forwardRef<HTMLTextAreaElement, TextAreaPro
       <TextareaAutosize
         {...props}
         ref={ref}
-        className={classes.textarea}
+        className={classNames(
+          classes.textarea,
+          wrap === 'off' && classes.nowrap, props.className,
+          noAutosize && classes.noAutosize,
+        )}
         onChange={onInnerChange}
       />
     )

@@ -15,42 +15,16 @@ import useDidUpdate from '@/renderer/hooks/useDidUpdate';
 
 import useTaskFS from '../hooks/useTaskFS';
 
-const template =
-  `module.exports = async function(content, {
-    // see https://github.com/GoogleChrome/puppeteer for API reference.
-    puppeteer,
-    clipboard,
-    http,
-    https,
-    fs,
-    path,
-  }) {
-    const browser = await puppeteer.launch({
-      headless: false,
-      timeout: 30000,
-    });
-    const page = await browser.newPage();
-    await page.goto('https://lncn.org/');
-
-    page.click('.ssr-list-wrapper.base-box .el-button--primary');
-    try {
-      await browser.close();
-    } catch (error) {}
-
-    const result = clipboard.readText('clipboard');
-
-    return result;
-  };
-`;
-
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => void;
+  templateCode: string;
 }
 
-const ProcessorTask: React.FC<Props> = ({
+const TaskEditor: React.FC<Props> = ({
   id,
   scriptPath,
   onTaskDelete,
+  templateCode,
 }) => {
   const styles = useStylesOfWorkflow();
   const [scriptContent, setScriptContent] = useState<string>('');
@@ -60,7 +34,7 @@ const ProcessorTask: React.FC<Props> = ({
   const [isContentTouched, setContentTouched] = useState(false);
 
   const onTemplateScriptLoad = () => {
-    editorRef.current?.setValue(template);
+    editorRef.current?.setValue(templateCode);
     setContentTouched(true);
   };
 
@@ -125,51 +99,46 @@ const ProcessorTask: React.FC<Props> = ({
   }, [scriptContent]);
 
   return (
-    <>
-      puppeteer
-      <div className={styles.scriptWrapper}>
-        <div className={styles.textEditorWrapper}>
-          <TextEditor
-            className={styles.textEditorContent}
-            onKeyDown={handleKeyDown}
-            placeholder=""
-            noAutosize
-            wrap="off"
-            ref={editorRef}
-            onChange={onScriptChange}
-            defaultValue={scriptContent}
-          />
-        </div>
-        <div className={styles.textEditorActions}>
-          <Tooltip title="Delete">
-            <DeleteIcon className={styles.textEditorActionButton} onClick={onTaskDeleteInner} color="action" />
-          </Tooltip>
-          <Tooltip title="Open with default external editor">
-            <LaunchIcon className={styles.textEditorActionButton} onClick={onScriptOpen} color="action" />
-          </Tooltip>
-          <Tooltip title="Restore">
-            <RotateLeftIcon className={styles.textEditorActionButton} onClick={onScriptReload} color="action" />
-          </Tooltip>
-          <Tooltip title="Save script file, you can press 'ctrl/cmd + s' instead when focus on editor.">
-            <SaveIcon
-              className={cls(styles.textEditorActionButton, isContentTouched && styles.textEditorActionButtonActive)}
-              onClick={onScriptSave}
-              color="action"
-            />
-          </Tooltip>
-          <Tooltip title="Load template script">
-            <CodeIcon
-              className={styles.textEditorActionButton}
-              onClick={onTemplateScriptLoad}
-              color="action"
-            />
-          </Tooltip>
-        </div>
+    <div className={styles.scriptWrapper}>
+      <div className={styles.textEditorWrapper}>
+        <TextEditor
+          className={styles.textEditorContent}
+          onKeyDown={handleKeyDown}
+          placeholder=""
+          wrap="off"
+          noAutosize
+          ref={editorRef}
+          onChange={onScriptChange}
+          defaultValue={scriptContent}
+        />
       </div>
-    </>
+      <div className={styles.textEditorActions}>
+        <Tooltip title="Delete">
+          <DeleteIcon className={styles.textEditorActionButton} onClick={onTaskDeleteInner} color="action" />
+        </Tooltip>
+        <Tooltip title="Open with default external editor">
+          <LaunchIcon className={styles.textEditorActionButton} onClick={onScriptOpen} color="action" />
+        </Tooltip>
+        <Tooltip title="Restore">
+          <RotateLeftIcon className={styles.textEditorActionButton} onClick={onScriptReload} color="action" />
+        </Tooltip>
+        <Tooltip title="Save script file, you can press 'ctrl/cmd + s' instead when focus on editor.">
+          <SaveIcon
+            className={cls(styles.textEditorActionButton, isContentTouched && styles.textEditorActionButtonActive)}
+            onClick={onScriptSave}
+            color="action"
+          />
+        </Tooltip>
+        <Tooltip title="Load template script">
+          <CodeIcon
+            className={styles.textEditorActionButton}
+            onClick={onTemplateScriptLoad}
+            color="action"
+          />
+        </Tooltip>
+      </div>
+    </div>
   );
 };
 
-export const type = 'processor-pipe';
-
-export default ProcessorTask;
+export default TaskEditor;

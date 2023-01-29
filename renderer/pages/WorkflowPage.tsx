@@ -41,32 +41,6 @@ const Workflow: React.FC= () => {
         }
       ],
     },
-    {
-      id: '2',
-      enable: true,
-      status: 'idle',
-      timerOption: { enable: false },
-      queue: [
-        {
-          id: '2-1',
-          status: 'idle',
-          type: 'puppeteer-source',
-          scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/2-1/index.js',
-        },
-        {
-          id: '2-2',
-          status: 'idle',
-          type: 'processor-pipe',
-          scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/2-2/index.js',
-        },
-        {
-          id: '2-3',
-          status: 'idle',
-          type: 'effect-pipe',
-          scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/2-3/index.js',
-        }
-      ],
-    }
   ];
   const createRunner = (type: string) => {
     return new Promise<boolean>((resolve) => {

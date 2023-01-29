@@ -206,12 +206,19 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     paddingLeft: theme.spacing(.5),
     // paddingRight: theme.spacing(.5),
     margin: `${theme.spacing(1)}px 0px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
-    '& *': scrollBarStyle(6, 0, theme),
+    // '& *': scrollBarStyle(6, 0, theme),
   },
   textEditorWrapper: {
-    maxHeight: '20vh',
+    position: 'relative',
+    height: '20vh',
     width: '85%',
-    overflowY: 'scroll',
+  },
+  textEditorContent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   textEditorActions: {
     flex: 1,
@@ -226,5 +233,8 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     '&:hover': {
       color: theme.palette.type === 'dark' ? theme.palette.secondary.light : theme.palette.secondary.dark,
     },
+  },
+  textEditorActionButtonActive: {
+    color: theme.palette.primary.light,
   }
 }));

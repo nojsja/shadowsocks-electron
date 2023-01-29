@@ -6,11 +6,11 @@ import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite'
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
-import { WorkflowRunner, WorkflowTaskType } from '@renderer/types';
+import { type WorkflowRunner, type WorkflowTaskType } from '@renderer/types';
 
-import EffectTask from './tasks/EffectTask';
+import EffectTask, { type as EffectTaskType } from './tasks/EffectTask';
 import NodeSourceTask, { type as NodeSourceTaskType } from './tasks/NodeSourceTask';
-import ProcessorTask from './tasks/ProcessorTask';
+import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask';
 import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
 
@@ -39,9 +39,9 @@ export const useStyles = makeStyles((theme) => createStyles({
 }));
 
 const TaskTypeMap = {
-  [EffectTask.type]: EffectTask,
+  [EffectTaskType]: EffectTask,
   [NodeSourceTaskType]: NodeSourceTask,
-  [ProcessorTask.type]: ProcessorTask,
+  [ProcessorTaskType]: ProcessorTask,
   [PuppeteerSourceTaskType]: PuppeteerSourceTask,
   [CrawlerSourceTaskTask]: CrawlerSourceTask,
   unknown: () => <div>Unknown Task</div>,
