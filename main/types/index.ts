@@ -169,7 +169,7 @@ export interface WorkflowService extends Service {
       schedule?: CronTableObject;
     };
   }) => Promise<ServiceResult>;
-  generateTaskOfRunner: (task: Partial<WorkflowTaskOptions>, runnerId?: string) => Promise<ServiceResult>;
+  generateTaskOfRunner: (params: { task: Partial<WorkflowTaskOptions>, runnerId?: string }) => Promise<ServiceResult>;
   removeTaskOfRunner: (taskId: string, runnerId: string) => Promise<ServiceResult>;
 }
 

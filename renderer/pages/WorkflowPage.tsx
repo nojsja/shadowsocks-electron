@@ -1,6 +1,7 @@
 import React from 'react';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container } from '@material-ui/core';
+import { MessageChannel } from 'electron-re';
 
 import {
   type WorkflowTaskTimer,
@@ -9,47 +10,81 @@ import {
 } from '@renderer/types';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
-import WorkflowRunner from './workflow/WorkflowRunner';
+import { useRequest, type Response } from '@renderer/hooks/useRequest';
 
+import WorkflowRunner from './workflow/WorkflowRunner';
 import { useStylesOfWorkflow } from './styles';
 
-const Workflow: React.FC= () => {
+const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
-  const runners: WorkflowRunnerType[] = [
+  // const runners: WorkflowRunnerType[] = [
+  //   {
+  //     id: '1',
+  //     enable: true,
+  //     status: 'idle',
+  //     timerOption: { enable: false },
+  //     queue: [
+  //       {
+  //         id: '1-1',
+  //         status: 'idle',
+  //         type: 'puppeteer-source',
+  //         scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-1/index.js',
+  //       },
+  //       {
+  //         id: '1-2',
+  //         status: 'idle',
+  //         type: 'processor-pipe',
+  //         scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-2/index.js',
+  //       },
+  //       {
+  //         id: '1-3',
+  //         status: 'idle',
+  //         type: 'effect-pipe',
+  //         scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-3/index.js',
+  //       }
+  //     ],
+  //   },
+  // ];
+
+  const { data: runnersResp } = useRequest<Response<WorkflowRunnerType[]>>(
+    () => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'getWorkflowRunners',
+      params: {},
+    }),
     {
-      id: '1',
-      enable: true,
-      status: 'idle',
-      timerOption: { enable: false },
-      queue: [
-        {
-          id: '1-1',
-          status: 'idle',
-          type: 'puppeteer-source',
-          scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-1/index.js',
-        },
-        {
-          id: '1-2',
-          status: 'idle',
-          type: 'processor-pipe',
-          scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-2/index.js',
-        },
-        {
-          id: '1-3',
-          status: 'idle',
-          type: 'effect-pipe',
-          scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-3/index.js',
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error('getWorkflowRunners failed');
         }
-      ],
-    },
-  ];
-  const createRunner = (type: WorkflowTaskType) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: createRunner } = useRequest<Response<void>>(
+    (type: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'generateTaskOfRunner',
+      params: {
+        task: { type },
+        runnerId: null,
+      },
+    }),
+    {
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error('createRunner failed');
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
   const removeRunner = (id: string) => {
     return new Promise<boolean>((resolve) => {
       setTimeout(() => {
@@ -133,7 +168,7 @@ const Workflow: React.FC= () => {
       </div>
       <div>
         {
-          runners.map((runner) => (
+          runnersResp?.result?.map((runner) => (
             <WorkflowRunner
               {...runner}
               key={runner.id}

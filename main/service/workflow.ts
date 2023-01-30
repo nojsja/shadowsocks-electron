@@ -66,8 +66,8 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async generateTaskOfRunner(task: Partial<WorkflowTaskOptions>, runnerId?: string) {
-    const error = await this.manager.generateTaskOfRunner(task, runnerId);
+  async generateTaskOfRunner(params: { task: Partial<WorkflowTaskOptions>, runnerId?: string }) {
+    const error = await this.manager.generateTaskOfRunner(params.task, params.runnerId);
 
     return {
       code: error ? 500 : 200,

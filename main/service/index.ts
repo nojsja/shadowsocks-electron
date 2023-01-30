@@ -28,10 +28,15 @@ export class IpcMainProcess implements IpcMainProcessType {
   workflowService: WorkflowServiceType
 
   constructor(ipc: IpcMain) {
+    const mainService = new MainService(ipc);
+    const desktopService = new DesktopService(ipc);
+    const themeService = new ThemeService(ipc);
+    const workflowService = new WorkflowService(ipc, workflowManager);
+
     this.ipc = ipc;
-    this.mainService = ipcBridge<MainServiceType>(this.ipc, 'service:main', new MainService(ipc));
-    this.desktopService = ipcBridge<DesktopServiceType>(this.ipc, 'service:desktop', new DesktopService(ipc));
-    this.themeService = ipcBridge<ThemeServiceType>(this.ipc, 'service:theme', new ThemeService(ipc));
-    this.workflowService = ipcBridge<WorkflowServiceType>(this.ipc, 'service:workflow', new WorkflowService(ipc, workflowManager));
+    this.mainService = ipcBridge<MainServiceType>(this.ipc, 'service:main', mainService);
+    this.desktopService = ipcBridge<DesktopServiceType>(this.ipc, 'service:desktop', desktopService);
+    this.themeService = ipcBridge<ThemeServiceType>(this.ipc, 'service:theme', themeService);
+    this.workflowService = ipcBridge<WorkflowServiceType>(this.ipc, 'service:workflow', workflowService);
   }
 }
