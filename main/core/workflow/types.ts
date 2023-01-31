@@ -1,12 +1,5 @@
 
 export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
-export enum WorkflowTaskTypes {
-  'puppeteer-source' = 0,
-  'crawler-source' = 1,
-  'node-source' = 2,
-  'processor-pipe' = 3,
-  'effect-pipe' = 4,
-}
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowManagerStatus = 'uninitialized' | 'initialized' | 'unloaded';

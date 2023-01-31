@@ -3,6 +3,8 @@ import _ from 'lodash';
 
 import { Workflow } from './base';
 import { WorkflowRunner } from './runner';
+import { WorkflowBridge } from './bridge';
+
 import {
   CronTableObject,
   RunnerCreateError,
@@ -19,11 +21,13 @@ export class WorkflowManager extends Workflow {
     this.runners = [];
     this.runnerIds = [];
     this.status = 'uninitialized';
+    this.bridge = new WorkflowBridge();
   }
 
   runners: WorkflowRunner[];
   runnerIds: string[];
   status: WorkflowManagerStatus;
+  bridge: WorkflowBridge;
 
   async bootstrap() {
     try {
@@ -39,9 +43,9 @@ export class WorkflowManager extends Workflow {
 
   async init() {
     const failedTasks: string[] = [];
-
+    await this.bridge.init();
     this.runnerIds.forEach(async (id) => {
-      const runner = await WorkflowRunner.from(id);
+      const runner = await WorkflowRunner.from(id, this.bridge);
       if (runner) {
         if (runner.enable) {
           runner.startTimer();
@@ -158,7 +162,7 @@ export class WorkflowManager extends Workflow {
       targetRunner = this.runners.find((runner) => runner.id === runnerId) || null;
       if (!targetRunner) return new RunnerNotFoundError(runnerId);
     } else {
-      targetRunner = await WorkflowRunner.generate();
+      targetRunner = await WorkflowRunner.generate(null, this.bridge);
       if (!targetRunner) return new RunnerCreateError();
       this.runners.push(targetRunner);
     }

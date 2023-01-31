@@ -3,60 +3,19 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import schedule from 'node-schedule';
 
-import { clipboard } from 'electron';
-import puppeteer from 'puppeteer';
-import crawler from 'crawler';
-import http from 'http';
-import https from 'https';
-
 import { Workflow } from './base';
 import { WorkflowTask } from './task';
+import { WorkflowBridge } from './bridge';
 import {
   RunnerIsRunningError,
   WorkflowRunnerOptions,
   WorkflowTaskOptions,
   WorkflowTaskStatus,
   WorkflowTaskTimer,
-  WorkflowTaskTypes,
 } from './types';
 
-const commonBridgeAttrs = {
-  http,
-  https,
-  fs,
-  clipboard,
-  path,
-};
-
-/**
-  * @name dispatch [trigger event to renderer process]
-  * @param action reconnect-server | add-server | disconnect-server | notifycation
-  * @param args unknown
-  * @returns void
-  * @example
-  * * demo1: connect client to server
-  * > dispatch('reconnect-server');
-  * * demo2-1: add server (ss) to client
-  * > dispatch('add-server', 'ss://xxx');
-  * * demo2-2: add server (ssr) to client
-  * > dispatch('add-server', 'ssr://xxx');
-  * * demo3: disconnect client from server
-  * > dispatch('disconnect-server');
-  * * demo4: send notifycation
-  * > dispatch('notifycation', {
-  *     message: 'xxx',
-  *     type: 'default', // type - 'default' | 'error' | 'success' | 'warning' | 'info'
-  *   });
-  */
-const dispatch = (action: string, args: unknown) => {
-  (global as any).win.webContents.send('event:stream', {
-    action,
-    args,
-  });
-};
-
 export class WorkflowRunner extends Workflow {
-  constructor(options: Partial<WorkflowRunnerOptions>) {
+  constructor(options: Partial<WorkflowRunnerOptions>, bridge: WorkflowBridge) {
     super();
     this.id = options.id ?? uuidv4();
     this.metaPath = path.resolve(this.rootDir, `${this.id}.workflow.json`);
@@ -67,6 +26,7 @@ export class WorkflowRunner extends Workflow {
     this.queue = [];
     this.timer = null;
     this.schedule = null;
+    this.bridge = bridge;
   }
 
   id: string;
@@ -78,31 +38,14 @@ export class WorkflowRunner extends Workflow {
   queue: WorkflowTask[];
   timer: NodeJS.Timer | null;
   schedule: schedule.Job | null;
-
-  static bridge = {
-    [WorkflowTaskTypes['puppeteer-source']]: { // puppeteer - Use [headless browser] to produce data.
-      puppeteer,
-      ...commonBridgeAttrs,
-    },
-    [WorkflowTaskTypes['crawler-source']]: { // crawler - Use [web crawler] to produce data.
-      crawler,
-      ...commonBridgeAttrs,
-    },
-    [WorkflowTaskTypes['node-source']]: { // node - Use nodejs script to produce data, such as read file, request http, etc.
-      ...commonBridgeAttrs,
-    },
-    [WorkflowTaskTypes['processor-pipe']]: {}, // processor - Use nodejs middle handler to process data, such as filter, sort, error wrapper, etc.
-    [WorkflowTaskTypes['effect-pipe']]: { // effect - produce some UI effects, such as notifycation.
-      dispatch,
-    },
-  }
+  bridge: WorkflowBridge;
 
   static getMetaPath(id: string) {
     return path.resolve(Workflow.rootDir, `${id}.workflow.json`);
   }
 
-  static async generate(options?: Partial<WorkflowRunnerOptions>) {
-    const runner = new WorkflowRunner(options ?? {});
+  static async generate(options: Partial<WorkflowRunnerOptions> | null, bridge: WorkflowBridge) {
+    const runner = new WorkflowRunner(options ?? {}, bridge);
     try {
       await runner.writeToMetaFile();
       const tasks = await runner.initTasks();
@@ -116,13 +59,13 @@ export class WorkflowRunner extends Workflow {
     return runner;
   }
 
-  static async from(id: string) {
+  static async from(id: string, bridge: WorkflowBridge) {
     try {
       const isExists = await WorkflowRunner.isExist(id);
       if (isExists) {
         const metaPath = WorkflowRunner.getMetaPath(id);
         const metaData = JSON.parse(await fs.promises.readFile(metaPath, 'utf-8')) as Partial<WorkflowRunnerOptions>;
-        const runner = new WorkflowRunner(metaData);
+        const runner = new WorkflowRunner(metaData, bridge);
         const tasks = await runner.loadTasks();
         const succeed = tasks.every((task) => task);
         if (!succeed) throw new Error('workflow runner: load tasks failed!');
@@ -257,7 +200,7 @@ export class WorkflowRunner extends Workflow {
           const payload = await memo;
           const [error, result] = await task.start(
             payload,
-            WorkflowRunner.bridge[WorkflowTaskTypes[task.type]] ?? {},
+            this.bridge.context?.[task.type] ?? {},
           );
           if (error) throw error;
           return result;

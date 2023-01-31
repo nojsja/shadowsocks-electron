@@ -8,23 +8,26 @@ import TaskEditor from './TaskEditor';
 const template =`
   module.exports = async function(content, {
     // see https://github.com/GoogleChrome/puppeteer for API reference.
-    puppeteer,
+    loadBrowserPage, // function - return puppeteer page instance and distroy function
     clipboard, // electron clipboard module
     http, // nodejs http module
     https, // nodejs https module
     fs, // nodejs fs module
     path, // nodejs path module
   }) {
-    const browser = await puppeteer.launch({
-      headless: false,
-      timeout: 30000,
-    });
-    const page = await browser.newPage();
-    await page.goto('https://lncn.org/');
+    const [page, closeBrowser] = await loadBrowserPage(
+      'https://lncn.org/',
+      {
+        show: false, // whether show browser window, optional, default is true.
+        width: 800, // browser window width, optional.
+        height: 600, // browser window height, optional.
+      }
+    );
 
-    page.click('.ssr-list-wrapper.base-box .el-button--primary');
+    page.click('.ssr-list-wrapper.base-box .el-button--primary'); // powered by puppeteer API
+
     try {
-      await browser.close();
+      closeBrowser();
     } catch (error) {}
 
     const result = clipboard.readText('clipboard');

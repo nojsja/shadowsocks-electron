@@ -118,9 +118,13 @@ const setAsDefaultProtocolClient = () => {
 const initWorkflow = async () => {
   console.log('hooks: >> initWorkflow');
   await workflowManager.bootstrap();
-  const [succeed, failedTasks] = await workflowManager.init();
-  if (!succeed) {
-    warning(`workflow init failed: ${failedTasks.join()}`);
+  try {
+    const [succeed, failedTasks] = await workflowManager.init();
+    if (!succeed) {
+      warning(`workflow init failed: ${failedTasks.join()}`);
+    }
+  } catch (error) {
+    warning(`workflow init failed: ${error}`);
   }
 };
 
