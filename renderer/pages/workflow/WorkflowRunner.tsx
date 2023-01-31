@@ -6,7 +6,12 @@ import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite'
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
-import { WorkflowTaskTimer, type WorkflowRunner, type WorkflowTaskType } from '@renderer/types';
+import { Response } from '@/renderer/hooks/useRequest';
+import {
+  WorkflowTaskTimer,
+  type WorkflowRunner,
+  type WorkflowTaskType,
+} from '@renderer/types';
 
 import EffectTask, { type as EffectTaskType } from './tasks/EffectTask';
 import NodeSourceTask, { type as NodeSourceTaskType } from './tasks/NodeSourceTask';
@@ -53,14 +58,14 @@ const TaskTypeMap = {
 };
 
 interface Props extends WorkflowRunner {
-  start: (id: string) => Promise<boolean>;
-  stop: (id: string) => Promise<boolean>;
-  removeTaskFromRunner: (runnerId: string, taskId: string) => Promise<boolean>;
-  putTaskIntoRunner: (runnerId: string, taskId: string, taskType: WorkflowTaskType) => Promise<boolean>;
-  adjustTimerOfRunner: (runnerId: string, timer: WorkflowTaskTimer) => Promise<boolean>;
-  enableRunner: (runnerId: string) => Promise<boolean>;
-  disableRunner: (runnerId: string) => Promise<boolean>;
-  removeRunner: (runnerId: string) => Promise<boolean>;
+  start: (id: string) => Promise<Response<string | null>>;
+  stop: (id: string) => Promise<Response<string | null>>;
+  removeTaskFromRunner: (runnerId: string, taskId: string) => Promise<Response<string | null>>;
+  putTaskIntoRunner: (runnerId: string, taskId: string, taskType: WorkflowTaskType) => Promise<Response<string | null>>;
+  adjustTimerOfRunner: (runnerId: string, timer: WorkflowTaskTimer) => Promise<Response<string | null>>;
+  enableRunner: (runnerId: string) => Promise<Response<string | null>>;
+  disableRunner: (runnerId: string) => Promise<Response<string | null>>;
+  removeRunner: (runnerId: string) => Promise<Response<string | null>>;
 }
 
 const WorkflowRunner: React.FC<Props> = ({

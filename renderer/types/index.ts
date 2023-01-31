@@ -204,11 +204,21 @@ export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskTimerType = 'schedule' | 'timer';
 
+export type CronTableObject = {
+  seconds?: number;
+  minutes?: number;
+  hours?: number;
+  date?: number;
+  month?: number;
+  day?: number;
+};
+
+
 export interface WorkflowTaskTimer {
   enable: boolean;
   type?: WorkflowTaskTimerType;
   interval?: number; // minutes
-  schedule?: string; // time schedule, unix cron format, such as '1 * * * * *'
+  schedule?: CronTableObject;
 }
 
 export interface WorkflowTask {

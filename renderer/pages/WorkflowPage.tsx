@@ -46,7 +46,7 @@ const Workflow: React.FC = () => {
   //   },
   // ];
 
-  const { data: runnersResp } = useRequest<Response<WorkflowRunnerType[]>>(
+  const { data: runnersResp, run: getWorkflowRunners } = useRequest<Response<WorkflowRunnerType[]>>(
     () => MessageChannel.invoke('main', 'service:workflow', {
       action: 'getWorkflowRunners',
       params: {},
@@ -64,7 +64,7 @@ const Workflow: React.FC = () => {
     }
   );
 
-  const { run: createRunner } = useRequest<Response<void>>(
+  const { run: createRunner } = useRequest<Response<string | null>>(
     (type: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
       action: 'generateTaskOfRunner',
       params: {
@@ -75,7 +75,7 @@ const Workflow: React.FC = () => {
     {
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          throw new Error('createRunner failed');
+          throw new Error(`Fail to create runner, ${rsp.result}`);
         }
       },
       onError(error) {
@@ -85,62 +85,178 @@ const Workflow: React.FC = () => {
     }
   );
 
-  const removeRunner = (id: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const putTaskIntoRunner = (runnerId: string, taskId: string, taskType: WorkflowTaskType) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const removeTaskFromRunner = (runnerId: string, taskId: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const startRunner = (id: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const stopRunner = (id: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const enableRunner = (id: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const disableRunner = (id: string) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
-  const adjustTimerOfRunner = (id: string, timer: WorkflowTaskTimer) => {
-    return new Promise<boolean>((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 1000);
-    });
-  };
+  const { run: removeRunner } = useRequest<Response<string | null>>(
+    (type: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'removeWorkflowRunner',
+      params: {
+        task: { type },
+        runnerId: null,
+      },
+    }),
+    {
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to remove runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: putTaskIntoRunner } = useRequest<Response<string | null>>(
+    (runnerId: string, taskId: string, taskType: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'generateTaskOfRunner',
+      params: {
+        task: { type: taskType, id: taskId },
+        runnerId: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to create task, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: removeTaskFromRunner } = useRequest<Response<string | null>>(
+    (runnerId: string, taskId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'removeTaskOfRunner',
+      params: {
+        task: { taskId, runnerId },
+        runnerId: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to remove task, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: startRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'runWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to start runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: stopRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'stopWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to stop runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: enableRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'enableWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to enable runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: disableRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'disableWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to disable runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: adjustTimerOfRunner } = useRequest<Response<string | null>>(
+    (runnerId: string, timer: WorkflowTaskTimer) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'editWorkflowRunner',
+      params: {
+        id: runnerId,
+        options: {
+          timer,
+        },
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error(`Fail to adjust timer of runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
 
   return (
     <Container className={styles.container}>

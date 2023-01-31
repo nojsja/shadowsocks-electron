@@ -36,8 +36,7 @@ export class WorkflowTask extends Workflow {
       await task.writeToMetaFile();
       await task.writeToScriptFile(options.script ?? '');
     } catch (error) {
-      fs.promises.unlink(task.metaPath).catch((e) => e);
-      fs.promises.unlink(task.scriptPath).catch((e) => e);
+      fs.promises.rm(task.taskPath, { recursive: true, force: true }).catch((e) => e);
       return null;
     }
     return task;
@@ -76,11 +75,23 @@ export class WorkflowTask extends Workflow {
       metaPath: this.metaPath,
     });
 
-    await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
+    try {
+      await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
+    } catch (error) {
+      return error as Error;
+    }
+
+    return null;
   }
 
   async writeToScriptFile(script: string) {
-    await fs.promises.writeFile(this.scriptPath, script, 'utf-8');
+    try {
+      await fs.promises.writeFile(this.scriptPath, script, 'utf-8');
+    } catch (error) {
+      return error as Error;
+    }
+
+    return null;
   }
 
   get isRunning() {
@@ -173,22 +184,32 @@ export class WorkflowTask extends Workflow {
   /**
    * @name stop
    * @description Stop the task
-   * @returns [TaskIsNotRunningError | null, boolean]
+   * @returns Promise<TaskIsNotRunningError | null>
    */
-  stop(): Promise<[TaskIsNotRunningError | null, boolean]> {
+  stop(): Promise<TaskIsNotRunningError | null> {
     return new Promise((resolve) => {
       if (this.status !== 'running') {
         console.warn('Task is not running: ', this.id);
-        return resolve([new TaskIsNotRunningError(this.id), false]);
+        return resolve(new TaskIsNotRunningError(this.id));
       }
       const abortCallback = () => {
         this.status = 'idle';
         this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
-        resolve([null, true]);
+        resolve(null);
       };
 
       this.abortCtrl?.signal.addEventListener('abort', abortCallback);
       this.abortCtrl?.abort();
     });
+  }
+
+  async remove(): Promise<Error | null> {
+    try {
+      await fs.promises.rm(this.taskPath, { recursive: true, force: true });
+    } catch (error) {
+      return error as Error;
+    }
+
+    return null;
   }
 }

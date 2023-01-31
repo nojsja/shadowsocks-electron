@@ -116,6 +116,7 @@ export class WorkflowManager extends Workflow {
 
     const cloneRunner = _.clone(targetRunner);
     const timerType = options.timer?.type ?? cloneRunner?.timerOption?.type;
+    const timerEnable = options.timer?.enable ?? cloneRunner?.timerOption?.enable;
     const timerTouched = 'timer' in options;
 
     await this.ready();
@@ -127,7 +128,7 @@ export class WorkflowManager extends Workflow {
       targetRunner.timerOption = {
         ...(cloneRunner?.timerOption ?? {}),
         type: timerType,
-        enable: !!options.timer?.enable ?? cloneRunner?.enable ?? false,
+        enable: timerEnable,
         ...(
           timerType === 'schedule' && 'schedule' in (options!.timer || {})
         ) ? { schedule: dateToCronTable(options.timer?.schedule as CronTableObject) } : {},
@@ -145,9 +146,17 @@ export class WorkflowManager extends Workflow {
       return error as Error;
     }
 
-    if (targetRunner.enable && timerTouched) {
+    if (targetRunner.enable) {
+      if (timerTouched) { // status changed
+        if (targetRunner.timerOption.enable) { // restart timer
+          targetRunner.stopTimer();
+          targetRunner.startTimer();
+        } else { // stop timer
+          targetRunner.stopTimer();
+        }
+      }
+    } else { // stop timer
       targetRunner.stopTimer();
-      targetRunner.startTimer();
     }
 
     return null;
@@ -182,12 +191,84 @@ export class WorkflowManager extends Workflow {
     return error;
   }
 
-  async unload() {
-    this.runners.forEach((runner) => {
-      runner.stop();
+  async unloadWorkflowRunners() {
+    this.runners.forEach(async (runner) => {
+      runner.stopTimer();
+      await runner.stop();
     });
-    this.runners = [];
-    this.runnerIds = [];
     this.status = 'unloaded';
+    return null;
+  }
+
+  async reloadWorkflowRunners() {
+    this.runners.forEach(async (runner) => {
+      runner.startTimer();
+      await runner.start();
+    });
+    this.status = 'initialized';
+  }
+
+  async clearWorkflowRunners() {
+    const errors: Array<Error | null> = [];
+
+    this.runners.forEach(async (runner) => {
+      const error = await runner.remove();
+      if (!error) {
+        this.runners = this.runners.filter((runner) => runner.id !== runner.id);
+        this.runnerIds = this.runnerIds.filter((id) => id !== runner.id);
+      } else {
+        errors.push(error);
+      }
+    });
+
+    if (!errors.length) {
+      this.status = 'uninitialized';
+    }
+
+    return errors;
+  }
+
+  async removeWorkflowRunner(runnerId: string) {
+    await this.ready();
+
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    const error = await targetRunner.remove();
+    if (!error) {
+      this.runners = this.runners.filter((runner) => runner.id !== runnerId);
+    }
+
+    return error;
+  }
+
+  async enableWorkflowRunner(runnerId: string) {
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    let error: Error | null = null;
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    targetRunner.enable = true;
+    error = await targetRunner.writeToMetaFile();
+    if (error) {
+      targetRunner.enable = false;
+      return error;
+    }
+
+    return null;
+  }
+
+  async disableWorkflowRunner(runnerId: string) {
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    let error: Error | null = null;
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    targetRunner.enable = false;
+    error = await targetRunner.writeToMetaFile();
+    if (error) {
+      targetRunner.enable = true;
+      return error;
+    }
+
+    return null;
   }
 }

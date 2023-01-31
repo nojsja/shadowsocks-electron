@@ -96,7 +96,13 @@ export class WorkflowRunner extends Workflow {
       tasks: this.tasks,
     });
 
-    await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
+    try {
+      await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
+    } catch (error) {
+      return error as Error;
+    }
+
+    return null;
   }
 
   get isRunning() {
@@ -131,15 +137,19 @@ export class WorkflowRunner extends Workflow {
 
   async pushTask(options: Partial<WorkflowTaskOptions>) {
     const task = await WorkflowTask.generate(options);
+
     if (task) {
       this.tasks.push(task.id);
-      this.queue.push(task);
-      try {
-        await this.writeToMetaFile();
-      } catch (error) {
-        console.error(error);
-        return error as Error;
+      const error = await this.writeToMetaFile();
+
+      if (error) { // sync error then rollback
+        this.tasks = this.tasks.filter((taskId) => taskId !== task.id);
+        await task.remove();
+        return error;
       }
+
+      this.queue.push(task);
+      return error;
     }
 
     return null;
@@ -148,17 +158,22 @@ export class WorkflowRunner extends Workflow {
   async removeTask(id: string) {
     const index = this.tasks.findIndex((taskId) => taskId === id);
     let targetTask: WorkflowTask | null = null;
+    let error: Error | null = null;
+    let taskId: string;
 
     if (index > -1) {
-      this.tasks.splice(index, 1);
-      targetTask = this.queue.splice(index, 1)[0];
-      try {
-        await targetTask.stop();
-        await this.writeToMetaFile();
-      } catch (error) {
-        console.error(error);
-        return error as Error;
-      }
+      targetTask = this.queue[index];
+      error = await targetTask.stop();
+      if (error) return error;
+
+      error = await targetTask.remove();
+      if (error) return error;
+
+      taskId = this.tasks.splice(index, 1)[0];
+      error = await this.writeToMetaFile();
+      this.queue.splice(index, 1);
+
+      if (error) return error;
     }
 
     return null;
@@ -227,6 +242,29 @@ export class WorkflowRunner extends Workflow {
         },
         Promise.resolve(),
       );
+    } catch (error) {
+      return error as Error;
+    }
+
+    return null;
+  }
+
+  async remove(): Promise<Error | null> {
+    try {
+      this.stopTimer();
+      await this.queue.reduce(
+        async (memo, task) => {
+          await memo;
+
+          const errorWhenStop = await task.remove();
+          if (errorWhenStop) throw errorWhenStop;
+
+          const errorWhenRemove = await task.remove();
+          if (errorWhenRemove) throw errorWhenRemove;
+        },
+        Promise.resolve(),
+      );
+      await fs.promises.rm(this.metaPath, { recursive: true, force: true });
     } catch (error) {
       return error as Error;
     }

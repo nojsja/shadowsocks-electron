@@ -2,7 +2,7 @@ import { IpcMain } from 'electron';
 import { WorkflowManager } from '../core/workflow/manager';
 import { CronTableObject, WorkflowTaskOptions } from '../core/workflow/types';
 
-import { ServiceResult, WorkflowService as WorkflowServiceType, WorkflowTaskTimer } from '../types';
+import { type WorkflowService as WorkflowServiceType, type WorkflowTaskTimer } from '../types';
 
 export class WorkflowService implements WorkflowServiceType {
   ipc: IpcMain
@@ -22,7 +22,8 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async getWorkflowRunner(id: string) {
+  async getWorkflowRunner(params: {id: string}) {
+    const { id } = params;
     const runner = await this.manager.getWorkflowRunner(id);
 
     return {
@@ -31,7 +32,8 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async runWorkflowRunner(id: string) {
+  async runWorkflowRunner(params: {id: string}) {
+    const { id } = params;
     const error = await this.manager.runWorkflowRunner(id);
 
     return {
@@ -40,7 +42,8 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async stopWorkflowRunner(id: string) {
+  async stopWorkflowRunner(params: {id: string}) {
+    const { id } = params;
     const error = await this.manager.stopWorkflowRunner(id);
 
     return {
@@ -49,7 +52,28 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async editWorkflowRunner(id: string, options: {
+
+  async enableWorkflowRunner(params: {id: string}) {
+    const { id } = params;
+    const error = await this.manager.enableWorkflowRunner(id);
+
+    return {
+      code: error ? 500 : 200,
+      result: error,
+    };
+  }
+
+  async disableWorkflowRunner(params: {id: string}) {
+    const { id } = params;
+    const error = await this.manager.disableWorkflowRunner(id);
+
+    return {
+      code: error ? 500 : 200,
+      result: error,
+    };
+  }
+
+  async editWorkflowRunner(params: {id: string, options: {
     enable?: boolean;
     timer?: {
       enable?: boolean;
@@ -57,7 +81,8 @@ export class WorkflowService implements WorkflowServiceType {
       interval?: number;
       schedule?: CronTableObject;
     };
-  }) {
+  }}) {
+    const { id, options } = params;
     const error = await this.manager.editWorkflowRunner(id, options);
 
     return {
@@ -75,8 +100,19 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async removeTaskOfRunner(taskId: string, runnerId: string) {
+  async removeTaskOfRunner(params: {taskId: string, runnerId: string}) {
+    const { taskId, runnerId } = params;
     const error = await this.manager.removeTaskOfRunner(taskId, runnerId);
+
+    return {
+      code: error ? 500 : 200,
+      result: error,
+    };
+  }
+
+  async removeWorkflowRunner(params: {id: string}) {
+    const { id } = params;
+    const error = await this.manager.removeWorkflowRunner(id);
 
     return {
       code: error ? 500 : 200,

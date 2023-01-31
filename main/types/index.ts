@@ -157,10 +157,12 @@ export interface ThemeService extends Service {
 export interface WorkflowService extends Service {
   [attr: string]: IpcMain | ServiceHandler | any
   getWorkflowRunners: () => Promise<ServiceResult>;
-  getWorkflowRunner: (id: string) => Promise<ServiceResult>;
-  runWorkflowRunner: (id: string) => Promise<ServiceResult>;
-  stopWorkflowRunner: (id: string) => Promise<ServiceResult>;
-  editWorkflowRunner: (id: string, options: {
+  getWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
+  runWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
+  stopWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
+  disableWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
+  enableWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
+  editWorkflowRunner: (params: {id: string, options: {
     enable?: boolean;
     timer?: {
       enable?: boolean;
@@ -168,9 +170,10 @@ export interface WorkflowService extends Service {
       interval?: number;
       schedule?: CronTableObject;
     };
-  }) => Promise<ServiceResult>;
+  }}) => Promise<ServiceResult>;
   generateTaskOfRunner: (params: { task: Partial<WorkflowTaskOptions>, runnerId?: string }) => Promise<ServiceResult>;
-  removeTaskOfRunner: (taskId: string, runnerId: string) => Promise<ServiceResult>;
+  removeTaskOfRunner: (params: {taskId: string, runnerId: string}) => Promise<ServiceResult>;
+  removeWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
 }
 
 export type ServiceHandler = (params: any) => Promise<ServiceResult>
