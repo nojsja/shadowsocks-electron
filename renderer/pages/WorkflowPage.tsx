@@ -46,7 +46,7 @@ const Workflow: React.FC = () => {
   //   },
   // ];
 
-  const { data: runnersResp, run: getWorkflowRunners } = useRequest<Response<WorkflowRunnerType[]>>(
+  const { data: runnersResp, run: getWorkflowRunners, setState } = useRequest<Response<WorkflowRunnerType[]>>(
     () => MessageChannel.invoke('main', 'service:workflow', {
       action: 'getWorkflowRunners',
       params: {},
@@ -64,6 +64,39 @@ const Workflow: React.FC = () => {
     }
   );
 
+  const { run: updateRunner } = useRequest<Response<WorkflowRunnerType>>(
+    (id: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'getWorkflowRunner',
+      params: { id },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          throw new Error('getWorkflowRunner failed');
+        }
+        setState((result) => {
+          const { result: runners } = result;
+          if (!runners) return result;
+
+          const index = runners.findIndex((runner) => runner.id === rsp.result.id);
+          if (index === -1) return result;
+          runners[index] = rsp.result;
+
+          return {
+            ...rsp,
+            result: runners,
+          };
+        });
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+
   const { run: createRunner } = useRequest<Response<string | null>>(
     (type: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
       action: 'generateTaskOfRunner',
@@ -73,10 +106,12 @@ const Workflow: React.FC = () => {
       },
     }),
     {
+      manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
           throw new Error(`Fail to create runner, ${rsp.result}`);
         }
+        getWorkflowRunners();
       },
       onError(error) {
         console.error(error);
@@ -94,10 +129,12 @@ const Workflow: React.FC = () => {
       },
     }),
     {
+      manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
           throw new Error(`Fail to remove runner, ${rsp.result}`);
         }
+        getWorkflowRunners();
       },
       onError(error) {
         console.error(error);
@@ -120,6 +157,7 @@ const Workflow: React.FC = () => {
         if (rsp.code !== 200) {
           throw new Error(`Fail to create task, ${rsp.result}`);
         }
+        // getWorkflowRunner();
       },
       onError(error) {
         console.error(error);
@@ -142,6 +180,7 @@ const Workflow: React.FC = () => {
         if (rsp.code !== 200) {
           throw new Error(`Fail to remove task, ${rsp.result}`);
         }
+        // getWorkflowRunner();
       },
       onError(error) {
         console.error(error);
@@ -291,6 +330,7 @@ const Workflow: React.FC = () => {
               start={startRunner}
               stop={stopRunner}
               removeRunner={removeRunner}
+              updateRunner={updateRunner}
               removeTaskFromRunner={removeTaskFromRunner}
               putTaskIntoRunner={putTaskIntoRunner}
               enableRunner={enableRunner}

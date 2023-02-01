@@ -14,6 +14,7 @@
   "scripts": {
     "start:renderer": "cross-env NODE_ENV=development cross-env PORT=3001 cross-env BROWSER=none webpack serve",
     "start:main": "nodemon --config nodemon.json",
+    "start:main:cold": "electron .",
     "start:main:inspect": "npm run build:main && cross-env electron . --inspect=5222",
     "start": "concurrently \"npm run start:renderer\" \"wait-on http://localhost:3001 && npm run start:main\"",
     "build:renderer": "webpack --config webpack.prod.config.js --progress",

@@ -63,6 +63,7 @@ interface Props extends WorkflowRunner {
   removeTaskFromRunner: (runnerId: string, taskId: string) => Promise<Response<string | null>>;
   putTaskIntoRunner: (runnerId: string, taskId: string, taskType: WorkflowTaskType) => Promise<Response<string | null>>;
   adjustTimerOfRunner: (runnerId: string, timer: WorkflowTaskTimer) => Promise<Response<string | null>>;
+  updateRunner: (runnerId: string) => Promise<Response<WorkflowRunner>>
   enableRunner: (runnerId: string) => Promise<Response<string | null>>;
   disableRunner: (runnerId: string) => Promise<Response<string | null>>;
   removeRunner: (runnerId: string) => Promise<Response<string | null>>;
@@ -79,21 +80,24 @@ const WorkflowRunner: React.FC<Props> = ({
   removeRunner,
   disableRunner,
   enableRunner,
+  updateRunner,
 }) => {
   const styles = useStyles();
 
-  const onTaskDelete = (taskId: string) => {
-    removeTaskFromRunner(id, taskId);
+  const onTaskDelete = async (taskId: string) => {
+    await removeTaskFromRunner(id, taskId);
+    await updateRunner(id);
   };
   const onTaskAdd = (taskType: WorkflowTaskType) => {
     putTaskIntoRunner(id, uuidv4(), taskType);
   };
-  const toggleEnable = () => {
+  const toggleEnable = async () => {
     if (enable) {
-      disableRunner(id);
+      await disableRunner(id);
     } else {
-      enableRunner(id);
+      await enableRunner(id);
     }
+    await updateRunner(id);
   };
 
   return (

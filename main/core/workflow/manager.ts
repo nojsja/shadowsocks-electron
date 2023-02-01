@@ -45,13 +45,14 @@ export class WorkflowManager extends Workflow {
     const failedTasks: string[] = [];
     await this.bridge.init();
     this.runnerIds.forEach(async (id) => {
-      const runner = await WorkflowRunner.from(id, this.bridge);
+      const [error, runner] = await WorkflowRunner.from(id, this.bridge);
       if (runner) {
         if (runner.enable) {
           runner.startTimer();
         }
         this.runners.push(runner);
       } else {
+        console.error(error);
         failedTasks.push(id);
       }
     });
@@ -63,10 +64,11 @@ export class WorkflowManager extends Workflow {
     return [!failedTasks.length, failedTasks] as [boolean, string[]];
   }
 
-  async ready() {
+  ready() {
     return new Promise((resolve) => {
       if (this.status === 'initialized') {
         resolve(true);
+        return;
       }
       this.once('ready', () => resolve(true));
     });
@@ -171,7 +173,7 @@ export class WorkflowManager extends Workflow {
       targetRunner = this.runners.find((runner) => runner.id === runnerId) || null;
       if (!targetRunner) return new RunnerNotFoundError(runnerId);
     } else {
-      targetRunner = await WorkflowRunner.generate(null, this.bridge);
+      [, targetRunner] = await WorkflowRunner.generate(null, this.bridge);
       if (!targetRunner) return new RunnerCreateError();
       this.runners.push(targetRunner);
     }

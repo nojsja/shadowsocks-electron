@@ -55,7 +55,7 @@ export class WorkflowBridge {
   browser: Browser | null;
 
   async init() {
-    pie.initialize(app);
+    await pie.initialize(app);
     this.browser = await pie.connect(app, puppeteer as any);
     this.context = {
       /* puppeteer - Use [headless browser] to produce data. */

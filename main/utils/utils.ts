@@ -4,7 +4,7 @@ import os from 'os';
 import { exec, ExecOptions } from 'child_process';
 import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
-  MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig,
+  MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig, WorkflowRunner,
 } from '../types';
 import { archMap, getPathRuntime, pathExecutable } from '../config';
 import { i18n } from '../electron';
@@ -522,4 +522,24 @@ export function dateToCronTable(date: {
   day?: number;
 }) {
   return `${date.seconds ?? ''} ${date.minutes ?? '*'} ${date.hours ?? '*'} ${date.date ?? '*'} ${date.month ?? '*'} ${date.day ?? '*'}`.trim();
+}
+
+/**
+ * @name getPureRunners [get pure runners without illegal properties]
+ * @param { WorkflowRunner } runners [runners]
+ * @returns { Partial<WorkflowRunner> } [pure runners]
+ */
+export function getPureRunners(runners: WorkflowRunner[]) {
+  return runners.map((runner) => ({
+    id: runner.id,
+    enable: runner.enable,
+    status: runner.status,
+    timerOption: runner.timerOption,
+    queue: runner.queue.map((task) => ({
+      id: task.id,
+      status: task.status,
+      type: task.type,
+      scriptPath: task.scriptPath,
+    })),
+  }));
 }

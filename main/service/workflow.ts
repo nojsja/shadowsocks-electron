@@ -3,6 +3,7 @@ import { WorkflowManager } from '../core/workflow/manager';
 import { CronTableObject, WorkflowTaskOptions } from '../core/workflow/types';
 
 import { type WorkflowService as WorkflowServiceType, type WorkflowTaskTimer } from '../types';
+import { getPureRunners } from '../utils/utils';
 
 export class WorkflowService implements WorkflowServiceType {
   ipc: IpcMain
@@ -15,20 +16,22 @@ export class WorkflowService implements WorkflowServiceType {
 
   async getWorkflowRunners() {
     const runners = await this.manager.getWorkflowRunners();
+    const pureRunners = getPureRunners(runners);
 
     return {
       code: 200,
-      result: runners,
+      result: pureRunners,
     };
   }
 
   async getWorkflowRunner(params: {id: string}) {
     const { id } = params;
     const runner = await this.manager.getWorkflowRunner(id);
+    const pureRunner = runner ? getPureRunners([runner])[0] : null;
 
     return {
-      code: runner ? 200 : 404,
-      result: runner,
+      code: pureRunner ? 200 : 404,
+      result: pureRunner,
     };
   }
 

@@ -44,8 +44,9 @@ export class WorkflowRunner extends Workflow {
     return path.resolve(Workflow.rootDir, `${id}.workflow.json`);
   }
 
-  static async generate(options: Partial<WorkflowRunnerOptions> | null, bridge: WorkflowBridge) {
+  static async generate(options: Partial<WorkflowRunnerOptions> | null, bridge: WorkflowBridge): Promise<[Error | null, WorkflowRunner | null]> {
     const runner = new WorkflowRunner(options ?? {}, bridge);
+
     try {
       await runner.writeToMetaFile();
       const tasks = await runner.initTasks();
@@ -53,13 +54,14 @@ export class WorkflowRunner extends Workflow {
       if (!succeed) throw new Error('workflow runner: init tasks failed!');
       runner.queue = tasks as WorkflowTask[];
     } catch (error) {
-      fs.promises.unlink(runner.metaPath).catch((e) => e);
-      return null;
+      await runner.remove();
+      return [error as Error, null];
     }
-    return runner;
+
+    return [null, runner];
   }
 
-  static async from(id: string, bridge: WorkflowBridge) {
+  static async from(id: string, bridge: WorkflowBridge): Promise<[Error | null, WorkflowRunner | null]> {
     try {
       const isExists = await WorkflowRunner.isExist(id);
       if (isExists) {
@@ -70,12 +72,13 @@ export class WorkflowRunner extends Workflow {
         const succeed = tasks.every((task) => task);
         if (!succeed) throw new Error('workflow runner: load tasks failed!');
         runner.queue = tasks as WorkflowTask[];
-        return runner;
+        return [null, runner];
       }
+      throw new Error('workflow runner: not exists!');
     } catch (error) {
       console.error(error);
+      return [error as Error, null];
     }
-    return null;
   }
 
   static async isExist(id: string) {
@@ -97,6 +100,11 @@ export class WorkflowRunner extends Workflow {
     });
 
     try {
+      try {
+        await fs.promises.access(this.rootDir, fs.constants.O_DIRECT);
+      } catch (error) {
+        await fs.promises.mkdir(this.rootDir, { recursive: true });
+      }
       await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
     } catch (error) {
       return error as Error;

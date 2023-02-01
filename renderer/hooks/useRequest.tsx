@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
 
 export interface UseRequestReturn<T> {
   data?: T;
   error?: Error;
   loading: boolean;
   run: (...args: any[]) => Promise<T>;
+  setState: (setter: (data: T) => T) => Promise<void>;
 }
 
 export interface Response<T> {
@@ -23,7 +25,12 @@ export function useRequest<T>(
   const [response, setResponse] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
-  const fetchData = async (...args: any[]) => {
+  const setState = async (setter: (data: T) => T) => {
+    const state = await setter(_.clone(response as T));
+    setResponse(state);
+  };
+
+  const fetchData = async (...args: Parameters<typeof action>) => {
     let res;
     setLoading(true);
 
@@ -51,6 +58,7 @@ export function useRequest<T>(
 
   return {
     data: response,
+    setState,
     run: fetchData,
     loading,
   };

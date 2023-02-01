@@ -76,6 +76,11 @@ export class WorkflowTask extends Workflow {
     });
 
     try {
+      try {
+        await fs.promises.access(this.taskPath, fs.constants.O_DIRECT);
+      } catch (error) {
+        await fs.promises.mkdir(this.taskPath, { recursive: true });
+      }
       await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
     } catch (error) {
       return error as Error;
@@ -86,6 +91,11 @@ export class WorkflowTask extends Workflow {
 
   async writeToScriptFile(script: string) {
     try {
+      try {
+        await fs.promises.access(this.taskPath, fs.constants.O_DIRECT);
+      } catch (error) {
+        await fs.promises.mkdir(this.taskPath, { recursive: true });
+      }
       await fs.promises.writeFile(this.scriptPath, script, 'utf-8');
     } catch (error) {
       return error as Error;
