@@ -197,8 +197,13 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   },
   headerActionButton: {
     cursor: 'pointer',
-    marginTop: theme.spacing(.5),
-    color: theme.palette.primary.light,
+    color: theme.palette.text.secondary,
+    '&.highlight': {
+      color: theme.palette.primary.light,
+    },
+  },
+  headerHelpInfoWrapper: {
+    padding: theme.spacing(1),
   },
   scriptWrapper: {
     display: 'flex',

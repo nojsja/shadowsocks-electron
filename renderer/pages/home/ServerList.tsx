@@ -27,6 +27,7 @@ import ServerListItem from './ServerListItem';
 import ConfShareDialog from './ConfShareDialog';
 
 import { findAndCallback } from '@renderer/utils';
+import NoRecord from '@/renderer/components/Pices/NoRecord';
 
 const useStyles = makeStyles((theme: Theme) =>
 
@@ -39,12 +40,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     scrollbar: scrollBarStyle(6, 0, theme),
     empty: {
-      flex: 1,
       marginTop: theme.spacing(2),
       marginBottom: theme.spacing(2),
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
     },
   })
 );
@@ -194,12 +191,11 @@ const ServerList: React.FC<ServerListProps> = props => {
         }
         else={
           <div className={styles.empty}>
-            <Typography variant="body1" color="textSecondary">
-              No Server
-            </Typography>
+            <NoRecord title="No Server" />
           </div>
         }
       />
+
       <ConfShareDialog
         dataUrl={shareData.dataUrl}
         url={shareData.url}

@@ -14,9 +14,9 @@ import {
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import { useTranslation } from 'react-i18next';
-import CameraIcon from '@material-ui/icons/PhotoCamera';
+import CropFreeIcon from '@material-ui/icons/CropFree';
+import CopyIcon from '@material-ui/icons/LibraryBooks';
 import CloseIcon from '@material-ui/icons/Close';
-import CopyIcon from '@material-ui/icons/Code';
 import CreateIcon from '@material-ui/icons/Create';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
@@ -89,7 +89,7 @@ const AddServerDialog: React.FC<AddServerDialogProps> = props => {
         </ListItemButton>
         <ListItemButton button onClick={() => onClose("qrcode")}>
           <ListItemAvatar>
-            <CameraIcon />
+            <CropFreeIcon />
           </ListItemAvatar>
           <ListItemText primary={t('scan_qt_code_from_screen')} />
         </ListItemButton>

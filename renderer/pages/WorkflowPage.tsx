@@ -1,7 +1,8 @@
 import React from 'react';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { Container } from '@material-ui/core';
+import { Container, IconButton } from '@material-ui/core';
 import { MessageChannel } from 'electron-re';
+import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
 
 import {
   type WorkflowTaskTimer,
@@ -10,10 +11,12 @@ import {
 } from '@renderer/types';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
+import NoRecord from '@renderer/components/Pices/NoRecord';
 import { useRequest, type Response } from '@renderer/hooks/useRequest';
 
 import WorkflowRunner from './workflow/WorkflowRunner';
 import { useStylesOfWorkflow } from './styles';
+import WorkflowHelpInfo from './workflow/WorkflowHelpInfo';
 
 const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
@@ -300,8 +303,13 @@ const Workflow: React.FC = () => {
   return (
     <Container className={styles.container}>
       <div className={styles.headerActions}>
+        <WorkflowHelpInfo />
         <MenuButton
-          menuButton={<AddCircleIcon className={styles.headerActionButton} />}
+          menuButton={
+            <IconButton size="small">
+              <AddCircleIcon color="primary"/>
+            </IconButton>
+          }
           config={[
             {
               label: 'Source Task (puppeteer)', // puppeteer headless browser (data source)
@@ -339,6 +347,7 @@ const Workflow: React.FC = () => {
             />
           ))
         }
+        <NoRecord hidden={!!runnersResp?.result?.length} />
       </div>
     </Container>
   );
