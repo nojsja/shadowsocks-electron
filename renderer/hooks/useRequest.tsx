@@ -38,15 +38,13 @@ export function useRequest<T>(
       res = await action(...args);
       options.onSuccess?.(res);
       setResponse(res);
+      setLoading(false);
     } catch (error) {
-      if (options.onError) {
-        options.onError(error as Error);
-      } else {
-        throw error;
-      }
+      options.onError?.(error as Error);
+      setLoading(false);
+      throw error as Error;
     }
 
-    setLoading(false);
     return res as T;
   };
 

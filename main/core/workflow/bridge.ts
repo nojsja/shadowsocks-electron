@@ -6,7 +6,6 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
-import crawler from 'crawler';
 
 import { type WorkflowTaskType } from './types';
 
@@ -80,7 +79,7 @@ export class WorkflowBridge {
       },
       /* crawler - Use [web crawler] to produce data. */
       'crawler-source': {
-        crawler,
+        loadCrawler: () => require('crawler'),
         ...commonBridgeAttrs,
       },
       /* node - Use nodejs script to produce data, such as read file, request http, etc. */

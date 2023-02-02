@@ -15,7 +15,7 @@ const template =`
 `;
 
 interface Props extends WorkflowTask {
-  onTaskDelete: (taskId: string) => void;
+  onTaskDelete: (taskId: string) => Promise<void>;
 }
 
 const ProcessorTask: React.FC<Props> = (props) => {

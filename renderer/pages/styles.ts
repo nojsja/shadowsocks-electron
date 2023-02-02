@@ -227,6 +227,9 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     left: 0,
     right: 0,
     bottom: 0,
+    '&.error': {
+      border: `solid 1px ${theme.palette.error.light} !important`,
+    },
   },
   textEditorActions: {
     flex: 1,

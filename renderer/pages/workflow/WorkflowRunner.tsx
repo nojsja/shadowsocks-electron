@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { createStyles, IconButton, LinearProgress, makeStyles, Switch, Tooltip } from '@material-ui/core';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import DeleteIcon from '@material-ui/icons/Delete';
+import classNames from 'classnames';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response } from '@/renderer/hooks/useRequest';
@@ -45,6 +46,9 @@ export const useStyles = makeStyles((theme) => createStyles({
   footerActionButton: {
     cursor: 'pointer',
     color: theme.palette.secondary[theme.palette.type === 'dark' ? 'light' : 'dark'],
+    '&.disabled': {
+      color: theme.palette.secondary.main,
+    }
   },
 }));
 
@@ -58,8 +62,8 @@ const TaskTypeMap = {
 };
 
 interface Props extends WorkflowRunner {
-  start: (id: string) => Promise<Response<string | null>>;
-  stop: (id: string) => Promise<Response<string | null>>;
+  startRunner: (id: string) => Promise<Response<string | null>>;
+  stopRunner: (id: string) => Promise<Response<string | null>>;
   removeTaskFromRunner: (runnerId: string, taskId: string) => Promise<Response<string | null>>;
   putTaskIntoRunner: (runnerId: string, taskId: string, taskType: WorkflowTaskType) => Promise<Response<string | null>>;
   adjustTimerOfRunner: (runnerId: string, timer: WorkflowTaskTimer) => Promise<Response<string | null>>;
@@ -73,8 +77,7 @@ const WorkflowRunner: React.FC<Props> = ({
   enable,
   id,
   queue,
-  status,
-  start,
+  startRunner,
   removeTaskFromRunner,
   putTaskIntoRunner,
   removeRunner,
@@ -82,15 +85,25 @@ const WorkflowRunner: React.FC<Props> = ({
   enableRunner,
   updateRunner,
 }) => {
+  const enableStatus = enable ? 'Enabled' : 'Disabled';
   const styles = useStyles();
+  const [running, setRunning] = useState(false);
+  const isStarting = useRef(false);
 
   const onTaskDelete = async (taskId: string) => {
-    await removeTaskFromRunner(id, taskId);
+    if (queue.length === 1) {
+      await removeRunner(id);
+    } else {
+      await removeTaskFromRunner(id, taskId);
+      await updateRunner(id);
+    }
+  };
+
+  const onTaskAdd = async (taskType: WorkflowTaskType) => {
+    await putTaskIntoRunner(id, uuidv4(), taskType);
     await updateRunner(id);
   };
-  const onTaskAdd = (taskType: WorkflowTaskType) => {
-    putTaskIntoRunner(id, uuidv4(), taskType);
-  };
+
   const toggleEnable = async () => {
     if (enable) {
       await disableRunner(id);
@@ -98,6 +111,17 @@ const WorkflowRunner: React.FC<Props> = ({
       await enableRunner(id);
     }
     await updateRunner(id);
+  };
+
+  const startRunnerInner = () => {
+    if (isStarting.current) return;
+    isStarting.current = true;
+
+    setRunning(true);
+    startRunner(id).finally(() => {
+      setRunning(false);
+      isStarting.current = true;
+    });
   };
 
   return (
@@ -116,7 +140,7 @@ const WorkflowRunner: React.FC<Props> = ({
       }
       <div className={styles.footerAction} >
         <div className={styles.footerActionFixed}>
-          <Tooltip title="Enabled">
+          <Tooltip title={enableStatus}>
             <Switch onClick={toggleEnable} checked={enable} size="small" color="primary" className={styles.footerActionButton} />
           </Tooltip>
         </div>
@@ -146,28 +170,28 @@ const WorkflowRunner: React.FC<Props> = ({
             },
             {
               label: 'Source Task (node)', // node script, generate data from local script or remote request (data source)
-              key: 'pipe',
+              key: 'node',
               onClick: () => onTaskAdd('node-source'),
             },
             {
               label: 'Processor Task (pipe)', // process data (processor)
-              key: 'pipe',
+              key: 'processor',
               onClick: () => onTaskAdd('processor-pipe'),
             },
             {
               label: 'Effect Task (pipe)', // run tasks on ui process, such as notification, ssr/ss parsing, etc. (effect)
-              key: 'pipe',
+              key: 'effect',
               onClick: () => onTaskAdd('effect-pipe'),
             },
           ]}
         />
         <Tooltip title="Run">
-          <IconButton size="small">
-            <PlayCircleFilledWhiteIcon onClick={() => start(id)} color="action" className={styles.footerActionButton} />
+          <IconButton size="small" disabled={!enable}>
+            <PlayCircleFilledWhiteIcon onClick={startRunnerInner} color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
           </IconButton>
         </Tooltip>
       </div>
-      <LinearProgress hidden={status !== 'running'} color="secondary" />
+      <LinearProgress hidden={!running} color="secondary" />
     </div>
   );
 }

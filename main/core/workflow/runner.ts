@@ -8,6 +8,7 @@ import { WorkflowTask } from './task';
 import { WorkflowBridge } from './bridge';
 import {
   RunnerIsRunningError,
+  TaskIsNotRunningError,
   WorkflowRunnerOptions,
   WorkflowTaskOptions,
   WorkflowTaskStatus,
@@ -129,6 +130,10 @@ export class WorkflowRunner extends Workflow {
     return this.status === 'failed';
   }
 
+  get isEmpty() {
+    return this.tasks.length === 0;
+  }
+
   private initTasks() {
     return Promise.all(
       this.tasks.map((taskId) => WorkflowTask.generate({
@@ -172,7 +177,7 @@ export class WorkflowRunner extends Workflow {
     if (index > -1) {
       targetTask = this.queue[index];
       error = await targetTask.stop();
-      if (error) return error;
+      if (!(error instanceof TaskIsNotRunningError)) return error;
 
       error = await targetTask.remove();
       if (error) return error;

@@ -7,6 +7,7 @@ import { shell } from 'electron';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import cls from 'classnames';
 import CodeIcon from '@material-ui/icons/Code';
+import classNames from 'classnames';
 
 import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
@@ -16,11 +17,12 @@ import useDidUpdate from '@/renderer/hooks/useDidUpdate';
 import useTaskFS from '../hooks/useTaskFS';
 
 interface Props extends WorkflowTask {
-  onTaskDelete: (taskId: string) => void;
+  onTaskDelete: (taskId: string) => Promise<void>;
   templateCode: string;
 }
 
 const TaskEditor: React.FC<Props> = ({
+  status,
   id,
   scriptPath,
   onTaskDelete,
@@ -31,7 +33,9 @@ const TaskEditor: React.FC<Props> = ({
   const taskFS = useTaskFS(scriptPath);
   const editorRef = useRef<TextEditorRef>(null);
   const cursorRef = useRef<[number, number]>([0, 0]);
+  const isDeleting = useRef(false);
   const [isContentTouched, setContentTouched] = useState(false);
+  const isErrored = status === 'failed';
 
   const onTemplateScriptLoad = () => {
     editorRef.current?.setValue(templateCode);
@@ -86,7 +90,11 @@ const TaskEditor: React.FC<Props> = ({
   };
 
   const onTaskDeleteInner = () => {
-    onTaskDelete(id);
+    if (isDeleting.current) return;
+    isDeleting.current = true;
+    onTaskDelete(id).finally(() => {
+      isDeleting.current = false;
+    });
   };
 
   useEffect(() => {
@@ -102,7 +110,7 @@ const TaskEditor: React.FC<Props> = ({
     <div className={styles.scriptWrapper}>
       <div className={styles.textEditorWrapper}>
         <TextEditor
-          className={styles.textEditorContent}
+          className={classNames(styles.textEditorContent, isErrored && 'error')}
           onKeyDown={handleKeyDown}
           placeholder=""
           wrap="off"

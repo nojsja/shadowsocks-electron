@@ -37,7 +37,7 @@ const template =`
 `;
 
 interface Props extends WorkflowTask {
-  onTaskDelete: (taskId: string) => void;
+  onTaskDelete: (taskId: string) => Promise<void>;
 }
 
 const PuppeteerSourceTask: React.FC<Props> = (props) => {
