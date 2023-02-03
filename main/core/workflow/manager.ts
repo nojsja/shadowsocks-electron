@@ -132,7 +132,7 @@ export class WorkflowManager extends Workflow {
         type: timerType,
         enable: timerEnable,
         ...(
-          timerType === 'schedule' && 'schedule' in (options!.timer || {})
+          timerType === 'schedule' && 'schedule' in (options.timer || {})
         ) ? { schedule: dateToCronTable(options.timer?.schedule as CronTableObject) } : {},
         ...(
           timerType === 'timer' && 'interval' in (options.timer || {})

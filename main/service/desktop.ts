@@ -3,12 +3,6 @@ import fs from 'fs';
 import os from 'os';
 import { ProcessManager } from 'electron-re';
 
-import {
-  contextAction,
-  DesktopService as DesktopServiceType,
-  RectPoint, ServiceResult,
-  WindowInfo
-} from '../types';
 import { openLogDir } from '../logs';
 import TransparentWindow from '../window/TransparentWindow';
 import {
@@ -18,6 +12,13 @@ import {
 } from '../core/helpers';
 import { i18n, ipcMainWindow } from '../electron';
 import { getPluginsPath } from '../utils/utils';
+
+import {
+  contextAction,
+  DesktopService as DesktopServiceType,
+  RectPoint, ServiceResult,
+  WindowInfo
+} from '../types';
 
 /* main service handler */
 export class DesktopService implements DesktopServiceType {

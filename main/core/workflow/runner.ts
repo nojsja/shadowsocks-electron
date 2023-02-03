@@ -172,7 +172,6 @@ export class WorkflowRunner extends Workflow {
     const index = this.tasks.findIndex((taskId) => taskId === id);
     let targetTask: WorkflowTask | null = null;
     let error: Error | null = null;
-    let taskId: string;
 
     if (index > -1) {
       targetTask = this.queue[index];
@@ -182,7 +181,7 @@ export class WorkflowRunner extends Workflow {
       error = await targetTask.remove();
       if (error) return error;
 
-      taskId = this.tasks.splice(index, 1)[0];
+      this.tasks.splice(index, 1)[0];
       error = await this.writeToMetaFile();
       this.queue.splice(index, 1);
 

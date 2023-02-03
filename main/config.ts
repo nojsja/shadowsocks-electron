@@ -42,6 +42,7 @@ export const globalPacConf = path.resolve(pacDir, 'gfwlist.txt');
 export const userPacConf = path.resolve(pacDir, 'gfwlist-user.txt');
 export const workflowRootDir = getPathRuntime('workflow');
 export const workflowTaskDir = path.resolve(workflowRootDir, 'tasks');
+export const workflowTaskDemoDir = path.resolve(workflowRootDir, 'scripts-demo');
 
 export default {
   packageName,

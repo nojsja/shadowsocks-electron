@@ -8,6 +8,7 @@
     "public/**/*",
     "build/**/*",
     "assets/**/*",
+    "scripts/scripts-demo/*",
     "!bin/**/*",
     "!assets/add.png",
     "!assets/edit.png",

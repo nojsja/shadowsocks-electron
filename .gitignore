@@ -38,3 +38,4 @@ shadowsocks-electron-v*
 scripts/*
 !scripts/download.js
 !scripts/notarize.js
+!scripts/scripts-demo

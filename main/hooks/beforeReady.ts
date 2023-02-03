@@ -11,6 +11,7 @@ import {
   pathRuntime,
   pathExecutable,
   pathWorkflow,
+  workflowTaskDemoDir,
 } from '../config';
 import {
   checkEnvFiles as check, copyDir, chmod,
@@ -30,6 +31,12 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
         ...(platform === 'linux' ? [{ _path: `${os.homedir}/.config/autostart`, isDir: true }] : []),
         { _path: pathRuntime, isDir: true },
         { _path: pathWorkflow, isDir: true },
+        { _path: workflowTaskDemoDir, isDir: true, checkEmpty: true,
+          exec: () => {
+            logger.info(`copyDir: ${path.join(pathExecutable, 'scripts/scripts-demo')} -> ${workflowTaskDemoDir}`);
+            copyDir(path.join(pathExecutable, 'scripts/scripts-demo'), workflowTaskDemoDir);
+          },
+        },
         { _path: binDir, isDir: true, checkEmpty: true,
           exec: () => {
             logger.info(`copyDir: ${path.join(pathExecutable, 'bin')} -> ${binDir}`);

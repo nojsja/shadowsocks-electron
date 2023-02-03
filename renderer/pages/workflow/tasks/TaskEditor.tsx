@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip } from '@material-ui/core';
 import { shell } from 'electron';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import cls from 'classnames';
@@ -18,7 +18,7 @@ import useTaskFS from '../hooks/useTaskFS';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
-  templateCode: string;
+  templateCodePath: string;
 }
 
 const TaskEditor: React.FC<Props> = ({
@@ -26,7 +26,7 @@ const TaskEditor: React.FC<Props> = ({
   id,
   scriptPath,
   onTaskDelete,
-  templateCode,
+  templateCodePath,
 }) => {
   const styles = useStylesOfWorkflow();
   const [scriptContent, setScriptContent] = useState<string>('');
@@ -38,8 +38,12 @@ const TaskEditor: React.FC<Props> = ({
   const isErrored = status === 'failed';
 
   const onTemplateScriptLoad = () => {
-    editorRef.current?.setValue(templateCode);
-    setContentTouched(true);
+    taskFS.read(templateCodePath).then((templateCode) => {
+      editorRef.current?.setValue(templateCode);
+      setContentTouched(true);
+    }).catch((e) => {
+      console.log(e);
+    });
   };
 
   const onScriptReload = () => {
@@ -115,34 +119,47 @@ const TaskEditor: React.FC<Props> = ({
           placeholder=""
           wrap="off"
           noAutosize
-          ref={editorRef}
+          editorRef={editorRef}
           onChange={onScriptChange}
           defaultValue={scriptContent}
         />
       </div>
       <div className={styles.textEditorActions}>
         <Tooltip title="Delete">
-          <DeleteIcon className={styles.textEditorActionButton} onClick={onTaskDeleteInner} color="action" />
+          <IconButton onClick={onTaskDeleteInner} size="small">
+            <DeleteIcon className={styles.textEditorActionButton} color="action" />
+          </IconButton>
         </Tooltip>
         <Tooltip title="Open with default external editor">
-          <LaunchIcon className={styles.textEditorActionButton} onClick={onScriptOpen} color="action" />
+          <IconButton size="small" onClick={onScriptOpen}>
+            <LaunchIcon className={styles.textEditorActionButton} color="action" />
+          </IconButton>
         </Tooltip>
         <Tooltip title="Restore">
-          <RotateLeftIcon className={styles.textEditorActionButton} onClick={onScriptReload} color="action" />
+          <IconButton size="small" onClick={onScriptReload}>
+            <RotateLeftIcon className={styles.textEditorActionButton} color="action" />
+          </IconButton>
         </Tooltip>
         <Tooltip title="Save script file, you can press 'ctrl/cmd + s' instead when focus on editor.">
-          <SaveIcon
-            className={cls(styles.textEditorActionButton, isContentTouched && styles.textEditorActionButtonActive)}
-            onClick={onScriptSave}
-            color="action"
-          />
+          <IconButton size="small" onClick={onScriptSave}>
+            <SaveIcon
+              className={
+                cls(
+                  styles.textEditorActionButton,
+                  isContentTouched && styles.textEditorActionButtonActive
+                )
+              }
+              color="action"
+            />
+          </IconButton>
         </Tooltip>
         <Tooltip title="Load template code">
-          <CodeIcon
-            className={styles.textEditorActionButton}
-            onClick={onTemplateScriptLoad}
-            color="action"
-          />
+          <IconButton size="small" onClick={onTemplateScriptLoad}>
+            <CodeIcon
+              className={styles.textEditorActionButton}
+              color="action"
+            />
+          </IconButton>
         </Tooltip>
       </div>
     </div>

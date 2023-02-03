@@ -1,13 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import classNames from 'classnames';
+import { MessageChannel } from 'electron-re';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { createStyles, IconButton, LinearProgress, makeStyles, Switch, Tooltip } from '@material-ui/core';
 import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
 import DeleteIcon from '@material-ui/icons/Delete';
-import classNames from 'classnames';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
-import { Response } from '@/renderer/hooks/useRequest';
+import { Response, useRequest } from '@/renderer/hooks/useRequest';
 import {
   WorkflowTaskTimer,
   type WorkflowRunner,
@@ -90,6 +91,17 @@ const WorkflowRunner: React.FC<Props> = ({
   const [running, setRunning] = useState(false);
   const isStarting = useRef(false);
 
+  const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(() => {
+    return MessageChannel.invoke('main', 'service:workflow', {
+      action: 'getWorkflowTaskDemoDir',
+      params: {},
+    });
+  }, {
+    onError(error) {
+      alert(error);
+    },
+  });
+
   const onTaskDelete = async (taskId: string) => {
     if (queue.length === 1) {
       await removeRunner(id);
@@ -134,6 +146,7 @@ const WorkflowRunner: React.FC<Props> = ({
               key={task.id}
               {...task}
               onTaskDelete={onTaskDelete}
+              workflowTaskDemoDir={workflowTaskDemoRsp?.result}
             />
           );
         })
@@ -141,12 +154,14 @@ const WorkflowRunner: React.FC<Props> = ({
       <div className={styles.footerAction} >
         <div className={styles.footerActionFixed}>
           <Tooltip title={enableStatus}>
-            <Switch onClick={toggleEnable} checked={enable} size="small" color="primary" className={styles.footerActionButton} />
+            <IconButton size="small" onClick={toggleEnable}>
+              <Switch checked={enable} size="small" color="primary" className={styles.footerActionButton} />
+            </IconButton>
           </Tooltip>
         </div>
         <Tooltip title="Delete">
-          <IconButton size="small">
-            <DeleteIcon onClick={() => removeRunner(id)} className={styles.footerActionButton} color="action" />
+          <IconButton size="small" onClick={() => removeRunner(id)}>
+            <DeleteIcon className={styles.footerActionButton} color="action" />
           </IconButton>
         </Tooltip>
         <MenuButton
@@ -186,8 +201,8 @@ const WorkflowRunner: React.FC<Props> = ({
           ]}
         />
         <Tooltip title="Run">
-          <IconButton size="small" disabled={!enable}>
-            <PlayCircleFilledWhiteIcon onClick={startRunnerInner} color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
+          <IconButton size="small" disabled={!enable} onClick={startRunnerInner}>
+            <PlayCircleFilledWhiteIcon color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
           </IconButton>
         </Tooltip>
       </div>

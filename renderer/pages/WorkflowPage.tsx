@@ -2,7 +2,6 @@ import React from 'react';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container, IconButton } from '@material-ui/core';
 import { MessageChannel } from 'electron-re';
-import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
 
 import {
   type WorkflowTaskTimer,

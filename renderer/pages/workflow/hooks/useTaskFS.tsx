@@ -5,9 +5,9 @@ const taskQueue = new NodeTaskQueue(4);
 
 export default (filePath: string) => {
 
-  const read = () => {
+  const read = (_filePath?: string) => {
     return new Promise<string>((resolve, reject) => {
-      const task = new NodeTask(() => fs.promises.readFile(filePath, 'utf-8'), {
+      const task = new NodeTask(() => fs.promises.readFile(_filePath ?? filePath, 'utf-8'), {
         onSuccess: (content) => {
           resolve(content as string);
         },
@@ -19,9 +19,9 @@ export default (filePath: string) => {
     });
   };
 
-  const write = (content: string) => {
+  const write = (content: string, _filePath?: string) => {
     return new Promise<void>((resolve, reject) => {
-      const task = new NodeTask(() => fs.promises.writeFile(filePath, content, 'utf-8'), {
+      const task = new NodeTask(() => fs.promises.writeFile(_filePath ?? filePath, content, 'utf-8'), {
         onSuccess: () => {
           resolve();
         },

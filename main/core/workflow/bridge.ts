@@ -68,6 +68,7 @@ export class WorkflowBridge {
         loadBrowserPage: async (url: string, options: BrowserWindowConstructorOptions) => {
           const window = new BrowserWindow(options);
           await window.loadURL(url);
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const page = await pie.getPage(this.browser!, window);
           const closeBrowser = () => {
             window.destroy();

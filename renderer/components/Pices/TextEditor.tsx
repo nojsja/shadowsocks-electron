@@ -1,5 +1,4 @@
 import React, {
-  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
@@ -19,18 +18,18 @@ export interface TextEditorRef {
 
 interface EditorProps extends Omit<TextareaAutosizeProps, 'onChange' | 'value' | 'ref'> {
   onChange: (content: string) => void;
-  ref?: React.Ref<TextEditorRef>;
+  editorRef?: React.Ref<TextEditorRef>;
   defaultValue: string;
   noAutosize?: boolean;
 }
 
-const TextEditor: React.FC<EditorProps> = React.forwardRef(({
+const TextEditor: React.FC<EditorProps> = ({
   onChange,
   defaultValue,
-  ref: r,
   wrap,
+  editorRef,
   ...others
-}, refObject) => {
+}) => {
   const ref = useRef<HTMLTextAreaElement>(null);
 
   const setValue = (value: string) => {
@@ -43,7 +42,7 @@ const TextEditor: React.FC<EditorProps> = React.forwardRef(({
     setValue(defaultValue);
   }, [defaultValue]);
 
-  useImperativeHandle(refObject, () => ({
+  useImperativeHandle(editorRef, () => ({
     getValue: () => ref.current?.value || '',
     setValue,
     focus: () => ref.current?.focus(),
@@ -62,21 +61,21 @@ const TextEditor: React.FC<EditorProps> = React.forwardRef(({
 
   return (
     <StyledTextareaAutosize
+      {...others}
       minRows={20}
       defaultValue={defaultValue}
-      ref={ref}
       onTextChange={onChange}
       wrap={wrap}
-      {...others}
+      ref={ref}
     />
   );
-});
+};
 
 TextEditor.displayName = 'TextEditor';
 TextEditor.propTypes = {
   onChange: PropTypes.func.isRequired,
   defaultValue: PropTypes.string.isRequired,
-  ref: PropTypes.any,
+  editorRef: PropTypes.any,
   wrap: PropTypes.string,
   noAutosize: PropTypes.bool,
 };

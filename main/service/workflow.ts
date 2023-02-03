@@ -1,4 +1,5 @@
 import { IpcMain } from 'electron';
+import { workflowTaskDemoDir } from '../config';
 import { WorkflowManager } from '../core/workflow/manager';
 import { CronTableObject, WorkflowTaskOptions } from '../core/workflow/types';
 
@@ -120,6 +121,13 @@ export class WorkflowService implements WorkflowServiceType {
     return {
       code: error ? 500 : 200,
       result: error,
+    };
+  }
+
+  async getWorkflowTaskDemoDir() {
+    return {
+      code: 200,
+      result: workflowTaskDemoDir,
     };
   }
 }
