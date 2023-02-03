@@ -8,7 +8,7 @@ import { MessageChannel } from 'electron-re';
   * @param  {[String]} moduleName [the target module name to link]
   * @return {[Promise]}  [result]
   */
- export function ipcBridge<T>(ipc: IpcMain, moduleName: string, model: T) {
+ export function ipcBridge<T extends object>(ipc: IpcMain, moduleName: string, model: T) {
   MessageChannel.handle(moduleName, async function(event, args: { action: string, params: any }) {
     const { action, params } = args;
     let result: unknown;
