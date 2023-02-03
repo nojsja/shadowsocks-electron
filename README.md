@@ -1,4 +1,4 @@
-[![Build & Release](https://github.com/nojsja/shadowsocks-electron/actions/workflows/publish.yml/badge.svg)](https://github.com/nojsja/shadowsocks-electron/actions/workflows/publish.yml) ![GitHub repo size](https://img.shields.io/github/repo-size/nojsja/shadowsocks-electron) ![Lines of code](https://img.shields.io/tokei/lines/github/nojsja/shadowsocks-electron) ![GitHub](https://img.shields.io/github/license/nojsja/shadowsocks-electron)
+[![Build & Release](https://github.com/nojsja/shadowsocks-electron/actions/workflows/publish.yml/badge.svg)](https://github.com/nojsja/shadowsocks-electron/actions/workflows/publish.yml) ![GitHub repo size](https://img.shields.io/github/repo-size/nojsja/shadowsocks-electron) ![GitHub](https://img.shields.io/github/license/nojsja/shadowsocks-electron)
 
 ![GitHub issues](https://img.shields.io/github/issues/nojsja/shadowsocks-electron) ![GitHub contributors](https://img.shields.io/github/contributors-anon/nojsja/shadowsocks-electron)
 
@@ -17,6 +17,8 @@
 ## I. Shadowsocks Electron
 
 Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
+
+⚠️  For Mac OS users, If you receive system notification about **"The app is broken"** when start the client,  Run follow  command in terminal to fix that: **`sudo xattr -r -d com.apple.quarantine /Applications/Shadowsocks\ Electron.app`**.
 
 ### ➣ Tested on:
 
