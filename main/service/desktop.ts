@@ -1,7 +1,6 @@
-import { IpcMain, app, dialog, Notification, Menu, desktopCapturer, NotificationConstructorOptions } from 'electron';
+import { IpcMain, app, dialog, Notification, Menu, desktopCapturer, NotificationConstructorOptions, shell } from 'electron';
 import fs from 'fs';
 import os from 'os';
-import open from 'open';
 import { ProcessManager } from 'electron-re';
 
 import {
@@ -307,7 +306,7 @@ export class DesktopService implements DesktopServiceType {
 
   async openPluginsDir(): Promise<ServiceResult> {
     const dir = getPluginsPath();
-    open(dir);
+    shell.openPath(dir);
     return Promise.resolve({
       code: 200,
       result: {}

@@ -1,7 +1,6 @@
 import path from 'path';
-import { app } from 'electron';
+import { app, shell } from 'electron';
 import winston, { format } from 'winston';
-import open from 'open';
 import  DailyRotateFile from 'winston-daily-rotate-file';
 import chalk from 'chalk';
 
@@ -10,7 +9,7 @@ const { combine, simple, colorize } = format;
 export const logDir = app.getPath("logs");
 
 export const openLogDir = async () => {
-  await open(logDir);
+  await shell.openPath(logDir);
 };
 
 export const cleanLogs = () => {
