@@ -342,10 +342,44 @@ export function parseUrl(text: string) {
   return result;
 }
 
+export function parseServerGroup(text: string[] | string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
+  const serverInfos = text instanceof Array ? text : [text];
+
+  return new Promise((resolve) => {
+    const subHandler = subParserStore('');
+    const data: OneOfConfig[] = [];
+    let tmp = [];
+
+    if (subHandler) {
+      for (let index = 0; index < serverInfos.length; index++) {
+        try {
+          tmp = subHandler.parse(serverInfos[index]);
+          data.push(...(tmp || []));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
+      return resolve({
+        error: null,
+        result: data,
+        name: subHandler.name
+      });
+    }
+
+    return resolve({
+      error: i18n.__('invalid_parameter'),
+      result: [],
+      name: null
+    });
+  });
+}
+
 export function parseSubscription(text: string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
   return new Promise((resolve) => {
     const hostnameReg = /^(?:http:\/\/|https:\/\/)?(?:www.)?([\w.]+)?\/(.*)/;
     const httpReg = /^(http|https)/;
+
     if (httpReg.test(text)) {
       const subHandler = subParserStore(text);
       if (subHandler) {
@@ -374,20 +408,21 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
             name: null
           });
         });
-      } else {
-        return resolve({
-          error: i18n.__('invalid_subscription'),
-          result: [],
-          name: null
-        });
+        return;
       }
-    } else {
+
       return resolve({
         error: i18n.__('invalid_subscription'),
         result: [],
         name: null
       });
     }
+
+    return resolve({
+      error: i18n.__('invalid_subscription'),
+      result: [],
+      name: null
+    });
   })
 }
 

@@ -40,14 +40,14 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       }
     },
     container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      height: `calc(100vh - 56px)`,
+      display: 'flex !important',
+      flexDirection: 'column',
+      alignItems: 'center',
+      height: 'calc(100vh - 56px)',
       padding: theme.spacing(1),
       paddingTop: 0,
       [theme.breakpoints.up('sm')]: {
-        height: `calc(100vh - 64px)`,
+        height: 'calc(100vh - 64px)',
       }
     },
     list: {
@@ -71,13 +71,13 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
 export const useStylesOfAbout = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      height: `calc(100vh - 56px)`,
+      display: 'flex !important',
+      flexDirection: 'column',
+      alignItems: 'center',
+      height: 'calc(100vh - 56px)',
       padding: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
-        height: `calc(100vh - 64px)`,
+        height: 'calc(100vh - 64px)',
       }
     },
     'text-center': {
@@ -135,7 +135,7 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
 export const useStylesOfSettings = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      display: "flex",
+      display: 'flex !important',
       flexDirection: "column",
       alignItems: "center",
       height: `calc(100vh - 64px)`,
@@ -178,8 +178,8 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
 
 export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex !important',
+    flexDirection: 'column',
     height: `calc(100vh - 56px)`,
     padding: theme.spacing(.5),
     paddingTop: 0,
@@ -219,7 +219,13 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   textEditorWrapper: {
     position: 'relative',
     height: '20vh',
-    width: '85%',
+    width: '80%',
+    '&.wide': {
+      width: '85%',
+    },
+    '&.high': {
+      height: '30vh',
+    },
   },
   textEditorContent: {
     position: 'absolute',
@@ -227,9 +233,6 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     left: 0,
     right: 0,
     bottom: 0,
-    '&.error': {
-      border: `solid 1px ${theme.palette.error.light} !important`,
-    },
   },
   textEditorActions: {
     flex: 1,

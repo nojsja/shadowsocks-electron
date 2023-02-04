@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 
 import {
   addConfigFromClipboard,
+  addSubscriptionFromClipboard,
+  parseServerGroup,
   startClientAction,
   startClusterAction,
   stopClientAction,
@@ -72,6 +74,19 @@ export const useEventStreamService = () => {
       success: t('added_a_server'),
       error: { default: t('invalid_operation') }
     }));
+  }, []);
+
+  useBus('event:stream:add-subscription', (event: EventAction) => {
+    clipboard.writeText(event.payload);
+    dispatch(addSubscriptionFromClipboard({
+      success: t('added_a_server'),
+      error: { default: t('invalid_operation') }
+    }));
+  }, []);
+
+  useBus('event:stream:add-server-group', (event: EventAction) => {
+    const payload: { text: string, groupName: string } = event.payload;
+    dispatch(parseServerGroup(payload.text, payload.groupName));
   }, []);
 
   useBus('event:stream:reconnect-http', () => {

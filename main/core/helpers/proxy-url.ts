@@ -115,24 +115,24 @@ class ProxyURI {
       if (fullUri && uriContent) {
         const scheme = fullUri.toLowerCase();
         if (scheme.startsWith(ProxyScheme.SS)) {
-          const proxy = ProxyURI.parseSSContent(uriContent)
+          const proxy = ProxyURI.parseSSContent(uriContent);
           if (proxy) {
-            proxies.push(proxy)
+            proxies.push(proxy);
           }
         } else if (scheme.startsWith(ProxyScheme.SSR)) {
-          const proxy = ProxyURI.parseSSRContent(uriContent)
+          const proxy = ProxyURI.parseSSRContent(uriContent);
           if (proxy) {
-            proxies.push(proxy)
+            proxies.push(proxy);
           }
         } else if (scheme.startsWith(ProxyScheme.HTTP)) {
-          const proxy = ProxyURI.parseHTTPContent(ProxyScheme.HTTP, uriContent)
+          const proxy = ProxyURI.parseHTTPContent(ProxyScheme.HTTP, uriContent);
           if (proxy) {
-            proxies.push(proxy)
+            proxies.push(proxy);
           }
         } else if (scheme.startsWith(ProxyScheme.HTTPS)) {
-          const proxy = ProxyURI.parseHTTPContent(ProxyScheme.HTTPS, uriContent)
+          const proxy = ProxyURI.parseHTTPContent(ProxyScheme.HTTPS, uriContent);
           if (proxy) {
-            proxies.push(proxy)
+            proxies.push(proxy);
           }
         }
       }

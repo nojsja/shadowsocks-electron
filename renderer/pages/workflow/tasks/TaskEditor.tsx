@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import LaunchIcon from '@material-ui/icons/Launch';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip, useMediaQuery } from '@material-ui/core';
 import { shell } from 'electron';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import cls from 'classnames';
@@ -20,7 +20,6 @@ interface Props extends WorkflowTask {
 }
 
 const TaskEditor: React.FC<Props> = ({
-  status,
   id,
   scriptPath,
   onTaskDelete,
@@ -33,7 +32,8 @@ const TaskEditor: React.FC<Props> = ({
   const cursorRef = useRef<[number, number]>([0, 0]);
   const isDeleting = useRef(false);
   const [isContentTouched, setContentTouched] = useState(false);
-  const isErrored = status === 'failed';
+  const matchMaxWidth = useMediaQuery('(max-width: 500px)');
+  const matchMaxHeight = useMediaQuery('(max-width: 700px)');
 
   const onTemplateScriptLoad = () => {
     taskFS.read(templateCodePath).then((templateCode) => {
@@ -110,9 +110,17 @@ const TaskEditor: React.FC<Props> = ({
 
   return (
     <div className={styles.scriptWrapper}>
-      <div className={styles.textEditorWrapper}>
+      <div
+        className={
+          classNames(
+            styles.textEditorWrapper,
+            matchMaxWidth && 'wide',
+            matchMaxHeight && 'high',
+          )
+        }
+      >
         <TextEditor
-          className={classNames(styles.textEditorContent, isErrored && 'error')}
+          className={styles.textEditorContent}
           onKeyDown={handleKeyDown}
           placeholder=""
           wrap="off"

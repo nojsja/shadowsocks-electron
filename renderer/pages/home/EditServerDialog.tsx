@@ -133,7 +133,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
   });
   const { formState: { errors } } = form;
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   /* -------------- Computed -------------- */
 

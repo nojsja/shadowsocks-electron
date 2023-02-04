@@ -9,7 +9,7 @@ import {
 import { manager, http, pac } from '../core';
 import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';
-import { parseSubscription, parseUrl } from '../utils/utils';
+import { parseServerGroup, parseSubscription, parseUrl } from '../utils/utils';
 import { ProxyURI } from '../core/helpers/proxy-url';
 import checkPortInUse from '../core/helpers/port-checker';
 import logger, { warning } from '../logs';
@@ -63,6 +63,13 @@ export class MainService implements MainServiceType {
 
   async stopCluster(): Promise<ServiceResult> {
     return Manager.stopCluster();
+  }
+
+  async parseServerGroup(params: { text: string }): Promise<ServiceResult> {
+    return parseServerGroup(params.text).then((res) => ({
+      code: res.error ? 500 : 200,
+      result: res.result,
+    }));
   }
 
   async parseClipboardText(params: { text: string, type: ClipboardParseType }): Promise<ServiceResult> {

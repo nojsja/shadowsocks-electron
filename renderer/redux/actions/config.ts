@@ -3,9 +3,10 @@ import { ThunkAction } from 'redux-thunk';
 import jsqr from 'jsqr';
 import { v4 as uuidV4 } from 'uuid';
 import { MessageChannel } from 'electron-re';
+import i18n from 'i18n';
 
-import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from "../../types";
-import { findAndCallback, getScreenCapturedResources } from '../../utils';
+import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from '@renderer/types';
+import { findAndCallback, getScreenCapturedResources } from '@renderer/utils';
 import { overrideSetting, setSetting } from './settings';
 import { setStatus, getConnectionStatusAction } from './status';
 import { enqueueSnackbar } from './notifications';
@@ -193,19 +194,18 @@ export const startClientAction =
       }
 }
 
-export const stopClientAction =
-  (): ThunkAction<void, RootState, unknown, AnyAction> => {
-    return (dispatch) => {
-      MessageChannel.invoke('main', 'service:main', {
-        action: 'stopClient',
-        params: {}
-      }).then((rsp) => {
-        if (rsp.code !== 200) {
-          dispatch(enqueueSnackbar(rsp.result, { variant: "error" }));
-        }
-      });
-    };
-  }
+export const stopClientAction = (): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'stopClient',
+      params: {}
+    }).then((rsp) => {
+      if (rsp.code !== 200) {
+        dispatch(enqueueSnackbar(rsp.result, { variant: "error" }));
+      }
+    });
+  };
+};
 
 export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
@@ -228,7 +228,7 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
                 server.id = uuidV4();
                 return server;
               }),
-            }))
+            }));
             return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
           }
         } else {
@@ -282,6 +282,33 @@ export const getQrCodeFromScreenResources = (info: ActionRspText): ThunkAction<v
       dispatch(enqueueSnackbar(error && error.toString(), { variant: 'error' }));
     }).finally(() => {
       setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
+    });
+  };
+};
+
+export const parseServerGroup =
+  (text: string | string[], groupName: string): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    dispatch(setStatus('waiting', true));
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'parseServerGroup',
+      params: { text },
+    }).then((rsp) => {
+      if (rsp.code !== 200) {
+        return dispatch(enqueueSnackbar(rsp.result, { variant: 'error' }));
+      }
+      if (rsp.result?.length) {
+        dispatch(addSubscription(uuidV4(), '', {
+          name: groupName || 'new subscription',
+          servers: (rsp.result as Config[]).map(server => {
+            server.id = uuidV4();
+            return server;
+          }),
+        }));
+        return dispatch(enqueueSnackbar(i18n.__('translation'), { variant: 'success' }));
+      }
+    }).finally(() => {
+      dispatch(setStatus('waiting', false));
     });
   }
 };

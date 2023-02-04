@@ -62,8 +62,8 @@ const setAsDefaultProtocolClient = () => {
       .then(({ response }) => {
         if (response === 0) {
           ((global as any).win as BrowserWindow).show();
-          (global as any).win.webContents.send("event:stream", {
-            action: "add-server",
+          (global as any).win.webContents.send('event:stream', {
+            action: 'add-server',
             args: url,
           });
         }
