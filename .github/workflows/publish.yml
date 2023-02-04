@@ -2,10 +2,6 @@ name: Build & Release
 
 on:
   workflow_dispatch:
-  label:
-    types: [created]
-    branches:
-      - master
   push:
     branches:
       - development
@@ -18,66 +14,59 @@ on:
 jobs:
   publish:
     name: Release Windows/Linux App
-    runs-on: ${{ matrix.os }}   #流水线会跑在哪些操作系统中
+    runs-on: ${{ matrix.os }}   # operating systems
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-12]  # 流水线将分别触发在 macos/ubuntu/windows 系统中
+        os: [ubuntu-20.04, windows-2022, macos-12]  # runs on macos/ubuntu/windows
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 14.17.6
 
-      - name: Install Yarn
-        run: npm i -g yarn@latest
-
-      # - name: Install Snapcraft (ubuntu)
-      #   if: matrix.os == 'ubuntu-20.04'
-      #   run: sudo apt install snapd snap snapcraft && sudo snap install multipass && sudo snap install review-tools
-
-      - name: Install Dependencies (ubuntu)
+      - name: Prepare environment (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
         run: sudo apt update && sudo apt upgrade && sudo apt install build-essential
 
-      - name: Cache Desktop node_modules
+      - name: Cache node_modules
         id: cache-desktop-modules
         uses: actions/cache@v2
         with:
           path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock', 'patches/**') }}
+          key: ${{ runner.os }}-${{ hashFiles('package-lock', 'patches/**') }}
 
-      - name: Install Dependencies
+      - name: Install NPM Dependencies
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-        run: yarn install
+        run: npm install
 
-      - name: Build App
+      - name: Build Renderer & Main
         env:
           CI: false
-        run: yarn build
+        run: npm run build
 
-      - name: Publish Dmg/Zip (mac)
+      - name: Publish DMG/Zip (mac)
         if: matrix.os == 'macos-12'
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           CI: false
-        run:  yarn publish:mac
+        run:  npm run publish:mac
 
-      - name: Publish Deb/AppImage (ubuntu)
+      - name: Publish DEB/AppImage (ubuntu)
         if: matrix.os == 'ubuntu-20.04'
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           CI: false
-        run:  yarn publish:linux
+        run:  npm run publish:linux
 
-      - name: Publish Zip/Exe (windows)
+      - name: Publish EXE/Zip (windows)
         if: matrix.os == 'windows-latest'
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
           CI: false
-        run:  yarn publish:win
+        run:  npm run publish:win

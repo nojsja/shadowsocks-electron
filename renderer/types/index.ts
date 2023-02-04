@@ -85,6 +85,20 @@ export type NotificationOptions = {
 };
 
 interface CommonConfig {
+  id: string;
+  remark?: string;
+  serverHost: string;
+  serverPort: number;
+  password: string;
+  encryptMethod: Encryption | string;
+  timeout?: number;
+  acl?: ACL;
+  fastOpen?: boolean;
+  noDelay?: boolean;
+  maxOpenFile?: number;
+  udp?: boolean;
+  plugin?: Plugin | '';
+  pluginOpts?: string;
   definedPlugin?: string;
   definedPluginOpts?: string;
   definedPluginSIP003?: string;
@@ -92,43 +106,15 @@ interface CommonConfig {
 }
 
 export interface SSConfig extends CommonConfig {
-  id: string;
   type: 'ss';
-  remark?: string;
-  serverHost: string;
-  serverPort: number;
-  password: string;
-  encryptMethod: Encryption | string;
-  timeout?: number;
-  acl?: ACL;
-  fastOpen?: boolean;
-  noDelay?: boolean;
-  maxOpenFile?: number;
-  udp?: boolean;
-  plugin?: Plugin | '';
-  pluginOpts?: string;
 }
 
 export interface SSRConfig extends CommonConfig {
-  id: string;
   type: 'ssr';
-  remark?: string;
-  serverHost: string;
-  serverPort: number;
-  password: string;
-  encryptMethod: Encryption | string;
   protocol: typeof protocols[number];
   protocolParam: string;
   obfs: typeof obfs[number],
   obfsParam: string,
-  timeout?: number;
-  acl?: ACL;
-  fastOpen?: boolean;
-  noDelay?: boolean;
-  maxOpenFile?: number;
-  udp?: boolean;
-  plugin?: Plugin | '';
-  pluginOpts?: string;
 }
 
 export type Config = SSConfig | SSRConfig;
@@ -212,7 +198,6 @@ export type CronTableObject = {
   month?: number;
   day?: number;
 };
-
 
 export interface WorkflowTaskTimer {
   enable: boolean;
