@@ -28,7 +28,7 @@ interface SetMessage {
   (title: string, content: string): void
 }
 
-const useDialogConfirm = (): [React.FC<DialogConfirmProps>, SetMessage, () => void] => {
+export const useDialogConfirm = (): [React.FC<DialogConfirmProps>, SetMessage, () => void] => {
   const { t } =  useTranslation();
   const [msg, showMessage] = useState({
     title: '',

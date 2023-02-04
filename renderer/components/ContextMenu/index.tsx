@@ -23,7 +23,7 @@ const StyledMenuItem = withStyles(() => createStyles({
   }
 }))(MenuItem);
 
-const ContextMenu: React.FC<{ children: React.ReactNode }> = (props) => {
+export const useContextMenu: React.FC<{ children: React.ReactNode }> = (props) => {
   const [state, setState] = useState<{
     mouseX: null | number;
     mouseY: null | number;
@@ -85,4 +85,4 @@ const ContextMenu: React.FC<{ children: React.ReactNode }> = (props) => {
   )
 }
 
-export default ContextMenu;
+export default useContextMenu;

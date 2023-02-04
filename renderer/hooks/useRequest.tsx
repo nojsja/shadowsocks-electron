@@ -61,3 +61,5 @@ export function useRequest<T>(
     loading,
   };
 }
+
+export default useRequest;

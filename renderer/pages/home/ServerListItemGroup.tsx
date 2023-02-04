@@ -27,7 +27,7 @@ import { moveDown, moveUp, startClusterAction, stopClusterAction, top, updateSub
 import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
 import { useTypedSelector } from '@renderer/redux/reducers';
 
-import menuContext from '@renderer/hooks/useContextMenu/context';
+import MenuContext from '@renderer/components/ContextMenu/context';
 import If from '@renderer/components/HOC/IF';
 import { GroupConfig, Notification } from '@renderer/types';
 
@@ -104,7 +104,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
   const dispatch = useDispatch();
   const { item, selectedServer } = props;
   const { t } = useTranslation();
-  const context = useContext(menuContext);
+  const context = useContext(MenuContext);
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
   const [expanded, handleChange] = useState(

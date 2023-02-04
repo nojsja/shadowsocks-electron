@@ -12,9 +12,7 @@ import classNames from 'classnames';
 import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 import { type WorkflowTask } from '@renderer/types';
-import useDidUpdate from '@/renderer/hooks/useDidUpdate';
-
-import useTaskFS from '../hooks/useTaskFS';
+import { useDidUpdate, useTaskFS } from '@renderer/hooks';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;

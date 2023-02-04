@@ -48,7 +48,7 @@ export const dispatchAction = (payload: GlobalActionItem) => {
   });
 }
 
-export default (initialStore?: GlobalActionStore) => {
+export const useGlobalAction = (initialStore?: GlobalActionStore) => {
   Object.assign(store, initialStore ?? {});
 
   return new Proxy(store, {
@@ -71,3 +71,5 @@ export default (initialStore?: GlobalActionStore) => {
     }
   });
 };
+
+export default useGlobalAction;

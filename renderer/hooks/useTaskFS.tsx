@@ -1,11 +1,12 @@
 import fs from 'fs';
 import { NodeTaskQueue, NodeTask } from '@renderer/utils/task-queue';
+import { useCallback } from 'react';
 
 const taskQueue = new NodeTaskQueue(4);
 
-export default (filePath: string) => {
+export const useTaskFS = (filePath: string) => {
 
-  const read = (_filePath?: string) => {
+  const read = useCallback((_filePath?: string) => {
     return new Promise<string>((resolve, reject) => {
       const task = new NodeTask(() => fs.promises.readFile(_filePath ?? filePath, 'utf-8'), {
         onSuccess: (content) => {
@@ -17,9 +18,9 @@ export default (filePath: string) => {
       });
       taskQueue.add(task);
     });
-  };
+  }, []);
 
-  const write = (content: string, _filePath?: string) => {
+  const write = useCallback((content: string, _filePath?: string) => {
     return new Promise<void>((resolve, reject) => {
       const task = new NodeTask(() => fs.promises.writeFile(_filePath ?? filePath, content, 'utf-8'), {
         onSuccess: () => {
@@ -31,10 +32,12 @@ export default (filePath: string) => {
       });
       taskQueue.add(task);
     });
-  };
+  }, []);
 
   return {
     read,
     write,
   };
 };
+
+export default useTaskFS;

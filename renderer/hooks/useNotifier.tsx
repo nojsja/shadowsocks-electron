@@ -1,13 +1,13 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { SnackbarKey, useSnackbar } from 'notistack';
 
-import { removeSnackbar } from '../redux/actions/notifications';
-import { useTypedSelector } from "../redux/reducers";
+import { removeSnackbar } from '@renderer/redux/actions/notifications';
+import { useTypedSelector } from '@renderer/redux/reducers';
 
 let displayed: SnackbarKey[] = [];
 
-const useNotifier = () => {
+export const useNotifier = () => {
     const dispatch = useDispatch();
 
     const notifications = useTypedSelector(store => store.notifications);
@@ -21,7 +21,7 @@ const useNotifier = () => {
         displayed = [...displayed.filter(key => id !== key)];
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         notifications.forEach(({ key, message, dismissed = false, ...options }) => {
             if (dismissed) {
                 // dismiss snackbar using notistack

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-export default (effect: React.EffectCallback, deps?: React.DependencyList | undefined) => {
+export const useDidUpdate = (effect: React.EffectCallback, deps?: React.DependencyList | undefined) => {
   const initSymbol = useRef<boolean|null>(null);
 
   useEffect(() => {
@@ -11,3 +11,5 @@ export default (effect: React.EffectCallback, deps?: React.DependencyList | unde
     }
   }, deps);
 };
+
+export default useDidUpdate;

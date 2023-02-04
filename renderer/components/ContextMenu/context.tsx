@@ -1,8 +1,8 @@
-import { createContext } from "react";
+import { createContext } from 'react';
 
 import { MenuContent } from './index';
 
-const menucontext = {
+const Menucontext = {
   items: [] as MenuContent[],
   show: (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -15,6 +15,6 @@ const menucontext = {
   ) => {}
 };
 
-export type ContextMenuProps = typeof menucontext;
+export type ContextMenuProps = typeof Menucontext;
 
-export default createContext<ContextMenuProps>(menucontext);
+export default createContext<ContextMenuProps>(Menucontext);

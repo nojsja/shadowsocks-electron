@@ -34,7 +34,7 @@ import { moveDown, moveUp, top } from '@renderer/redux/actions/config';
 
 import ListItemTextMultipleLine from '@renderer/components/Pices/ListItemTextMultipleLine';
 import If from '@renderer/components/HOC/IF';
-import menuContext from '@renderer/hooks/useContextMenu/context';
+import MenuContext from '@renderer/components/ContextMenu/context';
 import { Config } from '@renderer/types';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -123,7 +123,7 @@ const ServerListItemSingle: React.FC<ServerListItemSingleProps> = props => {
 
   const origin = `${serverHost}:${serverPort}`;
   const [actionHidden, setActionHidden] = useState(true);
-  const context = useContext(menuContext);
+  const context = useContext(MenuContext);
   const secondaryText =
     (remark && plugin) ?
     `${origin} / ${plugin}` :

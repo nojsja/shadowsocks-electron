@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const transition = (props: TransitionProps) => <Slide {...props} direction="down" />;
 
-function useSnackbarAlert({ vertical, horizontal, duration }: SnackbarAlertProps) {
+export function useSnackbarAlert({ vertical, horizontal, duration }: SnackbarAlertProps) {
   const styles = useStyles();
   const [message, setMessage] = useState('');
   return [

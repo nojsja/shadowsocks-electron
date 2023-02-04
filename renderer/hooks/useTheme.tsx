@@ -1,14 +1,14 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import React, { Dispatch, useEffect, useState } from 'react';
+import { MessageChannel } from 'electron-re';
 import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
 import { createTheme, Theme } from '@material-ui/core';
 import { grey, indigo } from "@material-ui/core/colors";
-import { MessageChannel } from 'electron-re';
 
-import { persistStore } from '../App';
-import { SET_SETTING } from '../redux/actions/settings';
-import { store } from '../redux/store';
-import { ThemeMode } from '../types';
+import { persistStore } from '@renderer/App';
+import { SET_SETTING } from '@renderer/redux/actions/settings';
+import { store } from '@renderer/redux/store';
+import { ThemeMode } from '@renderer/types';
 
 const themes = {
   light: createTheme({
@@ -55,7 +55,7 @@ const themes = {
   })
 };
 
-export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMode>>] => {
+export const useTheme = (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMode>>] => {
   const [mode, setMode] = useState<ThemeMode>(theme);
 
   const updateTheme = (e: IpcRendererEvent | EventAction, data: { shouldUseDarkColors: boolean }) => {
@@ -97,3 +97,5 @@ export default (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMo
 
   return [themes[mode] ?? themes['light'], setMode];
 };
+
+export default useTheme;

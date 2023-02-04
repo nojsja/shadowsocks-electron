@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function useBackdrop(): [React.FC, React.MutableRefObject<any>] {
+export const useBackdrop = (): [React.FC, React.MutableRefObject<any>] => {
   const classes = useStyles();
   const ref = React.useRef<any>(null);
   const [open, setOpen] = React.useState(false);
@@ -26,3 +26,5 @@ export default function useBackdrop(): [React.FC, React.MutableRefObject<any>] {
     ref
   ];
 }
+
+export default useBackdrop;

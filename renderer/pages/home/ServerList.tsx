@@ -15,7 +15,7 @@ import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/action
 import { SET_SETTING } from '@renderer/redux/actions/settings';
 import { REMOVE_CONFIG } from '@renderer/redux/actions/config';
 
-import ContextMenuProvider from '@renderer/hooks/useContextMenu';
+import ContextMenuProvider from '@renderer/components/ContextMenu';
 import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
 import If from '@renderer/components/HOC/IF';
 import GradientDivider from '@renderer/components/Pices/GradientDivider';
