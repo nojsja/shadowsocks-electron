@@ -20,11 +20,10 @@ import { getConnectionStatus, setStatus } from './redux/actions/status';
 import { setSetting } from './redux/actions/settings';
 import { enqueueSnackbar } from './redux/actions/notifications';
 
-import RouterComp from './Router';
+import RouterComponent from './Router';
 import AppNav from './components/AppNav';
 import Loading from './components/Loading';
 import useTheme from './hooks/useTheme';
-import useGlobalAction from './hooks/useGlobalAction';
 
 import prepareForLanguage, { getFirstLanguage } from './i18n';
 import { getDefaultLang } from './utils';
@@ -73,12 +72,6 @@ const App: React.FC = () => {
   const [theme] = useTheme(darkMode ? 'dark' : 'light');
   const methods = useForm();
 
-  useGlobalAction({
-    'reconnect-server': { type: 'reconnect-server', payload: '' },
-    'reconnect-http': { type: 'reconnect-http', payload: '' },
-    'reconnect-pac': { type: 'reconnect-pac', payload: '' },
-  });
-
   useEffect(() => {
     getConnectionStatus((status) => {
       store.dispatch(setStatus('connected', status));
@@ -117,7 +110,7 @@ const App: React.FC = () => {
                   <AppNav />
                   <main className={styles.content}>
                     <div className={styles.toolbar} />
-                    <RouterComp />
+                    <RouterComponent />
                   </main>
                 </div>
               </HashRouter>

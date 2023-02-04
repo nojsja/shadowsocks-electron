@@ -6,13 +6,13 @@ import {
   Button
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { useDispatch } from "react-redux";
-import AddIcon from "@material-ui/icons/Add";
+import { useDispatch } from 'react-redux';
+import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
 
-import { Mode } from "../types";
-import { SET_SETTING } from '../redux/actions/settings';
-import { dispatchAction } from '../hooks/useGlobalAction';
+import { Mode } from '@renderer/types';
+import { SET_SETTING } from '@renderer/redux/actions/settings';
+import { dispatchAction } from '@renderer/hooks/useGlobalAction';
 
 type StatusBarProps = {
   mode: string,

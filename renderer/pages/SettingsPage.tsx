@@ -21,7 +21,6 @@ import { getStartupOnBoot, setSetting, setStartupOnBoot } from '@renderer/redux/
 import { setStatus } from '@renderer/redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '@renderer/redux/actions/settings';
 
-import * as globalAction from '@renderer/hooks/useGlobalAction';
 import { ALGORITHM, Notification, Settings } from '@renderer/types';
 import { persistStore } from '@renderer/App';
 
@@ -138,9 +137,9 @@ const SettingsPage: React.FC = () => {
       if (pacConditions.includes(key) || key === settingsCondition) needReconnectPac = true;
     });
 
-    if (needReconnectServer) globalAction.set({ type: 'reconnect-server' });
-    if (needReconnectHttp) globalAction.set({ type: 'reconnect-http' });
-    if (needReconnectPac) globalAction.set({ type: 'reconnect-pac' });
+    if (needReconnectServer) dispatchEvent('event:stream:reconnect-server');
+    if (needReconnectHttp) dispatchEvent('event:stream:reconnect-http');
+    if (needReconnectPac) dispatchEvent('event:stream:reconnect-pac');
   }, []);
 
   const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {

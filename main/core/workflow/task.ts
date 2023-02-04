@@ -159,6 +159,8 @@ export class WorkflowTask extends Workflow {
         })
         .then(() => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
+          delete require.cache[this.scriptPath]; // clear module cache
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           const scriptModule = require(this.scriptPath);
           return scriptModule(payload, options);
         })

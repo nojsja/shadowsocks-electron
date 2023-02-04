@@ -1,5 +1,6 @@
 import React from 'react';
 import path from 'path';
+import classNames from 'classnames';
 
 import { type WorkflowTask } from '@renderer/types';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
@@ -14,10 +15,23 @@ interface Props extends WorkflowTask {
 const ProcessorTask: React.FC<Props> = (props) => {
   const styles = useStylesOfWorkflow();
   const template = path.join(props.workflowTaskDemoDir ?? '', 'processor-pipe.js');
+  const isError = props.status === 'failed';
+  const isSuccess = props.status === 'success';
 
   return (
     <>
-      <span className={styles.textEditorTitle}>processor</span>
+      <span
+        className={
+          classNames(
+            styles.textEditorTitle,
+            styles.required,
+            isError && 'error',
+            isSuccess && 'success',
+          )
+        }
+      >
+        processor
+      </span>
       <TaskEditor
         {...props}
         templateCodePath={template}

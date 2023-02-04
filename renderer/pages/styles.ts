@@ -247,5 +247,20 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   },
   textEditorActionButtonActive: {
     color: theme.palette.primary.light,
+  },
+  required: {
+    position: 'relative',
+    '&:after': {
+      position: 'absolute',
+      top: '1px',
+      display: 'inline-block',
+      content: '"*"',
+    },
+    '&.error:after': {
+      color: theme.palette.error.light,
+    },
+    '&.success:after': {
+      color: theme.palette.success.light,
+    }
   }
 }));

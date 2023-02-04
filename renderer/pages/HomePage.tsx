@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { clipboard } from 'electron';
-import useBus, { EventAction } from 'use-bus';
+import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   Container,
@@ -21,16 +19,15 @@ import {
   startClusterAction,
   startClientAction,
   stopClientAction,
-  stopClusterAction
 } from '@renderer/redux/actions/config';
-import { setHttpProxy, setPacServer } from '@renderer/redux/actions/settings';
 import { getConnectionDelay } from '@renderer/redux/actions/status';
-
-import * as globalAction from '@renderer/hooks/useGlobalAction';
 import useDidUpdate from '@renderer/hooks/useDidUpdate';
 
-import { Config, CloseOptions, GroupConfig, Notification, ServerMode } from '@renderer/types';
 import { findAndCallback } from '@renderer/utils';
+import {
+  Config, CloseOptions, GroupConfig,
+  Notification, ServerMode,
+} from '@renderer/types';
 
 import FooterBar from '@renderer/components/FooterBar';
 import StatusBar from '@renderer/components/StatusBar';
@@ -63,7 +60,6 @@ const HomePage: React.FC = () => {
   const delay = useTypedSelector(state => state.status.delay);
   const loading = useTypedSelector(state => state.status.loading);
 
-  // const [BackDrop, setBackDrop] = useBackDrop();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
@@ -85,69 +81,6 @@ const HomePage: React.FC = () => {
       selectedServer && connectedToServer(config, selectedServer);
     }
   }, [config, selectedServer, mode, serverMode, clusterId, settings]);
-
-  /* event stream */
-
-  useBus('event:stream:reconnect-server', () => {
-    connectByMode();
-  }, [connectByMode]);
-
-  useBus('event:stream:add-server', (event: EventAction) => {
-    clipboard.writeText(event.payload);
-    dispatch(addConfigFromClipboard({
-      success: t('added_a_server'),
-      error: { default: t('invalid_operation') }
-    }));
-  }, []);
-
-  useBus('event:stream:disconnect-server', () => {
-    if (serverMode === 'cluster') {
-      dispatch(stopClusterAction());
-    } else {
-      dispatch(stopClientAction());
-    }
-  }, [connectByMode, serverMode]);
-
-  /* reconnect after get event from queue */
-  useBus('action:get:reconnect-server', () => {
-    connectByMode();
-  }, [connectByMode]);
-
-  useBus('action:get:reconnect-http', () => {
-    selectedServer && dispatch(
-      setHttpProxy({
-        ...settings.httpProxy,
-        proxyPort: settings.localPort
-      })
-    );
-  }, [settings, selectedServer]);
-
-  useBus('action:get:reconnect-pac', (event: EventAction) => {
-    if (!selectedServer) return;
-    dispatch(
-      setPacServer({
-        pacPort: settings.pacPort,
-        enable:
-          event.payload?.enable === true
-            ? true
-            : event.payload?.enable === false
-              ? false
-              : settings.mode === 'PAC'
-      })
-    );
-  }, [settings, selectedServer]);
-
-  /* status checker on mount */
-  useEffect(() => {
-    if (!selectedServer) return;
-
-    setTimeout(() => {
-      /* check reconnect event from queue */
-      globalAction.get({ type: 'reconnect-server' });
-      globalAction.get({ type: 'reconnect-http' });
-      globalAction.get({ type: 'reconnect-pac' });
-    }, 500);
-  }, []);
 
   /* reconnect when settings/selected update */
   useDidUpdate(() => {
@@ -174,21 +107,18 @@ const HomePage: React.FC = () => {
         setEditServerDialogOpen(true);
         break;
       case 'qrcode':
-        // setBackDrop.current(true);
         dispatch(getQrCodeFromScreenResources({
           success: t('added_a_server'),
           error: { default: t('no_qr_code_is_detected') },
         }));
         break;
       case 'url':
-        // setBackDrop.current(true);
         dispatch(addConfigFromClipboard({
           success: t('added_a_server'),
           error: { default: t('invalid_operation') }
         }));
         break;
       case 'subscription':
-        // setBackDrop.current(true);
         dispatch(addSubscriptionFromClipboard({
           success: t('added_a_server'),
           error: { default: t('invalid_operation') }
@@ -263,7 +193,7 @@ const HomePage: React.FC = () => {
           settings,
         )
       )});
-  }
+  };
 
   return (
     <Container className={styles.container}>
@@ -296,7 +226,6 @@ const HomePage: React.FC = () => {
             key="status_bar_connection"
             status={connected ? 'online' : 'offline'}
           />
-          // <span key="status_bar_mode" className={styles['statu-sbar_modeinfo']}>{t(mode.toLowerCase())}</span>
         ]}
       />
 

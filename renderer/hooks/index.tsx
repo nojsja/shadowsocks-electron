@@ -8,3 +8,4 @@ export { useRequest } from './useRequest';
 export { useSnackbarAlert } from './useSnackbarAlert';
 export { useTheme } from './useTheme';
 export { useTaskFS } from './useTaskFS';
+export { useEventStreamService } from './useEventStreamService';
