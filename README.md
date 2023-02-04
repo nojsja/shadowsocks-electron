@@ -18,7 +18,7 @@
 
 Shadowsocks GUI client with cross-platform desktop support powered by Electron⚛️, made specially for Linux / Windows users.
 
-⚠️  For Mac OS users, If you receive system notification about **"The app is broken"** when start the client,  Run follow  command in terminal to fix that: **`sudo xattr -r -d com.apple.quarantine /Applications/Shadowsocks\ Electron.app`**.
+⚠️  For Mac OS users, If you receive system notification about **"The app is broken"** when start the client, Run following  command in terminal to fix that: **`sudo xattr -r -d com.apple.quarantine /Applications/Shadowsocks\ Electron.app`**.
 
 ### ➣ Tested on:
 
