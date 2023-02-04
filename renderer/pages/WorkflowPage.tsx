@@ -19,34 +19,6 @@ import WorkflowHelpInfo from './workflow/WorkflowHelpInfo';
 
 const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
-  // const runners: WorkflowRunnerType[] = [
-  //   {
-  //     id: '1',
-  //     enable: true,
-  //     status: 'idle',
-  //     timerOption: { enable: false },
-  //     queue: [
-  //       {
-  //         id: '1-1',
-  //         status: 'idle',
-  //         type: 'puppeteer-source',
-  //         scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-1/index.js',
-  //       },
-  //       {
-  //         id: '1-2',
-  //         status: 'idle',
-  //         type: 'processor-pipe',
-  //         scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-2/index.js',
-  //       },
-  //       {
-  //         id: '1-3',
-  //         status: 'idle',
-  //         type: 'effect-pipe',
-  //         scriptPath: '/home/nojsja/.config/shadowsocks-electron/runtime/workflow/tasks/1-3/index.js',
-  //       }
-  //     ],
-  //   },
-  // ];
 
   const { data: runnersResp, run: getWorkflowRunners, setState } = useRequest<Response<WorkflowRunnerType[]>>(
     () => MessageChannel.invoke('main', 'service:workflow', {

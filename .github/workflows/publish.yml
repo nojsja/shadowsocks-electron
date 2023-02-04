@@ -36,10 +36,10 @@ jobs:
 
       - name: Cache node_modules
         id: cache-desktop-modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('package-lock', 'patches/**') }}
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json', 'patches/**') }}
 
       - name: Install NPM Dependencies
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'

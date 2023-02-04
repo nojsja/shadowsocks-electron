@@ -51,6 +51,9 @@ export const useStyles = makeStyles((theme) => createStyles({
       color: theme.palette.secondary.main,
     }
   },
+  noVisible: {
+    opacity: 0,
+  },
 }));
 
 const TaskTypeMap = {
@@ -132,7 +135,7 @@ const WorkflowRunner: React.FC<Props> = ({
     setRunning(true);
     startRunner(id).finally(() => {
       setRunning(false);
-      isStarting.current = true;
+      isStarting.current = false;
     });
   };
 
@@ -206,7 +209,7 @@ const WorkflowRunner: React.FC<Props> = ({
           </IconButton>
         </Tooltip>
       </div>
-      <LinearProgress hidden={!running} color="secondary" />
+      <LinearProgress className={classNames((!running) && styles.noVisible)} color="secondary" />
     </div>
   );
 }

@@ -160,7 +160,7 @@ export class WorkflowTask extends Workflow {
         .then(() => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const scriptModule = require(this.scriptPath);
-          return scriptModule.default(payload, options);
+          return scriptModule(payload, options);
         })
         .then((moduleResults: unknown) => {
           if (this.abortCtrl?.signal.aborted) {

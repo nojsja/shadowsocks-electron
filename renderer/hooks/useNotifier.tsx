@@ -1,14 +1,22 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { SnackbarKey, useSnackbar } from 'notistack';
+import { createStyles, makeStyles, Typography } from '@material-ui/core';
 
 import { removeSnackbar } from '@renderer/redux/actions/notifications';
 import { useTypedSelector } from '@renderer/redux/reducers';
 
 let displayed: SnackbarKey[] = [];
 
+export const useStyles = makeStyles(() => createStyles({
+  notifierBody: {
+    wordBreak: 'break-word',
+  },
+}));
+
 export const useNotifier = () => {
     const dispatch = useDispatch();
+    const styles = useStyles();
 
     const notifications = useTypedSelector(store => store.notifications);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -33,7 +41,9 @@ export const useNotifier = () => {
             if (displayed.includes(key)) return;
 
             // display snackbar using notistack
-            enqueueSnackbar(message, {
+            enqueueSnackbar((
+              <Typography className={styles.notifierBody} variant="body1">{message}</Typography>
+            ), {
                 key,
                 ...options,
                 onClose: (event, reason, myKey) => {
