@@ -342,35 +342,32 @@ export function parseUrl(text: string) {
   return result;
 }
 
-export function parseServerGroup(text: string[] | string): Promise<{ error: string | null, result: OneOfConfig[], name: string | null }> {
+export function parseServerGroup(text: string[] | string): Promise<{ error: string | null, result: OneOfConfig[] }> {
   const serverInfos = text instanceof Array ? text : [text];
 
   return new Promise((resolve) => {
-    const subHandler = subParserStore('');
     const data: OneOfConfig[] = [];
     let tmp = [];
 
-    if (subHandler) {
-      for (let index = 0; index < serverInfos.length; index++) {
-        try {
-          tmp = subHandler.parse(serverInfos[index]);
-          data.push(...(tmp || []));
-        } catch (error) {
-          console.log(error);
-        }
+    for (let index = 0; index < serverInfos.length; index++) {
+      try {
+        tmp = parseUrl(serverInfos[index]);
+        data.push(...(tmp || []));
+      } catch (error) {
+        console.log(error);
       }
+    }
 
+    if (!data.length) {
       return resolve({
-        error: null,
-        result: data,
-        name: subHandler.name
+        error: i18n.__('invalid_parameter'),
+        result: [],
       });
     }
 
-    return resolve({
-      error: i18n.__('invalid_parameter'),
-      result: [],
-      name: null
+    resolve({
+      error: null,
+      result: data,
     });
   });
 }

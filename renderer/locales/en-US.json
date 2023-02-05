@@ -37,6 +37,8 @@
   "failed_to_update_subscription": "Failed to update subscription group info",
   "server_url_not_set": "Remote server URL is not found, please remove the subscription server group and try add it again.",
   "server_group_added": "Server group added",
+  "server_group_updated": "Server group updated",
+  "fail_to_parse_server_group": "Fail to parse server group",
   "update": "Update",
   "move_up": "Move Up",
   "move_down": "Move Down",

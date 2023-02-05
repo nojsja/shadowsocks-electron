@@ -3,7 +3,7 @@ import { ThunkAction } from 'redux-thunk';
 import jsqr from 'jsqr';
 import { v4 as uuidV4 } from 'uuid';
 import { MessageChannel } from 'electron-re';
-import i18n from 'i18n';
+import i18n from 'i18next';
 
 import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from '@renderer/types';
 import { findAndCallback, getScreenCapturedResources } from '@renderer/utils';
@@ -79,24 +79,20 @@ export const updateSubscription = (id: string, url: string, info: ActionRspText)
       action: 'parseClipboardText',
       params: {
         text: url,
-        type: 'subscription'
-      }
+        type: 'subscription',
+      },
     })
     .then((rsp) => {
       setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
       if (rsp.code === 200) {
         if (rsp.result?.result?.length) {
-          dispatch({
-            type: UPDATE_SUBSCRIPTION,
-            id: id,
-            config: {
-              name: rsp.result.name || 'new subscription',
-              servers: (rsp.result.result as Config[]).map(server => {
-                server.id = uuidV4();
-                return server;
-              }),
-            }
-          });
+          dispatch(updateSubscriptionAction(id, 'id', {
+            name: rsp.result.name || 'new subscription',
+            servers: (rsp.result.result as Config[]).map(server => {
+              server.id = uuidV4();
+              return server;
+            }),
+          }));
           return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
         }
       }
@@ -287,7 +283,7 @@ export const getQrCodeFromScreenResources = (info: ActionRspText): ThunkAction<v
 };
 
 export const parseServerGroup =
-  (text: string | string[], groupName: string): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (text: string | string[], groupId: string, groupName: string): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
@@ -298,15 +294,59 @@ export const parseServerGroup =
         return dispatch(enqueueSnackbar(rsp.result, { variant: 'error' }));
       }
       if (rsp.result?.length) {
-        dispatch(addSubscription(uuidV4(), '', {
-          name: groupName || 'new subscription',
+        dispatch(addSubscription(groupId || uuidV4(), '', {
+          name: groupName || 'New server group',
           servers: (rsp.result as Config[]).map(server => {
             server.id = uuidV4();
             return server;
           }),
         }));
-        return dispatch(enqueueSnackbar(i18n.__('translation'), { variant: 'success' }));
+        return dispatch(enqueueSnackbar(
+          `${i18n.t('server_group_added')}: ${groupName}`,
+          { variant: 'success'},
+        ));
       }
+      dispatch(enqueueSnackbar(
+      `${i18n.t('fail_to_parse_server_group')}: ${groupName}`,
+        { variant: 'warning'},
+      ));
+    }).finally(() => {
+      dispatch(setStatus('waiting', false));
+    });
+  }
+};
+
+export const updateServerGroup =
+(text: string | string[], groupId: string, groupName: string): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    const searchKey = groupId ? 'id' : (groupName ? 'name' : '');
+    if (!searchKey) return;
+
+    dispatch(setStatus('waiting', true));
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'parseServerGroup',
+      params: { text },
+    }).then((rsp) => {
+      if (rsp.code !== 200) {
+        return dispatch(enqueueSnackbar(rsp.result, { variant: 'error' }));
+      }
+      if (rsp.result?.length) {
+        dispatch(updateSubscriptionAction(groupId, searchKey, {
+          name: groupName || 'New server group',
+          servers: (rsp.result as Config[]).map(server => {
+            server.id = uuidV4();
+            return server;
+          }),
+        }));
+        return dispatch(enqueueSnackbar(
+          `${i18n.t('server_group_updated')}: ${groupName}`,
+          { variant: 'success'},
+        ));
+      }
+      dispatch(enqueueSnackbar(
+      `${i18n.t('fail_to_parse_server_group')}: ${groupName}`,
+        { variant: 'warning'},
+      ));
     }).finally(() => {
       dispatch(setStatus('waiting', false));
     });
@@ -359,6 +399,15 @@ export const addSubscription = (id: string, url: string, config: PartialGroupCon
   }
 };
 
+export const updateSubscriptionAction = (id: string, searchKey: 'id' | 'name', config: PartialGroupConfig) => {
+  return {
+    type: UPDATE_SUBSCRIPTION,
+    id,
+    searchKey,
+    config,
+  }
+};
+
 export const editConfig = (id: string, config: Config) => {
   return {
     type: EDIT_CONFIG,
@@ -407,3 +456,4 @@ export type RemoveConfigAction = ReturnType<typeof removeConfig>;
 export type EditConfigAction = ReturnType<typeof editConfig>;
 export type MoveConfigAction = ReturnType<typeof moveConfig>;
 export type AddSubscriptionAction = ReturnType<typeof addSubscription>;
+export type UpdateSubscriptionAction = ReturnType<typeof updateSubscriptionAction>;

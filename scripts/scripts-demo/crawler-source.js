@@ -1,5 +1,5 @@
 module.exports = async function(
-  content,
+  content, // data from previous step
   {
     loadCrawler, // return node-crawler instance
     clipboard, // clipboard (electron)
@@ -19,13 +19,11 @@ module.exports = async function(
       // This will be called for each crawled page
       callback: (error, res, done) => {
         if (error) {
-          console.log(error);
           resolve(error);
         } else {
           // $ is Cheerio by default
           const $ = res.$;
           const title = $("title").text();
-          console.log(title);
           resolve(title);
         }
         done();

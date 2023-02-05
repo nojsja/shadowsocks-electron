@@ -1,5 +1,5 @@
 module.exports = function (
-  content,
+  content, // data from previous step
   {
     /**
      * @name dispatch [trigger event to renderer process]
@@ -9,8 +9,12 @@ module.exports = function (
      * @example
      * * demo1: connect client to server
      * > dispatch('reconnect-server');
-     * * demo2-1: add ss(r) server to client
+     * * demo2-1: add server (ss/ssr) to client
      * > dispatch('add-server', 'ss(r)://xxx');
+     * * demo2-2: add server group to client
+     * > dispatch('add-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
+     * * demo2-3: update server group of client
+     * > dispatch('update-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
      * * demo3: disconnect client from server
      * > dispatch('disconnect-server');
      * * demo4: send notifycation

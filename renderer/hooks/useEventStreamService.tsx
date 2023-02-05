@@ -12,6 +12,7 @@ import {
   startClusterAction,
   stopClientAction,
   stopClusterAction,
+  updateServerGroup,
 } from '@renderer/redux/actions/config';
 import { useTypedSelector } from '@renderer/redux/reducers';
 import { Config, GroupConfig, ServerMode } from '@renderer/types';
@@ -85,8 +86,13 @@ export const useEventStreamService = () => {
   }, []);
 
   useBus('event:stream:add-server-group', (event: EventAction) => {
-    const payload: { text: string, groupName: string } = event.payload;
-    dispatch(parseServerGroup(payload.text, payload.groupName));
+    const payload: { text: string, name: string } = event.payload;
+    dispatch(parseServerGroup(payload.text, '', payload.name));
+  }, []);
+
+  useBus('event:stream:update-server-group', (event: EventAction) => {
+    const payload: { text: string, name: string } = event.payload;
+    dispatch(updateServerGroup(payload.text, '', payload.name));
   }, []);
 
   useBus('event:stream:reconnect-http', () => {

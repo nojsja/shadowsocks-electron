@@ -1,5 +1,5 @@
 module.exports = async function(
-  content, // previous step data
+  content, // data from previous step
   {
     loadBrowserPage, // return -> [puppeteer page instance, destroy function]
     clipboard, // clipboard (electron)

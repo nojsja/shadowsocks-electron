@@ -6,6 +6,7 @@ import {
   EditConfigAction as ECA,
   MoveConfigAction as MCA,
   AddSubscriptionAction as ASA,
+  UpdateSubscriptionAction as USA,
   REMOVE_CONFIG,
   EDIT_CONFIG,
   WIPE_CONFIG,
@@ -20,7 +21,7 @@ import { findAndModify } from "../../utils";
 
 function configReducer(
   state: (Config | GroupConfig)[] = defaultStore.config,
-  action: ECA | MCA | ASA
+  action: ECA | MCA | ASA | USA
 ): (Config | GroupConfig)[] {
   let sourceIndex: number, targetIndex: number, newState: (Config | GroupConfig)[];
 
@@ -37,19 +38,24 @@ function configReducer(
       });
     case UPDATE_SUBSCRIPTION:
       return produce(state, draft => {
+        const isSearchKeyMatchName = (action as USA).searchKey === 'name';
+        const isSearchKeyMatchId = (action as USA).searchKey === 'id';
+
         // eslint-disable-next-line array-callback-return
         draft.map((config) => {
-          if (config.id === action.id) {
-            Object.assign(config, {
-              ...(action as ASA).config,
-              servers: (action as ASA).config.servers.map((server, i) => {
-                return {
-                  ...server,
-                  id: (config as GroupConfig).servers[i]?.id ?? server.id,
-                };
-              })
-            });
-          }
+          if ((config as GroupConfig).name !== (action as USA).config.name && isSearchKeyMatchName) return;
+          if ((config as GroupConfig).id !== (action as USA).id && isSearchKeyMatchId) return;
+
+          Object.assign(config, {
+            ...config,
+            ...(action as USA).config,
+            servers: (action as USA).config.servers.map((server, i) => {
+              return {
+                ...server,
+                id: (config as GroupConfig).servers[i]?.id ?? server.id,
+              };
+            })
+          });
         });
       });
     case ADD_CONFIG:

@@ -37,6 +37,8 @@
   "failed_to_update_subscription": "Не удалось обновить информацию о подписочной группе",
   "server_url_not_set": "URL-адрес удаленного сервера не найден, пожалуйста, удалите подписочную группу серверов и попробуйте добавить её снова.",
   "server_group_added": "Server group added",
+  "server_group_updated": "Server group updated",
+  "fail_to_parse_server_group": "Fail to parse server group",
   "update": "Обновить",
   "move_up": "Переместить Выше",
   "move_down": "Переместить Ниже",

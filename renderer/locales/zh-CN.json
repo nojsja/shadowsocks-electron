@@ -36,6 +36,8 @@
   "top": "置顶",
   "server_url_not_set": "服务器地址未设置，请尝试删除订阅后重新添加",
   "server_group_added": "已添加服务器组",
+  "server_group_updated": "已更新服务器组",
+  "fail_to_parse_server_group": "解析服务器组失败",
   "subscription_updated": "订阅已更新",
   "failed_to_update_subscription": "订阅更新失败",
   "update": "更新",

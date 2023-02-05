@@ -68,67 +68,51 @@ export class MainService implements MainServiceType {
   async parseServerGroup(params: { text: string }): Promise<ServiceResult> {
     return parseServerGroup(params.text).then((res) => ({
       code: res.error ? 500 : 200,
-      result: res.result,
+      result: res.error || res.result,
     }));
   }
 
   async parseClipboardText(params: { text: string, type: ClipboardParseType }): Promise<ServiceResult> {
     const text = params.text || clipboard.readText('clipboard');
     const type = params.type || 'url';
+    let res;
 
-    if (type === 'url') return Promise.resolve({
-      code: 200,
-      result: parseUrl(text)
-    });
-
-    if (type === 'subscription') {
-      return parseSubscription(text).then(res => {
-        if (res.error) {
-          return {
-            code: 200,
-            result: {
-              name: '',
-              result: [],
-              url: text
-            }
-          };
-        }
+    switch (type) {
+      case 'url':
+        return {
+          code: 200,
+          result: parseUrl(text),
+        };
+      case 'subscription':
+        res = await parseSubscription(text);
         return {
           code: 200,
           result: {
-            name: res.name || '',
-            result: res.result || [],
-            url: text
+            name: res.error ? '' : (res.name || ''),
+            result: res.error ? [] : (res.result || []),
+            url: text,
           }
         };
-      });
+      default:
+        return {
+          code: 200,
+          result: {
+            name: '',
+            result: []
+          },
+        };
     }
-
-    return Promise.resolve({
-      code: 200,
-      result: {
-        name: '',
-        result: []
-      }
-    });
   }
 
   async generateUrlFromConfig(params: Config): Promise<ServiceResult> {
     let url = '';
-    const result: {
-      code: number
-      result: {
-        dataUrl: string
-        url: string
-        msg?: string
-      }
-    } = {
+    const result = {
       code: 200,
       result: {
         dataUrl: '',
         url: '',
         msg: ''
-      }
+      },
     };
 
     switch (params.type) {
@@ -146,26 +130,24 @@ export class MainService implements MainServiceType {
         );
         break;
       default:
-        break;
+        result.code = 500;
+        result.result.msg = `Invalid Config: ${JSON.stringify(params)}`;
+        return result;
     }
 
+    result.result.url = url;
+
     return new Promise((resolve) => {
-      if (url) {
-        result.result.url = url;
-        QRCode.toDataURL(url, function (err, _dataURL) {
-          if (!err) {
-            result.result.dataUrl = _dataURL;
-          } else {
-            result.code = 500;
-            result.result.msg = err.toString();
-          }
-          resolve(result);
-        });
-      } else {
-        result.code = 500;
-        result.result.msg = `Invalid Conf: ${JSON.stringify(params)}`;
+      QRCode.toDataURL(url, function (err, _dataURL) {
+        if (!err) {
+          result.code = 200;
+          result.result.dataUrl = _dataURL;
+        } else {
+          result.code = 500;
+          result.result.msg = err.toString();
+        }
         resolve(result);
-      }
+      });
     });
   }
 
