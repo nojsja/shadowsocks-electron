@@ -4,8 +4,11 @@ import classNames from 'classnames';
 import { MessageChannel } from 'electron-re';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { createStyles, IconButton, LinearProgress, makeStyles, Switch, Tooltip } from '@material-ui/core';
-import PlayCircleFilledWhiteIcon from '@material-ui/icons/PlayCircleFilledWhite';
-import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  TimerTwoTone as TimerIcon,
+  Delete as DeleteIcon,
+  PlayCircleFilledWhite as PlayCircleFilledWhiteIcon,
+} from '@material-ui/icons';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response, useRequest } from '@/renderer/hooks/useRequest';
@@ -20,6 +23,7 @@ import NodeSourceTask, { type as NodeSourceTaskType } from './tasks/NodeSourceTa
 import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask';
 import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
+import WorkflowSchedule from './WorkflowSchedule';
 
 export const useStyles = makeStyles((theme) => createStyles({
   runnerWrapper: {
@@ -166,6 +170,9 @@ const WorkflowRunner: React.FC<Props> = ({
           <IconButton size="small" onClick={() => removeRunner(id)}>
             <DeleteIcon className={styles.footerActionButton} color="action" />
           </IconButton>
+        </Tooltip>
+        <Tooltip title="Timer">
+          <WorkflowSchedule renderButton={() => <TimerIcon className={styles.footerActionButton} color="action" />} />
         </Tooltip>
         <MenuButton
           menuButton={

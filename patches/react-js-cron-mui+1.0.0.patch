@@ -1,0 +1,10 @@
+diff --git a/node_modules/react-js-cron-mui/dist/esm/styles.css b/node_modules/react-js-cron-mui/dist/esm/styles.css
+index 2aeef07..0179eaa 100644
+--- a/node_modules/react-js-cron-mui/dist/esm/styles.css
++++ b/node_modules/react-js-cron-mui/dist/esm/styles.css
+@@ -1,4 +1,4 @@
+-@import 'fontsource-roboto';
++@import '~fontsource-roboto';
+ .react-js-cron {
+   font-family: 'roboto';
+   display: flex;
