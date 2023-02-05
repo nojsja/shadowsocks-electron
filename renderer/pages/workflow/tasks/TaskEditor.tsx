@@ -12,7 +12,7 @@ import classNames from 'classnames';
 import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 import { type WorkflowTask } from '@renderer/types';
-import { useDidUpdate, useTaskFS } from '@renderer/hooks';
+import { useDidUpdate, usePreviousValue, useTaskFS } from '@renderer/hooks';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
@@ -34,6 +34,7 @@ const TaskEditor: React.FC<Props> = ({
   const [isContentTouched, setContentTouched] = useState(false);
   const matchMaxWidth = useMediaQuery('(max-width: 500px)');
   const matchMaxHeight = useMediaQuery('(max-width: 700px)');
+  const preScriptContent = usePreviousValue(scriptContent || null);
 
   const onTemplateScriptLoad = () => {
     taskFS.read(templateCodePath).then((templateCode) => {
@@ -57,7 +58,7 @@ const TaskEditor: React.FC<Props> = ({
       });
   };
 
-  const onScriptSave = () => {
+  const onScriptSave = useCallback(() => {
     const content = editorRef.current?.getValue() ?? '';
 
     taskFS
@@ -70,17 +71,6 @@ const TaskEditor: React.FC<Props> = ({
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  /**
-   * @name handleKeyDown [trigger save action then press ctrl + s or cmd + s]
-   * @param event [React.KeyboardEvent]
-   */
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 's' && (event.ctrlKey || event.metaKey)) {
-      event.preventDefault();
-      onScriptSave();
-    }
   }, []);
 
   const onScriptChange = useCallback((content: string) => {
@@ -104,9 +94,12 @@ const TaskEditor: React.FC<Props> = ({
   }, []);
 
   useDidUpdate(() => {
-    editorRef.current?.focus();
-    editorRef.current?.restoreCursor(...cursorRef.current);
-  }, [scriptContent]);
+    editorRef.current?.setValue(scriptContent);
+    if (preScriptContent !== null) { // not first load
+      editorRef.current?.focus();
+      editorRef.current?.restoreCursor(...cursorRef.current);
+    }
+  }, [scriptContent, preScriptContent]);
 
   return (
     <div className={styles.scriptWrapper}>
@@ -121,13 +114,13 @@ const TaskEditor: React.FC<Props> = ({
       >
         <TextEditor
           className={styles.textEditorContent}
-          onKeyDown={handleKeyDown}
+          onContentSave={onScriptSave}
           placeholder=""
           wrap="off"
           noAutosize
           editorRef={editorRef}
           onChange={onScriptChange}
-          defaultValue={scriptContent}
+          defaultValue=""
         />
       </div>
       <div className={styles.textEditorActions}>

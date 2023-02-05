@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import { scrollBarStyle } from '@/renderer/pages/styles';
 
 export interface TextAreaProps extends TextareaAutosizeProps {
-  onTextChange?: (text: string) => void;
+  onTextChange?: (text: string, e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   noAutosize?: boolean;
 }
 
@@ -35,7 +35,7 @@ const StyledTextareaAutosize = React.forwardRef<HTMLTextAreaElement, TextAreaPro
   const { onTextChange, wrap, noAutosize, ...other } = props;
 
   const onInnerChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onTextChange?.(event.target.value)
+    onTextChange?.(event.target.value, event);
   }
 
   const TextArea = (props: TextAreaProps) => {

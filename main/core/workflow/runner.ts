@@ -98,7 +98,7 @@ export class WorkflowRunner extends Workflow {
       enable: this.enable,
       timer: this.timerOption,
       tasks: this.tasks,
-    });
+    }, null, 2);
 
     try {
       try {

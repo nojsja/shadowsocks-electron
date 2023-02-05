@@ -73,7 +73,7 @@ export class WorkflowTask extends Workflow {
       taskPath: this.taskPath,
       scriptPath: this.scriptPath,
       metaPath: this.metaPath,
-    });
+    }, null, 2);
 
     try {
       try {
