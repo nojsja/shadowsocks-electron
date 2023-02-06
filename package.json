@@ -34,7 +34,7 @@
     "clean": "rm -rf dist/linux-*unpacked && rm -rf dist/__snap* && rm -rf dist/win-*unpacked",
     "lint": "eslint --ext .tsx,.ts .",
     "typecheck": "tsc --noUnusedLocals",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps && patch-package"
   },
   "dependencies": {
     "@material-ui/pickers": "^3.3.10",

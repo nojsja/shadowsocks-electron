@@ -139,7 +139,7 @@ const TaskEditor: React.FC<Props> = ({
             <RotateLeftIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Save script file, you can press 'ctrl/cmd + s' instead when focus on editor.">
+        <Tooltip title="Save changes, same as 'ctrl/cmd + s'.">
           <IconButton size="small" onClick={onScriptSave}>
             <SaveIcon
               className={
