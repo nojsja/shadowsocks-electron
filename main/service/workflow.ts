@@ -1,9 +1,9 @@
 import { IpcMain } from 'electron';
 import { workflowTaskDemoDir } from '../config';
 import { WorkflowManager } from '../core/workflow/manager';
-import { CronTableObject, WorkflowTaskOptions } from '../core/workflow/types';
+import { WorkflowTaskOptions } from '../core/workflow/types';
 
-import { type WorkflowService as WorkflowServiceType, type WorkflowTaskTimer } from '../types';
+import { type WorkflowService as WorkflowServiceType } from '../types';
 import { getPureRunners } from '../utils/utils';
 
 export class WorkflowService implements WorkflowServiceType {

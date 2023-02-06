@@ -4,7 +4,7 @@ import {
 } from 'electron';
 
 import CONSTS from '../core/LoadBalancer/consts';
-import { CronTableObject, WorkflowTaskOptions } from '../core/workflow/types';
+import { WorkflowTaskOptions } from '../core/workflow/types';
 
 export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
