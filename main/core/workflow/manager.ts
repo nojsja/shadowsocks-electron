@@ -6,14 +6,11 @@ import { WorkflowRunner } from './runner';
 import { WorkflowBridge } from './bridge';
 
 import {
-  CronTableObject,
   RunnerCreateError,
   RunnerNotFoundError,
   WorkflowManagerStatus,
   WorkflowTaskOptions,
-  WorkflowTaskTimer,
 } from './types';
-import { dateToCronTable } from '../../utils/utils';
 
 export class WorkflowManager extends Workflow {
   constructor() {

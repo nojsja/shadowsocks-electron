@@ -193,7 +193,6 @@ export class WorkflowRunner extends Workflow {
 
   startTimer() {
     const timerOption = this.timerOption;
-    const minute = 60 * 1000;
     if (!timerOption.enable) return;
 
     if (!timerOption.schedule) return;
