@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Cron, { CronError } from 'react-js-cron-mui';
 import {
   TextField,
@@ -9,20 +9,28 @@ import {
   DialogContent,
   Switch,
   Tooltip,
+  Button,
+  DialogActions,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@material-ui/core';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import CloseIcon from '@material-ui/icons/Close';
-import { TimerTwoTone as TimerIcon } from '@material-ui/icons';
+import { Save as SaveIcon, TimerTwoTone as TimerIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
-import GradientDivider from '@/renderer/components/Pices/GradientDivider';
+import { WorkflowTaskTimer } from '@/renderer/types';
 
 type onCloseType = () => void;
 
 interface Props {
   renderButton?: () => React.ReactNode;
+  timerOption: WorkflowTaskTimer;
 }
 
 interface DefineDialogTitleProps extends DialogTitleProps {
@@ -43,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     dialogContent: {},
     divider: {
-      marginBottom: theme.spacing(1),
+      marginTop: theme.spacing(1),
     }
   }));
 
@@ -67,50 +75,78 @@ export const DialogTitle = (props: DefineDialogTitleProps) => {
 };
 
 const WorkflowScheduleDialog: React.FC<Props> = (props) => {
+  const { timerOption } = props;
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const styles = useStyles();
-  const inputRef = useRef<TextFieldProps>()
-  const defaultValue = '* * * * *'
-  const [value, setValue] = useState(defaultValue)
-  const [textValue, setTextValue] = useState('');
-  const customSetValue = useCallback(
-    (newValue: string) => {
-      setValue(newValue)
-      setTextValue(newValue);
-    },
-    [setTextValue]
-  )
-  const [, onError] = useState<CronError>()
+  const inputRef = useRef<TextFieldProps>();
+  const [value, setValue] = useState('* * * * *')
+  const [enabled, setEnabled] = useState(false);
+  const [, onError] = useState<CronError>();
+  const customSetValue = (newValue: string) => {
+    setValue(newValue)
+  };
+
+  useEffect(() => {
+    if (timerOption.schedule) {
+      setValue(timerOption.schedule);
+    }
+    setEnabled(Boolean(timerOption.enable));
+  }, [open]);
 
   return (
     <>
-      <IconButton size="small" onClick={() => setOpen(true)}>
-        { props.renderButton?.() || <TimerIcon /> }
-      </IconButton>
-      <AdaptiveDialog onClose={() => setOpen(false)} open={open}>
+      <Tooltip title="Timer">
+        <IconButton size="small" onClick={() => setOpen(true)}>
+          { props.renderButton?.() || <TimerIcon /> }
+        </IconButton>
+      </Tooltip>
+      <AdaptiveDialog onClose={() => setOpen(false)} open={open} fullWidth maxWidth="sm">
         <DialogTitle onClose={() => setOpen(false)}>{t('set_timed_execution_rule')}</DialogTitle>
         <DialogContent className={styles.dialogContent}>
-          <TextField
-            value={`${textValue}  [crontab syntax]`}
-            inputRef={inputRef}
-            disabled
-            onBlur={(event) => {
-              setValue(event.target.value)
-            }}
-            onChange={(event: any) => {
-              customSetValue(event.target.value)
-            }}
-          />
-          <Tooltip title="disabled">
-            <IconButton size="small">
-                <Switch color="primary" />
-            </IconButton>
-          </Tooltip>
-          <div className={styles.divider}>
-            <GradientDivider />
-          </div>
-          <Cron value={value} setValue={customSetValue} onError={onError} />
+          <List>
+            <ListItem>
+              <ListItemText
+                primary={
+                  <TextField
+                    value={`${value} [crontab]`}
+                    inputRef={inputRef}
+                    disabled
+                    onChange={(event: any) => {
+                      customSetValue(event.target.value)
+                    }}
+                  />
+                }
+              />
+              <ListItemSecondaryAction>
+                <Tooltip title="disabled">
+                  <IconButton size="small">
+                    <Switch
+                      color="primary"
+                      checked={enabled}
+                      onChange={(e, checked) => setEnabled(checked)}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </ListItemSecondaryAction>
+            </ListItem>
+            <ListItem>
+              <Cron
+                value={value}
+                setValue={customSetValue}
+                onError={onError}
+              />
+            </ListItem>
+          </List>
+          <Divider />
+          <DialogActions>
+            <Button
+              color="primary"
+              startIcon={<SaveIcon />}
+            >
+              Save
+            </Button>
+          </DialogActions>
         </DialogContent>
       </AdaptiveDialog>
     </>

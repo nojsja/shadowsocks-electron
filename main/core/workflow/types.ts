@@ -16,8 +16,6 @@ export type CronTableObject = {
 
 export interface WorkflowTaskTimer {
   enable: boolean;
-  type?: WorkflowTaskTimerType;
-  interval?: number; // minutes
   schedule?: string; // time schedule, unix cron format, such as '1 * * * * *'
 }
 

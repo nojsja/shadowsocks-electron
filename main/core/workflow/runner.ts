@@ -196,20 +196,10 @@ export class WorkflowRunner extends Workflow {
     const minute = 60 * 1000;
     if (!timerOption.enable) return;
 
-    if (timerOption.type === 'timer') {
-      if (!timerOption.interval) return;
-      this.timer = setInterval(() => {
-        this.start();
-      }, (+timerOption.interval) * minute);
-      return;
-    }
-
-    if (timerOption.type === 'schedule') {
-      if (!timerOption.schedule) return;
-      this.schedule = schedule.scheduleJob(timerOption.schedule, () => {
-        this.start();
-      });
-    }
+    if (!timerOption.schedule) return;
+    this.schedule = schedule.scheduleJob(timerOption.schedule, () => {
+      this.start();
+    });
   }
 
   stopTimer() {

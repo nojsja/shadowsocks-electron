@@ -85,6 +85,7 @@ const WorkflowRunner: React.FC<Props> = ({
   enable,
   id,
   queue,
+  timerOption,
   startRunner,
   removeTaskFromRunner,
   putTaskIntoRunner,
@@ -171,9 +172,10 @@ const WorkflowRunner: React.FC<Props> = ({
             <DeleteIcon className={styles.footerActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Timer">
-          <WorkflowSchedule renderButton={() => <TimerIcon className={styles.footerActionButton} color="action" />} />
-        </Tooltip>
+        <WorkflowSchedule
+          renderButton={() => <TimerIcon className={styles.footerActionButton} color="action" />}
+          timerOption={timerOption}
+        />
         <MenuButton
           menuButton={
             <Tooltip title="Add">

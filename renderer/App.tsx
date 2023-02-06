@@ -34,7 +34,7 @@ export const persistStore = new ElectronStore();
 const useStyles = makeStyles(() =>
   createStyles({
     root: {
-      display: 'flex'
+      display: 'flex',
     },
     toolbar: {
       minHeight: '42px'

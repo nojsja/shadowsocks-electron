@@ -108,16 +108,13 @@ export class WorkflowManager extends Workflow {
     enable?: boolean;
     timer?: {
       enable?: boolean;
-      type?: WorkflowTaskTimer['type'];
-      interval?: number;
-      schedule?: CronTableObject;
+      schedule?: string;
     };
   }) {
     const targetRunner = this.runners.find((runner) => runner.id === runnerId);
     if (!targetRunner) return new RunnerNotFoundError(runnerId);
 
     const cloneRunner = _.clone(targetRunner);
-    const timerType = options.timer?.type ?? cloneRunner?.timerOption?.type;
     const timerEnable = options.timer?.enable ?? cloneRunner?.timerOption?.enable;
     const timerTouched = 'timer' in options;
 
@@ -129,14 +126,8 @@ export class WorkflowManager extends Workflow {
     if (timerTouched) {
       targetRunner.timerOption = {
         ...(cloneRunner?.timerOption ?? {}),
-        type: timerType,
         enable: timerEnable,
-        ...(
-          timerType === 'schedule' && 'schedule' in (options.timer || {})
-        ) ? { schedule: dateToCronTable(options.timer?.schedule as CronTableObject) } : {},
-        ...(
-          timerType === 'timer' && 'interval' in (options.timer || {})
-        ) ? { interval: options.timer?.interval } : {},
+        ...('schedule' in (options.timer || {})) ? { schedule: options.timer?.schedule } : {},
       };
     }
 

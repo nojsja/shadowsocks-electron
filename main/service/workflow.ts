@@ -81,9 +81,7 @@ export class WorkflowService implements WorkflowServiceType {
     enable?: boolean;
     timer?: {
       enable?: boolean;
-      type?: WorkflowTaskTimer['type'];
-      interval?: number;
-      schedule?: CronTableObject;
+      schedule?: string;
     };
   }}) {
     const { id, options } = params;

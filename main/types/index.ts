@@ -166,9 +166,7 @@ export interface WorkflowService extends Service {
     enable?: boolean;
     timer?: {
       enable?: boolean;
-      type?: WorkflowTaskTimer['type'];
-      interval?: number;
-      schedule?: CronTableObject;
+      schedule?: string;
     };
   }}) => Promise<ServiceResult>;
   generateTaskOfRunner: (params: { task: Partial<WorkflowTaskOptions>, runnerId?: string }) => Promise<ServiceResult>;

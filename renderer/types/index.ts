@@ -201,9 +201,7 @@ export type CronTableObject = {
 
 export interface WorkflowTaskTimer {
   enable: boolean;
-  type?: WorkflowTaskTimerType;
-  interval?: number; // minutes
-  schedule?: CronTableObject;
+  schedule?: string;
 }
 
 export interface WorkflowTask {
