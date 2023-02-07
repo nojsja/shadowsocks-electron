@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { MessageChannel } from 'electron-re';
@@ -79,6 +79,7 @@ interface Props extends WorkflowRunner {
 const WorkflowRunner: React.FC<Props> = ({
   enable,
   id,
+  status,
   queue,
   timerOption,
   removeRunner,
@@ -86,8 +87,8 @@ const WorkflowRunner: React.FC<Props> = ({
 }) => {
   const enableStatus = enable ? 'Enabled' : 'Disabled';
   const styles = useStyles();
-  const [running, setRunning] = useState(false);
   const isStarting = useRef(false);
+  const isRunning = status === 'running';
   const { t } = useTranslation();
 
   const { run: startRunner } = useRequest<Response<string | null>>(
@@ -283,9 +284,7 @@ const WorkflowRunner: React.FC<Props> = ({
     if (isStarting.current) return;
     isStarting.current = true;
 
-    setRunning(true);
     startRunner(id).finally(() => {
-      setRunning(false);
       isStarting.current = false;
     });
   };
@@ -367,7 +366,7 @@ const WorkflowRunner: React.FC<Props> = ({
           </IconButton>
         </Tooltip>
       </div>
-      <LinearProgress className={classNames((!running) && styles.noVisible)} color="secondary" />
+      <LinearProgress className={classNames((!isRunning) && styles.noVisible)} color="secondary" />
     </div>
   );
 }

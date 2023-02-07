@@ -6,6 +6,7 @@ import {
 } from '../../config';
 
 export class Workflow extends EventEmitter {
+  [key: string]: any;
   public readonly rootDir = workflowRootDir;
   public readonly taskDir = workflowTaskDir;
   public static readonly rootDir = workflowRootDir;

@@ -21,7 +21,7 @@ export class WorkflowRunner extends Workflow {
     this.id = options.id ?? uuidv4();
     this.metaPath = path.resolve(this.rootDir, `${this.id}.workflow.json`);
     this.enable = options.enable ?? true;
-    this.status = options.status ?? 'idle';
+    this.status = this.initStatusProxy({ value: options.status ?? 'idle' });
     this.timerOption = options.timer ?? { enable: false };
     this.tasks = options.tasks ?? [];
     this.queue = [];
@@ -32,7 +32,7 @@ export class WorkflowRunner extends Workflow {
   id: string;
   metaPath: string;
   enable: boolean;
-  status: WorkflowTaskStatus;
+  status: { value: WorkflowTaskStatus };
   timerOption: WorkflowTaskTimer;
   tasks: string[];
   queue: WorkflowTask[];
@@ -113,19 +113,19 @@ export class WorkflowRunner extends Workflow {
   }
 
   get isRunning() {
-    return this.status === 'running';
+    return this.status.value === 'running';
   }
 
   get isIdle() {
-    return this.status === 'idle';
+    return this.status.value === 'idle';
   }
 
   get isSuccess() {
-    return this.status === 'success';
+    return this.status.value === 'success';
   }
 
   get isFailed() {
-    return this.status === 'failed';
+    return this.status.value === 'failed';
   }
 
   get isEmpty() {
@@ -138,6 +138,20 @@ export class WorkflowRunner extends Workflow {
         id: taskId,
       }))
     );
+  }
+
+  private initStatusProxy(statusObj: { value: WorkflowTaskStatus }) {
+    const handler = {
+      set: (target: typeof statusObj, key: string, value: any) => {
+        if (key === 'value') {
+          this.bridge.dispatch('workflow-status', { runnerId: this.id, status: value });
+          target[key] = value;
+          return true;
+        }
+        return false;
+      },
+    };
+    return new Proxy(statusObj, handler);
   }
 
   private loadTasks() {
@@ -205,7 +219,7 @@ export class WorkflowRunner extends Workflow {
 
   async start() {
     if (this.isRunning) return new RunnerIsRunningError(this.id);
-    this.status = 'running';
+    this.status.value = 'running';
 
     try {
       await this.queue.reduce(
@@ -221,11 +235,11 @@ export class WorkflowRunner extends Workflow {
         Promise.resolve() as Promise<unknown>,
       );
     } catch (error) {
-      this.status = 'failed';
+      this.status.value = 'failed';
       return error as Error;
     }
 
-    this.status = 'success';
+    this.status.value = 'success';
     return null;
   }
 

@@ -565,7 +565,7 @@ export function getPureRunners(runners: WorkflowRunner[]) {
   return runners.map((runner) => ({
     id: runner.id,
     enable: runner.enable,
-    status: runner.status,
+    status: runner.status.value,
     timerOption: runner.timerOption,
     queue: runner.queue.map((task) => ({
       id: task.id,

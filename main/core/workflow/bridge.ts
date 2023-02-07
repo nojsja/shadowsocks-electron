@@ -39,7 +39,7 @@ const commonBridgeAttrs = {
   *     type: 'default', // type - 'default' | 'error' | 'success' | 'warning' | 'info'
   *   });
   */
-const dispatch = (action: string, args: unknown) => {
+export const dispatch = (action: string, args: unknown) => {
   (global as any).win.webContents.send('event:stream', {
     action,
     args,
@@ -50,10 +50,12 @@ export class WorkflowBridge {
   constructor() {
     this.context = null;
     this.browser = null;
+    this.dispatch = dispatch;
   }
 
   context: { [key: string]: unknown } | null;
   browser: Browser | null;
+  dispatch: (action: string, args: unknown) => void;
 
   async init() {
     await pie.initialize(app);

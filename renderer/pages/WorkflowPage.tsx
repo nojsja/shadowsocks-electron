@@ -15,6 +15,7 @@ import { useRequest, type Response } from '@renderer/hooks/useRequest';
 import WorkflowRunner from './workflow/WorkflowRunner';
 import { useStylesOfWorkflow } from './styles';
 import WorkflowHelpInfo from './workflow/WorkflowHelpInfo';
+import useBus, { EventAction } from 'use-bus';
 
 const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
@@ -49,10 +50,12 @@ const Workflow: React.FC = () => {
           alert('getWorkflowRunner failed');
         }
         setState((result) => {
-          const { result: runners } = result;
-          if (!runners) return result;
+          let { result: runners } = result;
+          let index = -1;
 
-          const index = runners.findIndex((runner) => runner.id === rsp.result.id);
+          if (!runners) return result;
+          runners = runners.slice();
+          index = runners.findIndex((runner) => runner.id === rsp.result.id);
           if (index === -1) return result;
           runners[index] = rsp.result;
 
@@ -114,6 +117,27 @@ const Workflow: React.FC = () => {
       }
     }
   );
+
+  useBus('event:stream:workflow-status', (event: EventAction) => {
+    const { payload } = event;
+    const { runnerId, status } = payload;
+
+    setState((result) => {
+      let { result: runners } = result;
+      let index = -1;
+
+      if (!runners) return result;
+      runners = runners.slice();
+      index = runners.findIndex((runner) => runner.id === runnerId);
+      if (index === -1) return result;
+      runners[index].status = status;
+
+      return {
+        ...result,
+        result: runners,
+      };
+    });
+  }, [setState]);
 
   return (
     <Container className={styles.container}>
