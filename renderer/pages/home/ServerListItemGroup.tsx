@@ -20,18 +20,17 @@ import {
 } from '@material-ui/icons';
 import { createStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
-import { SnackbarMessage } from 'notistack';
 import { blue, grey } from "@material-ui/core/colors";
 
 import { moveDown, moveUp, startClusterAction, stopClusterAction, top, updateSubscription } from '@renderer/redux/actions/config';
-import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
 import { useTypedSelector } from '@renderer/redux/reducers';
 
 import MenuContext from '@renderer/components/ContextMenu/context';
 import If from '@renderer/components/HOC/IF';
-import { GroupConfig, Notification } from '@renderer/types';
+import { GroupConfig } from '@renderer/types';
 
 import ServerListItemSingle from './ServerListItemSingle';
+import { Message } from '@/renderer/hooks/useNotifier';
 
 const StyledBadge = withStyles(() =>
   createStyles({
@@ -130,9 +129,6 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
     }
     return items;
   }, [serverMode, clusterId]);
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
 
   useLayoutEffect(() => {
     if (settings.serverMode === 'cluster') {
@@ -156,7 +152,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
             error: { default: t('failed_to_update_subscription') }
           }));
         } else {
-          enqueueSnackbar(t('server_url_not_set'), { variant: 'warning' });
+          Message.warning(t('server_url_not_set'));
         }
         break;
       case 'top':

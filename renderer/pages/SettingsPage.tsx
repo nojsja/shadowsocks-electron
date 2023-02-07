@@ -11,17 +11,16 @@ import {
   createStyles,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import { SnackbarMessage } from 'notistack';
 import _ from 'lodash';
 
 import { useTypedDispatch } from '@renderer/redux/actions';
 import { useTypedSelector } from '@renderer/redux/reducers';
-import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
 import { getStartupOnBoot, setSetting, setStartupOnBoot } from '@renderer/redux/actions/settings';
 import { setStatus } from '@renderer/redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '@renderer/redux/actions/settings';
+import { Message } from '@renderer/hooks/useNotifier';
 
-import { ALGORITHM, Notification, Settings } from '@renderer/types';
+import { ALGORITHM, Settings } from '@renderer/types';
 import { persistStore } from '@renderer/App';
 
 import { useStylesOfSettings as useStyles } from './styles';
@@ -142,10 +141,6 @@ const SettingsPage: React.FC = () => {
     if (needReconnectPac) dispatchEvent('event:stream:reconnect-pac');
   }, []);
 
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
-
   const touchField = (field: string, status: boolean) => {
     changedFields.current[field] = status;
   }
@@ -175,9 +170,9 @@ const SettingsPage: React.FC = () => {
     }).then((rsp) => {
       setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
       if (rsp.code === 200) {
-        enqueueSnackbar(t('successful_operation'), { variant: 'success' });
+        Message.success(t('successful_operation'));
       } else {
-        enqueueSnackbar(t('failed_to_download_file'), { variant: 'error' });
+        Message.error(t('failed_to_download_file'));
       }
     });
   }
@@ -299,7 +294,7 @@ const SettingsPage: React.FC = () => {
           <Language form={form} />
           <Backup />
           <Restore form={form} touchField={touchField} />
-          <ResetData form={form} enqueueSnackbar={enqueueSnackbar} />
+          <ResetData form={form} />
 
           <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
 

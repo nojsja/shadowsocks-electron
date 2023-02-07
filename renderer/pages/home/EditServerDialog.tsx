@@ -1,6 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { SnackbarMessage } from 'notistack';
 import {
   TextField,
   DialogProps,
@@ -28,12 +27,11 @@ import {
   Theme,
   withStyles
 } from '@material-ui/core/styles';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 
-import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { Message } from '@/renderer/hooks/useNotifier';
 
 import If from '@renderer/components/HOC/IF';
 import { AdaptiveAppBar } from '@renderer/components/Pices/AppBar';
@@ -46,7 +44,6 @@ import {
   Config, encryptMethods, plugins,
   serverTypes, protocols, obfs,
   SSRConfig,
-  Notification,
 } from '@renderer/types';
 
 import OpenPluginsDir from '../settings/OpenPluginsDir';
@@ -98,7 +95,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
   const styles = useStyles();
   const { t } = useTranslation();
   const { open, onClose, defaultValues, onValues } = props;
-  const dispatch = useDispatch();
   const [values, setValues] = useState<Partial<Config>>(
     defaultValues ?? {
       timeout: 60,
@@ -148,10 +144,6 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
 
   /* -------------- Functions -------------- */
 
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
-
   const handleCancel = () => {
     onValues(null);
   };
@@ -165,7 +157,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             id: defaultValues?.id ?? ''
           });
         } else {
-          enqueueSnackbar(t('invalid_value'), { variant: 'error' });
+          Message.error(t('invalid_value'));
         }
       });
   };

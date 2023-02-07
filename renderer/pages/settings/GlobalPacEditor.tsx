@@ -9,16 +9,15 @@ import {
 import { useTranslation } from 'react-i18next';
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { MessageChannel } from 'electron-re';
-import { useDispatch } from 'react-redux';
 
-import { DialogTitle } from '../home/AddServerDialog';
-import { AdaptiveDialog } from '../../components/Pices/Dialog';
-import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
-import TextEditor from '../../components/Pices/TextEditor';
+import { Message } from '@renderer/hooks/useNotifier';
+import { DialogTitle } from '@renderer/pages/home/AddServerDialog';
+import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
+import { TextWithTooltip } from '@renderer/components/Pices/TextWithTooltip';
+import TextEditor from '@renderer/components/Pices/TextEditor';
 
-import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
-import { debounce } from '../../utils';
-import useDidUpdate from '../../hooks/useDidUpdate';
+import { debounce } from '@renderer/utils';
+import useDidUpdate from '@renderer/hooks/useDidUpdate';
 
 const pacRuleDemos =
 `
@@ -71,7 +70,6 @@ const GlobalPacEditor: React.FC<GlobalPacEditorProps> = ({ touchField, isFieldTo
   const { t } = useTranslation();
   const contentRef = useRef<string>(pacRuleDemos);
   const [pacContent, setPacContent] = useState(pacRuleDemos);
-  const dispatch = useDispatch();
 
   const handleClose = () => {
     if (isFieldTouched('pac')) {
@@ -92,7 +90,7 @@ const GlobalPacEditor: React.FC<GlobalPacEditorProps> = ({ touchField, isFieldTo
     })
       .then(({ code, result }) => {
         if (code === 500) {
-          dispatch(SnackbarAction(result, { variant: 'error' }));
+          Message.error(result);
         }
       });
   }, .5e3), []);
@@ -109,7 +107,7 @@ const GlobalPacEditor: React.FC<GlobalPacEditorProps> = ({ touchField, isFieldTo
             setPacContent(result);
           }
         } else {
-          dispatch(SnackbarAction(result, { variant: 'error' }));
+          Message.error(result);
         }
       });
   }, []);

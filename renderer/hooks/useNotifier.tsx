@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { SnackbarKey, useSnackbar } from 'notistack';
+import { SnackbarKey, SnackbarMessage, useSnackbar } from 'notistack';
 import { createStyles, makeStyles, Typography } from '@material-ui/core';
+import { Notification } from '@renderer/types';
 
-import { removeSnackbar } from '@renderer/redux/actions/notifications';
+import { store } from '@renderer/redux/store';
+import { enqueueSnackbar, removeSnackbar } from '@renderer/redux/actions/notifications';
 import { useTypedSelector } from '@renderer/redux/reducers';
 
 let displayed: SnackbarKey[] = [];
@@ -13,6 +15,21 @@ export const useStyles = makeStyles(() => createStyles({
     wordBreak: 'break-word',
   },
 }));
+
+export const Message = {
+  success: (message: SnackbarMessage, options?: Notification) => {
+    store.dispatch(enqueueSnackbar(message, { variant: 'success', ...(options ?? {}) }))
+  },
+  error: (message: SnackbarMessage, options?: Notification) => {
+    store.dispatch(enqueueSnackbar(message, { variant: 'error', ...(options ?? {}) }))
+  },
+  warning: (message: SnackbarMessage, options?: Notification) => {
+    store.dispatch(enqueueSnackbar(message, { variant: 'warning', ...(options ?? {}) }))
+  },
+  default: (message: SnackbarMessage, options?: Notification) => {
+    store.dispatch(enqueueSnackbar(message, { variant: 'default', ...(options ?? {}) }))
+  },
+};
 
 export const useNotifier = () => {
     const dispatch = useDispatch();

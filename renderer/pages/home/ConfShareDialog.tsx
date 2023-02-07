@@ -17,13 +17,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { SnackbarMessage } from 'notistack';
-import { useDispatch } from 'react-redux';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
-import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
+import { Message } from '@/renderer/hooks/useNotifier';
 import { saveDataURLAsFile } from '@renderer/utils';
-import { CloseOptions, Notification } from '@renderer/types';
+import { CloseOptions } from '@renderer/types';
 
 import { DialogTitle } from './AddServerDialog';
 
@@ -77,12 +75,7 @@ export const StyledCard = withStyles(
 
 const MediaCard: React.FC<MediaCardProps> = (props) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const { t } = useTranslation();
-
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
 
   const downloadPicture = (dataLink: string) => {
     setTimeout(() => {
@@ -95,7 +88,7 @@ const MediaCard: React.FC<MediaCardProps> = (props) => {
     setTimeout(() => {
       props.onClose('share');
     }, 1e3);
-    enqueueSnackbar(t('copied'), { variant: 'success' });
+    Message.success(t('copied'));
     clipboard.writeText(link, 'clipboard');
   }
 

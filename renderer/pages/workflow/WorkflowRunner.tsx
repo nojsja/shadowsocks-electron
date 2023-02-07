@@ -9,9 +9,11 @@ import {
   Delete as DeleteIcon,
   PlayCircleFilledWhite as PlayCircleFilledWhiteIcon,
 } from '@material-ui/icons';
+import { useTranslation } from 'react-i18next';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response, useRequest } from '@/renderer/hooks/useRequest';
+import { Message } from '@/renderer/hooks/useNotifier';
 import {
   WorkflowTaskTimer,
   type WorkflowRunner,
@@ -70,14 +72,7 @@ const TaskTypeMap = {
 };
 
 interface Props extends WorkflowRunner {
-  startRunner: (id: string) => Promise<Response<string | null>>;
-  stopRunner: (id: string) => Promise<Response<string | null>>;
-  removeTaskFromRunner: (runnerId: string, taskId: string) => Promise<Response<string | null>>;
-  putTaskIntoRunner: (runnerId: string, taskId: string, taskType: WorkflowTaskType) => Promise<Response<string | null>>;
-  adjustTimerOfRunner: (runnerId: string, timer: WorkflowTaskTimer) => Promise<Response<string | null>>;
   updateRunner: (runnerId: string) => Promise<Response<WorkflowRunner>>
-  enableRunner: (runnerId: string) => Promise<Response<string | null>>;
-  disableRunner: (runnerId: string) => Promise<Response<string | null>>;
   removeRunner: (runnerId: string) => Promise<Response<string | null>>;
 }
 
@@ -86,18 +81,169 @@ const WorkflowRunner: React.FC<Props> = ({
   id,
   queue,
   timerOption,
-  startRunner,
-  removeTaskFromRunner,
-  putTaskIntoRunner,
   removeRunner,
-  disableRunner,
-  enableRunner,
   updateRunner,
 }) => {
   const enableStatus = enable ? 'Enabled' : 'Disabled';
   const styles = useStyles();
   const [running, setRunning] = useState(false);
   const isStarting = useRef(false);
+  const { t } = useTranslation();
+
+  const { run: startRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'runWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          alert(`Fail to start runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { run: stopRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'stopWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          alert(`Fail to stop runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: putTaskIntoRunner } = useRequest<Response<string | null>>(
+    (runnerId: string, taskId: string, taskType: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'generateTaskOfRunner',
+      params: {
+        task: { type: taskType, id: taskId },
+        runnerId: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          alert(`Fail to create task, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: removeTaskFromRunner } = useRequest<Response<string | null>>(
+    (runnerId: string, taskId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'removeTaskOfRunner',
+      params: {
+        runnerId,
+        taskId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          alert(`Fail to remove task, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: enableRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'enableWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          alert(`Fail to enable runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: disableRunner } = useRequest<Response<string | null>>(
+    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'disableWorkflowRunner',
+      params: {
+        id: runnerId,
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          alert(`Fail to disable runner, ${rsp.result}`);
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
+
+  const { run: editTimerOfRunner } = useRequest<Response<string | null>>(
+    (runnerId: string, timer: WorkflowTaskTimer) => MessageChannel.invoke('main', 'service:workflow', {
+      action: 'editWorkflowRunner',
+      params: {
+        id: runnerId,
+        options: {
+          timer,
+        },
+      },
+    }),
+    {
+      manual: true,
+      onSuccess(rsp) {
+        if (rsp.code !== 200) {
+          Message.error(`Fail to adjust timer of runner, ${rsp.result}`);
+        } else {
+          Message.success(t('workflow_timed_execution_rule_updated'));
+        }
+      },
+      onError(error) {
+        console.error(error);
+        alert(error.message);
+      }
+    }
+  );
 
   const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(() => {
     return MessageChannel.invoke('main', 'service:workflow', {
@@ -175,6 +321,9 @@ const WorkflowRunner: React.FC<Props> = ({
         <WorkflowSchedule
           renderButton={() => <TimerIcon className={styles.footerActionButton} color="action" />}
           timerOption={timerOption}
+          editTimerOfRunner={editTimerOfRunner}
+          updateRunner={updateRunner}
+          runnerId={id}
         />
         <MenuButton
           menuButton={

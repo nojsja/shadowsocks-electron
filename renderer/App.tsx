@@ -15,19 +15,19 @@ import ElectronStore from 'electron-store';
 import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { store, persistor } from './redux/store';
-import { getConnectionStatus, setStatus } from './redux/actions/status';
-import { setSetting } from './redux/actions/settings';
-import { enqueueSnackbar } from './redux/actions/notifications';
+import { Message } from '@renderer/hooks/useNotifier';
+import { store, persistor } from '@renderer/redux/store';
+import { getConnectionStatus, setStatus } from '@renderer/redux/actions/status';
+import { setSetting } from '@renderer/redux/actions/settings';
 
-import RouterComponent from './Router';
-import AppNav from './components/AppNav';
-import Loading from './components/Loading';
-import useTheme from './hooks/useTheme';
+import RouterComponent from '@renderer/Router';
+import AppNav from '@renderer/components/AppNav';
+import Loading from '@renderer/components/Loading';
+import useTheme from '@renderer/hooks/useTheme';
 
-import prepareForLanguage, { getFirstLanguage } from './i18n';
-import { getDefaultLang } from './utils';
-import { ServerMode, Notification } from './types';
+import prepareForLanguage, { getFirstLanguage } from '@renderer/i18n';
+import { getDefaultLang } from '@renderer/utils';
+import { ServerMode, Notification } from '@renderer/types';
 
 export const persistStore = new ElectronStore();
 
@@ -89,9 +89,9 @@ const App: React.FC = () => {
       type,
     } = event.payload as { message: string; type: Notification['variant'] };
 
-    store.dispatch(enqueueSnackbar(message, {
+    Message.default(message, {
       variant: type || 'default',
-    }));
+    });
   }, []);
 
   return (

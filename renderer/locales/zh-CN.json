@@ -155,5 +155,6 @@
   "langZhong": "中文",
   "langRussian": "Русский",
   "workflow": "工作流",
+  "workflow_timed_execution_rule_updated": "定时执行规则已更新",
   "set_timed_execution_rule": "设置定时执行规则"
 }

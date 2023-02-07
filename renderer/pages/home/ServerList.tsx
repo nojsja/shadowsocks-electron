@@ -4,19 +4,18 @@ import {
   List,
 } from '@material-ui/core';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { SnackbarMessage } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 
-import { Config, GroupConfig, Notification, CloseOptions } from '@renderer/types';
+import { Config, GroupConfig, CloseOptions } from '@renderer/types';
 
 import { moveConfig, generateUrlFromConfig } from '@renderer/redux/actions/config';
-import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
 import { SET_SETTING } from '@renderer/redux/actions/settings';
 import { REMOVE_CONFIG } from '@renderer/redux/actions/config';
 
 import ContextMenuProvider from '@renderer/components/ContextMenu';
 import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
+import { Message } from '@/renderer/hooks/useNotifier';
 import If from '@renderer/components/HOC/IF';
 import GradientDivider from '@renderer/components/Pices/GradientDivider';
 
@@ -76,13 +75,9 @@ const ServerList: React.FC<ServerListProps> = props => {
     handleServerConnect
   } = props;
 
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
-
   const handleRemoveButtonClick = useCallback((id: string) => {
     if (id === selectedServer) {
-      return enqueueSnackbar(t('cannot_remove_selected_server'), { variant: 'warning' });
+      return Message.warning(t('cannot_remove_selected_server'));
     }
 
     removingServerId.current = id;
@@ -110,7 +105,7 @@ const ServerList: React.FC<ServerListProps> = props => {
       config: null,
       id: removingServerId.current
     });
-    enqueueSnackbar(t("removed_a_server"), { variant: 'success' });
+    Message.success(t('removed_a_server'));
 
     closeDialog();
     removingServerId.current = null;

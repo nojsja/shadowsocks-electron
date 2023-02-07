@@ -20,6 +20,7 @@ export function useRequest<T>(
     manual?: boolean;
     onSuccess?: (data: T) => void;
     onError?: (error: Error) => void;
+    throwable?: boolean;
   }
 ): UseRequestReturn<T> {
   const [response, setResponse] = useState<T | undefined>(undefined);
@@ -42,7 +43,9 @@ export function useRequest<T>(
     } catch (error) {
       options.onError?.(error as Error);
       setLoading(false);
-      throw error as Error;
+      if (options.throwable) {
+        throw error as Error;
+      }
     }
 
     return res as T;

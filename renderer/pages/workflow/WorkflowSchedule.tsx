@@ -24,13 +24,17 @@ import { Save as SaveIcon, TimerTwoTone as TimerIcon } from '@material-ui/icons'
 import { useTranslation } from 'react-i18next';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
-import { WorkflowTaskTimer } from '@/renderer/types';
+import { WorkflowRunner, WorkflowTaskTimer } from '@/renderer/types';
+import { Response } from '@/renderer/hooks/useRequest';
 
 type onCloseType = () => void;
 
 interface Props {
   renderButton?: () => React.ReactNode;
+  editTimerOfRunner: (...args: any[]) => Promise<Response<string | null>>;
+  updateRunner: (runnerId: string) => Promise<Response<WorkflowRunner>>;
   timerOption: WorkflowTaskTimer;
+  runnerId: string;
 }
 
 interface DefineDialogTitleProps extends DialogTitleProps {
@@ -57,7 +61,11 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const DialogTitle = (props: DefineDialogTitleProps) => {
   const classes = useStyles();
-  const { children, onClose, ...other } = props;
+  const {
+    children,
+    onClose,
+    ...other
+  } = props;
   return (
     <MuiDialogTitle disableTypography className={classes.root} {...other}>
       <Typography variant="h6">{children}</Typography>
@@ -75,16 +83,33 @@ export const DialogTitle = (props: DefineDialogTitleProps) => {
 };
 
 const WorkflowScheduleDialog: React.FC<Props> = (props) => {
-  const { timerOption } = props;
+  const {
+    timerOption,
+    runnerId,
+    editTimerOfRunner,
+    updateRunner,
+  } = props;
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
   const styles = useStyles();
   const inputRef = useRef<TextFieldProps>();
-  const [value, setValue] = useState('* * * * *')
-  const [enabled, setEnabled] = useState(false);
+  const [value, setValue] = useState(timerOption.schedule ?? '* * * * *')
+  const [enabled, setEnabled] = useState(timerOption.enable);
   const [, onError] = useState<CronError>();
   const customSetValue = (newValue: string) => {
     setValue(newValue)
+  };
+
+  const onConfirm = () => {
+    editTimerOfRunner(runnerId, {
+      enable: enabled,
+      schedule: value,
+    }).then(() => {
+      updateRunner(runnerId);
+      setTimeout(() => {
+        setOpen(false);
+      }, .5e3);
+    });
   };
 
   useEffect(() => {
@@ -92,7 +117,7 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
       setValue(timerOption.schedule);
     }
     setEnabled(Boolean(timerOption.enable));
-  }, [open]);
+  }, [timerOption]);
 
   return (
     <>
@@ -143,6 +168,7 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
             <Button
               color="primary"
               startIcon={<SaveIcon />}
+              onClick={onConfirm}
             >
               Save
             </Button>

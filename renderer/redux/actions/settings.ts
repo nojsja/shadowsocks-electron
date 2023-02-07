@@ -2,8 +2,8 @@ import { ThunkAction } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { MessageChannel } from 'electron-re';
 
-import { Settings, RootState, ActionRspText } from "../../types";
-import { enqueueSnackbar } from './notifications';
+import { Message } from '@renderer/hooks/useNotifier';
+import { Settings, RootState, ActionRspText } from '@renderer/types';
 
 export const SET_SETTING = "SET_SETTING";
 export const OVERRIDE_SETTING = "OVERRIDE_SETTING";
@@ -68,7 +68,7 @@ export const setHttpProxy =
     proxyPort: number
   }): ThunkAction<void, RootState, unknown, AnyAction> => {
 
-  return (dispatch) => {
+  return () => {
     const { enable, port, proxyPort } = params;
     const action = `${enable ? 'start' : 'stop'}HttpProxyServer`
     MessageChannel
@@ -78,14 +78,14 @@ export const setHttpProxy =
       })
       .then(rsp => {
         if (rsp.code !== 200) {
-          dispatch(enqueueSnackbar(rsp.result, { variant: 'warning' }));
+          Message.warning(rsp.result);
         }
       });
   };
 }
 
 export const setPacServer = (params: {enable: boolean, pacPort: number}): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return (dispatch) => {
+  return () => {
     const { enable, pacPort } = params;
     const action = `${enable ? 'start' : 'stop'}PacServer`
     MessageChannel
@@ -95,7 +95,7 @@ export const setPacServer = (params: {enable: boolean, pacPort: number}): ThunkA
       })
       .then(rsp => {
         if (rsp.code !== 200) {
-          dispatch(enqueueSnackbar(rsp.result, { variant: 'warning' }));
+          Message.warning(rsp.result);
         }
       });
   };
@@ -112,9 +112,9 @@ export const setAclUrl = (info: ActionRspText): ThunkAction<void, RootState, unk
           enable: true,
           url: rsp.result
         }));
-        dispatch(enqueueSnackbar(info.success, { variant: "success" }));
+        Message.success(info.success);
       } else {
-        dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
+        Message.warning(info.error[rsp.code] ?? info.error.default);
       }
     });
   }

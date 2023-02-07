@@ -7,14 +7,13 @@ import {
 } from "@material-ui/core";
 import BorderColorIcon from '@material-ui/icons/BorderColor';
 import { MessageChannel } from 'electron-re';
-import { useDispatch } from 'react-redux';
 
-import { DialogTitle } from '../home/AddServerDialog';
-import { AdaptiveDialog } from '../../components/Pices/Dialog';
-import TextEditor from '../../components/Pices/TextEditor';
+import { Message } from '@renderer/hooks/useNotifier';
+import { DialogTitle } from '@renderer/pages/home/AddServerDialog';
+import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
+import TextEditor from '@renderer/components/Pices/TextEditor';
 
-import { enqueueSnackbar as SnackbarAction } from '../../redux/actions/notifications';
-import { debounce } from '../../utils';
+import { debounce } from '@renderer/utils';
 
 interface AclEditorProps {
   touchField: (attr: string, status: boolean) => void;
@@ -26,7 +25,6 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
   const [visible, setVisible] = useState(false);
   const contentRef = useRef<string>('');
   const [aclContent, setAclContent] = useState('');
-  const dispatch = useDispatch();
 
   const onAclContentSubmit = useCallback(debounce((rules: string, url: string) => {
     MessageChannel.invoke('main', 'service:main', {
@@ -38,7 +36,7 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
     })
     .then(({ code, result }) => {
       if (code === 500) {
-        dispatch(SnackbarAction(<span style={{ wordBreak: 'break-word' }}>{result}</span>, { variant: 'error', autoHideDuration: 4e3 }));
+        Message.error(<span style={{ wordBreak: 'break-word' }}>{result}</span>, { autoHideDuration: 4e3 });
       }
     });
   }, .5e3), []);
@@ -57,7 +55,7 @@ const AclEditor: React.FC<AclEditorProps> = ({ touchField, isFieldTouched, url }
           setAclContent(result);
         }
       } else {
-        dispatch(SnackbarAction(<span style={{ wordBreak: 'break-word' }}>{result}</span>, { variant: 'error', autoHideDuration: 4e3 }));
+        Message.error(<span style={{ wordBreak: 'break-word' }}>{result}</span>, { autoHideDuration: 4e3 })
       }
     });
   }, []);

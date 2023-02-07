@@ -4,7 +4,6 @@ import { Container, IconButton } from '@material-ui/core';
 import { MessageChannel } from 'electron-re';
 
 import {
-  type WorkflowTaskTimer,
   type WorkflowTaskType,
   type WorkflowRunner as WorkflowRunnerType,
 } from '@renderer/types';
@@ -116,158 +115,6 @@ const Workflow: React.FC = () => {
     }
   );
 
-  const { run: putTaskIntoRunner } = useRequest<Response<string | null>>(
-    (runnerId: string, taskId: string, taskType: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'generateTaskOfRunner',
-      params: {
-        task: { type: taskType, id: taskId },
-        runnerId: runnerId,
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to create task, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
-  const { run: removeTaskFromRunner } = useRequest<Response<string | null>>(
-    (runnerId: string, taskId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'removeTaskOfRunner',
-      params: {
-        runnerId,
-        taskId,
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to remove task, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
-  const { run: startRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'runWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to start runner, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
-  const { run: stopRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'stopWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to stop runner, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
-  const { run: enableRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'enableWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to enable runner, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
-  const { run: disableRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'disableWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to disable runner, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
-  const { run: adjustTimerOfRunner } = useRequest<Response<string | null>>(
-    (runnerId: string, timer: WorkflowTaskTimer) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'editWorkflowRunner',
-      params: {
-        id: runnerId,
-        options: {
-          timer,
-        },
-      },
-    }),
-    {
-      manual: true,
-      onSuccess(rsp) {
-        if (rsp.code !== 200) {
-          alert(`Fail to adjust timer of runner, ${rsp.result}`);
-        }
-      },
-      onError(error) {
-        console.error(error);
-        alert(error.message);
-      }
-    }
-  );
-
   return (
     <Container className={styles.container}>
       <div className={styles.headerActions}>
@@ -303,15 +150,8 @@ const Workflow: React.FC = () => {
             <WorkflowRunner
               {...runner}
               key={runner.id}
-              startRunner={startRunner}
-              stopRunner={stopRunner}
               removeRunner={removeRunner}
               updateRunner={updateRunner}
-              removeTaskFromRunner={removeTaskFromRunner}
-              putTaskIntoRunner={putTaskIntoRunner}
-              enableRunner={enableRunner}
-              disableRunner={disableRunner}
-              adjustTimerOfRunner={adjustTimerOfRunner}
             />
           ))
         }

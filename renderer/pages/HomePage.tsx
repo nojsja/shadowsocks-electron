@@ -6,9 +6,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import SyncIcon from '@material-ui/icons/Sync';
 import { v4 as uuidV4 } from 'uuid';
-import { SnackbarMessage } from 'notistack';
 
-import { enqueueSnackbar as enqueueSnackbarAction } from '@renderer/redux/actions/notifications';
 import { useTypedSelector } from '@renderer/redux/reducers';
 import {
   addConfigFromClipboard,
@@ -22,11 +20,12 @@ import {
 } from '@renderer/redux/actions/config';
 import { getConnectionDelay } from '@renderer/redux/actions/status';
 import useDidUpdate from '@renderer/hooks/useDidUpdate';
+import { Message } from '@renderer/hooks/useNotifier';
 
 import { findAndCallback } from '@renderer/utils';
 import {
   Config, CloseOptions, GroupConfig,
-  Notification, ServerMode,
+  ServerMode,
 } from '@renderer/types';
 
 import FooterBar from '@renderer/components/FooterBar';
@@ -95,10 +94,6 @@ const HomePage: React.FC = () => {
 
   /* -------- functions ------- */
 
-  const enqueueSnackbar = (message: SnackbarMessage, options: Notification) => {
-    dispatch(enqueueSnackbarAction(message, options))
-  };
-
   const handleDialogClose = (selection?: CloseOptions) => {
     setDialogOpen(false);
 
@@ -138,7 +133,7 @@ const HomePage: React.FC = () => {
       const id = uuidV4();
       dispatch({ type: ADD_CONFIG, config: values, id });
       selectedServer === id && connectedToServer(config, id, values);
-      enqueueSnackbar(t("added_a_server"), { variant: 'success' });
+      Message.success(t("added_a_server"));
     } else {
       dispatch({
         type: EDIT_CONFIG,
@@ -146,7 +141,7 @@ const HomePage: React.FC = () => {
         id: values.id
       });
       selectedServer === values.id && connectedToServer(config, values.id, values);
-      enqueueSnackbar(t("edited_a_server"), { variant: 'success' });
+      Message.success(t("edited_a_server"));
     }
   };
 

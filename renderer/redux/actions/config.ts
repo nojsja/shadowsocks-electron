@@ -5,11 +5,12 @@ import { v4 as uuidV4 } from 'uuid';
 import { MessageChannel } from 'electron-re';
 import i18n from 'i18next';
 
-import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from '@renderer/types';
+import { Message } from '@renderer/hooks/useNotifier';
 import { findAndCallback, getScreenCapturedResources } from '@renderer/utils';
+import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from '@renderer/types';
+
 import { overrideSetting, setSetting } from './settings';
 import { setStatus, getConnectionStatusAction } from './status';
-import { enqueueSnackbar } from './notifications';
 
 export const ADD_CONFIG = "ADD_CONFIG";
 export const ADD_SUBSCRIPTION = "ADD_SUBSCRIPTION";
@@ -32,15 +33,15 @@ export const addConfig = (id: string, config: Config) => {
 };
 
 export const backupConfigurationToFile = (params: any, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return (dispatch) => {
+  return () => {
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'backupConfigurationToFile',
       params
     }).then(rsp => {
       if (rsp.code === 200) {
-        return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
+        return Message.success(info.success);
       }
-      dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
+      Message.warning(info.error[rsp.code] ?? info.error.default);
     });
   }
 }
@@ -54,7 +55,7 @@ export const restoreConfigurationFromFile =
     })
     .then((rsp) => {
       if (rsp.code === 200) {
-        dispatch(enqueueSnackbar(info.success, { variant: "success" }));
+        Message.success(info.success);
         dispatch(wipeConfig());
         if (rsp.result.config?.length) {
           rsp.result.config.forEach((conf: Config) => {
@@ -66,7 +67,7 @@ export const restoreConfigurationFromFile =
         }
         callback && callback(rsp.result);
       } else {
-        dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "warning" }));
+        Message.warning(info.error[rsp.code] ?? info.error.default);
       }
     });
   }
@@ -93,10 +94,10 @@ export const updateSubscription = (id: string, url: string, info: ActionRspText)
               return server;
             }),
           }));
-          return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
+          return Message.success(info.success);
         }
       }
-      dispatch(enqueueSnackbar(info.error.default, { variant: 'error' }));
+      Message.error(info.error.default);
     });
   }
 };
@@ -125,7 +126,7 @@ export const startClusterAction =
           if (rsp.code === 200) {
             dispatch(setSetting('serverMode', 'cluster'));
             dispatch(setSetting('clusterId', id));
-            return dispatch(enqueueSnackbar(info.success, { variant: "success" }));
+            return Message.success(info.success);
           } else {
             MessageChannel.invoke('main', 'service:desktop', {
               action: 'openNotification',
@@ -155,7 +156,7 @@ export const stopClusterAction =
             dispatch(setSetting('serverMode', 'single'));
             dispatch(setSetting('clusterId', ''));
           } else {
-            return dispatch(enqueueSnackbar(rsp.result, { variant: "error" }));
+            return Message.error(rsp.result);
           }
         });
     }
@@ -191,13 +192,13 @@ export const startClientAction =
 }
 
 export const stopClientAction = (): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return (dispatch) => {
+  return () => {
     MessageChannel.invoke('main', 'service:main', {
       action: 'stopClient',
       params: {}
     }).then((rsp) => {
       if (rsp.code !== 200) {
-        dispatch(enqueueSnackbar(rsp.result, { variant: "error" }));
+        Message.error(rsp.result);
       }
     });
   };
@@ -225,16 +226,16 @@ export const parseClipboardText = (text: string | null, type: ClipboardParseType
                 return server;
               }),
             }));
-            return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
+            return Message.success(info.success);
           }
         } else {
           if (rsp.result?.length) {
             dispatch(addConfig(uuidV4(), rsp.result[0]));
-            return dispatch(enqueueSnackbar(info.success, { variant: 'success' }));
+            return Message.success(info.success);
           }
         }
       }
-      return dispatch(enqueueSnackbar(info.error[rsp.code] ?? info.error.default, { variant: "error" }));
+      return Message.error(info.error[rsp.code] ?? info.error.default);
     });
   }
 };
@@ -269,13 +270,13 @@ export const getQrCodeFromScreenResources = (info: ActionRspText): ThunkAction<v
             });
           });
         } else {
-          dispatch(enqueueSnackbar(info.error.default, { variant: 'error' }));
+          Message.error(info.error.default);
         }
       } else {
-        dispatch(enqueueSnackbar(info.error.default, { variant: 'error' }));
+        Message.error(info.error.default);
       }
     }).catch(error => {
-      dispatch(enqueueSnackbar(error && error.toString(), { variant: 'error' }));
+      Message.error(error && error.toString());
     }).finally(() => {
       setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
     });
@@ -291,7 +292,7 @@ export const parseServerGroup =
       params: { text },
     }).then((rsp) => {
       if (rsp.code !== 200) {
-        return dispatch(enqueueSnackbar(rsp.result, { variant: 'error' }));
+        return Message.error(rsp.result);
       }
       if (rsp.result?.length) {
         dispatch(addSubscription(groupId || uuidV4(), '', {
@@ -301,15 +302,9 @@ export const parseServerGroup =
             return server;
           }),
         }));
-        return dispatch(enqueueSnackbar(
-          `${i18n.t('server_group_added')}: ${groupName}`,
-          { variant: 'success'},
-        ));
+        return Message.success(`${i18n.t('server_group_added')}: ${groupName}`);
       }
-      dispatch(enqueueSnackbar(
-      `${i18n.t('fail_to_parse_server_group')}: ${groupName}`,
-        { variant: 'warning'},
-      ));
+      Message.warning(`${i18n.t('fail_to_parse_server_group')}: ${groupName}`);
     }).finally(() => {
       dispatch(setStatus('waiting', false));
     });
@@ -328,7 +323,7 @@ export const updateServerGroup =
       params: { text },
     }).then((rsp) => {
       if (rsp.code !== 200) {
-        return dispatch(enqueueSnackbar(rsp.result, { variant: 'error' }));
+        return Message.error(rsp.result);
       }
       if (rsp.result?.length) {
         dispatch(updateSubscriptionAction(groupId, searchKey, {
@@ -338,15 +333,9 @@ export const updateServerGroup =
             return server;
           }),
         }));
-        return dispatch(enqueueSnackbar(
-          `${i18n.t('server_group_updated')}: ${groupName}`,
-          { variant: 'success'},
-        ));
+        return Message.success(`${i18n.t('server_group_updated')}: ${groupName}`);
       }
-      dispatch(enqueueSnackbar(
-      `${i18n.t('fail_to_parse_server_group')}: ${groupName}`,
-        { variant: 'warning'},
-      ));
+      Message.warning(`${i18n.t('fail_to_parse_server_group')}: ${groupName}`);
     }).finally(() => {
       dispatch(setStatus('waiting', false));
     });

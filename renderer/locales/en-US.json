@@ -155,5 +155,6 @@
   "langZhong": "中文",
   "langRussian": "Русский",
   "workflow": "Workflow",
+  "workflow_timed_execution_rule_updated": "Workflow timed execution rule updated",
   "set_timed_execution_rule": "Set timed execution rules"
 }

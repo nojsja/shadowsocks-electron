@@ -25,7 +25,6 @@ export class WorkflowRunner extends Workflow {
     this.timerOption = options.timer ?? { enable: false };
     this.tasks = options.tasks ?? [];
     this.queue = [];
-    this.timer = null;
     this.schedule = null;
     this.bridge = bridge;
   }
@@ -37,7 +36,6 @@ export class WorkflowRunner extends Workflow {
   timerOption: WorkflowTaskTimer;
   tasks: string[];
   queue: WorkflowTask[];
-  timer: NodeJS.Timer | null;
   schedule: schedule.Job | null;
   bridge: WorkflowBridge;
 
@@ -193,8 +191,8 @@ export class WorkflowRunner extends Workflow {
 
   startTimer() {
     const timerOption = this.timerOption;
-    if (!timerOption.enable) return;
 
+    if (!timerOption.enable) return;
     if (!timerOption.schedule) return;
     this.schedule = schedule.scheduleJob(timerOption.schedule, () => {
       this.start();
@@ -202,7 +200,6 @@ export class WorkflowRunner extends Workflow {
   }
 
   stopTimer() {
-    this.timer && clearInterval(this.timer);
     this.schedule && this.schedule.cancel();
   }
 

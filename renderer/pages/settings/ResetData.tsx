@@ -2,23 +2,21 @@ import React from 'react';
 import { ListItem, ListItemText } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { MessageChannel } from 'electron-re';
-import { SnackbarMessage } from 'notistack';
-
-import useDialogConfirm from '../../hooks/useDialogConfirm';
-import { useTypedDispatch } from '../../redux/actions';
-import { CLEAR_STORE } from '../../redux/reducers';
-import { Notification, Settings } from '../../types';
-import defaultStore from '../../redux/defaultStore';
 import { UseFormReturn } from 'react-hook-form';
 
+import { useTypedDispatch } from '@renderer/redux/actions';
+import { CLEAR_STORE } from '@renderer/redux/reducers';
+import { Message } from '@/renderer/hooks/useNotifier';
+import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
+import { Settings } from '@renderer/types';
+import defaultStore from '@renderer/redux/defaultStore';
+
 interface ResetDataProps {
-  enqueueSnackbar: (message: SnackbarMessage, options: Notification) => void;
   form: UseFormReturn<Settings>;
 }
 
 const ResetData: React.FC<ResetDataProps> = ({
   form,
-  enqueueSnackbar
 }) => {
   const { t } = useTranslation();
   const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
@@ -32,7 +30,7 @@ const ResetData: React.FC<ResetDataProps> = ({
       action: 'stopClient',
       params: {}
     });
-    enqueueSnackbar(t('cleared_all_data'), { variant: 'success' });
+    Message.success(t('cleared_all_data'));
   };
 
   const handleAlertDialogOpen = () => {
