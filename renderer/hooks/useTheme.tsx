@@ -1,4 +1,3 @@
-import { ipcRenderer, IpcRendererEvent } from 'electron';
 import React, { Dispatch, useEffect, useState } from 'react';
 import { MessageChannel } from 'electron-re';
 import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
@@ -58,7 +57,7 @@ const themes = {
 export const useTheme = (theme: ThemeMode): [Theme, Dispatch<React.SetStateAction<ThemeMode>>] => {
   const [mode, setMode] = useState<ThemeMode>(theme);
 
-  const updateTheme = (e: IpcRendererEvent | EventAction, data: { shouldUseDarkColors: boolean }) => {
+  const updateTheme = (e: EventAction, data: { shouldUseDarkColors: boolean }) => {
     persistStore.set('darkMode', data.shouldUseDarkColors ? 'true' : 'false');
     store.dispatch({
       type: SET_SETTING,
@@ -71,11 +70,8 @@ export const useTheme = (theme: ThemeMode): [Theme, Dispatch<React.SetStateActio
   useBus('theme:update', (event: EventAction) => updateTheme(event, event.payload), [setMode]);
 
   useEffect(() => {
-    ipcRenderer.on("theme:update", updateTheme);
-
-    return () => {
-      ipcRenderer.off("theme:update", updateTheme);
-    }
+    const removeListener = MessageChannel.on('theme:update', updateTheme);
+    return removeListener;
   }, []);
 
   useEffect(() => {

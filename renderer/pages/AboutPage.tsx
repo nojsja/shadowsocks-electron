@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Container, Typography, SwipeableDrawer, IconButton } from '@material-ui/core';
+import { Container, Typography, SwipeableDrawer, IconButton, Link } from '@material-ui/core';
 import { CloseOutlined } from '@material-ui/icons';
 import os from 'os';
 import { useTranslation } from 'react-i18next';
+import { shell } from 'electron';
 
 import authorPic from '@/assets/icons/256x256.png';
 import packageJson from '@/package.json';
@@ -12,10 +13,35 @@ import { useStylesOfAbout as useStyles } from './styles';
 
 type Timeline = {
   title: string;
-  children: string[];
+  children: React.ReactNode[];
 }[];
 
+const LinkButton: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => {
+  const handleClick = () => {
+    shell.openExternal(href);
+  };
+
+  return (
+    <Link component="button" variant="body2" onClick={handleClick}>
+      {children}
+    </Link>
+  );
+};
+
 const timeline = [
+  {
+    title: 'v1.2.4',
+    children: [
+      <div key="1">
+        <span>
+          Feat: Support workflow - organize and execute your nodejs scripts with powerful
+        </span>
+        <LinkButton href="https://github.com/puppeteer/puppeteer">{'\u00A0'}puppeteer{'\u00A0'}</LinkButton>/
+        <LinkButton href="https://github.com/bda-research/node-crawler">{'\u00A0'}crawler{'\u00A0'}</LinkButton>tools.
+      </div>,
+      'Refactor: Event stream service.'
+    ]
+  },
   {
     title: 'v1.2.3',
     children: [

@@ -133,14 +133,16 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
             <ListItem>
               <ListItemText
                 primary={
-                  <TextField
-                    value={`${value} [crontab]`}
-                    inputRef={inputRef}
-                    disabled
-                    onChange={(event: any) => {
-                      customSetValue(event.target.value)
-                    }}
-                  />
+                  <Tooltip title={value} placement="bottom" arrow >
+                    <TextField
+                      value={`${value} [crontab]`}
+                      inputRef={inputRef}
+                      disabled
+                      onChange={(event: any) => {
+                        customSetValue(event.target.value)
+                      }}
+                    />
+                  </Tooltip>
                 }
               />
               <ListItemSecondaryAction>

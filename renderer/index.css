@@ -12,6 +12,12 @@ body {
   background-color: inherit !important;
 }
 
+.react-js-cron .react-js-cron-field .MuiSelect-select > div {
+  max-width: 15vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

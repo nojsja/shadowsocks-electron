@@ -9,7 +9,6 @@ import {  SnackbarProvider } from 'notistack';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { ipcRenderer } from 'electron';
 import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
 import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
@@ -45,19 +44,19 @@ const useStyles = makeStyles(() =>
   })
 );
 
-ipcRenderer.on('connected', (e, message : { status: boolean, mode: ServerMode }) => {
+MessageChannel.on('connected', (e, message : { status: boolean, mode: ServerMode }) => {
   store.dispatch(setStatus('connected', message.status));
   store.dispatch(setSetting('serverMode', message.mode));
 });
 
-ipcRenderer.on('traffic', (e, message: { traffic: number }) => {
+MessageChannel.on('traffic', (e, message: { traffic: number }) => {
   const KB = (message.traffic / 1024);
   const MB = (KB / 1024);
   const GB = (MB / 1024);
   store.dispatch(setStatus('traffic', { KB, MB, GB }));
 });
 
-ipcRenderer.on('event:stream', (e, message: { action: string, args: any }) => {
+MessageChannel.on('event:stream', (e, message: { action: string, args: any }) => {
   dispatchEvent({
     type: `event:stream:${message.action}`,
     payload: message.args,
