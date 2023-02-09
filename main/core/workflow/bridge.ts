@@ -59,7 +59,7 @@ export class WorkflowBridge {
 
   async init() {
     await pie.initialize(app);
-    this.browser = await pie.connect(app, puppeteer as any);
+    this.browser = await pie.connect(app, puppeteer as any) as unknown as Browser;
     this.context = {
       /* puppeteer - Use [headless browser] to produce data. */
       'puppeteer-source': {
@@ -73,7 +73,7 @@ export class WorkflowBridge {
           const window = new BrowserWindow(options);
           await window.loadURL(url);
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const page = await pie.getPage(this.browser!, window);
+          const page = await pie.getPage(this.browser! as any, window);
           const closeBrowser = () => {
             window.destroy();
           };
