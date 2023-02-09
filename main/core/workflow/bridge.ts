@@ -1,5 +1,5 @@
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import pie from 'puppeteer-in-electron';
+import pie from 'puppeteer-in-electron2';
 import puppeteer, { Browser } from 'puppeteer-core';
 import { clipboard } from 'electron';
 import http from 'http';
@@ -59,7 +59,7 @@ export class WorkflowBridge {
 
   async init() {
     await pie.initialize(app);
-    this.browser = await pie.connect(app, puppeteer as any) as unknown as Browser;
+    this.browser = await pie.connect(app, puppeteer as any) as any;
     this.context = {
       /* puppeteer - Use [headless browser] to produce data. */
       'puppeteer-source': {
@@ -75,7 +75,11 @@ export class WorkflowBridge {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const page = await pie.getPage(this.browser! as any, window);
           const closeBrowser = () => {
-            window.destroy();
+            try {
+              window.destroy();
+            } catch (error) {
+              console.error(error);
+            }
           };
 
           return [page, closeBrowser];

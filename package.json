@@ -61,7 +61,7 @@
     "node-fetch": "2.6.0",
     "node-schedule": "^2.1.1",
     "puppeteer-core": "^19.6.2",
-    "puppeteer-in-electron": "^3.0.5",
+    "puppeteer-in-electron2": "^3.0.6",
     "qrcode": "^1.4.4",
     "react-js-cron-mui": "^1.0.0",
     "socks": "1.x",

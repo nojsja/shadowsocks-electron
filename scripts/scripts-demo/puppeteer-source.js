@@ -19,7 +19,7 @@ module.exports = async function(
   // powered by puppeteer page API
   page.click('.ssr-list-wrapper.base-box .el-button--primary');
 
-  try { closeBrowser(); } catch (error) {}
+  closeBrowser();
 
   // see https://www.electronjs.org/docs/latest/api/clipboard for API reference.
   const result = clipboard.readText('clipboard');
