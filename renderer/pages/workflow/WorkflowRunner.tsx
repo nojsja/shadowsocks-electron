@@ -3,7 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { MessageChannel } from 'electron-re';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { createStyles, IconButton, LinearProgress, makeStyles, Switch, Tooltip } from '@material-ui/core';
+import {
+  createStyles, IconButton,
+  LinearProgress, makeStyles,
+  Switch, Tooltip
+} from '@material-ui/core';
 import {
   TimerTwoTone as TimerIcon,
   Delete as DeleteIcon,
@@ -27,6 +31,7 @@ import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask'
 import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
 import WorkflowSchedule from './WorkflowSchedule';
+import NoRecord from '@/renderer/components/Pices/NoRecord';
 
 export const useStyles = makeStyles((theme) => createStyles({
   runnerWrapper: {
@@ -92,6 +97,22 @@ const WorkflowRunner: React.FC<Props> = ({
   const isRunning = status === 'running';
   const { t } = useTranslation();
   const { openDialog } = useDialog();
+  const isEmptyRunner = !queue?.length;
+  const dialogOptions = {
+    title: t('warning'),
+      cancelButton: {
+        props: {
+          color: 'default' as any
+        },
+        children: t('cancel')
+      },
+      submitButton: {
+        children: t('ok')
+      },
+      dialogProps: {
+        maxWidth: 'sm' as any
+      },
+  };
 
   const { run: startRunner } = useRequest<Response<string | null>>(
     (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
@@ -248,6 +269,16 @@ const WorkflowRunner: React.FC<Props> = ({
     }
   );
 
+  const onRemoveRunner = () => {
+    openDialog({
+      ...dialogOptions,
+      contentText: t('sure_to_delete_runner_tips'),
+      onSubmit: async () => {
+        await removeRunner(id);
+      }
+    });
+  };
+
   const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(() => {
     return MessageChannel.invoke('main', 'service:workflow', {
       action: 'getWorkflowTaskDemoDir',
@@ -261,14 +292,11 @@ const WorkflowRunner: React.FC<Props> = ({
 
   const onTaskDelete = async (taskId: string) => {
     openDialog({
-      title: 'Are you sure to delete?',
+      ...dialogOptions,
+      contentText: t('sure_to_delete_task_tips'),
       onSubmit: async () => {
-        if (queue.length === 1) {
-          await removeRunner(id);
-        } else {
-          await removeTaskFromRunner(id, taskId);
-          await updateRunner(id);
-        }
+        await removeTaskFromRunner(id, taskId);
+        await updateRunner(id);
       }
     });
   };
@@ -289,6 +317,7 @@ const WorkflowRunner: React.FC<Props> = ({
 
   const startRunnerInner = () => {
     if (isStarting.current) return;
+    if (isEmptyRunner) return;
     isStarting.current = true;
 
     startRunner(id).finally(() => {
@@ -311,6 +340,11 @@ const WorkflowRunner: React.FC<Props> = ({
           );
         })
       }
+      {
+        isEmptyRunner && (
+          <NoRecord title="No Tasks" />
+        )
+      }
       <div className={styles.footerAction} >
         <div className={styles.footerActionFixed}>
           <Tooltip title={enableStatus}>
@@ -320,7 +354,7 @@ const WorkflowRunner: React.FC<Props> = ({
           </Tooltip>
         </div>
         <Tooltip title="Delete">
-          <IconButton size="small" onClick={() => removeRunner(id)}>
+          <IconButton size="small" onClick={onRemoveRunner}>
             <DeleteIcon className={styles.footerActionButton} color="action" />
           </IconButton>
         </Tooltip>

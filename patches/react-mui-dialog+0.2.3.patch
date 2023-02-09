@@ -1,0 +1,14 @@
+diff --git a/node_modules/react-mui-dialog/dist/index.d.ts b/node_modules/react-mui-dialog/dist/index.d.ts
+index 6030dd5..15da68c 100644
+--- a/node_modules/react-mui-dialog/dist/index.d.ts
++++ b/node_modules/react-mui-dialog/dist/index.d.ts
+@@ -35,6 +35,8 @@ declare type ContextType = {
+     openDialog: OpenDialog;
+     closeDialog: () => void;
+ };
+-export declare const DialogProvider: React.FC;
++export declare const DialogProvider: React.FC<{
++  children: React.ReactNode;
++}>;
+ export declare const useDialog: () => ContextType;
+ export {};

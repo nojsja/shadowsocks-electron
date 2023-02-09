@@ -156,5 +156,7 @@
   "langRussian": "Русский",
   "workflow": "工作流",
   "workflow_timed_execution_rule_updated": "定时执行规则已更新",
-  "set_timed_execution_rule": "设置定时执行规则"
+  "set_timed_execution_rule": "设置定时执行规则",
+  "sure_to_delete_task_tips": "确定要删除这个任务吗？",
+  "sure_to_delete_runner_tips": "确定要删除这个工作流吗？所有相关脚本代码都将丢失。"
 }

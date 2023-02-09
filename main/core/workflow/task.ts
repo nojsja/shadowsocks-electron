@@ -14,7 +14,7 @@ export class WorkflowTask extends Workflow {
     this.status = options.status ?? 'idle';
     this.taskPath = path.resolve(this.taskDir, this.id);
     this.scriptPath = path.resolve(this.taskPath, 'index.js');
-    this.metaPath = path.resolve(this.taskPath, 'meta.json');
+    this.metaPath = path.resolve(this.taskPath, 'manifest.json');
     this.abortCtrl = null;
   }
 
@@ -27,7 +27,7 @@ export class WorkflowTask extends Workflow {
   abortCtrl: AbortController | null = null;
 
   static getMetaPath(id: string) {
-    return path.resolve(Workflow.taskDir, id, 'meta.json');
+    return path.resolve(Workflow.taskDir, id, 'manifest.json');
   }
 
   static async generate(options: Partial<WorkflowTaskOptions>) {
@@ -58,7 +58,11 @@ export class WorkflowTask extends Workflow {
 
   static async isExist(id: string) {
     try {
-      const statInfo = await fs.promises.stat(path.resolve(Workflow.taskDir, id, 'meta.json'));
+      const statInfo = await fs.promises.stat(path.resolve(
+        Workflow.taskDir,
+        id,
+        'manifest.json'
+      ));
       return statInfo.isFile();
     } catch (error) {
       console.error(error);

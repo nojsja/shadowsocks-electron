@@ -59,6 +59,7 @@ export class WorkflowBridge {
 
   async init() {
     await pie.initialize(app);
+    // FIXME: types error
     this.browser = await pie.connect(app, puppeteer as any) as any;
     this.context = {
       /* puppeteer - Use [headless browser] to produce data. */
@@ -72,8 +73,8 @@ export class WorkflowBridge {
         loadBrowserPage: async (url: string, options: BrowserWindowConstructorOptions) => {
           const window = new BrowserWindow(options);
           await window.loadURL(url);
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const page = await pie.getPage(this.browser! as any, window);
+          // FIXME: types error
+          const page = await pie.getPage(this.browser as any, window);
           const closeBrowser = () => {
             try {
               window.destroy();
