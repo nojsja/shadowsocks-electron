@@ -13,6 +13,7 @@ import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
 import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
 import { FormProvider, useForm } from 'react-hook-form';
+import { DialogProvider } from 'react-mui-dialog';
 
 import { Message } from '@renderer/hooks/useNotifier';
 import { store, persistor } from '@renderer/redux/store';
@@ -97,24 +98,26 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <FormProvider {...methods}>
-            <SnackbarProvider
-              maxSnack={3}
-              anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
-              autoHideDuration={2e3}
-            >
-              <HashRouter>
-                <div className={styles.root}>
-                  <CssBaseline />
-                  <AppNav />
-                  <main className={styles.content}>
-                    <div className={styles.toolbar} />
-                    <RouterComponent />
-                  </main>
-                </div>
-              </HashRouter>
-            </SnackbarProvider>
-          </FormProvider>
+          <DialogProvider>
+            <FormProvider {...methods}>
+              <SnackbarProvider
+                maxSnack={3}
+                anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
+                autoHideDuration={2e3}
+              >
+                <HashRouter>
+                  <div className={styles.root}>
+                    <CssBaseline />
+                    <AppNav />
+                    <main className={styles.content}>
+                      <div className={styles.toolbar} />
+                      <RouterComponent />
+                    </main>
+                  </div>
+                </HashRouter>
+              </SnackbarProvider>
+            </FormProvider>
+          </DialogProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

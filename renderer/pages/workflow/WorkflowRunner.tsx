@@ -10,6 +10,7 @@ import {
   PlayCircleFilledWhite as PlayCircleFilledWhiteIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import { useDialog } from 'react-mui-dialog';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response, useRequest } from '@/renderer/hooks/useRequest';
@@ -90,6 +91,7 @@ const WorkflowRunner: React.FC<Props> = ({
   const isStarting = useRef(false);
   const isRunning = status === 'running';
   const { t } = useTranslation();
+  const { openDialog } = useDialog();
 
   const { run: startRunner } = useRequest<Response<string | null>>(
     (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
@@ -258,12 +260,17 @@ const WorkflowRunner: React.FC<Props> = ({
   });
 
   const onTaskDelete = async (taskId: string) => {
-    if (queue.length === 1) {
-      await removeRunner(id);
-    } else {
-      await removeTaskFromRunner(id, taskId);
-      await updateRunner(id);
-    }
+    openDialog({
+      title: 'Are you sure to delete?',
+      onSubmit: async () => {
+        if (queue.length === 1) {
+          await removeRunner(id);
+        } else {
+          await removeTaskFromRunner(id, taskId);
+          await updateRunner(id);
+        }
+      }
+    });
   };
 
   const onTaskAdd = async (taskType: WorkflowTaskType) => {
