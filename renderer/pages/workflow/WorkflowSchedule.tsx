@@ -35,6 +35,7 @@ interface Props {
   updateRunner: (runnerId: string) => Promise<Response<WorkflowRunner>>;
   timerOption: WorkflowTaskTimer;
   runnerId: string;
+  runnerEnabled: boolean;
 }
 
 interface DefineDialogTitleProps extends DialogTitleProps {
@@ -86,6 +87,7 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
   const {
     timerOption,
     runnerId,
+    runnerEnabled,
     editTimerOfRunner,
     updateRunner,
   } = props;
@@ -151,6 +153,7 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
                     <Switch
                       color="primary"
                       checked={enabled}
+                      disabled={!runnerEnabled}
                       onChange={(e, checked) => setEnabled(checked)}
                     />
                   </IconButton>

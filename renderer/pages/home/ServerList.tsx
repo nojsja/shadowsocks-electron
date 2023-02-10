@@ -61,7 +61,7 @@ const ServerList: React.FC<ServerListProps> = props => {
   const styles = useStyles();
   const dragTarget = useRef<string | null>(null);
   const dragSource = useRef<string | null>(null);
-  const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
+  const [openDialog] = useDialogConfirm();
   const removingServerId = useRef<string | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [shareData, setShareData] = useState({ url: '', dataUrl: '' });
@@ -81,7 +81,22 @@ const ServerList: React.FC<ServerListProps> = props => {
     }
 
     removingServerId.current = id;
-    showDialog(t('remove_this_server?'), t('this_action_cannot_be_undone'));
+    openDialog({
+      title: t('remove_this_server?'),
+      content: t('this_action_cannot_be_undone'),
+      onConfirm() {
+        dispatch({
+          type: REMOVE_CONFIG,
+          config: null,
+          id: removingServerId.current
+        });
+        Message.success(t('removed_a_server'));
+        removingServerId.current = null;
+      },
+      onClose() {
+        removingServerId.current = null;
+      }
+    });
   }, [selectedServer]);
 
   const handleShareButtonClick = useCallback((id: string) => {
@@ -99,18 +114,6 @@ const ServerList: React.FC<ServerListProps> = props => {
     });
   }, [config]);
 
-  const handleServerRemove = () => {
-    dispatch({
-      type: REMOVE_CONFIG,
-      config: null,
-      id: removingServerId.current
-    });
-    Message.success(t('removed_a_server'));
-
-    closeDialog();
-    removingServerId.current = null;
-  };
-
   const handleServerSelect = useCallback((id: string) => {
     dispatch({
       type: SET_SETTING,
@@ -118,11 +121,6 @@ const ServerList: React.FC<ServerListProps> = props => {
       value: id
     });
   }, []);
-
-  const handleAlertDialogClose = () => {
-    closeDialog()
-    removingServerId.current = null;
-  };
 
   const handleDialogClose = (selection?: CloseOptions) => {
     switch (selection) {
@@ -195,10 +193,6 @@ const ServerList: React.FC<ServerListProps> = props => {
         url={shareData.url}
         open={shareDialogOpen}
         onClose={handleDialogClose}
-      />
-      <DialogConfirm
-        onClose={handleAlertDialogClose}
-        onConfirm={handleServerRemove}
       />
     </>
   )

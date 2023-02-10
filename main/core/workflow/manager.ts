@@ -236,11 +236,13 @@ export class WorkflowManager extends Workflow {
     const targetRunner = this.runners.find((runner) => runner.id === runnerId);
     let error: Error | null = null;
     if (!targetRunner) return new RunnerNotFoundError(runnerId);
+    const { enable: runnerEnable } = targetRunner;
 
     targetRunner.enable = true;
     error = await targetRunner.writeToMetaFile();
+
     if (error) {
-      targetRunner.enable = false;
+      targetRunner.enable = runnerEnable;
       return error;
     }
 
@@ -251,11 +253,16 @@ export class WorkflowManager extends Workflow {
     const targetRunner = this.runners.find((runner) => runner.id === runnerId);
     let error: Error | null = null;
     if (!targetRunner) return new RunnerNotFoundError(runnerId);
+    const { enable: timerEnable } = targetRunner.timerOption;
+    const { enable: runnerEnable } = targetRunner;
 
     targetRunner.enable = false;
+    targetRunner.timerOption.enable = false;
     error = await targetRunner.writeToMetaFile();
+
     if (error) {
-      targetRunner.enable = true;
+      targetRunner.enable = runnerEnable;
+      targetRunner.timerOption.enable = timerEnable;
       return error;
     }
 

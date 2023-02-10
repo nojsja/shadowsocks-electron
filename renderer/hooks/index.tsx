@@ -1,9 +1,9 @@
 export { useBackdrop } from './useBackDrop';
-export { useDialogConfirm } from './useDialogConfirm';
+export { useDialogConfirm, DialogConfirmProvider } from './useDialogConfirm';
 export { useDidUpdate } from './useDidUpdate';
 export { useGlobalAction } from './useGlobalAction';
 export { useLayoutDidUpdate } from './useLayoutDidUpdate';
-export { useNotifier } from './useNotifier';
+export { useNotifier, Message } from './useNotifier';
 export { useRequest } from './useRequest';
 export { useSnackbarAlert } from './useSnackbarAlert';
 export { useTheme } from './useTheme';

@@ -13,9 +13,8 @@ import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
 import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
 import { FormProvider, useForm } from 'react-hook-form';
-import { DialogProvider } from 'react-mui-dialog';
 
-import { Message } from '@renderer/hooks/useNotifier';
+import { DialogConfirmProvider, Message } from '@renderer/hooks';
 import { store, persistor } from '@renderer/redux/store';
 import { getConnectionStatus, setStatus } from '@renderer/redux/actions/status';
 import { setSetting } from '@renderer/redux/actions/settings';
@@ -98,7 +97,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <DialogProvider>
+          <DialogConfirmProvider>
             <FormProvider {...methods}>
               <SnackbarProvider
                 maxSnack={3}
@@ -117,7 +116,7 @@ const App: React.FC = () => {
                 </HashRouter>
               </SnackbarProvider>
             </FormProvider>
-          </DialogProvider>
+          </DialogConfirmProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

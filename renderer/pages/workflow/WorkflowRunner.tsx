@@ -14,7 +14,6 @@ import {
   PlayCircleFilledWhite as PlayCircleFilledWhiteIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
-import { useDialog } from 'react-mui-dialog';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response, useRequest } from '@/renderer/hooks/useRequest';
@@ -32,6 +31,7 @@ import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/Pu
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
 import WorkflowSchedule from './WorkflowSchedule';
 import NoRecord from '@/renderer/components/Pices/NoRecord';
+import { useDialogConfirm } from '@/renderer/hooks';
 
 export const useStyles = makeStyles((theme) => createStyles({
   runnerWrapper: {
@@ -96,22 +96,10 @@ const WorkflowRunner: React.FC<Props> = ({
   const isStarting = useRef(false);
   const isRunning = status === 'running';
   const { t } = useTranslation();
-  const { openDialog } = useDialog();
+  const [openDialog] = useDialogConfirm();
   const isEmptyRunner = !queue?.length;
   const dialogOptions = {
     title: t('warning'),
-      cancelButton: {
-        props: {
-          color: 'default' as any
-        },
-        children: t('cancel')
-      },
-      submitButton: {
-        children: t('ok')
-      },
-      dialogProps: {
-        maxWidth: 'sm' as any
-      },
   };
 
   const { run: startRunner } = useRequest<Response<string | null>>(
@@ -272,10 +260,10 @@ const WorkflowRunner: React.FC<Props> = ({
   const onRemoveRunner = () => {
     openDialog({
       ...dialogOptions,
-      contentText: t('sure_to_delete_runner_tips'),
-      onSubmit: async () => {
+      content: t('sure_to_delete_runner_tips'),
+      onConfirm: async () => {
         await removeRunner(id);
-      }
+      },
     });
   };
 
@@ -293,8 +281,8 @@ const WorkflowRunner: React.FC<Props> = ({
   const onTaskDelete = async (taskId: string) => {
     openDialog({
       ...dialogOptions,
-      contentText: t('sure_to_delete_task_tips'),
-      onSubmit: async () => {
+      content: t('sure_to_delete_task_tips'),
+      onConfirm: async () => {
         await removeTaskFromRunner(id, taskId);
         await updateRunner(id);
       }
@@ -364,6 +352,7 @@ const WorkflowRunner: React.FC<Props> = ({
           editTimerOfRunner={editTimerOfRunner}
           updateRunner={updateRunner}
           runnerId={id}
+          runnerEnabled={enable}
         />
         <MenuButton
           menuButton={

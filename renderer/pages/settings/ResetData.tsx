@@ -19,22 +19,23 @@ const ResetData: React.FC<ResetDataProps> = ({
   form,
 }) => {
   const { t } = useTranslation();
-  const [DialogConfirm, showDialog, closeDialog] = useDialogConfirm();
+  const [openDialog] = useDialogConfirm();
   const dispatch = useTypedDispatch();
 
-  const handleReset = () => {
-    dispatch({type: CLEAR_STORE} as any);
-    closeDialog();
-    form.reset(defaultStore.settings);
-    MessageChannel.invoke('main', 'service:main', {
-      action: 'stopClient',
-      params: {}
-    });
-    Message.success(t('cleared_all_data'));
-  };
-
   const handleAlertDialogOpen = () => {
-    showDialog(t('reset_all_data'), t('reset_all_data_tips'));
+    openDialog({
+      title: t('reset_all_data'),
+      content: t('reset_all_data_tips'),
+      onConfirm() {
+        dispatch({type: CLEAR_STORE} as any);
+        form.reset(defaultStore.settings);
+        MessageChannel.invoke('main', 'service:main', {
+          action: 'stopClient',
+          params: {}
+        });
+        Message.success(t('cleared_all_data'));
+      },
+    });
   };
 
 
@@ -43,7 +44,6 @@ const ResetData: React.FC<ResetDataProps> = ({
       <ListItem button onClick={handleAlertDialogOpen}>
         <ListItemText primary={t('reset_data')} />
       </ListItem>
-      <DialogConfirm onClose={closeDialog} onConfirm={handleReset} />
     </>
   )
 }

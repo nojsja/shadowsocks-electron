@@ -1,68 +1,138 @@
 /**
   * @name nojsja
-  * @description alert component based on snackbar
+  * @description ConfirmDialog Component based on MUI Dialog
   */
-import React, { useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
   DialogTitle,
   DialogContent,
   DialogActions,
   DialogContentText,
-  Button
+  Button,
+  DialogProps
 } from "@material-ui/core";
 import { useTranslation } from 'react-i18next';
-import { AdaptiveDialog } from '../components/Pices/Dialog';
 
-type message = {
-  title: string,
-  content: string,
-  show: boolean
+import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
+
+type OpenDialogOptions = {
+  dialogProps?: Omit<DialogProps, 'open'>;
+  dialogStyles?: React.CSSProperties;
+} & DialogConfirmProps & Partial<Omit<DialogConfirmMessage, 'show'>>;
+type OpenDialogFunc = (options: OpenDialogOptions) => void;
+
+interface DialogConfirmMessage {
+  title: React.ReactNode;
+  content: React.ReactNode;
+  show: boolean;
 }
 
 interface DialogConfirmProps {
-  onClose?: () => any
-  onConfirm?: () => any
+  onClose?: () => void;
+  onConfirm?: () => void;
 }
 
-interface SetMessage {
-  (title: string, content: string): void
+interface DialogConfirmContext {
+  openDialog: OpenDialogFunc;
 }
 
-export const useDialogConfirm = (): [React.FC<DialogConfirmProps>, SetMessage, () => void] => {
-  const { t } =  useTranslation();
-  const [msg, showMessage] = useState({
+const DialogConfirmContext = React.createContext<DialogConfirmContext>({
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  openDialog: () => {},
+});
+
+export const DialogConfirmProvider: React.FC<{ children: React.ReactNode }> = (props) => {
+  const [{ title, content, show }, showMessage] = useState<Partial<DialogConfirmMessage> & { show: boolean }>({
     title: '',
     content: '',
-    show: false
-  } as message);
-  const closeDialog = (callback?: () => any) => {
-    showMessage({ ...msg, show: false });
-    callback && callback();
-  };
-  const showDialog = (title: string, content: string) => {
-    showMessage({ title, content, show: true });
+    show: false,
+  });
+  const [dialogProps, setDialogProps] = useState<Omit<DialogProps, 'open'> | null>(null);
+  const [dialogStyles, setDialogStyles] = useState<React.CSSProperties>({});
+  const { t } =  useTranslation();
+  const onConfirmRef = useRef<DialogConfirmProps['onConfirm']>();
+  const onCloseRef = useRef<DialogConfirmProps['onClose']>();
+
+  const handleClose = () => {
+    showMessage({ show: false });
+    setTimeout(() => {
+      setDialogProps(null);
+      setDialogStyles({});
+    }, 1e3);
   };
 
-  return [
-    ((props) =>
-      (<AdaptiveDialog open={msg.show} onClose={() => closeDialog(props.onClose)}>
-        <DialogTitle>{msg.title}</DialogTitle>
+  const handleOpen = (options: Omit<DialogConfirmMessage, 'show'>) => {
+    showMessage({ ...options, show: true });
+  };
+
+  const onCloseDialog = () => {
+    onCloseRef.current?.();
+    handleClose();
+  };
+
+  const onConfirmDialog = () => {
+    onConfirmRef.current?.();
+    handleClose();
+  };
+
+  const openDialog: OpenDialogFunc = (options) => {
+    const {
+      onConfirm,
+      onClose,
+      dialogProps,
+      dialogStyles,
+      ...others
+    } = options;
+
+    onConfirmRef.current = onConfirm;
+    onCloseRef.current = onClose;
+    setDialogProps(dialogProps || null);
+    setDialogStyles(dialogStyles ?? {});
+    handleOpen({
+      title: '',
+      content: '',
+      ...others,
+    });
+  };
+
+  return (
+    <DialogConfirmContext.Provider
+      value={{
+        openDialog
+      }}
+    >
+      {
+        props.children
+      }
+      <AdaptiveDialog
+        open={show}
+        onClose={onCloseDialog}
+        fullWidth
+        maxWidth="sm"
+        {...(dialogProps || {})}
+        style={dialogStyles}
+      >
+        <DialogTitle>{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText>{msg.content}</DialogContentText>
+          <DialogContentText>{content}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => closeDialog(props.onConfirm)} color="primary">
+          <Button onClick={onConfirmDialog} color="primary">
             {t('ok')}
           </Button>
-          <Button onClick={() => closeDialog(props.onClose)} autoFocus>
+          <Button onClick={onCloseDialog} autoFocus>
             {t('cancel')}
           </Button>
         </DialogActions>
-      </AdaptiveDialog>)
-    ),
-    showDialog,
-    closeDialog
-  ];
+      </AdaptiveDialog>
+    </DialogConfirmContext.Provider>
+  );
+};
+
+export const useDialogConfirm = (): [OpenDialogFunc] => {
+  const { openDialog } = useContext(DialogConfirmContext);
+
+  return [openDialog];
 };
 
 export default useDialogConfirm;
