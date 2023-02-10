@@ -65,7 +65,7 @@ export class WorkflowBridge {
           const page = await pie.getPage(this.browser as any, window);
           const closeBrowser = () => {
             try {
-              window.destroy();
+              window.close();
             } catch (error) {
               console.error(error);
             }
