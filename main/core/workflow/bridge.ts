@@ -2,20 +2,8 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import pie from 'puppeteer-in-electron2';
 import puppeteer, { Browser } from 'puppeteer-core';
 import { clipboard } from 'electron';
-import http from 'http';
-import fs from 'fs';
-import path from 'path';
-import https from 'https';
 
 import { type WorkflowTaskType } from './types';
-
-const commonBridgeAttrs = {
-  http,
-  https,
-  fs,
-  clipboard,
-  path,
-};
 
 /**
   * @name dispatch [trigger event to renderer process]
@@ -85,17 +73,14 @@ export class WorkflowBridge {
 
           return [page, closeBrowser];
         },
-        ...commonBridgeAttrs,
+        clipboard,
       },
       /* crawler - Use [web crawler] to produce data. */
       'crawler-source': {
         loadCrawler: () => require('crawler'),
-        ...commonBridgeAttrs,
       },
       /* node - Use nodejs script to produce data, such as read file, request http, etc. */
-      'node-source': {
-        ...commonBridgeAttrs,
-      },
+      'node-source': {},
       /* processor - Use nodejs middle handler to process data, such as filter, sort, error wrapper, etc. */
       'processor-pipe': {},
       /* effect - produce some UI effects, such as notifycation. */

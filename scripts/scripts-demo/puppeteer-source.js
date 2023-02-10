@@ -1,28 +1,24 @@
 module.exports = async function(
-  content, // data from previous step
+  content, // Data from previous step
   {
-    loadBrowserPage, // return -> [puppeteer page instance, destroy function]
-    clipboard, // clipboard (electron)
-    http, // http (nodejs)
-    https, // https (nodejs)
-    fs, // fs (nodejs)
-    path, // path (nodejs)
+    loadBrowserPage, // -> [puppeteer Page instance, destroy function]
+    clipboard, // Clipboard module of electron
   }
 ) {
-  // see https://github.com/GoogleChrome/puppeteer for API reference.
+  // See API https://github.com/GoogleChrome/puppeteer.
   const [page, closeBrowser] = await loadBrowserPage('https://lncn.org/', {
-    show: false, // show browser window, optional, default true.
-    width: 800, // browser window width, optional.
-    height: 600, // browser window height, optional.
+    show: false, // Show browser window, optional, default true.
   });
 
-  // powered by puppeteer page API
+  // Trigger button click event for saving data to clipborad.
   page.click('.ssr-list-wrapper.base-box .el-button--primary');
 
+  // See API https://www.electronjs.org/docs/latest/api/clipboard.
+  const result = clipboard.readText('clipboard'); // read data from clipboard.
+
+  // In order to avoid memory overflow, close browser when task done.
   closeBrowser();
 
-  // see https://www.electronjs.org/docs/latest/api/clipboard for API reference.
-  const result = clipboard.readText('clipboard');
-
+  // Pass data to next step
   return result;
 };

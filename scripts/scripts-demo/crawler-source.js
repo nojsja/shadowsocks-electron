@@ -1,27 +1,22 @@
 module.exports = async function(
-  content, // data from previous step
+  content, // Data from previous step
   {
-    loadCrawler, // return node-crawler instance
-    clipboard, // clipboard (electron)
-    http, // http (nodejs)
-    https, // https (nodejs)
-    fs, // fs (nodejs)
-    path, // path (nodejs)
+    loadCrawler, // Function to load crawler module
   }
 ) {
-  // load node-crawler module
+  // Import node-crawler module
   const Crawler = loadCrawler();
-
-  // web crawler, see https://github.com/bda-research/node-crawler for API reference.
   const result = await new Promise((resolve, reject) => {
+    // See API https://github.com/bda-research/node-crawler.
     const crawler = new Crawler({
       maxConnections: 10,
-      // This will be called for each crawled page
+      // This will be called for each crawled page, asynchronously.
       callback: (error, res, done) => {
         if (error) {
           resolve(error);
         } else {
-          // $ is Cheerio by default
+          // $ is Cheerio - a magic tool used to parse html.
+          // See API https://cheerio.js.org/.
           const $ = res.$;
           const title = $("title").text();
           resolve(title);
@@ -29,10 +24,11 @@ module.exports = async function(
         done();
       },
     });
-    // Queue just one URL, with default callback
+    // Put a crawler task into Queue.
     crawler.queue('http://www.amazon.com');
   });
 
-  // return result to next processor
+  // Return data to next step.
+  // In this example, data will be 'title' of amazon.com site.
   return result;
 };

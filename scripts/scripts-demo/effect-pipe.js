@@ -1,5 +1,5 @@
 module.exports = function (
-  content, // data from previous step
+  content, // Data from previous step
   {
     /**
      * @name dispatch [trigger event to renderer process]
@@ -30,4 +30,7 @@ module.exports = function (
     message: content,
     type: 'success',
   });
+
+  // Pass data to next step
+  return content;
 };
