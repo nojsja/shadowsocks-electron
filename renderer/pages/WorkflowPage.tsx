@@ -119,6 +119,32 @@ const Workflow: React.FC = () => {
     }
   );
 
+  useBus('event:stream:workflow:task-status', (event: EventAction) => {
+    const { payload } = event;
+    const { runnerId, taskId, status } = payload;
+
+    setState((result) => {
+      let { result: runners } = result;
+      let index = -1;
+
+      if (!runners) return result;
+      runners = runners.slice();
+      index = runners.findIndex((runner) => runner.id === runnerId);
+      if (index === -1) return result;
+      runners[index].queue = runners[index].queue.map((task) => {
+        if (task.id === taskId) {
+          task.status = status;
+        }
+        return task;
+      });
+
+      return {
+        ...result,
+        result: runners,
+      };
+    });
+  }, [setState]);
+
   useBus('event:stream:workflow-status', (event: EventAction) => {
     const { payload } = event;
     const { runnerId, status } = payload;

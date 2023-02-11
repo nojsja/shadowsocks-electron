@@ -20,7 +20,7 @@ export interface WorkflowTaskTimer {
 
 export interface WorkflowTask {
   id: string;
-  status: WorkflowTaskStatus;
+  status: { value: WorkflowTaskStatus };
   type: WorkflowTaskType;
   scriptPath: string;
 }

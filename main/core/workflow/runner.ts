@@ -21,7 +21,7 @@ export class WorkflowRunner extends Workflow {
     this.id = options.id ?? uuidv4();
     this.metaPath = path.resolve(this.rootDir, `${this.id}.workflow.json`);
     this.enable = options.enable ?? true;
-    this.status = this.initStatusProxy({ value: options.status ?? 'idle' });
+    this.status = this.proxyStatus({ value: options.status ?? 'idle' });
     this.timerOption = options.timer ?? { enable: false };
     this.tasks = options.tasks ?? [];
     this.queue = [];
@@ -51,7 +51,6 @@ export class WorkflowRunner extends Workflow {
       const tasks = await runner.initTasks();
       const succeed = tasks.every((task) => task);
       if (!succeed) throw new Error('workflow runner: init tasks failed!');
-      runner.queue = tasks as WorkflowTask[];
     } catch (error) {
       await runner.remove();
       return [error as Error, null];
@@ -70,7 +69,6 @@ export class WorkflowRunner extends Workflow {
         const tasks = await runner.loadTasks();
         const succeed = tasks.every((task) => task);
         if (!succeed) throw new Error('workflow runner: load tasks failed!');
-        runner.queue = tasks as WorkflowTask[];
         return [null, runner];
       }
       throw new Error('workflow runner: not exists!');
@@ -137,10 +135,16 @@ export class WorkflowRunner extends Workflow {
       this.tasks.map((taskId) => WorkflowTask.generate({
         id: taskId,
       }))
-    );
+    ).then((tasks) => {
+      this.queue = tasks.filter(Boolean) as WorkflowTask[];
+      this.queue.forEach((task) => {
+        task.addListener('status:changed', this.watchTaskStatus);
+      });
+      return tasks;
+    });
   }
 
-  private initStatusProxy(statusObj: { value: WorkflowTaskStatus }) {
+  private proxyStatus(statusObj: { value: WorkflowTaskStatus }) {
     const handler = {
       set: (target: typeof statusObj, key: string, value: any) => {
         if (key === 'value') {
@@ -154,10 +158,21 @@ export class WorkflowRunner extends Workflow {
     return new Proxy(statusObj, handler);
   }
 
+  private watchTaskStatus = (taskObj: { status: WorkflowTaskStatus; id: string }) => {
+    const { status, id } = taskObj;
+    this.bridge.dispatch('workflow:task-status', { runnerId: this.id, taskId: id, status });
+  }
+
   private loadTasks() {
     return Promise.all(
       this.tasks.map((taskId) => WorkflowTask.from(taskId))
-    );
+    ).then((tasks) => {
+      this.queue = tasks.filter(Boolean) as WorkflowTask[];
+      this.queue.forEach((task) => {
+        task.addListener('status:changed', this.watchTaskStatus);
+      });
+      return tasks;
+    });
   }
 
   async pushTask(options: Partial<WorkflowTaskOptions>) {
@@ -173,6 +188,7 @@ export class WorkflowRunner extends Workflow {
         return error;
       }
 
+      task.addListener('status:changed', this.watchTaskStatus);
       this.queue.push(task);
       return error;
     }

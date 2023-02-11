@@ -569,7 +569,7 @@ export function getPureRunners(runners: WorkflowRunner[]) {
     timerOption: runner.timerOption,
     queue: runner.queue.map((task) => ({
       id: task.id,
-      status: task.status,
+      status: task.status.value,
       type: task.type,
       scriptPath: task.scriptPath,
     })),

@@ -11,7 +11,7 @@ export class WorkflowTask extends Workflow {
     super();
     this.id = options.id ?? uuidv4();
     this.type = options.type ?? 'node-source';
-    this.status = options.status ?? 'idle';
+    this.status = this.proxyStatus({ value: options.status ?? 'idle' });
     this.taskPath = path.resolve(this.taskDir, this.id);
     this.scriptPath = path.resolve(this.taskPath, 'index.js');
     this.metaPath = path.resolve(this.taskPath, 'manifest.json');
@@ -19,7 +19,7 @@ export class WorkflowTask extends Workflow {
   }
 
   id: string;
-  status: WorkflowTaskStatus;
+  status: { value:  WorkflowTaskStatus };
   type: WorkflowTaskType;
   scriptPath: string;
   taskPath: string;
@@ -48,7 +48,8 @@ export class WorkflowTask extends Workflow {
       if (isExists) {
         const metaPath = WorkflowTask.getMetaPath(id);
         const metaData = JSON.parse(await fs.promises.readFile(metaPath, 'utf-8')) as Partial<WorkflowTaskOptions>;
-        return new WorkflowTask(metaData);
+        const task = new WorkflowTask(metaData);
+        return task;
       }
     } catch (error) {
       console.error(error);
@@ -68,6 +69,20 @@ export class WorkflowTask extends Workflow {
       console.error(error);
       return false;
     }
+  }
+
+  private proxyStatus(statusObj: { value: WorkflowTaskStatus }) {
+    const handler = {
+      set: (target: typeof statusObj, key: string, value: any) => {
+        if (key === 'value') {
+          target[key] = value;
+          this.emit('status:changed', { id: this.id, status: value });
+          return true;
+        }
+        return false;
+      },
+    };
+    return new Proxy(statusObj, handler);
   }
 
   async writeToMetaFile() {
@@ -109,23 +124,23 @@ export class WorkflowTask extends Workflow {
   }
 
   get isRunning() {
-    return this.status === 'running';
+    return this.status.value === 'running';
   }
 
   get isIdle() {
-    return this.status === 'idle';
+    return this.status.value === 'idle';
   }
 
   get isSuccess() {
-    return this.status === 'success';
+    return this.status.value === 'success';
   }
 
   get isFailed() {
-    return this.status === 'failed';
+    return this.status.value === 'failed';
   }
 
   setStatus(status: WorkflowTaskStatus) {
-    this.status = status;
+    this.status.value = status;
   }
 
   /**
@@ -137,14 +152,14 @@ export class WorkflowTask extends Workflow {
   start(payload: unknown, options: object) {
     const tuple: [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null] = [null, null];
 
-    if (this.status === 'running') {
+    if (this.status.value === 'running') {
       console.warn('Task is already running: ', this.id);
       tuple[0] = new TaskIsRunningError(this.id);
       tuple[1] = null;
       return Promise.resolve(tuple);
     }
 
-    this.status = 'running';
+    this.status.value = 'running';
     this.abortCtrl = new AbortController();
 
     return new Promise<typeof tuple>((resolve) => {
@@ -172,7 +187,7 @@ export class WorkflowTask extends Workflow {
           if (this.abortCtrl?.signal.aborted) {
             throw new TaskIsAbortedError(this.id);
           }
-          this.status = 'success';
+          this.status.value = 'success';
           tuple[0] = null;
           tuple[1] = moduleResults;
 
@@ -180,10 +195,10 @@ export class WorkflowTask extends Workflow {
         })
         .catch((err: unknown) => {
           if (err instanceof TaskIsAbortedError) {
-            this.status = 'idle';
+            this.status.value = 'idle';
             tuple[0] = err;
           } else {
-            this.status = 'failed';
+            this.status.value = 'failed';
             tuple[0] = new TaskExecutionError(this.id, (err as Error).message);
           }
           tuple[1] = null;
@@ -204,12 +219,12 @@ export class WorkflowTask extends Workflow {
    */
   stop(): Promise<TaskIsNotRunningError | null> {
     return new Promise((resolve) => {
-      if (this.status !== 'running') {
+      if (this.status.value !== 'running') {
         console.warn('Task is not running: ', this.id);
         return resolve(new TaskIsNotRunningError(this.id));
       }
       const abortCallback = () => {
-        this.status = 'idle';
+        this.status.value = 'idle';
         this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
         resolve(null);
       };
