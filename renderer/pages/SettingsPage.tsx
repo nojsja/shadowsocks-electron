@@ -84,41 +84,6 @@ const SettingsPage: React.FC = () => {
     },
   });
 
-  /* -------------- hooks -------------- */
-
-  useEffect(() => {
-    form.reset(settings);
-  }, [settings]);
-
-  /* check settings item */
-  useEffect(() => {
-    return () => {
-      calGlobalActions();
-    };
-  }, []);
-
-  useEffect(() => {
-    dispatch<any>(getStartupOnBoot());
-  }, [dispatch]);
-
-  /* dark mode */
-  useEffect(() => {
-    const darkMode = persistStore.get('darkMode');
-
-    if (
-      (darkMode === 'true' && !settings.darkMode) ||
-      (darkMode === 'false' && !!settings.darkMode) ||
-      (darkMode === undefined && !!settings.darkMode)
-    ) {
-      dispatchEvent({
-        type: 'theme:update',
-        payload: {
-          shouldUseDarkColors: !!settings.darkMode
-        }
-      });
-    }
-  }, [settings.darkMode]);
-
   /* -------------- functions -------------- */
 
   const calGlobalActions = useCallback(() => {
@@ -245,6 +210,41 @@ const SettingsPage: React.FC = () => {
       }
     });
   };
+
+  /* -------------- hooks -------------- */
+
+  useEffect(() => {
+    form.reset(settings);
+  }, [settings]);
+
+  /* check settings item */
+  useEffect(() => {
+    return () => {
+      calGlobalActions();
+    };
+  }, []);
+
+  useEffect(() => {
+    dispatch<any>(getStartupOnBoot());
+  }, [dispatch]);
+
+  /* dark mode */
+  useEffect(() => {
+    const darkMode = persistStore.get('darkMode');
+
+    if (
+      (darkMode === 'true' && !settings.darkMode) ||
+      (darkMode === 'false' && !!settings.darkMode) ||
+      (darkMode === undefined && !!settings.darkMode)
+    ) {
+      dispatchEvent({
+        type: 'theme:update',
+        payload: {
+          shouldUseDarkColors: !!settings.darkMode
+        }
+      });
+    }
+  }, [settings.darkMode]);
 
   /* wach fields change */
   useEffect(() => {

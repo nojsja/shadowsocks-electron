@@ -210,7 +210,7 @@ const [visible, setVisible] = useState(false);
         condition={!visible}
         then={
           <div
-            className={styles['release-drawer__button']}
+            className={styles.releaseDrawerButton}
             onClick={handleOpen}
           >
             <span>{ t('release_notes') }</span>
@@ -220,7 +220,7 @@ const [visible, setVisible] = useState(false);
       <SwipeableDrawer
         anchor={'bottom'}
         open={visible}
-        className={styles['release-drawer__wrapper']}
+        className={styles.releaseDrawerWrapper}
         onClose={handleClose}
         onOpen={handleOpen}
       >
@@ -237,7 +237,7 @@ const [visible, setVisible] = useState(false);
           ))
         }
         <span
-          className={styles['release-drawer__close']}
+          className={styles.releaseDrawerClose}
         >
           <IconButton edge="start" color="inherit" onClick={() => setVisible(false)}>
               <CloseOutlined />
@@ -253,11 +253,11 @@ const AboutPage: React.FC = () => {
 
   return (
     <Container className={styles.container}>
-      <div className={styles['author-info__wrapper']}>
-        <img src={authorPic} alt="author" className={styles['author-info__image']}></img>
+      <div className={styles.authorInfoWrapper}>
+        <img src={authorPic} alt="author" className={styles.authorInfoImage}></img>
       </div>
-      <div className={styles['text-center']}>
-        <Typography className={styles['text-center']} variant="h6" gutterBottom>
+      <div className={styles.textCenter}>
+        <Typography className={styles.textCenter} variant="h6" gutterBottom>
           Shadowsocks Electron {packageJson.version}
         </Typography>
         <Typography variant="body1" gutterBottom>
@@ -269,13 +269,13 @@ const AboutPage: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               gutterBottom
-              className={styles['link-color__light']}
+              className={styles.linkColorLight}
               color="primary"
             >
               github
             </Typography>.
         </Typography>
-        <div className={styles['author-info__others']}>
+        <div className={styles.authorInfoOthers}>
           <div>
               <Typography variant="caption" gutterBottom>
                 OS: {os.platform()} ({os.arch()})

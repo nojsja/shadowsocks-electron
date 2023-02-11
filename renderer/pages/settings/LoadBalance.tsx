@@ -68,7 +68,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
       </ListItem>
       {
         enable && (
-          <ListItem className={styles.sub}>
+          <ListItem className={styles.listItemSub}>
             <ListItemText
               primary={
                 <TextWithTooltip
@@ -97,7 +97,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
       }
       {
         enable && (
-          <ListItem className={styles.sub}>
+          <ListItem className={styles.listItemSub}>
             <ListItemText
               primary={
                 <TextWithTooltip

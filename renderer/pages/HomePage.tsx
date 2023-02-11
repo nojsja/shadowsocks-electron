@@ -210,7 +210,7 @@ const HomePage: React.FC = () => {
           <SyncIcon
             key="status_bar_rotate"
             fontSize='small'
-            className={`${styles['loading-icon']} ${loading ? 'rotate' : ''}`}
+            className={`${styles.loadingIcon} ${loading ? 'rotate' : ''}`}
           />,
           <StatusBarNetwork key="status_bar_network" delay={delay}/>,
           <span key="status_bar_splitter">/</span>,

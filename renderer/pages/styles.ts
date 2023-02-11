@@ -26,11 +26,8 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
         transform: "rotateZ(-360deg)"
       }
     },
-    'statu-sbar_modeinfo': {
-      marginRight: theme.spacing(3)
-    },
-    'loading-icon': {
-      marginRight: '0',
+    loadingIcon: {
+      marginRight: 0,
       fontSize: '14px',
       '&.rotate': {
         animationName: '$rotate',
@@ -80,10 +77,10 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
         height: 'calc(100vh - 64px)',
       }
     },
-    'text-center': {
+    textCenter: {
       textAlign: 'center'
     },
-    'author-info__wrapper': {
+    authorInfoWrapper: {
       display: 'inline-flex',
       width: '40%',
       height: '40%',
@@ -95,20 +92,20 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       textAlign: 'center',
       borderRadius: '50%'
     },
-    'author-info__image': {
+    authorInfoImage: {
       width: '80%',
       height: 'auto'
     },
-    'author-info__others': {
+    authorInfoOthers: {
       display: 'inline-block',
       textAlign: 'left',
       margin: '10px auto',
       color: theme.palette.type === 'dark' ? grey[400] : grey[600],
     },
-    'link-color__light': {
+    linkColorLight: {
       color: theme.palette.primary.light,
     },
-    'release-drawer__button': {
+    releaseDrawerButton: {
       position: 'fixed',
       bottom: theme.spacing(.5),
       right: theme.spacing(.5),
@@ -120,11 +117,11 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
         color: theme.palette.primary.main,
       }
     },
-    'release-drawer__wrapper': {
+    releaseDrawerWrapper: {
       '& *': scrollBarStyle(6, 0, theme),
       '-webkit-app-region': 'none',
     },
-    'release-drawer__close': {
+    releaseDrawerClose: {
       position: 'fixed',
       top: theme.spacing(1),
       right: theme.spacing(1),
@@ -136,12 +133,19 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
   createStyles({
     container: {
       display: 'flex !important',
-      flexDirection: "column",
-      alignItems: "center",
+      flexDirection: 'column',
+      alignItems: 'center',
       height: `calc(100vh - 64px)`,
       overflowY: 'scroll',
       padding: theme.spacing(2),
       ...scrollBarStyle(0, 0, theme)
+    },
+    list: {
+      width: "100%",
+      padding: 0
+    },
+    listItemSub: {
+      marginLeft: '10px'
     },
     indentInput: {
       '& input': {
@@ -157,21 +161,8 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     colorGrey: {
       color: 'grey'
     },
-    list: {
-      width: "100%",
-      padding: 0
-    },
-    sub: {
-      marginLeft: '10px'
-    },
     textField: {
       marginBottom: `${theme.spacing(2)}px !important`
-    },
-    'switch-button__color': {
-      color: theme.palette.primary.light,
-    },
-    margin: {
-      marginTop: theme.spacing(1),
     }
   })
 );
@@ -200,7 +191,7 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     color: theme.palette.text.secondary,
     '&.highlight': {
       color: theme.palette.primary.light,
-    },
+    }
   },
   headerHelpInfoWrapper: {
     padding: theme.spacing(1),
@@ -245,7 +236,7 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     color: theme.palette.secondary.main,
     transition: 'color .3s',
     '&:hover': {
-      color: theme.palette.type === 'dark' ? theme.palette.secondary.light : theme.palette.secondary.dark,
+      color: theme.palette.secondary[theme.palette.type === 'dark' ? 'light' : 'dark'],
     },
   },
   textEditorActionButtonActive: {

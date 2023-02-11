@@ -70,7 +70,7 @@ const Acl: React.FC<AclProps> = ({
       </ListItem>
       {
         enable && (
-          <ListItem className={styles.sub}>
+          <ListItem className={styles.listItemSub}>
             <ListItemTextMultipleLine
               primary={
                 <Controller

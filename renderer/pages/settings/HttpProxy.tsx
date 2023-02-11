@@ -71,7 +71,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
       <If
         condition={enable}
         then={
-          <ListItem className={styles.sub}>
+          <ListItem className={styles.listItemSub}>
             <ListItemText
               primary={`└─ ${t('http_proxy_port')}`}
             />
