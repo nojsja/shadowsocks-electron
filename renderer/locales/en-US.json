@@ -59,7 +59,7 @@
   "home": "Home",
   "settings": "Settings",
   "about": "About",
-  "user_script": "User Script",
+  "workflow": "User Script",
   "local_port": "Local Port",
   "local_port_tips": "Port for socks server",
   "pac_port": "PAC Port",

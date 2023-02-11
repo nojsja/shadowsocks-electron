@@ -44,25 +44,6 @@ const useStyles = makeStyles(() =>
   })
 );
 
-MessageChannel.on('connected', (e, message : { status: boolean, mode: ServerMode }) => {
-  store.dispatch(setStatus('connected', message.status));
-  store.dispatch(setSetting('serverMode', message.mode));
-});
-
-MessageChannel.on('traffic', (e, message: { traffic: number }) => {
-  const KB = (message.traffic / 1024);
-  const MB = (KB / 1024);
-  const GB = (MB / 1024);
-  store.dispatch(setStatus('traffic', { KB, MB, GB }));
-});
-
-MessageChannel.on('event:stream', (e, message: { action: string, args: any }) => {
-  dispatchEvent({
-    type: `event:stream:${message.action}`,
-    payload: message.args,
-  });
-});
-
 prepareForLanguage(getDefaultLang());
 
 const App: React.FC = () => {
@@ -72,14 +53,39 @@ const App: React.FC = () => {
   const methods = useForm();
 
   useEffect(() => {
-    getConnectionStatus((status) => {
-      store.dispatch(setStatus('connected', status));
+    const removeConnectedListener = MessageChannel.on('connected', (e, message : { status: boolean, mode: ServerMode }) => {
+      store.dispatch(setStatus('connected', message.status));
+      store.dispatch(setSetting('serverMode', message.mode));
+    });
+
+    const removeTrafficListener = MessageChannel.on('traffic', (e, message: { traffic: number }) => {
+      const KB = (message.traffic / 1024);
+      const MB = (KB / 1024);
+      const GB = (MB / 1024);
+      store.dispatch(setStatus('traffic', { KB, MB, GB }));
+    });
+
+    const removeEventStreamListener = MessageChannel.on('event:stream', (e, message: { action: string, args: any }) => {
+      dispatchEvent({
+        type: `event:stream:${message.action}`,
+        payload: message.args,
+      });
     });
 
     MessageChannel.invoke('main', 'service:desktop', {
       action: 'setLocale',
       params: getFirstLanguage(persistStore.get('lang') as string)
     });
+
+    getConnectionStatus((status) => {
+      store.dispatch(setStatus('connected', status));
+    });
+
+    return () => {
+      removeConnectedListener();
+      removeTrafficListener();
+      removeEventStreamListener();
+    };
   }, []);
 
   useBus('event:stream:notifycation', (event: EventAction) => {

@@ -258,7 +258,7 @@ const SettingsPage: React.FC = () => {
 
   return (
     <Container className={styles.container}>
-      <form>
+      <form className={styles.form}>
         <LocalPort
           form={form}
         />

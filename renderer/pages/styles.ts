@@ -68,9 +68,10 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
 export const useStylesOfAbout = makeStyles((theme: Theme) =>
   createStyles({
     container: {
+      position: 'relative',
       display: 'flex !important',
-      flexDirection: 'column',
       alignItems: 'center',
+      flexDirection: 'column',
       height: 'calc(100vh - 56px)',
       padding: theme.spacing(2),
       [theme.breakpoints.up('sm')]: {
@@ -83,7 +84,7 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
     authorInfoWrapper: {
       display: 'inline-flex',
       width: '40%',
-      height: '40%',
+      height: '30%',
       justifyContent: 'center',
       alignItems: 'center',
       marginLeft: 'auto',
@@ -117,6 +118,13 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
         color: theme.palette.primary.main,
       }
     },
+    copyright: {
+      textAlign: 'center',
+      color: theme.palette.type === 'dark' ? grey[400] : grey[600],
+    },
+    cursorPointer: {
+      cursor: 'pointer',
+    },
     releaseDrawerWrapper: {
       '& *': scrollBarStyle(6, 0, theme),
       '-webkit-app-region': 'none',
@@ -134,11 +142,16 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     container: {
       display: 'flex !important',
       flexDirection: 'column',
-      alignItems: 'center',
       height: `calc(100vh - 64px)`,
-      overflowY: 'scroll',
       padding: theme.spacing(2),
+      borderLeft: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : grey[300]}`,
+      borderRight: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : grey[300]}`,
+      overflowY: 'scroll',
+      alignItems: 'center',
       ...scrollBarStyle(0, 0, theme)
+    },
+    form: {
+      width: "100%",
     },
     list: {
       width: "100%",
@@ -169,6 +182,7 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
 
 export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   container: {
+    position: 'relative',
     display: 'flex !important',
     flexDirection: 'column',
     height: `calc(100vh - 56px)`,

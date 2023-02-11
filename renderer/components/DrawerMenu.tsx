@@ -81,7 +81,7 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
             <ListItemIcon className={matchWorkflowPath}>
               <DeveloperBoardIcon />
             </ListItemIcon>
-            <ListItemText primary={t('user_script')} className={matchWorkflowPath} />
+            <ListItemText primary={t('workflow')} className={matchWorkflowPath} />
           </ListItem>
         </Link>
         <Link to="/about" onClick={props.onClick} >
