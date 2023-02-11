@@ -19,6 +19,7 @@ import { getStartupOnBoot, setSetting, setStartupOnBoot } from '@renderer/redux/
 import { setStatus } from '@renderer/redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '@renderer/redux/actions/settings';
 import { Message } from '@renderer/hooks/useNotifier';
+import StatusBar from '@renderer/components/StatusBar';
 
 import { ALGORITHM, Settings } from '@renderer/types';
 import { persistStore } from '@renderer/App';
@@ -55,6 +56,7 @@ const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
     top: '-12px',
   },
 }))(ListSubheader);
+
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
@@ -310,6 +312,7 @@ const SettingsPage: React.FC = () => {
           <OpenProcessManager />
         </List>
       </form>
+      <StatusBar/>
     </Container>
   );
 };

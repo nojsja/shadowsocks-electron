@@ -18,34 +18,13 @@ export const scrollBarStyle = (width = 10, radius = 5, theme: Theme) => ({
 
 export const useStylesOfHome = makeStyles((theme: Theme) =>
   createStyles({
-    "@keyframes rotate": {
-      "0%": {
-        transform: "rotateZ(0deg)"
-      },
-      "100%": {
-        transform: "rotateZ(-360deg)"
-      }
-    },
-    loadingIcon: {
-      marginRight: 0,
-      fontSize: '14px',
-      '&.rotate': {
-        animationName: '$rotate',
-        animationDuration: '1s',
-        animationTimingFunction: 'linear',
-        animationIterationCount: 'infinite'
-      }
-    },
     container: {
       display: 'flex !important',
       flexDirection: 'column',
       alignItems: 'center',
-      height: 'calc(100vh - 56px)',
+      height: 'calc(100vh - 64px)',
       padding: theme.spacing(1),
       paddingTop: 0,
-      [theme.breakpoints.up('sm')]: {
-        height: 'calc(100vh - 64px)',
-      }
     },
     list: {
       width: "100%",
@@ -72,11 +51,8 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       display: 'flex !important',
       alignItems: 'center',
       flexDirection: 'column',
-      height: 'calc(100vh - 56px)',
+      height: 'calc(100vh - 64px)',
       padding: theme.spacing(2),
-      [theme.breakpoints.up('sm')]: {
-        height: 'calc(100vh - 64px)',
-      }
     },
     textCenter: {
       textAlign: 'center'
@@ -142,7 +118,7 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     container: {
       display: 'flex !important',
       flexDirection: 'column',
-      height: `calc(100vh - 64px)`,
+      height: 'calc(100vh - 64px)',
       padding: theme.spacing(2),
       borderLeft: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : grey[300]}`,
       borderRight: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : grey[300]}`,
@@ -185,7 +161,7 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     position: 'relative',
     display: 'flex !important',
     flexDirection: 'column',
-    height: `calc(100vh - 56px)`,
+    height: 'calc(100vh - 64px)',
     padding: theme.spacing(.5),
     paddingTop: 0,
     [theme.breakpoints.up('sm')]: {

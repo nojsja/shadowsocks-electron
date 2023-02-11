@@ -9,10 +9,10 @@ import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import AddIcon from '@material-ui/icons/Add';
 import { useTranslation } from 'react-i18next';
+import { dispatch as dispatchEvent } from 'use-bus';
 
 import { Mode } from '@renderer/types';
 import { SET_SETTING } from '@renderer/redux/actions/settings';
-import { dispatchAction } from '@renderer/hooks/useGlobalAction';
 
 type StatusBarProps = {
   mode: string,
@@ -24,7 +24,7 @@ const menuItems = ["Global", "PAC", "Manual"];
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fabPlaceholder: {
-      height: theme.spacing(5)
+      height: theme.spacing(4)
     },
     fabs: {
       display: "flex",
@@ -59,15 +59,13 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
     if (value === mode) return;
     dispatch({
       type: SET_SETTING,
-      key: "mode",
+      key: 'mode',
       value: value as Mode
     });
-    if (value === 'PAC') {
-      return dispatchAction({ type: 'reconnect-pac', payload: { enable: true } });
-    }
-    if (mode === 'PAC') {
-      return dispatchAction({ type: 'reconnect-pac', payload: { enable: false } });
-    }
+    dispatchEvent({
+      type: 'event:stream:reconnect-pac',
+      payload: { enable: value === 'PAC' },
+    });
   });
 
   const handleDialogOpen = () => {
@@ -78,7 +76,13 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
     <>
       <div className={styles.fabPlaceholder} />
       <div className={styles.fabs}>
-        <Fab size="small" color="secondary" className={styles.noShadow} variant="circular" onClick={handleDialogOpen}>
+        <Fab
+          size="small"
+          color="secondary"
+          className={styles.noShadow}
+          variant="circular"
+          onClick={handleDialogOpen}
+        >
           <AddIcon />
         </Fab>
         <span>

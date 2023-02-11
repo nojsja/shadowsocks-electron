@@ -4,7 +4,6 @@ import {
   Container,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
-import SyncIcon from '@material-ui/icons/Sync';
 import { v4 as uuidV4 } from 'uuid';
 
 import { useTypedSelector } from '@renderer/redux/reducers';
@@ -30,9 +29,6 @@ import {
 
 import FooterBar from '@renderer/components/FooterBar';
 import StatusBar from '@renderer/components/StatusBar';
-import StatusBarConnection from '@renderer/components/BarItems/StatusBarConnection';
-import StatusBarNetwork from '@renderer/components/BarItems/StatusBarNetwork';
-import StatusBarTraffic from '@renderer/components/BarItems/StatusBarTraffic';
 
 import ServerList from './home/ServerList';
 import AddServerDialog from './home/AddServerDialog';
@@ -56,8 +52,6 @@ const HomePage: React.FC = () => {
   const mode = useTypedSelector(state => state.settings.mode);
   const settings = useTypedSelector(state => state.settings);
   const connected = useTypedSelector(state => state.status.connected);
-  const delay = useTypedSelector(state => state.status.delay);
-  const loading = useTypedSelector(state => state.status.loading);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
@@ -205,24 +199,7 @@ const HomePage: React.FC = () => {
 
       <FooterBar mode={mode} setDialogOpen={setDialogOpen} />
 
-      <StatusBar
-        left={[
-          <SyncIcon
-            key="status_bar_rotate"
-            fontSize='small'
-            className={`${styles.loadingIcon} ${loading ? 'rotate' : ''}`}
-          />,
-          <StatusBarNetwork key="status_bar_network" delay={delay}/>,
-          <span key="status_bar_splitter">/</span>,
-          <StatusBarTraffic key="status_bar_traffic" />
-        ]}
-        right={[
-          <StatusBarConnection
-            key="status_bar_connection"
-            status={connected ? 'online' : 'offline'}
-          />
-        ]}
-      />
+      <StatusBar/>
 
       {/* -------- dialog ------- */}
 

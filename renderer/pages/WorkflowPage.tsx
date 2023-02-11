@@ -10,6 +10,7 @@ import {
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import NoRecord from '@renderer/components/Pices/NoRecord';
+import StatusBar from '@renderer/components/StatusBar';
 import { useRequest, type Response } from '@renderer/hooks/useRequest';
 
 import WorkflowRunner from './workflow/WorkflowRunner';
@@ -181,6 +182,7 @@ const Workflow: React.FC = () => {
         }
         <NoRecord hidden={!!runnersResp?.result?.length} />
       </div>
+      <StatusBar />
     </Container>
   );
 }

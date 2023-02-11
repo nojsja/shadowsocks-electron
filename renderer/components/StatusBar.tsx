@@ -4,15 +4,39 @@ import {
 } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { grey } from '@material-ui/core/colors';
+import { Sync as SyncIcon } from '@material-ui/icons';
+
+import { useTypedSelector } from '@renderer/redux/reducers';
+import StatusBarNetwork from '@renderer/components/BarItems/StatusBarNetwork';
+import StatusBarTraffic from '@renderer/components/BarItems/StatusBarTraffic';
+import StatusBarConnection from '@renderer/components/BarItems/StatusBarConnection';
 
 type StatusBarProps = {
-  left: React.ReactElement[];
-  right: React.ReactElement[];
+  left?: React.ReactElement[];
+  right?: React.ReactElement[];
 };
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    'status-bar-wrapper': {
+    "@keyframes rotate": {
+      "0%": {
+        transform: "rotateZ(0deg)"
+      },
+      "100%": {
+        transform: "rotateZ(-360deg)"
+      }
+    },
+    loadingIcon: {
+      marginRight: 0,
+      fontSize: '14px',
+      '&.rotate': {
+        animationName: '$rotate',
+        animationDuration: '1s',
+        animationTimingFunction: 'linear',
+        animationIterationCount: 'infinite'
+      }
+    },
+    statusBarWrapper: {
       padding: '4px 8px',
       position: 'fixed',
       height: '20px',
@@ -61,15 +85,30 @@ export const StatusBarItem: React.FC<{ children: React.ReactNode }> = (props) =>
 
 const StatusBar: React.FC<StatusBarProps> =  (props) => {
   const styles = useStyles();
-  const { left, right } = props;
+  const delay = useTypedSelector(state => state.status.delay);
+  const loading = useTypedSelector(state => state.status.loading);
+  const connected = useTypedSelector(state => state.status.connected);
+  const { left = [], right = [] } = props;
 
   return (
-    <div className={styles['status-bar-wrapper']}>
+    <div className={styles.statusBarWrapper}>
       <div className={'left-panel'}>
+        <SyncIcon
+          key="status_bar_rotate"
+          fontSize='small'
+          className={`${styles.loadingIcon} ${loading ? 'rotate' : ''}`}
+        />
+        <StatusBarNetwork key="status_bar_network" delay={delay} />
+        <span key="status_bar_splitter">/</span>
+        <StatusBarTraffic key="status_bar_traffic" />
         { left.map(item => <StatusBarItem key={item.key as string}>{item}</StatusBarItem>) }
       </div>
       <div className={'right-panel'}>
         { right.map(item => <StatusBarItem key={item.key as string}>{item}</StatusBarItem>) }
+        <StatusBarConnection
+          key="status_bar_connection"
+          status={connected ? 'online' : 'offline'}
+        />
       </div>
     </div>
   );

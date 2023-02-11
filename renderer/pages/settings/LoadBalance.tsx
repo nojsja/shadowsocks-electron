@@ -101,7 +101,7 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
             <ListItemText
               primary={
                 <TextWithTooltip
-                  text={`└─ ${t('load_balance_strategy')}`}
+                  text={`└── ${t('load_balance_strategy')}`}
                   tooltip={
                     <div>
                       <div>{t('polling')} - {t('polling_tips')}</div>

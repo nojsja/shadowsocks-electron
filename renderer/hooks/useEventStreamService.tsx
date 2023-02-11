@@ -106,17 +106,12 @@ export const useEventStreamService = () => {
 
   useBus('event:stream:reconnect-pac', (event: EventAction) => {
     if (!selectedServer) return;
-    const enableStatus = event.payload?.enable;
+    const enableParam = event.payload?.enable ?? settings.mode === 'PAC' // undefined
 
     dispatch(
       setPacServer({
         pacPort: settings.pacPort,
-        enable:
-          enableStatus === true
-            ? true
-            : enableStatus === false
-              ? false
-              : settings.mode === 'PAC'
+        enable: enableParam
       })
     );
   }, [settings, selectedServer]);
