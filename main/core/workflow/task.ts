@@ -4,7 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { AbortController } from 'node-abort-controller';
 
 import { Workflow } from './base';
-import { TaskExecutionError, TaskIsAbortedError, TaskIsNotRunningError, TaskIsRunningError, WorkflowTaskOptions, WorkflowTaskStatus, WorkflowTaskType } from './types';
+import {
+  TaskExecutionError,
+  TaskIsAbortedError,
+  TaskIsNotRunningError,
+  TaskIsRunningError,
+  WorkflowTaskOptions,
+  WorkflowTaskStatus,
+  WorkflowTaskType
+} from './types';
 
 export class WorkflowTask extends Workflow {
   constructor(options: Partial<WorkflowTaskOptions>) {
@@ -232,6 +240,13 @@ export class WorkflowTask extends Workflow {
       this.abortCtrl?.signal.addEventListener('abort', abortCallback);
       this.abortCtrl?.abort();
     });
+  }
+
+  async reset() {
+    if (this.isRunning) {
+      await this.stop();
+    }
+    this.setStatus('idle');
   }
 
   async remove(): Promise<Error | null> {

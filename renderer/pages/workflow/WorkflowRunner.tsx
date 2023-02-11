@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { MessageChannel } from 'electron-re';
@@ -12,6 +12,7 @@ import {
   TimerTwoTone as TimerIcon,
   Delete as DeleteIcon,
   PlayCircleFilledWhite as PlayCircleFilledWhiteIcon,
+  Cancel as CancelIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 
@@ -93,7 +94,6 @@ const WorkflowRunner: React.FC<Props> = ({
 }) => {
   const enableStatus = enable ? 'Enabled' : 'Disabled';
   const styles = useStyles();
-  const isStarting = useRef(false);
   const isRunning = status === 'running';
   const { t } = useTranslation();
   const [openDialog] = useDialogConfirm();
@@ -304,13 +304,13 @@ const WorkflowRunner: React.FC<Props> = ({
   };
 
   const startRunnerInner = () => {
-    if (isStarting.current) return;
     if (isEmptyRunner) return;
-    isStarting.current = true;
+    startRunner(id);
+  };
 
-    startRunner(id).finally(() => {
-      isStarting.current = false;
-    });
+  const stopRunnerInner = () => {
+    if (isEmptyRunner) return;
+    stopRunner(id);
   };
 
   return (
@@ -390,11 +390,24 @@ const WorkflowRunner: React.FC<Props> = ({
             },
           ]}
         />
-        <Tooltip title="Run">
-          <IconButton size="small" disabled={!enable} onClick={startRunnerInner}>
-            <PlayCircleFilledWhiteIcon color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
-          </IconButton>
-        </Tooltip>
+        {
+          !isRunning && (
+            <Tooltip title="Run">
+              <IconButton size="small" disabled={!enable || isEmptyRunner} onClick={startRunnerInner}>
+                <PlayCircleFilledWhiteIcon color="action" className={classNames(styles.footerActionButton, (!enable || isEmptyRunner) && 'disabled')} />
+              </IconButton>
+            </Tooltip>
+          )
+        }
+        {
+          isRunning && (
+            <Tooltip title="Stop">
+              <IconButton size="small" disabled={!enable} onClick={stopRunnerInner}>
+                <CancelIcon color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
+              </IconButton>
+            </Tooltip>
+          )
+        }
       </div>
       <LinearProgress className={classNames((!isRunning) && styles.noVisible)} color="secondary" />
     </div>

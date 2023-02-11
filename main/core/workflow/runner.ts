@@ -238,6 +238,9 @@ export class WorkflowRunner extends Workflow {
     this.status.value = 'running';
 
     try {
+      this.queue.forEach(async (task) => {
+        await task.reset();
+      });
       await this.queue.reduce(
         async (memo, task) => {
           const payload = await memo;
