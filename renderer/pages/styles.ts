@@ -185,6 +185,16 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
   },
   headerHelpInfoWrapper: {
     padding: theme.spacing(1),
+    maxHeight: '80vh',
+    maxWidth: '80vw',
+    overflowY: 'auto',
+    '& h1': {
+      fontSize: '1.5em',
+    },
+    '& h2': {
+      fontSize: '1.25em',
+    },
+    ...scrollBarStyle(6, 0, theme),
   },
   scriptWrapper: {
     display: 'flex',

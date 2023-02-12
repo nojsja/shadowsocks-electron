@@ -58,6 +58,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 - Nodes Load-Balancing Mode
 - Clipboard / QR-code Import
 - Subscription Import
+- Workflow
 - Language Detecting And Switching (zh-CN / en-US / ru-RU)
 - Configuration Backup / Recovery
 - Dark / Light Mode
@@ -128,6 +129,10 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 ![share.png](./assets/share.png)
 
+### Workflow
+
+![workflow.png](./assets/workflow.png)
+
 ## VI. Downloads
 
 - GitHub Releases
@@ -164,7 +169,45 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 **2. Enable ACL Mode and load the file on settings page of client.**
 
-## IX. Why?
+## IX. Workflow Instructions
+
+Workflow is a set of tasks that executing in a specific order, you can create a workflow by adding async or sync tasks to it. There are some different task types: Source, Processor, Effect.
+
+Ability of workflow makes it easier to create a complex task flow. In my one case, I use workflow for SSR/SS server nodes scraping from internet.
+
+One another example is about acheving subscription auto update by a timed schedule, like the unix crontab job and follow the same crontab syntax (`* */1 * * *`).
+
+If you have no idea to create task script, try `Load Template Code` button to load a simple demo for each task.
+
+### ä¸€ã€Source Task
+
+For Source type task, generally used to produce data source and then pass data to next task handler. It has three sub types - Puppeteer, Crawler, Node.
+
+#### 1. Puppeteer Source Task
+
+[Puppeteer](https://github.com/puppeteer/puppeteer) - a headless browser for excuting automate tasks on the web, it supports programming control without an UI interface.
+
+When you find Crawler task hard to achieve some functions, remember to try Puppeteer task.
+
+#### 2. Crawler Source Task
+
+[Crawler](https://github.com/bda-research/node-crawler) - most powerful, popular and web scraping tool for Node.js.
+
+#### 3. Node Source Task
+
+Node type task is a general task with nodejs native module support (all of other types too), you can use it to execute any nodejs script, such as read/write file system and send http request for remote data fetching.
+
+### äºŒã€Processor Task
+
+For Processor type task, playing role as a middleware between other tasks. It is generally used to process data from previous task, and pass data to next task handler.
+
+### ä¸‰ã€Effect Task
+
+For Effect type task, generally used to produce side effect, such as notification, subscription update, subscription add, server add, server connect, server disconnect, etc.
+
+All of those abilities are provided by the client inner API service (IPC), waiting for some periods to open more API.
+
+## X. Why?
 
 - The official qt-version app - [`shadowsocks-qt5`](https://github.com/shadowsocks/shadowsocks-qt5) has been deprecated, which has an old interface but still working.
 - Only [`Shadowsocks-libev`](https://github.com/shadowsocks/shadowsocks-libev) and [`Shadowsocks for Android`](https://github.com/shadowsocks/shadowsocks-android) support ACL (bypass China IPs, etc.)
@@ -173,7 +216,7 @@ Shadowsocks GUI client with cross-platform desktop support powered by Electronâš
 
 It also uses Electron to bring the most powerful cross-platform desktop support with great developing experience.
 
-## X. Development
+## XI. Development
 
 ### 1. Env
 
@@ -228,11 +271,11 @@ $: cp pac/gfwlist.txt ~/Library/Application\ Support/shadowsocks-electron/pac/
 $: npm start
 ```
 
-## XI. Mention
+## XII. Mention
 
 > The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
 
-## XII. Credit
+## XIII. Credit
 
 - [tindy2013/shadowsocks-static-binaries](https://github.com/tindy2013/shadowsocks-static-binaries)
 - [robertying/shadowsocks-electron](https://github.com/robertying/shadowsocks-electron)
