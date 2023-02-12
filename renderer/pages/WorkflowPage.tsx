@@ -2,12 +2,14 @@ import React from 'react';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container, IconButton } from '@material-ui/core';
 import { MessageChannel } from 'electron-re';
+import i18n from 'i18next';
 
 import {
   type WorkflowTaskType,
   type WorkflowRunner as WorkflowRunnerType,
 } from '@renderer/types';
 
+import { Message } from '@renderer/hooks';
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import NoRecord from '@renderer/components/Pices/NoRecord';
 import StatusBar from '@renderer/components/StatusBar';
@@ -29,12 +31,11 @@ const Workflow: React.FC = () => {
     {
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert('getWorkflowRunners failed');
+          Message.error(i18n.t<string>('fail_to_get_workflow_list'));
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -48,7 +49,7 @@ const Workflow: React.FC = () => {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert('getWorkflowRunner failed');
+          Message.error(i18n.t<string>('fail_to_get_workflow_detail'));
         }
         setState((result) => {
           let { result: runners } = result;
@@ -67,8 +68,7 @@ const Workflow: React.FC = () => {
         });
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -86,13 +86,12 @@ const Workflow: React.FC = () => {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to create runner, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_create_workflow')}: ${rsp.result}`);
         }
         getWorkflowRunners();
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -108,13 +107,12 @@ const Workflow: React.FC = () => {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to remove runner, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_remove_workflow')}: ${rsp.result}`);
         }
         getWorkflowRunners();
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );

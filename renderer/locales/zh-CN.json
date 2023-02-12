@@ -159,5 +159,16 @@
   "workflow_timed_execution_rule_updated": "定时执行规则已更新",
   "set_timed_execution_rule": "设置定时执行规则",
   "sure_to_delete_task_tips": "确定要删除这个任务吗？",
-  "sure_to_delete_runner_tips": "确定要删除这个工作流吗？所有相关脚本代码都将丢失。"
+  "sure_to_delete_runner_tips": "确定要删除这个工作流吗？所有相关脚本代码都将丢失。",
+  "fail_to_get_workflow_list": "获取工作流列表失败",
+  "fail_to_get_workflow_detail": "获取工作流详情失败",
+  "fail_to_create_workflow": "创建工作流失败",
+  "fail_to_remove_workflow": "删除工作流失败",
+  "fail_to_run_workflow": "执行工作流失败",
+  "fail_to_stop_workflow": "中止工作流失败",
+  "fail_to_enable_workflow": "启用工作流失败",
+  "fail_to_disable_workflow": "禁用工作流失败",
+  "fail_to_create_workflow_task": "创建工作流任务失败",
+  "fail_to_remove_workflow_task": "删除工作流任务失败",
+  "fail_to_load_workflow_demo_script": "加载工作流示例脚本失败"
 }

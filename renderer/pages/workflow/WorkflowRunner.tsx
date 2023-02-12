@@ -15,6 +15,7 @@ import {
   Cancel as CancelIcon,
 } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response, useRequest } from '@/renderer/hooks/useRequest';
@@ -113,12 +114,11 @@ const WorkflowRunner: React.FC<Props> = ({
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to start runner, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_run_workflow')}: ${rsp.result}`);
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -135,12 +135,11 @@ const WorkflowRunner: React.FC<Props> = ({
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to stop runner, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_stop_workflow')}: ${rsp.result}`);
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -157,12 +156,11 @@ const WorkflowRunner: React.FC<Props> = ({
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to create task, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_create_workflow_task')}: ${rsp.result}`);
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -179,12 +177,11 @@ const WorkflowRunner: React.FC<Props> = ({
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to remove task, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_remove_workflow_task')}: ${rsp.result}`);
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -200,12 +197,11 @@ const WorkflowRunner: React.FC<Props> = ({
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to enable runner, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_enable_workflow')}: ${rsp.result}`);
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -221,12 +217,11 @@ const WorkflowRunner: React.FC<Props> = ({
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          alert(`Fail to disable runner, ${rsp.result}`);
+          Message.error(`${i18n.t<string>('fail_to_disable_workflow')}: ${rsp.result}`);
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -251,8 +246,7 @@ const WorkflowRunner: React.FC<Props> = ({
         }
       },
       onError(error) {
-        console.error(error);
-        alert(error.message);
+        Message.error(error.message);
       }
     }
   );
@@ -274,7 +268,7 @@ const WorkflowRunner: React.FC<Props> = ({
     });
   }, {
     onError(error) {
-      alert(error);
+      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
     },
   });
 

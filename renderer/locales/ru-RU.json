@@ -59,7 +59,6 @@
   "home": "Главная",
   "settings": "Настройки",
   "about": "О приложении",
-  "workflow": "User Script",
   "local_port": "Локальный Порт",
   "local_port_tips": "Порт для socks сервера",
   "pac_port": "PAC Порт",
@@ -160,5 +159,16 @@
   "workflow_timed_execution_rule_updated": "Workflow timed execution rule updated",
   "set_timed_execution_rule": "Set timed execution rules",
   "sure_to_delete_task_tips": "Are you sure to delete this task?",
-  "sure_to_delete_runner_tips": "Are you sure to delete this workflow? all task scripts will lost."
+  "sure_to_delete_runner_tips": "Are you sure to delete this workflow? all task scripts will lost.",
+  "fail_to_get_workflow_list": "Fail to get workflow list",
+  "fail_to_get_workflow_detail": "Fail to get workflow detail",
+  "fail_to_create_workflow": "Fail to create workflow",
+  "fail_to_remove_workflow": "Fail to remove workflow",
+  "fail_to_run_workflow": "Fail to run workflow",
+  "fail_to_stop_workflow": "Fail to stop workflow",
+  "fail_to_enable_workflow": "Fail to enable workflow",
+  "fail_to_disable_workflow": "Fail to disable workflow",
+  "fail_to_create_workflow_task": "Fail to create workflow task",
+  "fail_to_remove_workflow_task": "Fail to remove workflow task",
+  "fail_to_load_workflow_demo_script": "Fail to load workflow demo script"
 }
