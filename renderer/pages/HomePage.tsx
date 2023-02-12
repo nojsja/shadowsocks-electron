@@ -65,10 +65,7 @@ const HomePage: React.FC = () => {
     const modeToConnect = mode ?? serverMode;
     if (modeToConnect === 'cluster') {
       if (clusterId) {
-        dispatch(startClusterAction(config, clusterId, settings, {
-          success: t('successfully_enabled_load_balance'),
-          error: { default: t('failed_to_enable_load_balance') }
-        }));
+        dispatch(startClusterAction(config, clusterId, settings));
       }
     } else {
       selectedServer && connectedToServer(config, selectedServer);
@@ -96,22 +93,13 @@ const HomePage: React.FC = () => {
         setEditServerDialogOpen(true);
         break;
       case 'qrcode':
-        dispatch(getQrCodeFromScreenResources({
-          success: t('added_a_server'),
-          error: { default: t('no_qr_code_is_detected') },
-        }));
+        dispatch(getQrCodeFromScreenResources());
         break;
       case 'url':
-        dispatch(addConfigFromClipboard({
-          success: t('added_a_server'),
-          error: { default: t('invalid_operation') }
-        }));
+        dispatch(addConfigFromClipboard());
         break;
       case 'subscription':
-        dispatch(addSubscriptionFromClipboard({
-          success: t('added_a_server'),
-          error: { default: t('invalid_operation') }
-        }));
+        dispatch(addSubscriptionFromClipboard());
         break;
       default:
         break;

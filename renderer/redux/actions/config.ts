@@ -4,10 +4,15 @@ import jsqr from 'jsqr';
 import { v4 as uuidV4 } from 'uuid';
 import { MessageChannel } from 'electron-re';
 import i18n from 'i18next';
+import { clipboard } from 'electron';
 
 import { Message } from '@renderer/hooks/useNotifier';
 import { findAndCallback, getScreenCapturedResources } from '@renderer/utils';
-import { ActionRspText, ALGORITHM, ClipboardParseType, Config, GroupConfig, RootState, Settings } from '@renderer/types';
+import {
+  ActionRspText, ALGORITHM,
+  Config, GroupConfig,
+  RootState, Settings
+} from '@renderer/types';
 
 import { overrideSetting, setSetting } from './settings';
 import { setStatus, getConnectionStatusAction } from './status';
@@ -73,37 +78,42 @@ export const restoreConfigurationFromFile =
   }
 }
 
-export const updateSubscription = (id: string, url: string, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const updateSubscription = (id: string, url: string): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
-      action: 'parseClipboardText',
+      action: 'parseSubscriptionURL',
       params: {
         text: url,
-        type: 'subscription',
       },
     })
     .then((rsp) => {
-      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
-      if (rsp.code === 200) {
-        if (rsp.result?.result?.length) {
-          dispatch(updateSubscriptionAction(id, 'id', {
-            name: rsp.result.name || 'new subscription',
-            servers: (rsp.result.result as Config[]).map(server => {
-              server.id = uuidV4();
-              return server;
-            }),
-          }));
-          return Message.success(info.success);
-        }
+      if (rsp.code !== 200) {
+        throw new Error(rsp.result ?? i18n.t<string>('failed_to_update_subscription'));
       }
-      Message.error(info.error.default);
+      if (rsp.result?.result?.length) {
+        dispatch(updateSubscriptionAction(id, 'id', {
+          name: rsp.result.name || 'new subscription',
+          servers: (rsp.result.result as Config[]).map(server => {
+            server.id = uuidV4();
+            return server;
+          }),
+        }));
+        return Message.success(i18n.t<string>('subscription_updated'));
+      }
+      Message.warning(i18n.t<string>('invalid_parameter'));
+    })
+    .catch((error) => {
+      Message.error(error.toString());
+    })
+    .finally(() => {
+      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
     });
-  }
+  };
 };
 
 export const startClusterAction =
-  (config: (GroupConfig | Config)[], id: string, settings: Settings, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+  (config: (GroupConfig | Config)[], id: string, settings: Settings): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
       findAndCallback(config, id, (c: Config) => {
         const { servers: configs } = c as any;
@@ -123,19 +133,21 @@ export const startClusterAction =
           }
         })
         .then((rsp) => {
-          if (rsp.code === 200) {
-            dispatch(setSetting('serverMode', 'cluster'));
-            dispatch(setSetting('clusterId', id));
-            return Message.success(info.success);
-          } else {
-            MessageChannel.invoke('main', 'service:desktop', {
+          if (rsp.code !== 200) {
+            return MessageChannel.invoke('main', 'service:desktop', {
               action: 'openNotification',
               params: {
                 action: 'warning',
-                body: rsp.result
+                body: rsp.result ?? i18n.t<string>('failed_to_enable_load_balance')
               }
             });
           }
+          dispatch(setSetting('serverMode', 'cluster'));
+          dispatch(setSetting('clusterId', id));
+          Message.success(i18n.t<string>('successfully_enabled_load_balance'));
+        })
+        .catch((err) => {
+          Message.error(err.toString());
         })
         .finally(() => {
           dispatch(setStatus('waiting', false));
@@ -204,78 +216,107 @@ export const stopClientAction = (): ThunkAction<void, RootState, unknown, AnyAct
   };
 };
 
-export const parseClipboardText = (text: string | null, type: ClipboardParseType, info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const parseServerURL = (text: string): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
-      action: 'parseClipboardText',
+      action: 'parseServerURL',
       params: {
         text,
-        type
       }
     })
     .then((rsp) => {
-      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
-      if (rsp.code === 200) {
-        if ((type === 'subscription')) {
-          if (rsp.result?.result?.length) {
-            dispatch(addSubscription(uuidV4(), rsp.result.url, {
-              name: rsp.result.name || 'new subscription',
-              servers: (rsp.result.result as Config[]).map(server => {
-                server.id = uuidV4();
-                return server;
-              }),
-            }));
-            return Message.success(info.success);
-          }
-        } else {
-          if (rsp.result?.length) {
-            dispatch(addConfig(uuidV4(), rsp.result[0]));
-            return Message.success(info.success);
-          }
-        }
+      if (rsp.code !== 200) {
+        throw new Error(rsp.result ?? i18n.t<string>('invalid_operation'));
       }
-      return Message.error(info.error[rsp.code] ?? info.error.default);
+      if (rsp.result?.length) {
+        dispatch(addConfig(uuidV4(), rsp.result[0]));
+        Message.success(i18n.t<string>('added_a_server'));
+      } else {
+        Message.warning(i18n.t<string>('invalid_parameter'));
+      }
+    })
+    .catch((error) => {
+      Message.error(error.message);
+    })
+    .finally(() => {
+      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
     });
-  }
+  };
 };
 
-export const getQrCodeFromScreenResources = (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const parseSubscriptionURL = (text: string): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return (dispatch) => {
+    dispatch(setStatus('waiting', true));
+    MessageChannel.invoke('main', 'service:main', {
+      action: 'parseSubscriptionURL',
+      params: {
+        text,
+      }
+    })
+    .then((rsp) => {
+      if (rsp.code !== 200) {
+        throw new Error(rsp.result ?? i18n.t<string>('invalid_operation'));
+      }
+      if (rsp.result?.result?.length) {
+        dispatch(addSubscription(uuidV4(), rsp.result.url, {
+          name: rsp.result.name || 'New subscription',
+          servers: (rsp.result.result as Config[]).map(server => {
+            server.id = uuidV4();
+            return server;
+          }),
+        }));
+        Message.success(i18n.t<string>('added_a_subscription_server_group'));
+      } else {
+        Message.warning(i18n.t<string>('invalid_parameter'));
+      }
+    })
+    .catch((error) => {
+      Message.error(error.message);
+    })
+    .finally(() => {
+      setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
+    });
+  };
+}
+
+export const getQrCodeFromScreenResources = (): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
     dispatch(setStatus('waiting', true))
     getScreenCapturedResources().then((resources: Electron.DesktopCapturerSource[]) => {
-      if (resources?.length) {
-        const qrs: {x: number, y: number, width: number, height: number}[] = [];
-        const values: string[] = [];
-        resources.forEach(resource => {
-          const size = resource.thumbnail.getSize();
-          const capturedData = jsqr(resource.thumbnail.getBitmap() as any, size.width, size.height);
-          if (capturedData?.data) {
-            values.push(capturedData.data);
-            qrs.push({
-              x: capturedData.location.topLeftCorner.x,
-              y: capturedData.location.topLeftCorner.y,
-              width: capturedData.location.topRightCorner.x - capturedData.location.topLeftCorner.x,
-              height: capturedData.location.bottomLeftCorner.y - capturedData.location.topLeftCorner.y,
-            });
-          }
-        });
-        if (qrs.length) {
-          MessageChannel.invoke('main', 'service:desktop', {
-            action: 'createTransparentWindow',
-            params: qrs
-          }).then(() => {
-            values.forEach(value => {
-              dispatch(parseClipboardText(value, 'url', info));
-            });
-          });
-        } else {
-          Message.error(info.error.default);
-        }
-      } else {
-        Message.error(info.error.default);
+      if (!resources?.length) {
+        return Message.warning(i18n.t<string>('no_qr_code_is_detected'));
       }
-    }).catch(error => {
+      const qrs: {x: number, y: number, width: number, height: number}[] = [];
+      const values: string[] = [];
+
+      resources.forEach(resource => {
+        const size = resource.thumbnail.getSize();
+        const capturedData = jsqr(resource.thumbnail.getBitmap() as any, size.width, size.height);
+        if (capturedData?.data) {
+          values.push(capturedData.data);
+          qrs.push({
+            x: capturedData.location.topLeftCorner.x,
+            y: capturedData.location.topLeftCorner.y,
+            width: capturedData.location.topRightCorner.x - capturedData.location.topLeftCorner.x,
+            height: capturedData.location.bottomLeftCorner.y - capturedData.location.topLeftCorner.y,
+          });
+        }
+      });
+
+      if (!qrs.length) {
+        return Message.warning(i18n.t<string>('no_qr_code_is_detected'));
+      }
+
+      return MessageChannel.invoke('main', 'service:desktop', {
+        action: 'createTransparentWindow',
+        params: qrs
+      }).then(() => {
+        values.forEach(value => {
+          dispatch(parseServerURL(value));
+        });
+      });
+    }).catch((error) => {
       Message.error(error && error.toString());
     }).finally(() => {
       setTimeout(() => dispatch(setStatus('waiting', false)), 1e3);
@@ -343,17 +384,17 @@ export const updateServerGroup =
 };
 
 /* parse and get ss/ssr config from clipboard */
-export const addConfigFromClipboard =
-  (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const addConfigFromClipboard = (): ThunkAction<void, RootState, unknown, AnyAction> => {
   return (dispatch) => {
-    dispatch(parseClipboardText(null, 'url', info));
+    const text = clipboard.readText('clipboard');
+    dispatch(parseServerURL(text));
   }
 };
 
-export const addSubscriptionFromClipboard =
-  (info: ActionRspText): ThunkAction<void, RootState, unknown, AnyAction> => {
+export const addSubscriptionFromClipboard = (): ThunkAction<void, RootState, unknown, AnyAction> => {
     return (dispatch) => {
-      dispatch(parseClipboardText(null, 'subscription', info));
+      const text = clipboard.readText('clipboard');
+      dispatch(parseSubscriptionURL(text));
     }
   };
 

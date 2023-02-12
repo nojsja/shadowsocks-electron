@@ -2,7 +2,6 @@ import { useCallback, useEffect } from 'react'
 import { clipboard } from 'electron';
 import useBus, { EventAction, dispatch as dispatchEvent } from 'use-bus';
 import { useDispatch } from 'react-redux';
-import { useTranslation } from 'react-i18next';
 
 import {
   addConfigFromClipboard,
@@ -21,7 +20,6 @@ import { getConnectionDelay } from '@renderer/redux/actions/status';
 import { setHttpProxy, setPacServer } from '@renderer/redux/actions/settings';
 
 export const useEventStreamService = () => {
-  const { t } =  useTranslation();
   const dispatch = useDispatch();
   const settings = useTypedSelector(state => state.settings);
   const config = useTypedSelector(state => state.config);
@@ -47,10 +45,7 @@ export const useEventStreamService = () => {
     const modeToConnect = mode ?? serverMode;
     if (modeToConnect === 'cluster') {
       if (clusterId) {
-        dispatch(startClusterAction(config, clusterId, settings, {
-          success: t('successfully_enabled_load_balance'),
-          error: { default: t('failed_to_enable_load_balance') }
-        }));
+        dispatch(startClusterAction(config, clusterId, settings));
       }
     } else {
       selectedServer && connectedToServer(config, selectedServer);
@@ -71,18 +66,12 @@ export const useEventStreamService = () => {
 
   useBus('event:stream:add-server', (event: EventAction) => {
     clipboard.writeText(event.payload);
-    dispatch(addConfigFromClipboard({
-      success: t('added_a_server'),
-      error: { default: t('invalid_operation') }
-    }));
+    dispatch(addConfigFromClipboard());
   }, []);
 
   useBus('event:stream:add-subscription', (event: EventAction) => {
     clipboard.writeText(event.payload);
-    dispatch(addSubscriptionFromClipboard({
-      success: t('added_a_server'),
-      error: { default: t('invalid_operation') }
-    }));
+    dispatch(addSubscriptionFromClipboard());
   }, []);
 
   useBus('event:stream:add-server-group', (event: EventAction) => {

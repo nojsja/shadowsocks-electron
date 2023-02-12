@@ -130,32 +130,33 @@ export type ServiceResult = {
 };
 
 export interface MainService extends Service {
-  [attr: string]: IpcMain | ServiceHandler | any
-  isConnected: () => Promise<ServiceResult>
-  startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>
-  stopClient: () => Promise<ServiceResult>
-  startCluster: (params: { configs: Config[], settings: Settings }) => Promise<ServiceResult>
-  stopCluster: () => Promise<ServiceResult>
-  parseClipboardText: (params: { text: string, type: ClipboardParseType }) => Promise<ServiceResult>
-  generateUrlFromConfig: (params: Config) => Promise<ServiceResult>
+  [attr: string]: IpcMain | ServiceHandler | any;
+  isConnected: () => Promise<ServiceResult>;
+  startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>;
+  stopClient: () => Promise<ServiceResult>;
+  startCluster: (params: { configs: Config[], settings: Settings }) => Promise<ServiceResult>;
+  stopCluster: () => Promise<ServiceResult>;
+  parseServerURL: (params: { text: string }) => Promise<ServiceResult>;
+  parseSubscriptionURL: (params: { text: string }) => Promise<ServiceResult>;
+  generateUrlFromConfig: (params: Config) => Promise<ServiceResult>;
 }
 
 export interface DesktopService extends Service {
-  [attr: string]: IpcMain | ServiceHandler | any
-  createTransparentWindow: (params: RectPoint[]) => Promise<ServiceResult>
-  reloadMainWindow: (params: any) => Promise<ServiceResult>
-  setStartupOnBoot: (on: boolean) => Promise<ServiceResult>
-  openLogDir: (params: Config) => Promise<ServiceResult>
+  [attr: string]: IpcMain | ServiceHandler | any;
+  createTransparentWindow: (params: RectPoint[]) => Promise<ServiceResult>;
+  reloadMainWindow: (params: any) => Promise<ServiceResult>;
+  setStartupOnBoot: (on: boolean) => Promise<ServiceResult>;
+  openLogDir: (params: Config) => Promise<ServiceResult>;
 }
 
 export interface ThemeService extends Service {
-  listenForUpdate: () => Promise<ServiceResult>
-  unlistenForUpdate: () => Promise<ServiceResult>
-  getSystemThemeInfo: () => Promise<ServiceResult>
+  listenForUpdate: () => Promise<ServiceResult>;
+  unlistenForUpdate: () => Promise<ServiceResult>;
+  getSystemThemeInfo: () => Promise<ServiceResult>;
 }
 
 export interface WorkflowService extends Service {
-  [attr: string]: IpcMain | ServiceHandler | any
+  [attr: string]: IpcMain | ServiceHandler | any;
   getWorkflowRunners: () => Promise<ServiceResult>;
   getWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
   runWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;

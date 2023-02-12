@@ -1,10 +1,11 @@
-import { IpcMain, clipboard } from 'electron';
+import { IpcMain } from 'electron';
 import QRCode from 'qrcode';
 import fs from 'fs';
 
 import {
   MainService as MainServiceType,
-  Config, Settings, ServiceResult, ClipboardParseType, SSRConfig
+  Config, Settings, ServiceResult,
+  SSRConfig, OneOfConfig
 } from '../types';
 import { manager, http, pac } from '../core';
 import tcpPing from '../core/helpers/tcp-ping';
@@ -72,36 +73,34 @@ export class MainService implements MainServiceType {
     }));
   }
 
-  async parseClipboardText(params: { text: string, type: ClipboardParseType }): Promise<ServiceResult> {
-    const text = params.text || clipboard.readText('clipboard');
-    const type = params.type || 'url';
-    let res;
+  async parseServerURL(params: { text: string }): Promise<ServiceResult> {
+    let result: OneOfConfig[] | string;
+    let code;
 
-    switch (type) {
-      case 'url':
-        return {
-          code: 200,
-          result: parseUrl(text),
-        };
-      case 'subscription':
-        res = await parseSubscription(text);
-        return {
-          code: 200,
-          result: {
-            name: res.error ? '' : (res.name || ''),
-            result: res.error ? [] : (res.result || []),
-            url: text,
-          }
-        };
-      default:
-        return {
-          code: 200,
-          result: {
-            name: '',
-            result: []
-          },
-        };
+    try {
+      result = parseUrl(params.text);
+      code = 200;
+    } catch (error) {
+      code = 500;
+      result = error?.toString() ?? i18n.__('invalid_parameter');
     }
+
+    return {
+      code,
+      result,
+    };
+  }
+
+  async parseSubscriptionURL(params: { text: string }): Promise<ServiceResult> {
+    const res = await parseSubscription(params.text);
+    return {
+      code: 200,
+      result: {
+        name: res.error ? '' : (res.name || ''),
+        result: res.error ? [] : (res.result || []),
+        url: params.text,
+      }
+    };
   }
 
   async generateUrlFromConfig(params: Config): Promise<ServiceResult> {

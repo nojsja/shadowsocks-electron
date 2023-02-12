@@ -147,10 +147,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         break;
       case 'update_subscription':
         if (item.url) {
-          dispatch(updateSubscription(item.id, item.url, {
-            success: t('subscription_updated'),
-            error: { default: t('failed_to_update_subscription') }
-          }));
+          dispatch(updateSubscription(item.id, item.url));
         } else {
           Message.warning(t('server_url_not_set'));
         }
@@ -168,10 +165,7 @@ const ServerListItemGroup: React.FC<ServerListItemGroupProps> = props => {
         handleRemoveButtonClick();
         break;
       case 'start_cluster':
-        dispatch(startClusterAction(config, item.id, settings, {
-          success: t('successfully_enabled_load_balance'),
-          error: { default: t('failed_to_enable_load_balance') }
-        }));
+        dispatch(startClusterAction(config, item.id, settings));
         break;
       case 'stop_cluster':
         dispatch(stopClusterAction());
