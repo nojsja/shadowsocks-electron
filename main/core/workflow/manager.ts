@@ -41,19 +41,22 @@ export class WorkflowManager extends Workflow {
   async init() {
     const failedTasks: string[] = [];
     await this.bridge.init();
-    this.runnerIds.forEach(async (id) => {
+    const runners: WorkflowRunner[] = [];
+
+    await Promise.allSettled(this.runnerIds.map(async (id) => {
       const [error, runner] = await WorkflowRunner.from(id, this.bridge);
       if (runner) {
         if (runner.enable) {
           runner.startTimer();
         }
-        this.runners.push(runner);
+        runners.push(runner);
       } else {
         console.error(error);
         failedTasks.push(id);
       }
-    });
+    }));
 
+    this.runners = runners.sort((a, b) => a.ctime - b.ctime);
     this.status = 'initialized';
     this.emit('ready');
 
@@ -182,7 +185,7 @@ export class WorkflowManager extends Workflow {
   }
 
   async unloadWorkflowRunners() {
-    this.runners.forEach(async (runner) => {
+    this.runners.map(async (runner) => {
       runner.stopTimer();
       await runner.stop();
     });
@@ -191,17 +194,17 @@ export class WorkflowManager extends Workflow {
   }
 
   async reloadWorkflowRunners() {
-    this.runners.forEach(async (runner) => {
+    await Promise.allSettled(this.runners.map(async (runner) => {
       runner.startTimer();
       await runner.start();
-    });
+    }));
     this.status = 'initialized';
   }
 
   async clearWorkflowRunners() {
     const errors: Array<Error | null> = [];
 
-    this.runners.forEach(async (runner) => {
+    await Promise.allSettled(this.runners.map(async (runner) => {
       const error = await runner.remove();
       if (!error) {
         this.runners = this.runners.filter((runner) => runner.id !== runner.id);
@@ -209,7 +212,7 @@ export class WorkflowManager extends Workflow {
       } else {
         errors.push(error);
       }
-    });
+    }));
 
     if (!errors.length) {
       this.status = 'uninitialized';

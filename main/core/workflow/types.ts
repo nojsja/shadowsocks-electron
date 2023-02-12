@@ -29,6 +29,7 @@ export interface WorkflowTaskOptions {
 export interface WorkflowRunnerOptions {
   id: string;
   enable: boolean;
+  ctime: number;
   status: WorkflowRunnerStatus;
   timer: WorkflowTaskTimer;
   tasks: string[];

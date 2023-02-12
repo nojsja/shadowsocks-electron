@@ -28,6 +28,7 @@ export interface WorkflowTask {
 export interface WorkflowRunner {
   id: string;
   enable: boolean;
+  ctime: number;
   status: { value: WorkflowRunnerStatus };
   timerOption: WorkflowTaskTimer;
   queue: WorkflowTask[];

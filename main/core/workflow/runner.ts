@@ -21,6 +21,7 @@ export class WorkflowRunner extends Workflow {
     this.id = options.id ?? uuidv4();
     this.metaPath = path.resolve(this.rootDir, `${this.id}.workflow.json`);
     this.enable = options.enable ?? true;
+    this.ctime = options.ctime ?? Date.now();
     this.status = this.proxyStatus({ value: options.status ?? 'idle' });
     this.timerOption = options.timer ?? { enable: false };
     this.tasks = options.tasks ?? [];
@@ -32,6 +33,7 @@ export class WorkflowRunner extends Workflow {
   id: string;
   metaPath: string;
   enable: boolean;
+  ctime: number;
   status: { value: WorkflowTaskStatus };
   timerOption: WorkflowTaskTimer;
   tasks: string[];
@@ -92,13 +94,14 @@ export class WorkflowRunner extends Workflow {
     const metaData = JSON.stringify({
       id: this.id,
       enable: this.enable,
+      ctime: this.ctime,
       timer: this.timerOption,
       tasks: this.tasks,
     }, null, 2);
 
     try {
       try {
-        await fs.promises.access(this.rootDir, fs.constants.O_DIRECT);
+        await fs.promises.access(this.rootDir, fs.constants.F_OK);
       } catch (error) {
         await fs.promises.mkdir(this.rootDir, { recursive: true });
       }
@@ -238,9 +241,9 @@ export class WorkflowRunner extends Workflow {
     this.status.value = 'running';
 
     try {
-      this.queue.forEach(async (task) => {
+      Promise.allSettled(this.queue.map(async (task) => {
         await task.reset();
-      });
+      }));
       await this.queue.reduce(
         async (memo, task) => {
           const payload = await memo;

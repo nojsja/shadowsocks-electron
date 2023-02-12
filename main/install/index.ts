@@ -10,11 +10,14 @@ import { pacDir } from '../config';
 
 const loadExtensionsManually = (paths: string[]) => {
   paths.forEach(async (_path) => {
-    if (fs.existsSync(_path)) {
-      await session.defaultSession.loadExtension(_path);
+    try {
+      await fs.promises.access(_path, fs.constants.F_OK);
+      session.defaultSession.loadExtension(_path);
+    } catch (error) {
+      console.warn(error);
     }
-  })
-}
+  });
+};
 
 const loadExtensionsWithInstaller = async () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
