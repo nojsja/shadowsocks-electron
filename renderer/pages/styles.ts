@@ -171,10 +171,13 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     ...scrollBarStyle(6, 0, theme),
   },
   headerActions: {
+    position: 'sticky',
+    top: theme.spacing(.5),
     display: 'flex',
     justifyContent: 'flex-end',
     marginBottom: theme.spacing(1),
     padding: `0 ${theme.spacing(.5)}px`,
+    zIndex: 1000,
   },
   headerActionButton: {
     cursor: 'pointer',
