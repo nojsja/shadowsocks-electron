@@ -12,9 +12,9 @@ module.exports = function (
      * * demo2-1: add server (ss/ssr) to client
      * > dispatch('add-server', 'ss(r)://xxx');
      * * demo2-2: add server group to client
-     * > dispatch('add-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
+     * > dispatch('add-server-group', { name: 'xxx', text: ['ss(r)://xxx'] });
      * * demo2-3: update server group of client
-     * > dispatch('update-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
+     * > dispatch('update-server-group', { name: 'xxx', text: ['ss(r)://xxx'] });
      * * demo3: disconnect client from server
      * > dispatch('disconnect-server');
      * * demo4: send notifycation

@@ -1,7 +1,9 @@
+import { app } from 'electron';
 import path from 'path';
 import os from 'os';
 import * as Sentry from '@sentry/electron';
 import isDev from 'electron-is-dev';
+import pie from 'puppeteer-in-electron2';
 
 import logger from '../logs';
 import { ElectronApp } from '../app';
@@ -19,6 +21,7 @@ import {
   copyFileToPluginDir,
 } from '../utils/utils';
 import { pacDir, binDir } from '../config';
+import { warning } from '../logs';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
@@ -62,14 +65,14 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
 
 const chmodFiles = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'chmodFiles', () => {
-    console.log('hooks: >> chmodFiles');
+    console.log('hooks: >> chmod bin files');
     chmod(path.join(pathRuntime, 'bin'), 0o711);
   });
 };
 
 const checkPlatform = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'checkPlatform', (app: Electron.App) => {
-    console.log('hooks: >> checkPlatform');
+    console.log('hooks: >> handle platform specific');
     if (platform === 'linux') {
       try {
         app.disableHardwareAcceleration();
@@ -83,7 +86,7 @@ const checkPlatform = (electronApp: ElectronApp) => {
 const injectSentryMonitor = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('beforeReady', 'injectSentryMonitor', () => {
     if (isDev) {
-      console.log('hooks: >> uncaughtException');
+      console.log('hooks: >> uncaughtException handler');
       // 未捕获的全局错误
       process.on('uncaughtException', (err) => {
         console.error('<---------------');
@@ -98,11 +101,23 @@ const injectSentryMonitor = (electronApp: ElectronApp) => {
   });
 };
 
+const initPuppeteerInElectron = async (electronApp: ElectronApp) => {
+  electronApp.registryHooksSync('beforeReady', 'initPuppeteerInElectron', async () => {
+    console.log('hooks: >> init puppeteer-in-electron');
+    try {
+      await pie.initialize(app);
+    } catch (error) {
+      warning(`fail to init puppeteer-in-electron: ${error}`);
+    }
+  });
+};
+
 tasks.push(
   checkEnvFiles,
   chmodFiles,
   checkPlatform,
   injectSentryMonitor,
+  initPuppeteerInElectron,
 );
 
 export default (electronApp: ElectronApp) => {

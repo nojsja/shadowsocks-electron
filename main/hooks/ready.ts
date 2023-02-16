@@ -7,7 +7,7 @@ const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
 const configureLanguage = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('ready', 'configureLanguage', () => {
-    console.log('hooks: >> configureLanguage');
+    console.log('hooks: >> configure language');
     i18n.configure({
       locales: ['en-US', 'zh-CN', 'ru-RU'],
       defaultLocale: 'en-US',

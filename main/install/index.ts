@@ -10,6 +10,7 @@ import { pacDir } from '../config';
 
 const loadExtensionsManually = (paths: string[]) => {
   paths.forEach(async (_path) => {
+    if (!_path) return;
     try {
       await fs.promises.access(_path, fs.constants.F_OK);
       session.defaultSession.loadExtension(_path);
@@ -37,7 +38,7 @@ export const setupAfterInstall = async (manually?: boolean) => {
       'lmhkpmbekcpmknklioeibfkpmmfibljd'
     ]).then(async (paths) => {
       if (paths && paths.length) {
-        loadExtensionsManually(paths)
+        loadExtensionsManually(paths);
       }
     });
   } else if (!manually && isDev) {

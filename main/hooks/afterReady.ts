@@ -20,7 +20,7 @@ const electronReServiceTest = (electronApp: ElectronApp) => {
   if (!electronIsDev) return;
 
   electronApp.registryHooksAsyncWhenReady('electronReServiceTest', async () => {
-    console.log('hooks: >> electronReServiceTest');
+    console.log('hooks: >> electron-re service test');
     try {
       const testService = new BrowserService('test', path.join(__dirname, '../test/test.service.js'), {
         dev: true,
@@ -115,17 +115,19 @@ const setAsDefaultProtocolClient = () => {
   });
 };
 
-const initWorkflow = async () => {
-  console.log('hooks: >> initWorkflow');
-  await workflowManager.bootstrap();
-  try {
-    const [succeed, failedTasks] = await workflowManager.init();
-    if (!succeed) {
-      warning(`workflow init failed: ${failedTasks.join()}`);
+const initWorkflow = async (electronApp: ElectronApp) => {
+  electronApp.registryHooksAsyncWhenReady('initWorkflow', async () => {
+    console.log('hooks: >> init workflow');
+    try {
+      await workflowManager.bootstrap();
+      const [succeed, failedTasks] = await workflowManager.init();
+      if (!succeed) {
+        warning(`workflow init failed: ${failedTasks.join()}`);
+      }
+    } catch (error) {
+      warning(`workflow init failed: ${error}`);
     }
-  } catch (error) {
-    warning(`workflow init failed: ${error}`);
-  }
+  });
 };
 
 tasks.push(

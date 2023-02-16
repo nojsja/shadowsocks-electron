@@ -46,7 +46,6 @@ export class WorkflowBridge {
   dispatch: (action: string, args: unknown) => void;
 
   async init() {
-    await pie.initialize(app);
     // FIXME: types error
     this.browser = await pie.connect(app, puppeteer as any) as any;
     this.context = {
