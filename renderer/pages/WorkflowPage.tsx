@@ -14,6 +14,7 @@ import MenuButton from '@renderer/components/Pices/MenuButton';
 import NoRecord from '@renderer/components/Pices/NoRecord';
 import StatusBar from '@renderer/components/StatusBar';
 import { useRequest, type Response } from '@renderer/hooks/useRequest';
+import { MonacoEditorModalContextProvider } from '@renderer/hooks/useMonacoEditorModal';
 
 import WorkflowRunner from './workflow/WorkflowRunner';
 import { useStylesOfWorkflow } from './styles';
@@ -165,49 +166,51 @@ const Workflow: React.FC = () => {
   }, [setState]);
 
   return (
-    <Container className={styles.container}>
-      <div className={styles.headerActions}>
-        <WorkflowHelpInfo />
-        <MenuButton
-          menuButton={
-            <IconButton size="small">
-              <AddCircleIcon color="primary"/>
-            </IconButton>
+    <MonacoEditorModalContextProvider>
+      <Container className={styles.container}>
+        <div className={styles.headerActions}>
+          <WorkflowHelpInfo />
+          <MenuButton
+            menuButton={
+              <IconButton size="small">
+                <AddCircleIcon color="primary" />
+              </IconButton>
+            }
+            config={[
+              {
+                label: 'Source Task (puppeteer)', // puppeteer headless browser (data source)
+                key: 'puppeteer',
+                onClick: () => createRunner('puppeteer-source'),
+              },
+              {
+                label: 'Source Task (crawler)', // web crawler (data source)
+                key: 'crawler',
+                onClick: () => createRunner('crawler-source'),
+              },
+              {
+                label: 'Source Task (node)', // node script, generate data from local script or remote request (data source)
+                key: 'pipe',
+                onClick: () => createRunner('node-source'),
+              },
+            ]}
+          />
+        </div>
+        <div>
+          {
+            runnersResp?.result?.map((runner) => (
+              <WorkflowRunner
+                {...runner}
+                key={runner.id}
+                removeRunner={removeRunner}
+                updateRunner={updateRunner}
+              />
+            ))
           }
-          config={[
-            {
-              label: 'Source Task (puppeteer)', // puppeteer headless browser (data source)
-              key: 'puppeteer',
-              onClick: () => createRunner('puppeteer-source'),
-            },
-            {
-              label: 'Source Task (crawler)', // web crawler (data source)
-              key: 'crawler',
-              onClick: () => createRunner('crawler-source'),
-            },
-            {
-              label: 'Source Task (node)', // node script, generate data from local script or remote request (data source)
-              key: 'pipe',
-              onClick: () => createRunner('node-source'),
-            },
-          ]}
-        />
-      </div>
-      <div>
-        {
-          runnersResp?.result?.map((runner) => (
-            <WorkflowRunner
-              {...runner}
-              key={runner.id}
-              removeRunner={removeRunner}
-              updateRunner={updateRunner}
-            />
-          ))
-        }
-        <NoRecord hidden={!!runnersResp?.result?.length} />
-      </div>
-      <StatusBar />
-    </Container>
+          <NoRecord hidden={!!runnersResp?.result?.length} />
+        </div>
+        <StatusBar />
+      </Container>
+    </MonacoEditorModalContextProvider>
   );
 }
 

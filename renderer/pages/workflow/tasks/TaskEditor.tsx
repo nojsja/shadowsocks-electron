@@ -3,12 +3,12 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import LaunchIcon from '@material-ui/icons/Launch';
 import { IconButton, Tooltip, useMediaQuery } from '@material-ui/core';
-import { shell } from 'electron';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import cls from 'classnames';
 import CodeIcon from '@material-ui/icons/Code';
 import classNames from 'classnames';
 
+import useMonacoEditorModal from '@/renderer/hooks/useMonacoEditorModal';
 import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 import { type WorkflowTask } from '@renderer/types';
@@ -35,6 +35,7 @@ const TaskEditor: React.FC<Props> = ({
   const matchMaxWidth = useMediaQuery('(max-width: 500px)');
   const matchMaxHeight = useMediaQuery('(max-width: 700px)');
   const preScriptContent = usePreviousValue(scriptContent || null);
+  const { openModal, /* closeModal, */setValue } = useMonacoEditorModal();
 
   const onTemplateScriptLoad = () => {
     taskFS.read(templateCodePath).then((templateCode) => {
@@ -78,7 +79,8 @@ const TaskEditor: React.FC<Props> = ({
   }, [scriptContent]);
 
   const onScriptOpen = () => {
-    shell.openPath(scriptPath);
+    openModal();
+    setValue(scriptContent);
   };
 
   const onTaskDeleteInner = () => {
