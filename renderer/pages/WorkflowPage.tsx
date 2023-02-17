@@ -3,6 +3,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import { Container, IconButton } from '@material-ui/core';
 import { MessageChannel } from 'electron-re';
 import i18n from 'i18next';
+import useBus, { EventAction } from 'use-bus';
 
 import {
   type WorkflowTaskType,
@@ -19,7 +20,6 @@ import { MonacoEditorModalContextProvider } from '@renderer/hooks/useMonacoEdito
 import WorkflowRunner from './workflow/WorkflowRunner';
 import { useStylesOfWorkflow } from './styles';
 import WorkflowHelpInfo from './workflow/WorkflowHelpInfo';
-import useBus, { EventAction } from 'use-bus';
 
 const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
