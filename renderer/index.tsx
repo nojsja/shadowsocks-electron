@@ -1,7 +1,8 @@
-import React from "react";
+import React from 'react';
 import { render } from 'react-dom';
-import "typeface-roboto";
-import "./index.css";
+
+import 'typeface-roboto';
+import './index.css';
 
 let App;
 const rootDOMNode = document.getElementById("root");

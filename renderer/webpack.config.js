@@ -5,19 +5,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   devtool: 'cheap-module-source-map',
-  entry: path.resolve(__dirname, './renderer/index.tsx'),
+  entry: path.resolve(__dirname, './index.tsx'),
   mode: 'development',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'build'),
+    path: path.resolve(__dirname, '../build'),
     publicPath: '/',
   },
   resolve: {
     alias: {
       // dir
-      '@': __dirname,
-      '@main': path.resolve(__dirname, 'main'),
-      '@renderer': path.resolve(__dirname, 'renderer'),
+      '@': path.resolve(__dirname, '..'),
+      '@main': path.resolve(__dirname, '../main'),
+      '@renderer': path.resolve(__dirname, '.'),
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
@@ -86,11 +86,11 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
     new ESLintPlugin({
       extensions: ['.ts', '.tsx'],
-      context: path.resolve(__dirname, './'),
+      context: path.resolve(__dirname, '../'),
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: './renderer/index.html',
+      template: './index.html',
       inject: 'body',
       minify: true
     }),

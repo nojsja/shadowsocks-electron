@@ -5,20 +5,20 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, './renderer/index.tsx'),
+  entry: path.resolve(__dirname, './index.tsx'),
   // devtool: 'hidden-source-map',
   mode: 'production',
   output: {
     filename: 'bundle_[hash:8].js',
-    path: path.resolve(__dirname, 'build/'),
+    path: path.resolve(__dirname, '../build/'),
     publicPath: '',
   },
   resolve: {
     alias: {
       // dir
-      '@': __dirname,
-      '@main': path.resolve(__dirname, 'main'),
-      '@renderer': path.resolve(__dirname, 'renderer'),
+      '@': path.resolve(__dirname, '..'),
+      '@main': path.resolve(__dirname, '../main'),
+      '@renderer': path.resolve(__dirname, '.'),
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
@@ -42,7 +42,7 @@ module.exports = {
             loader: MiniCssExtractPlugin.loader,
             options: {
               // by default it uses publicPath in webpackOptions.output
-              publicPath: path.join(__dirname, 'build/'),
+              publicPath: path.join(__dirname, '../build/'),
             },
           },
           {
@@ -58,7 +58,7 @@ module.exports = {
             loader: MiniCssExtractPlugin.loader,
             options: {
               // by default it uses publicPath in webpackOptions.output
-              publicPath: path.join(__dirname, 'build/'),
+              publicPath: path.join(__dirname, '../build/'),
             },
           },
           {
@@ -121,7 +121,7 @@ module.exports = {
     new webpack.NoEmitOnErrorsPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: './renderer/template.ejs',
+      template: './template.ejs',
       inject: 'body',
       publicPath: './',
       minify: false

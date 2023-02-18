@@ -3,7 +3,8 @@ import { Container, Typography, Tooltip } from '@material-ui/core';
 import os from 'os';
 
 import authorPic from '@/assets/icons/256x256.png';
-import packageJson from '@/package.json';
+import packageJsonRenderer from '@/renderer/package.json';
+import packageJsonMain from '@/package.json';
 
 import ReleaseNotes from './about/ReleaseNotes';
 import { useStylesOfAbout as useStyles } from './styles';
@@ -18,7 +19,7 @@ const AboutPage: React.FC = () => {
       </div>
       <div className={styles.textCenter}>
         <Typography className={styles.textCenter} variant="h6" gutterBottom>
-          Shadowsocks Electron {packageJson.version}
+          Shadowsocks Electron {packageJsonMain.version}
         </Typography>
         <Typography variant="body1" gutterBottom>
           Shadowsocks GUI application with cross-platform desktop support, get more info on &nbsp;
@@ -43,7 +44,7 @@ const AboutPage: React.FC = () => {
             </div>
           <div>
             <Typography variant="caption" gutterBottom>
-              Electron: { packageJson.devDependencies['electron'] }
+              Electron: { packageJsonMain.devDependencies['electron'] }
             </Typography>
           </div>
           <div>
@@ -53,12 +54,12 @@ const AboutPage: React.FC = () => {
           </div>
           <div>
             <Typography variant="caption" gutterBottom>
-              React: { packageJson.devDependencies['react'] }
+              React: { packageJsonRenderer.devDependencies['react'] }
             </Typography>
           </div>
           <div>
             <Typography variant="caption" gutterBottom>
-              MaterialUI: { packageJson.devDependencies['@material-ui/core'] }
+              MaterialUI: { packageJsonRenderer.devDependencies['@material-ui/core'] }
             </Typography>
           </div>
           <div>
@@ -68,62 +69,62 @@ const AboutPage: React.FC = () => {
                   <>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        electron-re: { packageJson.dependencies['electron-re'] }
+                        electron-re: { packageJsonRenderer.dependencies['electron-re'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        sentry: { packageJson.dependencies['@sentry/electron'] }
+                        sentry: { packageJsonRenderer.dependencies['@sentry/electron'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        tapable: { packageJson.dependencies['tapable'] }
+                        tapable: { packageJsonMain.dependencies['tapable'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        i18next: { packageJson.dependencies['i18n'] }
+                        i18next: { packageJsonMain.dependencies['i18n'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        electron-store: { packageJson.dependencies['electron-store'] }
+                        electron-store: { packageJsonMain.dependencies['electron-store'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        winston: { packageJson.dependencies['winston'] }
+                        winston: { packageJsonMain.dependencies['winston'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        react-js-cron-mui: { packageJson.dependencies['react-js-cron-mui'] }
+                        react-js-cron-mui: { packageJsonRenderer.dependencies['react-js-cron-mui'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        crawler: { packageJson.dependencies['crawler'] }
+                        crawler: { packageJsonMain.dependencies['crawler'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        puppeteer-core: { packageJson.dependencies['puppeteer-core'] }
+                        puppeteer-core: { packageJsonMain.dependencies['puppeteer-core'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        node-schedule: { packageJson.dependencies['node-schedule'] }
+                        node-schedule: { packageJsonMain.dependencies['node-schedule'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        qrcode: { packageJson.dependencies['qrcode'] }
+                        qrcode: { packageJsonMain.dependencies['qrcode'] }
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        socks: { packageJson.dependencies['socks'] }
+                        socks: { packageJsonMain.dependencies['socks'] }
                       </Typography>
                     </div>
                   </>
