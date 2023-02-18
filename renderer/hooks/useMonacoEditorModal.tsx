@@ -1,8 +1,18 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import MonacoEditor, { MonacoEditorProps } from 'react-monaco-editor';
-import { createStyles, Dialog, Theme, withStyles } from '@material-ui/core';
+import {
+  Button,
+  createStyles,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Theme,
+  useTheme,
+  withStyles
+} from '@material-ui/core';
 
 import { scrollBarStyle } from '@renderer/pages/styles';
+import { useTranslation } from 'react-i18next';
 
 const StyledDialog = withStyles((theme: Theme) => (
   createStyles({
@@ -12,50 +22,77 @@ const StyledDialog = withStyles((theme: Theme) => (
   })
 ))(Dialog);
 
+interface OpenEditorOptions {
+  editorProps?: MonacoEditorProps;
+  onConfirm?: (value: string) => void;
+  onCancel?: () => void;
+}
+
 interface EditorProps {
   setValue: (value: string) => void;
-  openModal: () => void;
+  openModal: (options?: OpenEditorOptions) => void;
   closeModal: () => void;
 }
 
-export const MonacoEditorModalContext = React.createContext<EditorProps> ({
+export const MonacoEditorModalContext = React.createContext<EditorProps>({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setValue: () => {},
+  setValue: () => { },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  openModal: () => {},
+  openModal: () => { },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  closeModal: () => {},
+  closeModal: () => { },
 });
 
 export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [editorProps, setEditorProps] = useState<MonacoEditorProps>({});
+  const theme = useTheme();
   const editorRef = useRef<any>(null);
+  const onConfirmRef = useRef<(value: string) => void>();
+  const onCancelRef = useRef<() => void>();
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
+
+  const editorTheme = theme.palette.type === 'dark' ? 'vs-dark' : 'vs-light';
+
+  const getCurrentTextEditor = () => editorRef.current?.editor?.getEditors?.()[0];
 
   const onClose = () => {
     setOpen(false);
+    onCancelRef.current?.();
   };
 
-  const onOpen = (editorProps: MonacoEditorProps = {}) => {
+  const onOpen = (options?: OpenEditorOptions) => {
     setOpen(true);
-    setEditorProps(editorProps);
+    onConfirmRef.current = options?.onConfirm;
+    onCancelRef.current = options?.onCancel;
+    options?.editorProps && setEditorProps(options.editorProps);
+  };
+
+  const onConfirm = () => {
+    onConfirmRef.current?.(getCurrentTextEditor()?.getValue() ?? '');
+    setOpen(false);
   };
 
   const setValue = (value: string) => {
-    if (!editorRef.current) return;
-    editorRef.current.editor.setValue(value);
+    getCurrentTextEditor()?.setValue(value);
   };
 
-  const onEditorDidMount = (editor: any) => {
-    editorRef.current = editor;
+  const onEditorDidMount = (editor: any, monaco: any) => {
+    editorRef.current = monaco;
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  const onEditorValueChange = (value: string) => {
-    console.log(value);
-  };
+  useEffect(() => {
+    const resize = () => {
+      getCurrentTextEditor()?.layout();
+    };
+    window.addEventListener('resize', resize);
+
+    return () => {
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
   return (
     <MonacoEditorModalContext.Provider
@@ -69,20 +106,36 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
       <StyledDialog
         open={open}
         onClose={onClose}
+        keepMounted
+        fullWidth
+        maxWidth="lg"
       >
-        <MonacoEditor
-          width="800"
-          height="600"
-          language="javascript"
-          theme="vs-dark"
-          options={{
-            selectOnLineNumbers: true,
-          }}
-          {...editorProps}
-          value=""
-          onChange={onEditorValueChange}
-          editorDidMount={onEditorDidMount}
-        />
+        <DialogContent>
+          <MonacoEditor
+            height="70vh"
+            language="javascript"
+            theme={editorTheme}
+            options={{
+              selectOnLineNumbers: true,
+              minimap: {
+                enabled: false,
+              },
+              tabSize: 2,
+              tabCompletion: 'on',
+            }}
+            {...editorProps}
+            value=""
+            editorDidMount={onEditorDidMount}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onConfirm} color="primary">
+            {t('ok')}
+          </Button>
+          <Button onClick={onClose} autoFocus>
+            {t('cancel')}
+          </Button>
+        </DialogActions>
       </StyledDialog>
     </MonacoEditorModalContext.Provider>
   );

@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   devtool: 'cheap-module-source-map',
@@ -93,6 +94,9 @@ module.exports = {
       template: './index.html',
       inject: 'body',
       minify: true
+    }),
+    new MonacoWebpackPlugin({
+      languages: ['json', 'javascript']
     }),
   ],
 

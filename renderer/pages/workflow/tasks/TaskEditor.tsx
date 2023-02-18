@@ -59,9 +59,7 @@ const TaskEditor: React.FC<Props> = ({
       });
   };
 
-  const onScriptSave = useCallback(() => {
-    const content = editorRef.current?.getValue() ?? '';
-
+  const onScriptSave = useCallback((content: string) => {
     taskFS
       .write(content)
       .then(() => {
@@ -79,7 +77,11 @@ const TaskEditor: React.FC<Props> = ({
   }, [scriptContent]);
 
   const onScriptOpen = () => {
-    openModal();
+    openModal({
+      onConfirm(value) {
+        onScriptSave(value);
+      },
+    });
     setValue(scriptContent);
   };
 
@@ -131,7 +133,7 @@ const TaskEditor: React.FC<Props> = ({
             <DeleteIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Open with default external editor">
+        <Tooltip title="Open with code editor">
           <IconButton size="small" onClick={onScriptOpen}>
             <LaunchIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
@@ -142,7 +144,7 @@ const TaskEditor: React.FC<Props> = ({
           </IconButton>
         </Tooltip>
         <Tooltip title="Save changes, same as 'ctrl/cmd + s'.">
-          <IconButton size="small" onClick={onScriptSave}>
+          <IconButton size="small" onClick={() => onScriptSave(editorRef.current?.getValue() ?? '')}>
             <SaveIcon
               className={
                 cls(

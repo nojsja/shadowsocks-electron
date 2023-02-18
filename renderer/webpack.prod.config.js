@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname, './index.tsx'),
@@ -125,6 +126,9 @@ module.exports = {
       inject: 'body',
       publicPath: './',
       minify: false
+    }),
+    new MonacoWebpackPlugin({
+      languages: ['json', 'javascript']
     }),
   ],
 
