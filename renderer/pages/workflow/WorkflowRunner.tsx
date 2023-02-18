@@ -270,6 +270,7 @@ const WorkflowRunner: React.FC<Props> = ({
     onError(error) {
       Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
     },
+    cacheKey: 'main/service:workflow/workflowTaskDemoDir',
   });
 
   const onTaskDelete = async (taskId: string) => {
