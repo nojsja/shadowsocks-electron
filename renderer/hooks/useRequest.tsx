@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import _ from 'lodash';
+import { EventEmitter } from 'stream';
 
 export interface UseRequestReturn<T> {
   data?: T;
@@ -30,6 +31,7 @@ interface CacheObject {
 }
 
 const cacheKeysOfRequest = new Map<string, CacheObject>();
+const eventBus = new EventEmitter();
 const DEFAULT_CACHE_TIME = 5 * 60e3;
 
 /* clear cache every 5 minutes to avoid memory overflow */
@@ -53,6 +55,7 @@ export function useRequest<T> (
   const [response, setResponse] = useState<T | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const cacheTime = options.cacheTime ?? DEFAULT_CACHE_TIME;
+  const cacheKey = options.cacheKey;
 
   const setState = async (setter: (data: T) => T) => {
     const state = await setter(_.clone(response as T));
@@ -60,24 +63,29 @@ export function useRequest<T> (
   };
 
   const cachedAction = async (args: Parameters<typeof action>, func: typeof action) => {
-    if (options.cacheKey) { // cache logic
-      if (cacheKeysOfRequest.has(options.cacheKey)) { // cache hit
-        const cachedData = cacheKeysOfRequest.get(options.cacheKey);
+    if (cacheKey) { // cache logic
+      if (cacheKeysOfRequest.has(cacheKey)) { // cache hit
+        const cachedData = cacheKeysOfRequest.get(cacheKey);
         const timestamp = cachedData?.timestamp ?? 0;
         const now = Date.now();
 
         if (timestamp && (now - timestamp < cacheTime)) { // cache valid - return cached data
           return cachedData?.data as unknown as T;
-        } else { // cache invalid - update cache
-          cacheKeysOfRequest.set(options.cacheKey, {
+        } else { // cache invalid - update cache and wait on event
+          cacheKeysOfRequest.set(cacheKey, {
             ...(cachedData ?? { data: undefined, cacheTime }),
-            timestamp: Date.now(),
+            timestamp: 0,
+          });
+          return new Promise<T>((resolve) => {
+            eventBus.once(`useRequest:cache:${cacheKey}`, (args: any) => {
+              resolve(args);
+            });
           });
         }
 
       } else { // cache miss - add cache
-        cacheKeysOfRequest.set(options.cacheKey, {
-          timestamp: Date.now(),
+        cacheKeysOfRequest.set(cacheKey, {
+          timestamp: 0,
           cacheTime,
           data: undefined,
         });
@@ -86,12 +94,13 @@ export function useRequest<T> (
 
     const data = await func(...args);
 
-    if (options.cacheKey) { // update cache
-      cacheKeysOfRequest.set(options.cacheKey, {
+    if (cacheKey) { // update cache
+      cacheKeysOfRequest.set(cacheKey, {
         timestamp: Date.now(),
         cacheTime,
         data,
       });
+      eventBus.emit(`useRequest:cache:${cacheKey}`, data);
     }
 
     return data;
