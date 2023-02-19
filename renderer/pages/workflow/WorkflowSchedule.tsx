@@ -123,7 +123,7 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Tooltip title="Timer">
+      <Tooltip title={t('timer')}>
         <IconButton size="small" onClick={() => setOpen(true)}>
           { props.renderButton?.() || <TimerIcon /> }
         </IconButton>
@@ -148,13 +148,15 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
                 }
               />
               <ListItemSecondaryAction>
-                <Tooltip title="disabled">
+                <Tooltip
+                  title={enabled ? t('enabled') : t('disabled')}
+                >
                   <IconButton size="small">
                     <Switch
                       color="primary"
                       checked={enabled}
                       disabled={!runnerEnabled}
-                      onChange={(e, checked) => setEnabled(checked)}
+                      onChange={(e, checked: boolean) => setEnabled(checked)}
                     />
                   </IconButton>
                 </Tooltip>
@@ -175,7 +177,7 @@ const WorkflowScheduleDialog: React.FC<Props> = (props) => {
               startIcon={<SaveIcon />}
               onClick={onConfirm}
             >
-              Save
+              {t('save')}
             </Button>
           </DialogActions>
         </DialogContent>

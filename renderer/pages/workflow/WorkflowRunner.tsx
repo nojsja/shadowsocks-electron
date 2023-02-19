@@ -325,7 +325,7 @@ const WorkflowRunner: React.FC<Props> = ({
       }
       {
         isEmptyRunner && (
-          <NoRecord title="No Tasks" />
+          <NoRecord title={t('no_tasks')} />
         )
       }
       <div className={styles.footerAction} >
@@ -336,7 +336,7 @@ const WorkflowRunner: React.FC<Props> = ({
             </IconButton>
           </Tooltip>
         </div>
-        <Tooltip title="Delete">
+        <Tooltip title={t('remove_workflow')}>
           <IconButton size="small" onClick={onRemoveRunner}>
             <DeleteIcon className={styles.footerActionButton} color="action" />
           </IconButton>
@@ -351,7 +351,7 @@ const WorkflowRunner: React.FC<Props> = ({
         />
         <MenuButton
           menuButton={
-            <Tooltip title="Add">
+            <Tooltip title={t('add_workflow_task')}>
               <IconButton size="small">
                 <AddCircleIcon className={styles.footerActionButton} />
               </IconButton>
@@ -387,7 +387,7 @@ const WorkflowRunner: React.FC<Props> = ({
         />
         {
           !isRunning && (
-            <Tooltip title="Run">
+            <Tooltip title={t('run_workflow')}>
               <IconButton size="small" disabled={!enable || isEmptyRunner} onClick={startRunnerInner}>
                 <PlayCircleFilledWhiteIcon color="action" className={classNames(styles.footerActionButton, (!enable || isEmptyRunner) && 'disabled')} />
               </IconButton>
@@ -396,7 +396,7 @@ const WorkflowRunner: React.FC<Props> = ({
         }
         {
           isRunning && (
-            <Tooltip title="Stop">
+            <Tooltip title={t('stop_workflow')}>
               <IconButton size="small" disabled={!enable} onClick={stopRunnerInner}>
                 <CancelIcon color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
               </IconButton>
