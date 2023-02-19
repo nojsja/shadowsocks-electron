@@ -1,5 +1,5 @@
 import React from 'react';
-import { type WorkflowTask } from '@renderer/types';
+import { WORKFLOW_TASK_FILE, type WorkflowTask } from '@renderer/types';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 import path from 'path';
 import classNames from 'classnames';
@@ -13,7 +13,7 @@ interface Props extends WorkflowTask {
 
 const CrawlerSourceTask: React.FC<Props> = (props) => {
   const styles = useStylesOfWorkflow();
-  const template = path.join(props.workflowTaskDemoDir ?? '', 'crawler-source.js');
+  const template = path.join(props.workflowTaskDemoDir ?? '', WORKFLOW_TASK_FILE.crawlerSource);
   const isError = props.status === 'failed';
   const isSuccess = props.status === 'success';
 

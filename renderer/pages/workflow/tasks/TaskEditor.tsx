@@ -13,6 +13,7 @@ import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 import { type WorkflowTask } from '@renderer/types';
 import { useDidUpdate, usePreviousValue, useTaskFS } from '@renderer/hooks';
+import { useTranslation } from 'react-i18next';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
@@ -26,6 +27,7 @@ const TaskEditor: React.FC<Props> = ({
   templateCodePath,
 }) => {
   const styles = useStylesOfWorkflow();
+  const { t } = useTranslation();
   const [scriptContent, setScriptContent] = useState<string>('');
   const taskFS = useTaskFS(scriptPath);
   const editorRef = useRef<TextEditorRef>(null);
@@ -128,22 +130,22 @@ const TaskEditor: React.FC<Props> = ({
         />
       </div>
       <div className={styles.textEditorActions}>
-        <Tooltip title="Delete">
+        <Tooltip title={t('delete')}>
           <IconButton onClick={onTaskDeleteInner} size="small">
             <DeleteIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Open with code editor">
+        <Tooltip title={t('open_with_code_editor')}>
           <IconButton size="small" onClick={onScriptOpen}>
             <LaunchIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Restore">
+        <Tooltip title={t('restore')}>
           <IconButton size="small" onClick={onScriptReload}>
             <RotateLeftIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Save changes, same as 'ctrl/cmd + s'.">
+        <Tooltip title={t('save_editor_content_tips')}>
           <IconButton size="small" onClick={() => onScriptSave(editorRef.current?.getValue() ?? '')}>
             <SaveIcon
               className={
@@ -156,7 +158,7 @@ const TaskEditor: React.FC<Props> = ({
             />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Load template code">
+        <Tooltip title={t('load_template_code')}>
           <IconButton size="small" onClick={onTemplateScriptLoad}>
             <CodeIcon
               className={styles.textEditorActionButton}

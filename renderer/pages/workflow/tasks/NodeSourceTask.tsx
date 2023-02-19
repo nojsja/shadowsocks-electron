@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { type WorkflowTask } from '@renderer/types';
+import { WORKFLOW_TASK_FILE, type WorkflowTask } from '@renderer/types';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 
 import TaskEditor from './TaskEditor';
@@ -14,7 +14,7 @@ interface Props extends WorkflowTask {
 
 const NodeSourceTask: React.FC<Props> = (props) => {
   const styles = useStylesOfWorkflow();
-  const template = path.join(props.workflowTaskDemoDir ?? '', 'node-source.js');
+  const template = path.join(props.workflowTaskDemoDir ?? '', WORKFLOW_TASK_FILE.nodeSource);
   const isError = props.status === 'failed';
   const isSuccess = props.status === 'success';
 

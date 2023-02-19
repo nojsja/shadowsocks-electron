@@ -3,7 +3,7 @@ import path from 'path';
 import classNames from 'classnames';
 
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
-import { type WorkflowTask } from '@renderer/types';
+import { WORKFLOW_TASK_FILE, type WorkflowTask } from '@renderer/types';
 import TaskEditor from './TaskEditor';
 
 interface Props extends WorkflowTask {
@@ -13,7 +13,7 @@ interface Props extends WorkflowTask {
 
 const EffectTask: React.FC<Props> = (props) => {
   const styles = useStylesOfWorkflow();
-  const template = path.join(props.workflowTaskDemoDir ?? '', 'effect-pipe.js');
+  const template = path.join(props.workflowTaskDemoDir ?? '', WORKFLOW_TASK_FILE.effectPipe);
   const isError = props.status === 'failed';
   const isSuccess = props.status === 'success';
 

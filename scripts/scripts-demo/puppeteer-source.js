@@ -5,13 +5,13 @@ module.exports = async function(
     clipboard, // clipboard module of electron
   }
 ) {
-  // see API https://github.com/GoogleChrome/puppeteer.
+  // see API https://pptr.dev/api/puppeteer.page.
   const [page, closeBrowser] = await loadBrowserPage('https://lncn.org/', {
     show: false, // show browser window, optional, default true.
   });
 
   // trigger button click event for saving data to clipborad.
-  page.click('.ssr-list-wrapper.base-box .el-button--primary');
+  await page.click('.ssr-list-wrapper.base-box .el-button--primary');
 
   // see API https://www.electronjs.org/docs/latest/api/clipboard.
   const result = clipboard.readText('clipboard'); // read data from clipboard.

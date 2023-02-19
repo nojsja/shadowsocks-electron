@@ -11,6 +11,14 @@ export enum ALGORITHM {
   WEIGHTS_MINIMUM_CONNECTION = 'WEIGHTS_MINIMUM_CONNECTION', // 权重最小连接数
 }
 
+export const WORKFLOW_TASK_FILE = {
+  crawlerSource: 'crawler-source.js',
+  nodeSource: 'node-source.js',
+  processorPipe: 'processor-pipe.js',
+  puppeteerSource: 'puppeteer-source.js',
+  effectPipe: 'effect-pipe.js',
+};
+
 export interface Traffic {
   GB: number, MB: number, KB: number
 }

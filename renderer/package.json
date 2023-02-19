@@ -34,6 +34,7 @@
     "i18next": "^20.6.1",
     "lodash": "^4.17.21",
     "monaco-editor": "^0.34.1",
+    "react-code-blocks": "0.0.9-0",
     "react-js-cron-mui": "^1.0.0",
     "react-monaco-editor": "^0.51.0",
     "uuid": "7.0.2"

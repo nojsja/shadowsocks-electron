@@ -5,6 +5,7 @@ import { grey } from "@material-ui/core/colors";
 export const scrollBarStyle = (width = 10, radius = 5, theme: Theme) => ({
   "&::-webkit-scrollbar": {
     width: width,
+    height: width,
   },
   "&::-webkit-scrollbar-track": {
       "-webkit-box-shadow": `inset 0 0 3px ${theme.palette.type === 'dark' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.3)'}`,
@@ -209,6 +210,7 @@ export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     fontSize: 12,
+    fontWeight: 500,
   },
   textEditorWrapper: {
     position: 'relative',

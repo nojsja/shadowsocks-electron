@@ -6,13 +6,14 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  makeStyles,
   Theme,
   useTheme,
   withStyles
 } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 import { scrollBarStyle } from '@renderer/pages/styles';
-import { useTranslation } from 'react-i18next';
 
 const StyledDialog = withStyles((theme: Theme) => (
   createStyles({
@@ -21,6 +22,17 @@ const StyledDialog = withStyles((theme: Theme) => (
     }
   })
 ))(Dialog);
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    content: {
+      backgroundColor: theme.palette.type === 'dark' ? 'rgba(255,255,255, .1)' : 'rgba(255, 255, 255, 1)',
+    },
+    footer: {
+      backgroundColor: theme.palette.type === 'dark' ? 'rgba(255,255,255, .1)' : 'rgba(255, 255, 255, 1)',
+    }
+  })
+);
 
 interface OpenEditorOptions {
   editorProps?: MonacoEditorProps;
@@ -46,6 +58,7 @@ export const MonacoEditorModalContext = React.createContext<EditorProps>({
 export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const styles = useStyles();
   const [editorProps, setEditorProps] = useState<MonacoEditorProps>({});
   const theme = useTheme();
   const editorRef = useRef<any>(null);
@@ -110,7 +123,7 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
         fullWidth
         maxWidth="lg"
       >
-        <DialogContent>
+        <DialogContent className={styles.content}>
           <MonacoEditor
             height="70vh"
             language="javascript"
@@ -128,7 +141,7 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
             editorDidMount={onEditorDidMount}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions className={styles.footer}>
           <Button onClick={onConfirm} color="primary">
             {t('ok')}
           </Button>
