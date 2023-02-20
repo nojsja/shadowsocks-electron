@@ -1,5 +1,5 @@
 import { shell } from 'electron';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import Popover from '@material-ui/core/Popover';
 import { createStyles, IconButton, Link, makeStyles, useTheme } from '@material-ui/core';
 import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
@@ -141,7 +141,7 @@ const InstrunctionEnUs: React.FC<InstrunctionProps> = ({ codeScripts }) => {
   )
 };
 
-export default function WorkflowHelpInfo() {
+function WorkflowHelpInfo() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const styles = useStylesOfWorkflow();
   const open = Boolean(anchorEl);
@@ -195,11 +195,10 @@ export default function WorkflowHelpInfo() {
 
   useEffect(() => {
     const templateCodePath = workflowTaskDemoRsp?.result;
-    if (!open) return;
     if (workflowTaskDemoRsp?.code === 200 && templateCodePath) {
       loadDemoScripts(templateCodePath);
     }
-  }, [workflowTaskDemoRsp, open]);
+  }, [workflowTaskDemoRsp]);
 
   return (
     <div>
@@ -229,3 +228,5 @@ export default function WorkflowHelpInfo() {
     </div>
   );
 }
+
+export default memo(WorkflowHelpInfo);

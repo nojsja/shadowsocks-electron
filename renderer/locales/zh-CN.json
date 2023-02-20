@@ -186,7 +186,7 @@
   "workflow_task_text_00_02": "工作流功能使创建复杂的任务流程变得更加容易。在我的一个案例中，使用了工作流来从互联网上抓取免费的 SSR/SS 服务器节点。",
   "workflow_task_text_00_03": "另一个例子是通过定时计划实现订阅自动更新，就像 unix 的 crontab 任务一样，当然也遵循相同的 crontab 语法(* */1 * * *)。",
   "workflow_task_text_00_04": "如果您不知道如何创建任务脚本，请尝试 <b>加载模板代码</b> 按钮为每个任务加载一个简单的示例。",
-  "workflow_task_text_01_01_title": "一、Source 源任务",
+  "workflow_task_text_01_01_title": "1. Source 源任务",
   "workflow_task_text_01_01_block_01": "对于源类型任务，一般用于生成数据源，然后将数据传递给下一个任务处理器。它有三个子类型：Puppeteer、Crawler、Node。",
   "workflow_task_text_01_01_01_title": "1.1 Puppeteer 源任务",
   "workflow_task_text_01_01_01_01": "用于在 web 上执行自动化任务的无头浏览器，它支持无 UI 界面的编程控制。",
@@ -195,9 +195,9 @@
   "workflow_task_text_01_01_02_01": "Node.js 上最强大、流行的 web 爬虫工具。",
   "workflow_task_text_01_01_03_title": "1.3 Node 源任务",
   "workflow_task_text_01_01_03_01": "Node 类型任务是 nodejs 原生模块(同样适用于所有其他任务)支持的通用任务，可以使用它来执行任何 Nodejs 脚本，例如读/写文件系统和发送 http 请求获取远程数据。",
-  "workflow_task_text_01_02_title": "二、Processor 处理器任务",
+  "workflow_task_text_01_02_title": "2. Processor 处理器任务",
   "workflow_task_text_01_02_block_01": "对于处理器类型的任务，扮演着任务之间的中间件的角色。它通常用于处理来自前一个任务的数据，并将处理后的数据传递给下一个任务处理程序。",
-  "workflow_task_text_01_03_title": "三、Effect 附加效果任务",
+  "workflow_task_text_01_03_title": "3. Effect 附加效果任务",
   "workflow_task_text_01_03_block_01": "对于附加效果型任务，一般用于产生副作用，如通知、订阅更新、订阅添加、服务器添加、服务器断开、服务器重连等。",
   "workflow_task_text_01_03_block_02": "所有这些功能都是由客户端内部 API 服务(IPC)提供的，之后会有更多的 API 支持。"
 }

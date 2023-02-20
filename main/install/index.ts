@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 import { session } from 'electron';
 import isDev from 'electron-is-dev';
@@ -48,16 +48,19 @@ export const setupAfterInstall = async (manually?: boolean) => {
 
 export const setupIfFirstRun = async () => {
   try {
-    const firstRun = !(await fs.pathExists(path.resolve(pacDir, "pac.txt")));
+    let firstRun = false;
+    try {
+      await fs.promises.access(path.resolve(pacDir, "pac.txt"), fs.constants.F_OK);
+    } catch (error) {
+      firstRun = true;
+    }
     const { PacServer: PS } = pac;
 
-    if (!firstRun) {
-      return;
-    }
+    if (!firstRun) return;
 
     logger.info("First run detected");
 
-    const data = await fs.readFile(path.resolve(pacDir, "gfwlist.txt"));
+    const data = await fs.promises.readFile(path.resolve(pacDir, "gfwlist.txt"));
     const text = data.toString("ascii");
     await PS.generatePacWithoutPort(text);
   } catch (err) {

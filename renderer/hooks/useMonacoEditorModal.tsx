@@ -118,7 +118,6 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
       {children}
       <StyledDialog
         open={open}
-        onClose={onClose}
         keepMounted
         fullWidth
         maxWidth="lg"

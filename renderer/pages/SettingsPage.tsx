@@ -137,6 +137,7 @@ const SettingsPage: React.FC = () => {
     }).then((rsp) => {
       setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
       if (rsp.code === 200) {
+        touchField('pac', true);
         Message.success(t('successful_operation'));
       } else {
         Message.error(t('failed_to_download_file'));

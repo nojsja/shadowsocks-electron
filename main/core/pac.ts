@@ -2,7 +2,6 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
-import fsExtra from 'fs-extra';
 import URL from 'url';
 
 import logger from '../logs';
@@ -60,10 +59,10 @@ export class PacServer {
         null,
         2
       );
-      const data = await fsExtra.readFile(path.resolve(pacDir, "template.pac"));
+      const data = await fs.promises.readFile(path.resolve(pacDir, "template.pac"));
       const pac = data.toString("ascii").replace(/__RULES__/g, rules);
 
-      await fsExtra.writeFile(path.resolve(pacDir, "pac.txt"), pac);
+      await fs.promises.writeFile(path.resolve(pacDir, "pac.txt"), pac);
       logger.info("Generated done.");
     } catch (err) {
       logger.error((err as any).message ?? err);
@@ -74,12 +73,12 @@ export class PacServer {
     logger.info("Generating full PAC file...");
 
     try {
-      const data = await fsExtra.readFile(path.resolve(pacDir, "pac.txt"));
+      const data = await fs.promises.readFile(path.resolve(pacDir, "pac.txt"));
       const pac = data
         .toString("ascii")
         .replace(/__PORT__/g, localPort.toString());
 
-      await fsExtra.writeFile(path.resolve(pacDir, "proxy.pac"), pac);
+      await fs.promises.writeFile(path.resolve(pacDir, "proxy.pac"), pac);
       logger.info("Generated done.");
     } catch (err) {
       logger.error((err as any).message ?? err);
@@ -178,7 +177,7 @@ export class PacServer {
     return fs.watch(pacFile, debounce(async () => {
       logger.info(`Regenerating PAC conf from file: ${pacFile}...`);
       try {
-        const userData = await fs.promises.readFile(pacFile);
+        const userData = await fs.promises.readFile(this.userPacConf);
         const globalData = await fs.promises.readFile(this.globalPacConf);
         const userText = userData.toString("ascii");
         const globalText = globalData.toString("ascii");
