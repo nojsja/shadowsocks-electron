@@ -34,6 +34,13 @@
       "filter": [
         "!.gitignore"
       ]
+    },
+    {
+      "from": "scripts/scripts-demo",
+      "to": "scripts/scripts-demo",
+      "filter": [
+        "!.gitignore"
+      ]
     }
   ],
   "mac": {
