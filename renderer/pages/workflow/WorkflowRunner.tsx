@@ -325,7 +325,7 @@ const WorkflowRunner: React.FC<Props> = ({
       }
       {
         isEmptyRunner && (
-          <NoRecord title={t('no_tasks')} />
+          <NoRecord title={t('no_task')} />
         )
       }
       <div className={styles.footerAction} >

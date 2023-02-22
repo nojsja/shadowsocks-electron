@@ -160,7 +160,7 @@
   "remove_workflow": "Remove Workflow",
   "run_workflow": "Run Workflow",
   "stop_workflow": "Stop Workflow",
-  "no_tasks": "No Tasks",
+  "no_task": "No Task",
   "timer": "Timer",
   "disabled": "Disabled",
   "enabled": "Enabled",

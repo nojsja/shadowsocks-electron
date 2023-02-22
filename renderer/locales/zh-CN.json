@@ -160,7 +160,7 @@
   "remove_workflow": "删除工作流",
   "run_workflow": "运行工作流",
   "stop_workflow": "中止工作流",
-  "no_tasks": "无任务",
+  "no_task": "无任务",
   "timer": "定时器",
   "disabled": "已禁用",
   "enabled": "已启用",

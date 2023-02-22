@@ -59,6 +59,14 @@ export class WorkflowBridge {
          */
         loadBrowserPage: async (url: string, options: BrowserWindowConstructorOptions) => {
           const window = new BrowserWindow(options);
+          await new Promise((resolve, reject) => {
+            window.once('ready-to-show', () => {
+              resolve(null);
+            });
+            window.once('closed', () => {
+              reject(new Error('Puppeteer Window closed abnormally!'));
+            });
+          });
           await window.loadURL(url);
           // FIXME: types error
           const page = await pie.getPage(this.browser as any, window);
@@ -86,7 +94,7 @@ export class WorkflowBridge {
       'effect-pipe': {
         dispatch,
       },
-    }
+    };
   }
 
   loadContext(type: WorkflowTaskType) {
