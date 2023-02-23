@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { AbortController } from 'node-abort-controller';
+import vm from 'vm';
 
 import { Workflow } from './base';
 import {
@@ -184,12 +185,13 @@ export class WorkflowTask extends Workflow {
             throw new TaskIsAbortedError(this.id);
           }
         })
-        .then(() => {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          delete require.cache[this.scriptPath]; // clear module cache
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const scriptModule = require(this.scriptPath);
-          return scriptModule(payload, options);
+        .then(async () => {
+          const scriptContents = await fs.promises.readFile(this.scriptPath, 'utf-8');
+          const result = vm.runInNewContext(scriptContents, vm.createContext({
+            content: payload,
+            ...options,
+          }));
+          return typeof result === 'function' ? result() : result;
         })
         .then((moduleResults: unknown) => {
           if (this.abortCtrl?.signal.aborted) {

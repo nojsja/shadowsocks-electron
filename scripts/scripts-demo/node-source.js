@@ -1,9 +1,5 @@
-module.exports = async function (
-  content, // data from previous step
-) {
+async () => {
   // see API https://nodejs.org/dist/latest-v16.x/docs/api/https.html.
-  // import native nodejs module you need, such as http/https/fs/os/path.
-  const https = require('https');
   const data = await new Promise((resolve) => {
     https.get('https://nodejs.org/en/', (res) => {
       let rawData = '';

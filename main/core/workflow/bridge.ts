@@ -2,6 +2,15 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import pie from 'puppeteer-in-electron2';
 import puppeteer, { Browser } from 'puppeteer-core';
 import { clipboard } from 'electron';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
+import path from 'path';
+import crypto from 'crypto';
+import os from 'os';
+import url from 'url';
+import net from 'net';
+import fetch from 'node-fetch';
 
 import { type WorkflowTaskType } from './types';
 
@@ -32,6 +41,19 @@ export const dispatch = (action: string, args: unknown) => {
     action,
     args,
   });
+};
+
+const commonContext = {
+  fs,
+  http,
+  https,
+  path,
+  crypto,
+  os,
+  url,
+  net,
+  fetch,
+  clipboard,
 };
 
 export class WorkflowBridge {
@@ -80,19 +102,25 @@ export class WorkflowBridge {
 
           return [page, closeBrowser];
         },
-        clipboard,
+        ...commonContext,
       },
       /* crawler - Use [web crawler] to produce data. */
       'crawler-source': {
         loadCrawler: () => require('crawler'),
+        ...commonContext,
       },
       /* node - Use nodejs script to produce data, such as read file, request http, etc. */
-      'node-source': {},
+      'node-source': {
+        ...commonContext,
+      },
       /* processor - Use nodejs middle handler to process data, such as filter, sort, error wrapper, etc. */
-      'processor-pipe': {},
+      'processor-pipe': {
+        ...commonContext,
+      },
       /* effect - produce some UI effects, such as notifycation. */
       'effect-pipe': {
         dispatch,
+        ...commonContext,
       },
     };
   }

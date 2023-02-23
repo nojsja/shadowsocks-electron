@@ -20,10 +20,7 @@
  *     type: 'default', // type - 'default' | 'error' | 'success' | 'warning' | 'info'
  *   });
  */
-module.exports = function (
-  content, // data from previous step
-  { dispatch }
-) {
+async () => {
   dispatch('notifycation', {
     message: content,
     type: 'success',

@@ -1,10 +1,4 @@
-module.exports = async function(
-  content, // data from previous step
-  {
-    loadBrowserPage, // -> [puppeteer Page instance, destroy function]
-    clipboard, // clipboard module of electron
-  }
-) {
+async () => {
   // see API https://pptr.dev/api/puppeteer.page.
   const [page, closeBrowser] = await loadBrowserPage('https://lncn.org/', {
     show: false, // show browser window, optional, default true.

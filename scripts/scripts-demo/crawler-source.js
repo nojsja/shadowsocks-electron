@@ -1,7 +1,4 @@
-module.exports = async function(
-  content, // data from previous step
-  { loadCrawler },
-) {
+async () => {
   // import node-crawler module
   const Crawler = loadCrawler();
   // see API https://github.com/bda-research/node-crawler.
