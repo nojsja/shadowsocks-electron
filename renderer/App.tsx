@@ -5,7 +5,7 @@ import {
   createStyles,
   ThemeProvider
 } from '@material-ui/core/styles';
-import {  SnackbarProvider } from 'notistack';
+import { SnackbarProvider } from 'notistack';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -20,6 +20,7 @@ import { getConnectionStatus, setStatus } from '@renderer/redux/actions/status';
 import { setSetting } from '@renderer/redux/actions/settings';
 
 import RouterComponent from '@renderer/Router';
+import ContextMenuProvider from '@renderer/components/ContextMenu';
 import AppNav from '@renderer/components/AppNav';
 import Loading from '@renderer/components/Loading';
 import useTheme from '@renderer/hooks/useTheme';
@@ -53,7 +54,7 @@ const App: React.FC = () => {
   const methods = useForm();
 
   useEffect(() => {
-    const removeConnectedListener = MessageChannel.on('connected', (e, message : { status: boolean, mode: ServerMode }) => {
+    const removeConnectedListener = MessageChannel.on('connected', (e, message: { status: boolean, mode: ServerMode }) => {
       store.dispatch(setStatus('connected', message.status));
       store.dispatch(setSetting('serverMode', message.mode));
     });
@@ -103,26 +104,28 @@ const App: React.FC = () => {
     <Provider store={store}>
       <PersistGate loading={<Loading />} persistor={persistor}>
         <ThemeProvider theme={theme}>
-          <DialogConfirmProvider>
-            <FormProvider {...methods}>
-              <SnackbarProvider
-                maxSnack={3}
-                anchorOrigin={ {horizontal: 'center', vertical: 'top'} }
-                autoHideDuration={2e3}
-              >
-                <HashRouter>
-                  <div className={styles.root}>
-                    <CssBaseline />
-                    <AppNav />
-                    <main className={styles.content}>
-                      <div className={styles.toolbar} />
-                      <RouterComponent />
-                    </main>
-                  </div>
-                </HashRouter>
-              </SnackbarProvider>
-            </FormProvider>
-          </DialogConfirmProvider>
+          <ContextMenuProvider>
+            <DialogConfirmProvider>
+              <FormProvider {...methods}>
+                <SnackbarProvider
+                  maxSnack={3}
+                  anchorOrigin={{ horizontal: 'center', vertical: 'top' }}
+                  autoHideDuration={2e3}
+                >
+                  <HashRouter>
+                    <div className={styles.root}>
+                      <CssBaseline />
+                      <AppNav />
+                      <main className={styles.content}>
+                        <div className={styles.toolbar} />
+                        <RouterComponent />
+                      </main>
+                    </div>
+                  </HashRouter>
+                </SnackbarProvider>
+              </FormProvider>
+            </DialogConfirmProvider>
+          </ContextMenuProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

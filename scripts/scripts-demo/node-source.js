@@ -1,5 +1,6 @@
 /**
  * API of Node Source Task
+ * {any} content - data from previous step, if current task is in first place, it will be undefined.
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).
  * {native} https - HTTPS server and client (nodejs).

@@ -1,5 +1,6 @@
 /**
  * API of Puppeteer Source Task
+ * {any} content - data from previous step, if current task is in first place, it will be undefined.
  * {function} loadBrowserPage - used to load web pages with puppeteer (external https://pptr.dev/api/puppeteer.page).
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).

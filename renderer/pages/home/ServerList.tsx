@@ -13,7 +13,6 @@ import { moveConfig, generateUrlFromConfig } from '@renderer/redux/actions/confi
 import { SET_SETTING } from '@renderer/redux/actions/settings';
 import { REMOVE_CONFIG } from '@renderer/redux/actions/config';
 
-import ContextMenuProvider from '@renderer/components/ContextMenu';
 import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
 import { Message } from '@/renderer/hooks/useNotifier';
 import If from '@renderer/components/HOC/IF';
@@ -156,7 +155,7 @@ const ServerList: React.FC<ServerListProps> = props => {
       <If
         condition={!!config.length}
         then={
-          <ContextMenuProvider>
+          <>
             <List className={`${styles.list} ${styles.scrollbar}`}>
               {config.map((item, index) => (
                 <ServerListItem
@@ -179,7 +178,7 @@ const ServerList: React.FC<ServerListProps> = props => {
               ))}
             </List>
             <GradientDivider />
-          </ContextMenuProvider>
+          </>
         }
         else={
           <div className={styles.empty}>

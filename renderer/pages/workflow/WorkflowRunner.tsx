@@ -311,12 +311,14 @@ const WorkflowRunner: React.FC<Props> = ({
   return (
     <div className={styles.runnerWrapper}>
       {
-        queue.map((task) => {
+        queue.map((task, i) => {
           const TaskComponent = TaskTypeMap[task.type] || TaskTypeMap.unknown;
           return (
             <TaskComponent
               key={task.id}
               {...task}
+              index={i}
+              total={queue.length}
               onTaskDelete={onTaskDelete}
               workflowTaskDemoDir={workflowTaskDemoRsp?.result}
             />
