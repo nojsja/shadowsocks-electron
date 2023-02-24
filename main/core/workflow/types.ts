@@ -24,6 +24,7 @@ export interface WorkflowTaskOptions {
   type: WorkflowTaskType;
   status: WorkflowTaskStatus;
   script: string;
+  timeout: number;
 }
 
 export interface WorkflowRunnerOptions {

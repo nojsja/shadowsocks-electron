@@ -573,6 +573,7 @@ export function getPureRunners(runners: WorkflowRunner[]) {
       status: task.status.value,
       type: task.type,
       scriptPath: task.scriptPath,
+      timeout: task.timeout,
     })),
   }));
 }

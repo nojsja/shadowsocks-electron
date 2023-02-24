@@ -137,6 +137,7 @@ export class WorkflowRunner extends Workflow {
     return Promise.all(
       this.tasks.map((taskId) => WorkflowTask.generate({
         id: taskId,
+        timeout: 60e3,
       }))
     ).then((tasks) => {
       this.queue = tasks.filter(Boolean) as WorkflowTask[];

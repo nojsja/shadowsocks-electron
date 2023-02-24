@@ -1,7 +1,20 @@
+/**
+ * API of Crawler Source Task
+ * {function} loadCrawler - used to load node-crawler module (external https://www.npmjs.com/package/crawler).
+ * {native} fs - filesystem (nodejs).
+ * {native} http - HTTP server and client (nodejs).
+ * {native} https - HTTPS server and client (nodejs).
+ * {native} path - utilities for file and directory paths (nodejs).
+ * {native} crypto - provides cryptographic functionality (nodejs).
+ * {native} os - operating system information (nodejs).
+ * {native} url - utilities for URL resolution and parsing (nodejs).
+ * {native} net - creating TCP/IPC servers/clients an (nodejs).
+ * {native} fetch - nodejs port fetch API of browser (external https://www.npmjs.com/package/node-fetch)
+ * {native} app - app (electron https://www.electronjs.org/docs/latest/api/app)
+ * {native} clipboard - clipboard (electron https://www.electronjs.org/docs/api/clipboard)
+ */
 async () => {
-  // import node-crawler module
   const Crawler = loadCrawler();
-  // see API https://github.com/bda-research/node-crawler.
   const crawler = new Crawler({
     maxConnections: 10,
   });

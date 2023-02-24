@@ -25,6 +25,7 @@ export class WorkflowTask extends Workflow {
     this.scriptPath = path.resolve(this.taskPath, 'index.js');
     this.metaPath = path.resolve(this.taskPath, 'manifest.json');
     this.abortCtrl = null;
+    this.timeout = options.timeout ?? -1;
   }
 
   id: string;
@@ -33,7 +34,8 @@ export class WorkflowTask extends Workflow {
   scriptPath: string;
   taskPath: string;
   metaPath: string;
-  abortCtrl: AbortController | null = null;
+  abortCtrl: AbortController | null;
+  timeout: number;
 
   static getMetaPath(id: string) {
     return path.resolve(Workflow.taskDir, id, 'manifest.json');
@@ -101,6 +103,7 @@ export class WorkflowTask extends Workflow {
       taskPath: this.taskPath,
       scriptPath: this.scriptPath,
       metaPath: this.metaPath,
+      timeout: this.timeout,
     }, null, 2);
 
     try {
@@ -160,6 +163,7 @@ export class WorkflowTask extends Workflow {
    */
   start(payload: unknown, options: object) {
     const tuple: [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null] = [null, null];
+    const timeout = this.timeout > 0 ? this.timeout : undefined;
 
     if (this.status.value === 'running') {
       console.warn('Task is already running: ', this.id);
@@ -177,7 +181,11 @@ export class WorkflowTask extends Workflow {
         tuple[1] = null;
         return resolve(tuple);
       };
+
       this.abortCtrl?.signal.addEventListener('abort', abortCallback);
+      timeout && setTimeout(() => {
+        this.stop();
+      }, timeout);
 
       Promise
         .resolve(() => {
@@ -187,10 +195,15 @@ export class WorkflowTask extends Workflow {
         })
         .then(async () => {
           const scriptContents = await fs.promises.readFile(this.scriptPath, 'utf-8');
-          const result = vm.runInNewContext(scriptContents, vm.createContext({
-            content: payload,
-            ...options,
-          }));
+          // micro tasks run immediately after the script has been evaluated
+          const result = vm.runInNewContext(
+            scriptContents,
+            vm.createContext({
+              content: payload,
+              ...options,
+            }),
+            { timeout, microtaskMode: 'afterEvaluate' }
+          );
           return typeof result === 'function' ? result() : result;
         })
         .then((moduleResults: unknown) => {

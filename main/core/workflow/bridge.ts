@@ -42,7 +42,6 @@ export const dispatch = (action: string, args: unknown) => {
     args,
   });
 };
-
 const commonContext = {
   fs,
   http,
@@ -53,7 +52,11 @@ const commonContext = {
   url,
   net,
   fetch,
+  app,
   clipboard,
+  setTimeout,
+  setInterval,
+  Buffer,
 };
 
 export class WorkflowBridge {

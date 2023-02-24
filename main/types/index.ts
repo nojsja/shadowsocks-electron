@@ -23,6 +23,7 @@ export interface WorkflowTask {
   status: { value: WorkflowTaskStatus };
   type: WorkflowTaskType;
   scriptPath: string;
+  timeout: number;
 }
 
 export interface WorkflowRunner {
