@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { blue, green, orange } from '@material-ui/core/colors';
 
 import MenuContext from '@renderer/components/ContextMenu/context';
-import { ArrowDownward as ArrowDownwardIcon, ArrowUpward as ArrowUpwardIcon } from '@material-ui/icons';
+import {
+  ArrowDownward as ArrowDownwardIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  Delete as DeleteIcon,
+} from '@material-ui/icons';
 
 const COLOR_MAP = {
   'source': green[600],
@@ -12,9 +16,13 @@ const COLOR_MAP = {
 };
 
 interface Props {
+  id: string;
   index: number;
   total: number;
   taskSymbol: keyof typeof COLOR_MAP;
+  deleteTask: (taskId: string) => void;
+  moveUpTask: (taskId: string) => Promise<void>;
+  moveDownTask: (taskId: string) => Promise<void>;
 }
 
 
@@ -33,6 +41,11 @@ const useWorkflowTaskContextMenu = (props: Props) => {
     action: 'move_down',
     icon: <ArrowDownwardIcon fontSize="small" />
     }] : [],
+    {
+      label: t('delete'),
+      action: 'delete',
+      icon: <DeleteIcon fontSize="small" />,
+    }
   ], [t, index]);
 
   const show = (e: React.MouseEvent<HTMLElement>, callback?: (key: string) => void) => {
@@ -41,8 +54,13 @@ const useWorkflowTaskContextMenu = (props: Props) => {
       e.stopPropagation();
       switch (action) {
         case 'move_up':
+          props.moveUpTask(props.id);
           break;
         case 'move_down':
+          props.moveDownTask(props.id);
+          break;
+        case 'delete':
+          props.deleteTask(props.id);
           break;
         default:
           break;

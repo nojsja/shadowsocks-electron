@@ -184,6 +184,26 @@ export class WorkflowManager extends Workflow {
     return error;
   }
 
+  async moveUpTaskOfRunner(taskId: string, runnerId: string) {
+    await this.ready();
+
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+    const error = await targetRunner.moveUpTask(taskId);
+
+    return error;
+  }
+
+  async moveDownTaskOfRunner(taskId: string, runnerId: string) {
+    await this.ready();
+
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+    const error = await targetRunner.moveDownTask(taskId);
+
+    return error;
+  }
+
   async unloadWorkflowRunners() {
     this.runners.map(async (runner) => {
       runner.stopTimer();

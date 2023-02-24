@@ -10,6 +10,8 @@ import useWorkflowTaskContextMenu from '../hooks/useWorkflowTaskContextMenu';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
+  onTaskMoveUp: (taskId: string) => Promise<void>;
+  onTaskMoveDown: (taskId: string) => Promise<void>;
   workflowTaskDemoDir?: string;
   index: number;
   total: number;
@@ -23,7 +25,10 @@ const EffectTask: React.FC<Props> = (props) => {
   const isSuccess = status === 'success';
 
   const showContextMenu = useWorkflowTaskContextMenu({
-    index, total, taskSymbol: 'pipe',
+    index, total, taskSymbol: 'pipe', id: props.id,
+    deleteTask: props.onTaskDelete,
+    moveUpTask: props.onTaskMoveUp,
+    moveDownTask: props.onTaskMoveDown,
   });
 
   return (

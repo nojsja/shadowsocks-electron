@@ -133,6 +133,10 @@ export class WorkflowRunner extends Workflow {
     return this.tasks.length === 0;
   }
 
+  get length() {
+    return this.tasks.length;
+  }
+
   private initTasks() {
     return Promise.all(
       this.tasks.map((taskId) => WorkflowTask.generate({
@@ -218,6 +222,38 @@ export class WorkflowRunner extends Workflow {
       this.queue.splice(index, 1);
 
       if (error) return error;
+    }
+
+    return null;
+  }
+
+  async moveUpTask(id: string) {
+    const index = this.tasks.findIndex((taskId) => taskId === id);
+    let targetTask: WorkflowTask | null = null;
+    let targetTaskId: string;
+
+    if (index > 0) {
+      targetTask = this.queue.splice(index, 1)[0];
+      targetTaskId = this.tasks.splice(index, 1)[0];
+      this.queue.splice(index - 1, 0, targetTask);
+      this.tasks.splice(index - 1, 0, targetTaskId);
+      return this.writeToMetaFile();
+    }
+
+    return null;
+  }
+
+  async moveDownTask(id: string) {
+    const index = this.tasks.findIndex((taskId) => taskId === id);
+    let targetTask: WorkflowTask | null = null;
+    let targetTaskId: string;
+
+    if (index > -1 && (index < (this.length - 1))) {
+      targetTask = this.queue.splice(index, 1)[0];
+      targetTaskId = this.tasks.splice(index, 1)[0];
+      this.queue.splice(index + 1, 0, targetTask);
+      this.tasks.splice(index + 1, 0, targetTaskId);
+      return this.writeToMetaFile();
     }
 
     return null;

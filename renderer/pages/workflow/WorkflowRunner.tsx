@@ -273,6 +273,30 @@ const WorkflowRunner: React.FC<Props> = ({
     cacheKey: 'main/service:workflow/workflowTaskDemoDir',
   });
 
+  const { run: moveUpTaskOfRunner } = useRequest<Response<string>>((runnerId: string, taskId: string) => {
+    return MessageChannel.invoke('main', 'service:workflow', {
+      action: 'moveUpTaskOfRunner',
+      params: { runnerId, taskId },
+    });
+  }, {
+    manual: true,
+    onError(error) {
+      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+    },
+  });
+
+  const { run: moveDownTaskOfRunner } = useRequest<Response<string>>((runnerId: string, taskId: string) => {
+    return MessageChannel.invoke('main', 'service:workflow', {
+      action: 'moveDownTaskOfRunner',
+      params: { runnerId, taskId },
+    });
+  }, {
+    manual: true,
+    onError(error) {
+      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+    },
+  });
+
   const onTaskDelete = async (taskId: string) => {
     openDialog({
       ...dialogOptions,
@@ -286,6 +310,16 @@ const WorkflowRunner: React.FC<Props> = ({
 
   const onTaskAdd = async (taskType: WorkflowTaskType) => {
     await putTaskIntoRunner(id, uuidv4(), taskType);
+    await updateRunner(id);
+  };
+
+  const onTaskMoveUp = async (taskId: string) => {
+    await moveUpTaskOfRunner(id, taskId);
+    await updateRunner(id);
+  };
+
+  const onTaskMoveDown = async (taskId: string) => {
+    await moveDownTaskOfRunner(id, taskId);
     await updateRunner(id);
   };
 
@@ -320,6 +354,8 @@ const WorkflowRunner: React.FC<Props> = ({
               index={i}
               total={queue.length}
               onTaskDelete={onTaskDelete}
+              onTaskMoveDown={onTaskMoveDown}
+              onTaskMoveUp={onTaskMoveUp}
               workflowTaskDemoDir={workflowTaskDemoRsp?.result}
             />
           );

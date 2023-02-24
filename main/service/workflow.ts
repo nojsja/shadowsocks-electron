@@ -112,6 +112,26 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
+  async moveUpTaskOfRunner(params: {taskId: string, runnerId: string}) {
+    const { taskId, runnerId } = params;
+    const error = await this.manager.moveUpTaskOfRunner(taskId, runnerId);
+
+    return {
+      code: error ? 500 : 200,
+      result: error,
+    };
+  }
+
+  async moveDownTaskOfRunner(params: {taskId: string, runnerId: string}) {
+    const { taskId, runnerId } = params;
+    const error = await this.manager.moveDownTaskOfRunner(taskId, runnerId);
+
+    return {
+      code: error ? 500 : 200,
+      result: error,
+    };
+  }
+
   async removeWorkflowRunner(params: {id: string}) {
     const { id } = params;
     const error = await this.manager.removeWorkflowRunner(id);
