@@ -14,6 +14,7 @@ import {
   WorkflowTaskStatus,
   WorkflowTaskType
 } from './types';
+import { TASK_TIMEOUT } from './consts';
 
 export class WorkflowTask extends Workflow {
   constructor(options: Partial<WorkflowTaskOptions>) {
@@ -59,7 +60,14 @@ export class WorkflowTask extends Workflow {
       if (isExists) {
         const metaPath = WorkflowTask.getMetaPath(id);
         const metaData = JSON.parse(await fs.promises.readFile(metaPath, 'utf-8')) as Partial<WorkflowTaskOptions>;
-        const task = new WorkflowTask(metaData);
+        const task = new WorkflowTask(
+          Object.assign(
+            metaData,
+            {
+              timeout: metaData.timeout ?? TASK_TIMEOUT
+            }
+          )
+        );
         return task;
       }
     } catch (error) {
@@ -164,6 +172,7 @@ export class WorkflowTask extends Workflow {
   start(payload: unknown, options: object) {
     const tuple: [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null] = [null, null];
     const timeout = this.timeout > 0 ? this.timeout : undefined;
+    let timer: NodeJS.Timeout;
 
     if (this.status.value === 'running') {
       console.warn('Task is already running: ', this.id);
@@ -179,13 +188,17 @@ export class WorkflowTask extends Workflow {
       const abortCallback = () => {
         tuple[0] = new TaskIsAbortedError(this.id);
         tuple[1] = null;
+        clearTimeout(timer);
         return resolve(tuple);
       };
 
-      this.abortCtrl?.signal.addEventListener('abort', abortCallback);
-      timeout && setTimeout(() => {
-        this.stop();
-      }, timeout);
+      this.abortCtrl?.signal.addEventListener('abort', abortCallback, { once: true });
+
+      if (timeout) {
+        timer = setTimeout(() => {
+          this.stop();
+        }, timeout);
+      }
 
       Promise
         .resolve(() => {
@@ -195,15 +208,23 @@ export class WorkflowTask extends Workflow {
         })
         .then(async () => {
           const scriptContents = await fs.promises.readFile(this.scriptPath, 'utf-8');
+          // prevent escaping from sandbox
+          const isolatedContext = Object.create(null);
+
+          Object.assign(isolatedContext, {
+            $content: payload,
+            $timeout: timeout,
+            $abortCtrl: this.abortCtrl,
+            ...options,
+          });
+
           // micro tasks run immediately after the script has been evaluated
           const result = vm.runInNewContext(
             scriptContents,
-            vm.createContext({
-              content: payload,
-              ...options,
-            }),
-            { timeout, microtaskMode: 'afterEvaluate' }
+            vm.createContext(isolatedContext),
+            { timeout, microtaskMode: 'afterEvaluate', filename: 'index.js' }
           );
+
           return typeof result === 'function' ? result() : result;
         })
         .then((moduleResults: unknown) => {
@@ -248,11 +269,10 @@ export class WorkflowTask extends Workflow {
       }
       const abortCallback = () => {
         this.status.value = 'idle';
-        this.abortCtrl?.signal.removeEventListener('abort', abortCallback);
         resolve(null);
       };
 
-      this.abortCtrl?.signal.addEventListener('abort', abortCallback);
+      this.abortCtrl?.signal.addEventListener('abort', abortCallback, { once: true });
       this.abortCtrl?.abort();
     });
   }

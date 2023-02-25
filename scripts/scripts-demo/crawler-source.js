@@ -1,6 +1,6 @@
 /**
  * API of Crawler Source Task
- * {any} content - data from previous step, if current task is in first place, it will be undefined.
+ * {any} $content - data from previous step, if current task is in first place, it will be undefined.
  * {function} loadCrawler - used to load node-crawler module (external https://www.npmjs.com/package/crawler).
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import pie from 'puppeteer-in-electron2';
-import puppeteer, { Browser } from 'puppeteer-core';
+import { type Browser } from 'puppeteer-core';
 import { clipboard } from 'electron';
 import fs from 'fs';
 import http from 'http';
@@ -12,7 +13,7 @@ import url from 'url';
 import net from 'net';
 import fetch from 'node-fetch';
 
-import { type WorkflowTaskType } from './types';
+import { LoadBrowserPageContext, type WorkflowTaskType } from './types';
 
 /**
   * @name dispatch [trigger event to renderer process]
@@ -72,7 +73,9 @@ export class WorkflowBridge {
 
   async init() {
     // FIXME: types error
-    this.browser = await pie.connect(app, puppeteer as any) as any;
+    const puppeteer = require('puppeteer-core') as any;
+    const browser = await pie.connect(app, puppeteer) as any;
+    this.browser = browser;
     this.context = {
       /* puppeteer - Use [headless browser] to produce data. */
       'puppeteer-source': {
@@ -80,28 +83,33 @@ export class WorkflowBridge {
          * @name loadBrowserPage
          * @param url [page url]
          * @param options [options to create electron window]
-         * @returns [Puppeteer page instance]
+         * @returns [Puppeteer Page instance]
          */
-        loadBrowserPage: async (url: string, options: BrowserWindowConstructorOptions) => {
+        async loadBrowserPage(
+          this: LoadBrowserPageContext,
+          url: string,
+          options: BrowserWindowConstructorOptions
+        ) {
+          let timer: NodeJS.Timeout;
+          const { $timeout, $abortCtrl } = this;
           const window = new BrowserWindow(options);
-          await new Promise((resolve, reject) => {
-            window.once('ready-to-show', () => {
-              resolve(null);
-            });
-            window.once('closed', () => {
-              reject(new Error('Puppeteer Window closed abnormally!'));
-            });
-          });
-          await window.loadURL(url);
-          // FIXME: types error
-          const page = await pie.getPage(this.browser as any, window);
           const closeBrowser = () => {
+            $timeout && clearTimeout(timer);
             try {
               window.close();
             } catch (error) {
               console.error(error);
             }
           };
+
+          $abortCtrl && $abortCtrl.signal.addEventListener('abort', closeBrowser, { once: true })
+          if($timeout) {
+            timer = setTimeout(closeBrowser, $timeout);
+          }
+
+          await window.loadURL(url);
+          // FIXME: types error
+          const page = await pie.getPage(browser as any, window);
 
           return [page, closeBrowser];
         },

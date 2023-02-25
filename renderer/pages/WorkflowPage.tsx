@@ -4,6 +4,7 @@ import { Container, IconButton } from '@material-ui/core';
 import { MessageChannel } from 'electron-re';
 import i18n from 'i18next';
 import useBus, { EventAction } from 'use-bus';
+import { useTranslation } from 'react-i18next';
 
 import {
   type WorkflowTaskType,
@@ -23,6 +24,7 @@ import WorkflowHelpInfo from './workflow/WorkflowHelpInfo';
 
 const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
+  const { t } = useTranslation();
 
   const { data: runnersResp, run: getWorkflowRunners, setState } = useRequest<Response<WorkflowRunnerType[]>>(
     () => MessageChannel.invoke('main', 'service:workflow', {
@@ -178,17 +180,17 @@ const Workflow: React.FC = () => {
             }
             config={[
               {
-                label: 'Source Task (puppeteer)', // puppeteer headless browser (data source)
+                label: `${t('source_task')} (puppeteer)`, // puppeteer headless browser (data source)
                 key: 'puppeteer',
                 onClick: () => createRunner('puppeteer-source'),
               },
               {
-                label: 'Source Task (crawler)', // web crawler (data source)
+                label: `${t('source_task')} (crawler)`, // web crawler (data source)
                 key: 'crawler',
                 onClick: () => createRunner('crawler-source'),
               },
               {
-                label: 'Source Task (node)', // node script, generate data from local script or remote request (data source)
+                label: `${t('source_task')} (node)`, // node script, generate data from local script or remote request (data source)
                 key: 'pipe',
                 onClick: () => createRunner('node-source'),
               },

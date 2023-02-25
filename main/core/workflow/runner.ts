@@ -14,6 +14,7 @@ import {
   WorkflowTaskStatus,
   WorkflowTaskTimer,
 } from './types';
+import { TASK_TIMEOUT } from './consts';
 
 export class WorkflowRunner extends Workflow {
   constructor(options: Partial<WorkflowRunnerOptions>, bridge: WorkflowBridge) {
@@ -141,7 +142,7 @@ export class WorkflowRunner extends Workflow {
     return Promise.all(
       this.tasks.map((taskId) => WorkflowTask.generate({
         id: taskId,
-        timeout: 60e3,
+        timeout: TASK_TIMEOUT,
       }))
     ).then((tasks) => {
       this.queue = tasks.filter(Boolean) as WorkflowTask[];
@@ -184,7 +185,10 @@ export class WorkflowRunner extends Workflow {
   }
 
   async pushTask(options: Partial<WorkflowTaskOptions>) {
-    const task = await WorkflowTask.generate(options);
+    const task = await WorkflowTask.generate({
+      timeout: TASK_TIMEOUT,
+      ...options,
+    });
 
     if (task) {
       this.tasks.push(task.id);
@@ -303,13 +307,13 @@ export class WorkflowRunner extends Workflow {
   }
 
   async stop(): Promise<Error | null> {
-    if (this.queue.every((task) => !task.isRunning)) return null;
-
     try {
       await this.queue.reduce(
         async (memo, task) => {
           await memo;
-          await task.stop();
+          if (task.isRunning) {
+            await task.stop();
+          }
         },
         Promise.resolve(),
       );

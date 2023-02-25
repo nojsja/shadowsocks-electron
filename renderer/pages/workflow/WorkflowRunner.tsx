@@ -20,6 +20,8 @@ import i18n from 'i18next';
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import { Response, useRequest } from '@/renderer/hooks/useRequest';
 import { Message } from '@/renderer/hooks/useNotifier';
+import NoRecord from '@/renderer/components/Pices/NoRecord';
+import { useDialogConfirm } from '@/renderer/hooks';
 import {
   WorkflowTaskTimer,
   type WorkflowRunner,
@@ -32,8 +34,6 @@ import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask'
 import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
 import WorkflowSchedule from './WorkflowSchedule';
-import NoRecord from '@/renderer/components/Pices/NoRecord';
-import { useDialogConfirm } from '@/renderer/hooks';
 
 export const useStyles = makeStyles((theme) => createStyles({
   runnerWrapper: {
@@ -397,27 +397,27 @@ const WorkflowRunner: React.FC<Props> = ({
           }
           config={[
             {
-              label: 'Source Task (puppeteer)', // puppeteer scrawler (data source)
+              label: `${t('source_task')} (puppeteer)`, // puppeteer scrawler (data source)
               key: 'puppeteer',
               onClick: () => onTaskAdd('puppeteer-source'),
             },
             {
-              label: 'Source Task (crawler)', // web crawler (data source)
+              label: `${t('source_task')} (crawler)`, // web crawler (data source)
               key: 'crawler',
               onClick: () => onTaskAdd('crawler-source'),
             },
             {
-              label: 'Source Task (node)', // node script, generate data from local script or remote request (data source)
+              label: `${t('source_task')} (node)`, // node script, generate data from local script or remote request (data source)
               key: 'node',
               onClick: () => onTaskAdd('node-source'),
             },
             {
-              label: 'Processor Task (pipe)', // process data (processor)
+              label: `${t('processor_task')} (pipe)`, // process data (processor)
               key: 'processor',
               onClick: () => onTaskAdd('processor-pipe'),
             },
             {
-              label: 'Effect Task (pipe)', // run tasks on ui process, such as notification, ssr/ss parsing, etc. (effect)
+              label: `${t('effect_task')} (pipe)`, // run tasks on ui process, such as notification, ssr/ss parsing, etc. (effect)
               key: 'effect',
               onClick: () => onTaskAdd('effect-pipe'),
             },

@@ -1,6 +1,6 @@
 /**
  * API of Processor Pipe Task
- * {any} content - data from previous step, if current task is in first place, it will be undefined.
+ * {any} $content - data from previous step, if current task is in first place, it will be undefined.
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).
  * {native} https - HTTPS server and client (nodejs).
@@ -20,5 +20,5 @@ async () => {
   const footer = `---${os.userInfo().username}--->`;
 
   // pass data to next step
-  return `${header}${content}${footer}`;
+  return `${header}${$content}${footer}`;
 };

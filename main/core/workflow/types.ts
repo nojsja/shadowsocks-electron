@@ -1,9 +1,14 @@
-
+import { type AbortController } from 'node-abort-controller';
 export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowManagerStatus = 'uninitialized' | 'initialized' | 'unloaded';
 export type WorkflowTaskTimerType = 'schedule' | 'timer';
+
+export interface LoadBrowserPageContext {
+  $timeout?: number;
+  $abortCtrl: AbortController;
+}
 
 export type CronTableObject = {
   seconds?: number;

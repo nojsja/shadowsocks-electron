@@ -1,6 +1,6 @@
 /**
  * API of Effect Pipe Task
- * {any} content - data from previous step, if current task is in first place, it will be undefined.
+ * {any} $content - data from previous step, if current task is in first place, it will be undefined.
  * {function} dispatch - used to trigger event, view details below (build-in).
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).
@@ -39,10 +39,10 @@
  */
 async () => {
   dispatch('notifycation', {
-    message: content,
+    message: $content,
     type: 'success',
   });
 
   // pass data to next step
-  return content;
+  return $content;
 };

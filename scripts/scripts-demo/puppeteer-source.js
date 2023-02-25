@@ -1,6 +1,6 @@
 /**
  * API of Puppeteer Source Task
- * {any} content - data from previous step, if current task is in first place, it will be undefined.
+ * {any} $content - data from previous step, if current task is in first place, it will be undefined.
  * {function} loadBrowserPage - used to load web pages with puppeteer (external https://pptr.dev/api/puppeteer.page).
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).
@@ -28,7 +28,7 @@
 async () => {
   // for this web site, maybe you should open PAC mode of client to let puppeteer visit in,
   // or it will be blocked by firewall in some areas.
-  const [page, closeBrowser] = await loadBrowserPage('https://lncn.org/', {
+  const [page, closeBrowser] = await loadBrowserPage.bind(this)('https://lncn.org/', {
     show: false,
   });
 
