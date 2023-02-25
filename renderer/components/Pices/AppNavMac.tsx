@@ -97,6 +97,7 @@ const AppNavMac: React.FC<AppNavMacProps> = (props) => {
                 <IconButton
                   color="inherit"
                   edge="start"
+                  size="small"
                   onClick={handleDrawerToggle}
                 >
                   <MenuIcon className={styles.menuButton} />

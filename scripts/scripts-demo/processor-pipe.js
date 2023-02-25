@@ -1,7 +1,6 @@
 /**
  * API of Processor Pipe Task
  * {any} content - data from previous step, if current task is in first place, it will be undefined.
- * {function} dispatch - used to trigger event, view details below (build-in).
  * {native} fs - filesystem (nodejs).
  * {native} http - HTTP server and client (nodejs).
  * {native} https - HTTPS server and client (nodejs).
@@ -16,7 +15,7 @@
  */
 
 async () => {
-  // see API https://nodejs.org/docs/latest-v16.x/api/os.html.
+  // see API https://nodejs.org/docs/latest-v14.x/api/os.html.
   const header = `<---${os.hostname()}---`;
   const footer = `---${os.userInfo().username}--->`;
 

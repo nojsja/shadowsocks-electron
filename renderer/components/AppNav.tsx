@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 import os from 'os';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 import AppNavMac from './Pices/AppNavMac';
 import AppNavNormal from './Pices/AppNavNormal';
-import If from "./HOC/IF";
+import If from './HOC/IF';
 
-const isMacOS = os.platform() === "darwin";
+const isMacOS = os.platform() === 'darwin';
 
 const AppNav: React.FC = () => {
   const { t } = useTranslation();
