@@ -15,9 +15,13 @@
  */
 
 async () => {
+  console.log('>> processor task start...');
+
   // see API https://nodejs.org/docs/latest-v14.x/api/os.html.
   const header = `<---${os.hostname()}---`;
   const footer = `---${os.userInfo().username}--->`;
+
+  console.log('>> processor task ended...');
 
   // pass data to next step
   return `${header}${$content}${footer}`;

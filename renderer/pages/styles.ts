@@ -2,18 +2,22 @@ import { makeStyles, createStyles } from "@material-ui/core/styles";
 import { Theme } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
 
-export const scrollBarStyle = (width = 10, radius = 5, theme: Theme) => ({
+export const scrollBarStyle = (width = 10, radius = 5, theme: Theme, color = '') => ({
   "&::-webkit-scrollbar": {
     width: width,
     height: width,
   },
   "&::-webkit-scrollbar-track": {
-      "-webkit-box-shadow": `inset 0 0 3px ${theme.palette.type === 'dark' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.3)'}`,
-      borderRadius: radius
+    "-webkit-box-shadow": `inset 0 0 3px ${theme.palette.type === 'dark' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.3)'}`,
+    borderRadius: radius
   },
   "&::-webkit-scrollbar-thumb": {
-      borderRadius: radius,
-      background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey'
+    ...color ? {
+      background: `color !important`,
+    } : {
+      background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
+    },
+    borderRadius: radius,
   }
 });
 

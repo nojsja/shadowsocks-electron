@@ -15,6 +15,8 @@
  * {native} clipboard - clipboard (electron https://www.electronjs.org/docs/api/clipboard)
  */
 async () => {
+  console.log('>> crawler task start...');
+
   const Crawler = loadCrawler();
   const crawler = new Crawler({
     maxConnections: 10,
@@ -37,6 +39,8 @@ async () => {
       },
     });
   });
+
+  console.log('>> crawler task ended...');
 
   // pass data to next step.
   // in this example, data will be 'title' of amazon.com site.

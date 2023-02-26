@@ -15,7 +15,11 @@
  */
 
 async () => {
+  console.log('>> node task start...');
+
   const data = await fetch('https://nodejs.org/en/').then((res) => res.text());
+
+  console.log('>> node task ended...');
 
   // pass data to next step
   return data.slice(0, 100);

@@ -455,6 +455,7 @@ const WorkflowRunner: React.FC<Props> = ({
         open={terminalOpen}
         taskId={terminalTaskId}
         onCloseDialog={() => setTerminalOpen(false)}
+        onRunnerStart={startRunnerInner}
       />
       <LinearProgress className={classNames((!isRunning) && styles.noVisible)} color="secondary" />
     </div>

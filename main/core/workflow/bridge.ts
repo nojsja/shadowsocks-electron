@@ -63,7 +63,6 @@ const $console = {
     }
   },
   log($taskId: string, ...args: unknown[]) {
-    console.log(...args);
     dispatch('workflow:task-console', {
       type: 'log',
       taskId: $taskId,
@@ -71,7 +70,6 @@ const $console = {
     });
   },
   error($taskId: string, ...args: unknown[]) {
-    console.error(...args);
     dispatch('workflow:task-console', {
       type: 'error',
       taskId: $taskId,
@@ -79,7 +77,6 @@ const $console = {
     });
   },
   warn($taskId: string, ...args: unknown[]) {
-    console.warn(...args);
     dispatch('workflow:task-console', {
       type: 'warn',
       taskId: $taskId,
@@ -87,7 +84,6 @@ const $console = {
     });
   },
   info($taskId: string, ...args: unknown[]) {
-    console.info(...args);
     dispatch('workflow:task-console', {
       type: 'info',
       taskId: $taskId,

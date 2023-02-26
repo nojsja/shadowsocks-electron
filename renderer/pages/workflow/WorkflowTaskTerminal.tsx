@@ -16,6 +16,7 @@ interface Props {
   open: boolean;
   taskId: string | null;
   onCloseDialog: () => void;
+  onRunnerStart: () => void;
 }
 
 const bannerText = "< type 'help' to get tips >";
@@ -24,6 +25,7 @@ const helpInfo = [
   'Command List:',
   '[help/h]: show help info.',
   '[id/i]: get ID of current task.',
+  '[run/r]: run whole workflow.',
   '[clear/c]: clear the terminal.',
   '[wipe/w]: wipe the terminal.',
   '[exit/e]: exit the terminal.',
@@ -39,6 +41,7 @@ const commandAliasMap: { [key: string]: string } = {
   c: 'clear',
   w: 'wipe',
   e: 'exit',
+  r: 'run',
 };
 
 const useStyles = makeStyles(() => createStyles({
@@ -61,6 +64,18 @@ const useStyles = makeStyles(() => createStyles({
     '&.help': {
       fontWeight: 'bold',
     }
+  },
+  crtTerminalWrapper: {
+    height: '70vh',
+    '& .crt-terminal': {
+      maxHeight: '70vh',
+      borderRadius: 0,
+    },
+    '& .crt-terminal__overflow-container': {
+      '&::-webkit-scrollbar-thumb': {
+        background: '#8aa950 !important',
+      }
+    }
   }
 }));
 
@@ -68,6 +83,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   open,
   taskId,
   onCloseDialog,
+  onRunnerStart,
 }) => {
   const eventQueue = useEventQueue();
   const styles = useStyles();
@@ -86,8 +102,10 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       case 'help':
         print(helpInfo.map((info) => textLine({
           words: [textWord({ className: `${styles.text} help`, characters: info })]
-        }))
-        );
+        })));
+        break;
+      case 'run':
+        onRunnerStart();
         break;
       case 'id':
         print([
@@ -158,12 +176,17 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       open={open}
       onClose={onCloseDialog}
       fullWidth
-      maxWidth="sm"
+      maxWidth="md"
+      noScrollBarColor
     >
-      <DialogContent style={{ maxHeight: '70vh' }}>
+      <DialogContent className={styles.crtTerminalWrapper}>
         <Terminal
           queue={eventQueue}
           maxHistoryCommands={CONSOLE_BUFFER_SIZE}
+          printer={{
+            printerSpeed: 8,
+            charactersPerTick: 20,
+          }}
           banner={banner}
           onCommand={onCommand}
         />

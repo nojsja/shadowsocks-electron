@@ -38,11 +38,14 @@
  *   });
  */
 async () => {
+  console.log('>> effect task start...');
+
   dispatch('notifycation', {
     message: $content,
     type: 'success',
   });
 
+  console.log('>> effect task ended...');
   // pass data to next step
   return $content;
 };

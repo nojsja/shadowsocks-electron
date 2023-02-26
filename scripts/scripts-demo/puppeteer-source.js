@@ -26,6 +26,8 @@
  */
 
 async () => {
+  console.log('>> puppeteer task start...');
+
   // for this web site, maybe you should open PAC mode of client to let puppeteer visit in,
   // or it will be blocked by firewall in some areas.
   const [page, closeBrowser] = await loadBrowserPage.bind(this)('https://lncn.org/', {
@@ -38,6 +40,8 @@ async () => {
 
   // to avoid memory overflow, close browser when task done.
   closeBrowser();
+
+  console.log('>> puppeteer task ended...');
 
   // pass data to next step
   return result;
