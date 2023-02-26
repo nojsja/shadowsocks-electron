@@ -15,6 +15,7 @@ import {
   WorkflowTaskType
 } from './types';
 import { TASK_TIMEOUT } from './consts';
+import { WorkflowBridgeConsole } from './bridge';
 
 export class WorkflowTask extends Workflow {
   constructor(options: Partial<WorkflowTaskOptions>) {
@@ -169,7 +170,7 @@ export class WorkflowTask extends Workflow {
    * @returns [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null]
    *
    */
-  start(payload: unknown, options: object) {
+  start(payload: unknown, options?: { [key: string]: unknown }) {
     const tuple: [TaskExecutionError | TaskIsAbortedError | TaskIsRunningError | null, unknown | null] = [null, null];
     const timeout = this.timeout > 0 ? this.timeout : undefined;
     let timer: NodeJS.Timeout;
@@ -210,12 +211,21 @@ export class WorkflowTask extends Workflow {
           const scriptContents = await fs.promises.readFile(this.scriptPath, 'utf-8');
           // prevent escaping from sandbox
           const isolatedContext = Object.create(null);
+          const $console = options?.$console as WorkflowBridgeConsole ?? {};
 
           Object.assign(isolatedContext, {
+            ...(options ?? {}),
+            $taskId: this.id,
             $content: payload,
             $timeout: timeout,
             $abortCtrl: this.abortCtrl,
-            ...options,
+            console: new Proxy($console, {
+              get: (target, prop: string) => {
+                return (...args: unknown[]) => {
+                  target?.[prop as keyof WorkflowBridgeConsole]?.(this.id, ...args);
+                };
+              },
+            }),
           });
 
           // micro tasks run immediately after the script has been evaluated

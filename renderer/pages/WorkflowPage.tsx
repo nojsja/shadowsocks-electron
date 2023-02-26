@@ -146,7 +146,7 @@ const Workflow: React.FC = () => {
     });
   }, [setState]);
 
-  useBus('event:stream:workflow-status', (event: EventAction) => {
+  useBus('event:stream:workflow:status', (event: EventAction) => {
     const { payload } = event;
     const { runnerId, status } = payload;
 

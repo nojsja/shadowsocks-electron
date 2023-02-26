@@ -14,10 +14,11 @@ import {
   updateServerGroup,
 } from '@renderer/redux/actions/config';
 import { useTypedSelector } from '@renderer/redux/reducers';
-import { Config, GroupConfig, ServerMode } from '@renderer/types';
+import { Config, GroupConfig, ServerMode, Notification } from '@renderer/types';
 import { findAndCallback } from '@renderer/utils';
 import { getConnectionDelay } from '@renderer/redux/actions/status';
 import { setHttpProxy, setPacServer } from '@renderer/redux/actions/settings';
+import { Message } from '@renderer/hooks';
 
 export const useEventStreamService = () => {
   const dispatch = useDispatch();
@@ -51,6 +52,17 @@ export const useEventStreamService = () => {
       selectedServer && connectedToServer(config, selectedServer);
     }
   }, [config, selectedServer, mode, serverMode, clusterId, settings]);
+
+  useBus('event:stream:notifycation', (event: EventAction) => {
+    const {
+      message,
+      type,
+    } = event.payload as { message: string; type: Notification['variant'] };
+
+    Message.default(message, {
+      variant: type || 'default',
+    });
+  }, []);
 
   useBus('event:stream:disconnect-server', () => {
     if (serverMode === 'cluster') {

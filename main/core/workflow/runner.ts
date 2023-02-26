@@ -157,7 +157,7 @@ export class WorkflowRunner extends Workflow {
     const handler = {
       set: (target: typeof statusObj, key: string, value: any) => {
         if (key === 'value') {
-          this.bridge.dispatch('workflow-status', { runnerId: this.id, status: value });
+          this.bridge.dispatch('workflow:status', { runnerId: this.id, status: value });
           target[key] = value;
           return true;
         }
@@ -290,7 +290,7 @@ export class WorkflowRunner extends Workflow {
           const payload = await memo;
           const [error, result] = await task.start(
             payload,
-            this.bridge.context?.[task.type] ?? {},
+            this.bridge.context?.[task.type] as { [key: string]: unknown },
           );
           if (error) throw error;
           return result;

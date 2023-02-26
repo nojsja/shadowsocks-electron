@@ -11,10 +11,10 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { MessageChannel } from 'electron-re';
 import ElectronStore from 'electron-store';
-import useBus, { dispatch as dispatchEvent, EventAction } from 'use-bus';
+import { dispatch as dispatchEvent} from 'use-bus';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { DialogConfirmProvider, Message } from '@renderer/hooks';
+import { DialogConfirmProvider } from '@renderer/hooks';
 import { store, persistor } from '@renderer/redux/store';
 import { getConnectionStatus, setStatus } from '@renderer/redux/actions/status';
 import { setSetting } from '@renderer/redux/actions/settings';
@@ -27,7 +27,7 @@ import useTheme from '@renderer/hooks/useTheme';
 
 import prepareForLanguage, { getFirstLanguage } from '@renderer/i18n';
 import { getDefaultLang } from '@renderer/utils';
-import { ServerMode, Notification } from '@renderer/types';
+import { ServerMode } from '@renderer/types';
 
 export const persistStore = new ElectronStore();
 
@@ -87,17 +87,6 @@ const App: React.FC = () => {
       removeTrafficListener();
       removeEventStreamListener();
     };
-  }, []);
-
-  useBus('event:stream:notifycation', (event: EventAction) => {
-    const {
-      message,
-      type,
-    } = event.payload as { message: string; type: Notification['variant'] };
-
-    Message.default(message, {
-      variant: type || 'default',
-    });
   }, []);
 
   return (

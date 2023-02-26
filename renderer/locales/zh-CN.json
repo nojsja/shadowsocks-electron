@@ -156,6 +156,7 @@
   "langZhong": "中文",
   "langRussian": "Русский",
   "workflow": "工作流",
+  "open_terminal": "打开终端",
   "source_task": "源任务",
   "processor_task": "处理器任务",
   "effect_task": "附加效果任务",

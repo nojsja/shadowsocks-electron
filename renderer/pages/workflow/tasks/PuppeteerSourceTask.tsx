@@ -13,6 +13,7 @@ interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
   onTaskMoveUp: (taskId: string) => Promise<void>;
   onTaskMoveDown: (taskId: string) => Promise<void>;
+  onTaskTerminalOpen: (taskId: string) => void;
   workflowTaskDemoDir?: string;
   index: number;
   total: number;

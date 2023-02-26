@@ -25,6 +25,7 @@
     "@types/lodash": "^4.14.191",
     "classnames": "^2.3.2",
     "clsx": "^1.1.1",
+    "crt-terminal": "^1.0.13",
     "electron-is-dev": "1.1.0",
     "electron-re": "^1.2.8",
     "electron-store": "^8.0.1",

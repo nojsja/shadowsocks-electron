@@ -43,6 +43,59 @@ export const dispatch = (action: string, args: unknown) => {
     args,
   });
 };
+
+export type WorkflowBridgeConsole = Omit<typeof $console, 'stringify'>;
+
+const $console = {
+  stringify(arg: unknown) {
+    try {
+      switch (typeof arg) {
+        case 'object':
+          if (arg === null) return 'null';
+          return JSON.stringify(arg);
+        case 'function':
+          return (arg as () => void).toString();
+        default:
+          return arg;
+      }
+    } catch (error) {
+      return 'invalid message';
+    }
+  },
+  log($taskId: string, ...args: unknown[]) {
+    console.log(...args);
+    dispatch('workflow:task-console', {
+      type: 'log',
+      taskId: $taskId,
+      data: args.map($console.stringify).join(' '),
+    });
+  },
+  error($taskId: string, ...args: unknown[]) {
+    console.error(...args);
+    dispatch('workflow:task-console', {
+      type: 'error',
+      taskId: $taskId,
+      data: args.map($console.stringify).join(' '),
+    });
+  },
+  warn($taskId: string, ...args: unknown[]) {
+    console.warn(...args);
+    dispatch('workflow:task-console', {
+      type: 'warn',
+      taskId: $taskId,
+      data: args.map($console.stringify).join(' '),
+    });
+  },
+  info($taskId: string, ...args: unknown[]) {
+    console.info(...args);
+    dispatch('workflow:task-console', {
+      type: 'info',
+      taskId: $taskId,
+      data: args.map($console.stringify).join(' '),
+    });
+  },
+};
+
 const commonContext = {
   fs,
   http,
@@ -58,6 +111,7 @@ const commonContext = {
   setTimeout,
   setInterval,
   Buffer,
+  $console,
 };
 
 export class WorkflowBridge {

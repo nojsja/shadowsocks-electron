@@ -156,6 +156,7 @@
   "langZhong": "中文",
   "langRussian": "Русский",
   "workflow": "Workflow",
+  "open_terminal": "Open Terminal",
   "source_task": "Source Task",
   "processor_task": "Processor Task",
   "effect_task": "Effect Task",

@@ -9,3 +9,7 @@ export { useTheme } from './useTheme';
 export { useTaskFS } from './useTaskFS';
 export { useEventStreamService } from './useEventStreamService';
 export { usePreviousValue } from './usePreviousValue';
+export {
+  useTerminalService,
+  useTerminalVisitor,
+} from './useWorkflowTaskTerminal';

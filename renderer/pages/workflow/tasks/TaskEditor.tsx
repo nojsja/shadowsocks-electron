@@ -7,6 +7,7 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import cls from 'classnames';
 import CodeIcon from '@material-ui/icons/Code';
 import classNames from 'classnames';
+import ComputerIcon from '@material-ui/icons/Computer';
 
 import useMonacoEditorModal from '@/renderer/hooks/useMonacoEditorModal';
 import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
@@ -17,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
+  onTaskTerminalOpen: (taskId: string) => void;
   templateCodePath: string;
 }
 
@@ -24,6 +26,7 @@ const TaskEditor: React.FC<Props> = ({
   id,
   scriptPath,
   onTaskDelete,
+  onTaskTerminalOpen,
   templateCodePath,
 }) => {
   const styles = useStylesOfWorkflow();
@@ -130,22 +133,27 @@ const TaskEditor: React.FC<Props> = ({
         />
       </div>
       <div className={styles.textEditorActions}>
-        <Tooltip title={t('delete')}>
+        <Tooltip title={t('delete')} placement="left">
           <IconButton onClick={onTaskDeleteInner} size="small">
             <DeleteIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title={t('open_with_code_editor')}>
+        <Tooltip title={t('open_terminal')} placement="left">
+          <IconButton size="small" onClick={() => onTaskTerminalOpen(id)}>
+            <ComputerIcon className={styles.textEditorActionButton} color="action" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={t('open_with_code_editor')} placement="left">
           <IconButton size="small" onClick={onScriptOpen}>
             <LaunchIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title={t('restore')}>
+        <Tooltip title={t('restore')} placement="left">
           <IconButton size="small" onClick={onScriptReload}>
             <RotateLeftIcon className={styles.textEditorActionButton} color="action" />
           </IconButton>
         </Tooltip>
-        <Tooltip title={t('save_editor_content_tips')}>
+        <Tooltip title={t('save_editor_content_tips')} placement="left">
           <IconButton size="small" onClick={() => onScriptSave(editorRef.current?.getValue() ?? '')}>
             <SaveIcon
               className={
@@ -158,7 +166,7 @@ const TaskEditor: React.FC<Props> = ({
             />
           </IconButton>
         </Tooltip>
-        <Tooltip title={t('load_template_code')}>
+        <Tooltip title={t('load_template_code')} placement="left">
           <IconButton size="small" onClick={onTemplateScriptLoad}>
             <CodeIcon
               className={styles.textEditorActionButton}

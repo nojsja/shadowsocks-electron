@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import classNames from 'classnames';
 import { MessageChannel } from 'electron-re';
@@ -34,6 +34,7 @@ import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask'
 import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
 import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
 import WorkflowSchedule from './WorkflowSchedule';
+import WorkflowTaskTerminal from './WorkflowTaskTerminal';
 
 export const useStyles = makeStyles((theme) => createStyles({
   runnerWrapper: {
@@ -93,6 +94,8 @@ const WorkflowRunner: React.FC<Props> = ({
   removeRunner,
   updateRunner,
 }) => {
+  const [terminalOpen, setTerminalOpen] = useState<boolean>(false);
+  const [terminalTaskId, setTerminalTaskId] = useState<string | null>(null);
   const enableStatus = enable ? 'Enabled' : 'Disabled';
   const styles = useStyles();
   const isRunning = status === 'running';
@@ -101,6 +104,11 @@ const WorkflowRunner: React.FC<Props> = ({
   const isEmptyRunner = !queue?.length;
   const dialogOptions = {
     title: t('warning'),
+  };
+
+  const onTerminalOpen = (taskId: string) => {
+    setTerminalOpen(true);
+    setTerminalTaskId(taskId);
   };
 
   const { run: startRunner } = useRequest<Response<string | null>>(
@@ -356,6 +364,7 @@ const WorkflowRunner: React.FC<Props> = ({
               onTaskDelete={onTaskDelete}
               onTaskMoveDown={onTaskMoveDown}
               onTaskMoveUp={onTaskMoveUp}
+              onTaskTerminalOpen={onTerminalOpen}
               workflowTaskDemoDir={workflowTaskDemoRsp?.result}
             />
           );
@@ -442,6 +451,11 @@ const WorkflowRunner: React.FC<Props> = ({
           )
         }
       </div>
+      <WorkflowTaskTerminal
+        open={terminalOpen}
+        taskId={terminalTaskId}
+        onCloseDialog={() => setTerminalOpen(false)}
+      />
       <LinearProgress className={classNames((!isRunning) && styles.noVisible)} color="secondary" />
     </div>
   );

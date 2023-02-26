@@ -5,7 +5,11 @@ import {
   Redirect
 } from 'react-router-dom';
 
-import { useNotifier, useEventStreamService } from './hooks';
+import {
+  useNotifier,
+  useEventStreamService,
+  useTerminalService
+} from './hooks';
 
 import HomePage from './pages/HomePage';
 import SettingsPage from './pages/SettingsPage';
@@ -15,6 +19,7 @@ import WorkflowPage from './pages/WorkflowPage';
 const Router = () => {
   useNotifier();
   useEventStreamService();
+  useTerminalService();
 
   return (
     <Switch>
