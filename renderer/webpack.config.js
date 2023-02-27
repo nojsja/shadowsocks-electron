@@ -18,6 +18,7 @@ module.exports = {
       // dir
       '@': path.resolve(__dirname, '..'),
       '@main': path.resolve(__dirname, '../main'),
+      '@common': path.resolve(__dirname, '../common'),
       '@renderer': path.resolve(__dirname, '.'),
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx'],

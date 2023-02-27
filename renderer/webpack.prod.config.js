@@ -20,6 +20,7 @@ module.exports = {
       '@': path.resolve(__dirname, '..'),
       '@main': path.resolve(__dirname, '../main'),
       '@renderer': path.resolve(__dirname, '.'),
+      '@common': path.resolve(__dirname, '../common'),
     },
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
