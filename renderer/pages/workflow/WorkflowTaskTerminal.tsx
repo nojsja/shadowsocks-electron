@@ -177,7 +177,6 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       onClose={onCloseDialog}
       fullWidth
       maxWidth="md"
-      noScrollBarColor
     >
       <DialogContent className={styles.crtTerminalWrapper}>
         <Terminal

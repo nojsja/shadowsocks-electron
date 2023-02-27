@@ -5,10 +5,6 @@ import { Dialog, DialogProps }  from '@material-ui/core';
 
 import { scrollBarStyle } from '@renderer/pages/styles';
 
-interface AdaptiveDialogProps extends DialogProps {
-  noScrollBarColor?: boolean;
-}
-
 const StyledDialog = withStyles((theme: Theme) => (
   createStyles({
     paper: {
@@ -23,7 +19,7 @@ const StyledDialog = withStyles((theme: Theme) => (
   })
 ))(Dialog);
 
-export const AdaptiveDialog = (props: AdaptiveDialogProps) => {
+export const AdaptiveDialog = (props: DialogProps) => {
   return (
     <StyledDialog
       {...props}
