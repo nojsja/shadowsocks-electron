@@ -1,5 +1,5 @@
-import { execAsync } from "../../utils/utils";
-import { ignoredHosts_win } from "./config";
+import { execAsync } from '../utils';
+import { IGNORE_HOSTS_WIN } from '../config';
 import { archMap, getPathRuntime } from '../../config';
 
 export const unsetProxy = async () => {
@@ -18,7 +18,7 @@ export const setPacProxy = async (url: string) => {
 
 export const setGlobalProxy = async (host: string, port: number) => {
   const manualSet = await execAsync(
-    `${getPathRuntime(`bin/win32/${archMap.get('x64')}/sysproxy.exe`)} global ${host}:${port} ${ignoredHosts_win}`
+    `${getPathRuntime(`bin/win32/${archMap.get('x64')}/sysproxy.exe`)} global ${host}:${port} ${IGNORE_HOSTS_WIN}`
   );
 
   return manualSet.code === 0;

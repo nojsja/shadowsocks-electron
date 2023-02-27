@@ -1,5 +1,5 @@
-import { execAsync } from "../../utils/utils";
-import { ignoredHosts } from "./config";
+import { execAsync } from '../utils';
+import { IGNORE_HOSTS } from '../config';
 
 const listNetworkServices = async () => {
   const result = await execAsync("networksetup -listallnetworkservices");
@@ -69,7 +69,7 @@ export const setGlobalProxy = async (host: string, port: number) => {
         `networksetup -setsocksfirewallproxy '${service}' '${host}' ${port}`
       );
       const bypassSet = await execAsync(
-        `networksetup -setproxybypassdomains '${service}' '${ignoredHosts}'`
+        `networksetup -setproxybypassdomains '${service}' '${IGNORE_HOSTS}'`
       );
       return autoSet.code === 0 && urlSet.code === 0 && bypassSet.code === 0;
     })

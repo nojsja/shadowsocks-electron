@@ -7,11 +7,11 @@ import path from 'path';
 import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 
-import { IpcMainWindowType } from '../types';
+import { IpcMainWindowType } from '../type';
 import { getBestWindowPosition } from '../core/helpers';
 import { electronStore, i18n } from '../electron';
 import { Manager } from '../core/manager';
-import { getPerfectDevicePixelRatioImage } from '../utils/utils';
+import { getPerfectDevicePixelRatioImage } from '../utils';
 
 const platform = os.platform();
 

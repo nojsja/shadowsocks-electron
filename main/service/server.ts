@@ -6,11 +6,11 @@ import {
   MainService as MainServiceType,
   Config, Settings, ServiceResult,
   SSRConfig, OneOfConfig
-} from '../types';
+} from '../type';
 import { manager, http, pac } from '../core';
 import tcpPing from '../core/helpers/tcp-ping';
 import { getPathRuntime } from '../config';
-import { parseServerGroup, parseSubscription, parseUrl } from '../utils/utils';
+import { parseServerGroup, parseSubscription, parseUrl } from '../utils';
 import { ProxyURI } from '../core/helpers/proxy-url';
 import checkPortInUse from '../core/helpers/port-checker';
 import logger, { warning } from '../logs';

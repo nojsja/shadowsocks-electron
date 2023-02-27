@@ -1,4 +1,4 @@
-import checkPortInUse from "./port-checker";
+import checkPortInUse from './port-checker';
 
 /**
  * @name pickPorts 获取指定数量的可用端口

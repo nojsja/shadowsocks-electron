@@ -7,7 +7,7 @@ import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient, type SupportedClient } from './client';
 import pickPorts from './helpers/port-picker';
 import { Proxy } from './proxy';
-import randomPicker from './helpers/random-picker';
+import { randomPicker } from './utils';
 import checkPortInUse from './helpers/port-checker';
 import { Target } from './LoadBalancer/types';
 import { ALGORITHM } from './LoadBalancer';
@@ -15,7 +15,7 @@ import { Interceptor } from './helpers/interceptor';
 import { i18n } from '../electron';
 import logger, { info, warning } from '../logs';
 
-import { type Config, type Settings, type ServiceResult } from '../types';
+import { type Config, type Settings, type ServiceResult } from '../type';
 
 const platform = os.platform();
 

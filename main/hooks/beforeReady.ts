@@ -19,7 +19,7 @@ import {
   checkEnvFiles as check, copyDir, chmod,
   getPluginsPath, getExecutableFilePath,
   copyFileToPluginDir,
-} from '../utils/utils';
+} from '../utils';
 import { pacDir, binDir } from '../config';
 import { warning } from '../logs';
 

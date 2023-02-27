@@ -5,6 +5,8 @@ import { Workflow } from './base';
 import { WorkflowRunner } from './runner';
 import { WorkflowBridge } from './bridge';
 
+import { catcher } from '../utils';
+
 import {
   RunnerCreateError,
   RunnerNotFoundError,
@@ -27,14 +29,16 @@ export class WorkflowManager extends Workflow {
   bridge: WorkflowBridge;
 
   async bootstrap() {
-    try {
-      const contents = await fs.promises.readdir(this.rootDir);
-      const runnerFiles = contents.filter((content) => content.endsWith('.workflow.json'));
-      this.runnerIds = runnerFiles.map((runnerFile) => runnerFile.replace('.workflow.json', ''));
-    } catch (error) {
-      console.error(error);
+    const [err, contents] = await catcher(fs.promises.readdir(this.rootDir));
+
+    if (err || !contents) {
+      console.error(err);
       return false;
     }
+
+    const runnerFiles = contents.filter((content) => content.endsWith('.workflow.json'));
+    this.runnerIds = runnerFiles.map((runnerFile) => runnerFile.replace('.workflow.json', ''));
+
     return true;
   }
 

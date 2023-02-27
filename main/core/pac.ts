@@ -7,9 +7,9 @@ import URL from 'url';
 import logger from '../logs';
 import { globalPacConf, pacDir, userPacConf } from '../config';
 import { i18n } from '../electron';
-import { request } from '../utils/http-request';
-import { Settings } from '../types';
-import { debounce } from '../utils/utils';
+import { request } from './utils';
+import { Settings } from '../type';
+import { debounce } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');

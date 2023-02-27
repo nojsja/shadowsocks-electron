@@ -3,8 +3,8 @@ import {
   Tray, MenuItem, Menu,
 } from 'electron';
 
-import CONSTS from '../core/LoadBalancer/consts';
-import { WorkflowTaskOptions } from '../core/workflow/types';
+import CONSTS from './core/LoadBalancer/consts';
+import { WorkflowTaskOptions } from './core/workflow/types';
 
 export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';

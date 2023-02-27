@@ -5,7 +5,7 @@ import isDev from 'electron-is-dev';
 
 import logger from '../logs';
 import { pac } from '../core';
-import { getChromeExtensionsPath } from '../utils/utils';
+import { getChromeExtensionsPath } from '../utils';
 import { pacDir } from '../config';
 
 const loadExtensionsManually = (paths: string[]) => {

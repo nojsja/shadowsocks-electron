@@ -3,7 +3,7 @@ import url from 'url';
 import http from 'http';
 import { Duplex } from 'stream';
 
-import { InnerCallback } from '../types';
+import { InnerCallback } from '../type';
 import checkPortInUse from './helpers/port-checker';
 import { i18n } from '../electron';
 

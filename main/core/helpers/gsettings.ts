@@ -1,5 +1,5 @@
-import { execAsync } from "../../utils/utils";
-import { ignoredHosts } from "./config";
+import { execAsync } from '../utils';
+import { IGNORE_HOSTS } from '../config';
 
 export const unsetProxy = async () => {
   const result = await execAsync(
@@ -29,7 +29,7 @@ export const setGlobalProxy = async (host: string, port: number) => {
     `gsettings set org.gnome.system.proxy.socks port ${port}`
   );
   const bypassSet = await execAsync(
-    `gsettings set org.gnome.system.proxy ignore-hosts "['${ignoredHosts}']"`
+    `gsettings set org.gnome.system.proxy ignore-hosts "['${IGNORE_HOSTS}']"`
   );
   return (
     manualSet.code === 0 &&

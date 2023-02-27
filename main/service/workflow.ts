@@ -3,8 +3,8 @@ import { workflowTaskDemoDir } from '../config';
 import { WorkflowManager } from '../core/workflow/manager';
 import { WorkflowTaskOptions } from '../core/workflow/types';
 
-import { type WorkflowService as WorkflowServiceType } from '../types';
-import { getPureRunners } from '../utils/utils';
+import { type WorkflowService as WorkflowServiceType } from '../type';
+import { getPureRunners } from '../utils';
 
 export class WorkflowService implements WorkflowServiceType {
   ipc: IpcMain

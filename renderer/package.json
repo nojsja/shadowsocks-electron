@@ -9,7 +9,7 @@
   "repository": "https://github.com/nojsja/shadowsocks-electron",
   "license": "GPL-3.0",
   "homepage": ".",
-  "main": "public/electron.js",
+  "main": "index.tsx",
   "private": true,
   "scripts": {
     "start": "cross-env NODE_ENV=development cross-env PORT=3001 cross-env BROWSER=none webpack serve",

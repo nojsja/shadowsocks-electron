@@ -1,17 +1,91 @@
 import path from 'path';
 import fs, { PathLike } from 'fs';
 import os from 'os';
-import { exec, ExecOptions } from 'child_process';
+import { IncomingMessage } from 'http';
+import https from 'https';
+import http from 'http';
+import { MessageChannel } from 'electron-re';
+import { screen } from 'electron';
+
 import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
   MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig, WorkflowRunner,
-} from '../types';
-import { archMap, getPathRuntime, pathExecutable } from '../config';
-import { i18n } from '../electron';
-import { ProxyURI } from '../core/helpers/proxy-url';
-import { get } from './http-request';
-import { screen } from 'electron';
-import logger from '../logs';
+  IpcMain, ServiceHandler
+} from './type';
+import { archMap, getPathRuntime, pathExecutable } from './config';
+import { i18n } from './electron';
+import { ProxyURI } from './core/helpers/proxy-url';
+import logger from './logs';
+
+export type JsonResult = {
+  error: Error | null,
+  data: any,
+};
+
+export function get(url: string): Promise<JsonResult> {
+  const isHttps = /^(https:\/\/)/.test(url);
+  const httpLib = isHttps ? https : http;
+
+  return new Promise((resolve) => {
+    const req = httpLib.get(url, (res: IncomingMessage) => {
+      let data : any = '';
+
+      res.on('data', (chunk: string) => {
+        data += chunk || '';
+      });
+      res.on('end', () => {
+        try {
+          data = JSON.parse(data);
+        } catch (error) {
+          data = {
+            error: null,
+            result: data
+          }
+        } finally {
+          resolve({
+            error: null,
+            data,
+          });
+        }
+      });
+    });
+
+    req.on('error', (err: Error) => {
+      resolve({
+        error: err,
+        data: null,
+      });
+    });
+  });
+}
+
+
+/**
+  * @name ipcBridge [ipc bridge between main and renderer]
+  * @param  {[Object]} ipc [main ipc]
+  * @param  {[String]} moduleName [the module name to link]
+  * @return {[Promise]}  [the result of the action]
+  */
+export function ipcBridge<T extends object>(ipc: IpcMain, moduleName: string, model: T) {
+  MessageChannel.handle(moduleName, async function(event, args: { action: string, params: any }) {
+    const { action, params } = args;
+    let result: unknown;
+
+    if (action && action in model) {
+      result = await ((model as any)[action] as ServiceHandler)(params)
+        .catch((error: Error) => {
+          console.error(error);
+        });
+    }
+
+    return result || {
+      code: 404,
+      result: `Unknown action: ${action}`
+    };
+  });
+
+  return model;
+}
 
 const subParserStore = subscriptionParserStore([
   {
@@ -274,39 +348,6 @@ export const copyDirAsync = (src: string, dist: string, callback?: (params: any)
         }
       })
     }
-  }
-}
-
-export const execAsync = (command: string, options?: ExecOptions) => {
-  return new Promise<{
-    code: number;
-    stdout?: string;
-    stderr?: string;
-  }>((resolve, reject) => {
-    exec(command, { ...options, windowsHide: true }, (err, stdout, stderr) => {
-      if (!stderr) {
-        resolve({
-          code: err ? 1 : 0,
-          stdout
-        });
-      } else {
-        reject({
-          code: err ? 1 : 0,
-          stderr
-        });
-      }
-    });
-  });
-};
-
-export function debounce<params extends any[]> (fn: (...args: params) => any, timeout: number) {
-  let timer: NodeJS.Timeout;
-
-  return function(this: any, ...args: params) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      fn.apply(this, args);
-    }, timeout);
   }
 }
 

@@ -11,14 +11,14 @@ import {
   getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '../core/helpers';
 import { i18n, ipcMainWindow } from '../electron';
-import { getPluginsPath } from '../utils/utils';
+import { getPluginsPath } from '../utils';
 
 import {
   contextAction,
   DesktopService as DesktopServiceType,
   RectPoint, ServiceResult,
   WindowInfo
-} from '../types';
+} from '../type';
 
 /* main service handler */
 export class DesktopService implements DesktopServiceType {

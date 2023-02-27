@@ -16,6 +16,8 @@ import {
 } from './types';
 import { TASK_TIMEOUT } from './consts';
 
+import { catcher } from '../utils';
+
 export class WorkflowRunner extends Workflow {
   constructor(options: Partial<WorkflowRunnerOptions>, bridge: WorkflowBridge) {
     super();
@@ -101,15 +103,15 @@ export class WorkflowRunner extends Workflow {
     }, null, 2);
 
     try {
-      try {
-        await fs.promises.access(this.rootDir, fs.constants.F_OK);
-      } catch (error) {
-        await fs.promises.mkdir(this.rootDir, { recursive: true });
-      }
-      await fs.promises.writeFile(this.metaPath, metaData, 'utf-8');
+      // check if root dir exists
+      await fs.promises.access(this.rootDir, fs.constants.F_OK);
     } catch (error) {
-      return error as Error;
+      const [err] = await catcher(fs.promises.mkdir(this.rootDir, { recursive: true }));
+      if (err) return err;
     }
+
+    const [err] = await catcher(fs.promises.writeFile(this.metaPath, metaData, 'utf-8'));
+    if (err) return err;
 
     return null;
   }

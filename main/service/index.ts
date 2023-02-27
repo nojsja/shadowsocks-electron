@@ -9,14 +9,14 @@ import {
   DesktopService as DesktopServiceType,
   ThemeService as ThemeServiceType,
   WorkflowService as WorkflowServiceType,
-} from '../types';
+} from '../type';
 
 import { MainService } from './server';
 import { DesktopService } from './desktop';
 import { ThemeService } from './theme';
 import { WorkflowService } from './workflow';
 
-import { ipcBridge } from '../utils/ipc-bridge';
+import { ipcBridge } from '../utils';
 
 export const workflowManager = new WorkflowManager();
 
