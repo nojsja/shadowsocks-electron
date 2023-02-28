@@ -2,12 +2,14 @@ import { EventEmitter } from 'events';
 import url from 'url';
 import http from 'http';
 import { Duplex } from 'stream';
+import { createRequire } from 'module';
 
-import { i18n } from '@main/electron';
+import { i18n } from '@main/i18n';
 import { InnerCallback } from '@main/type';
 
 import checkPortInUse from './helpers/port-checker';
 
+const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
 let httpServer: HttpProxyServer | null;
@@ -56,7 +58,7 @@ export class HttpProxyServer extends EventEmitter {
 
     checkPortInUse([port], host).then(results => {
       if (results[0].isInUse) {
-        return callback(new Error(`${i18n.__('port_already_used')} ${port}`));
+        return callback(new Error(`${i18n.t('port_already_used')} ${port}`));
       }
       console.log('Start http proxy server...');
       httpServer = new HttpProxyServer({

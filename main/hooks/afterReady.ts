@@ -8,11 +8,11 @@ import {
 } from 'electron-re';
 import electronIsDev from 'electron-is-dev';
 
-import { ElectronApp } from '../app';
-import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '../config';
-import { i18n } from '../electron';
-import { warning } from '../logs';
-import { workflowManager } from '../service';
+import { i18n } from '@main/i18n';
+import { ElectronApp } from '@main/app';
+import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '@main/config';
+import { warning } from '@main/logs';
+import { workflowManager } from '@main/service';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
@@ -55,8 +55,8 @@ const setAsDefaultProtocolClient = () => {
     dialog
       .showMessageBox({
         type: "info",
-        message: `${i18n.__('would_you_want_to_add_the_server')}\n${url}`,
-        buttons: [i18n.__('confirm'), i18n.__('cancel')],
+        message: `${i18n.t('would_you_want_to_add_the_server')}\n${url}`,
+        buttons: [i18n.t('confirm'), i18n.t('cancel')],
         defaultId: 0,
       })
       .then(({ response }) => {

@@ -2,7 +2,7 @@ import { IpcMain } from 'electron';
 import QRCode from 'qrcode';
 import fs from 'fs';
 
-import { i18n } from '@main/electron';
+import { i18n } from '@main/i18n';
 import { manager, http, pac } from '@main/core';
 import { PacServer } from '@main/core/pac';
 import tcpPing from '@main/core/helpers/tcp-ping';
@@ -83,7 +83,7 @@ export class MainService implements MainServiceType {
       code = 200;
     } catch (error) {
       code = 500;
-      result = error?.toString() ?? i18n.__('invalid_parameter');
+      result = error?.toString() ?? i18n.t('invalid_parameter');
     }
 
     return {
@@ -203,7 +203,7 @@ export class MainService implements MainServiceType {
         .then(results => {
           if (results[0]?.isInUse) {
             warning(`Pac port ${params.pacPort} is in use`);
-            throw new Error(`${i18n.__('port_already_in_use')} ${params.pacPort}`);
+            throw new Error(`${i18n.t('port_already_in_use')} ${params.pacPort}`);
           }
         })
         .then(() => {
@@ -251,7 +251,7 @@ export class MainService implements MainServiceType {
         .catch((error) => {
           resolve({
             code: 500,
-            result: error?.toString() || i18n.__('invalid_parameter'),
+            result: error?.toString() || i18n.t('invalid_parameter'),
           });
         });
     });
@@ -287,7 +287,7 @@ export class MainService implements MainServiceType {
         .catch((error) => {
           resolve({
             code: 500,
-            result: error?.toString() || i18n.__('invalid_parameter'),
+            result: error?.toString() || i18n.t('invalid_parameter'),
           });
         });
     });
@@ -317,7 +317,7 @@ export class MainService implements MainServiceType {
     } catch (error: any) {
       return Promise.resolve({
         code: 500,
-        result: error?.toString() || i18n.__('invalid_parameter'),
+        result: error?.toString() || i18n.t('invalid_parameter'),
       });
     }
 
@@ -335,7 +335,7 @@ export class MainService implements MainServiceType {
     } catch (error: any) {
       return Promise.resolve({
         code: 500,
-        result: error?.toString() || i18n.__('invalid_parameter'),
+        result: error?.toString() || i18n.t('invalid_parameter'),
       });
     }
 

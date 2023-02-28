@@ -9,7 +9,7 @@
   "repository": "https://github.com/nojsja/shadowsocks-electron",
   "license": "GPL-3.0",
   "homepage": ".",
-  "main": "public/main/electron.js",
+  "main": "public/electron.js",
   "type": "commonjs",
   "private": true,
   "scripts": {
@@ -20,8 +20,8 @@
     "start:main:inspect": "npm run build:main && cross-env electron . --inspect=5222",
     "start": "turbo start:renderer start:main",
     "build:renderer": "cd renderer && npm run build && cd ..",
-    "build:main": "npx tsc -p main/tsconfig.json",
-    "build:main:rollup": "rollup --config rollup.config.js",
+    "build:main": "rollup --config rollup.config.js",
+    "build:main:tsc": "npx tsc -p main/tsconfig.json",
     "build": "turbo build:main build:renderer",
     "pack:linux": "electron-builder --linux",
     "pack:mac": "electron-builder --mac",
@@ -29,7 +29,7 @@
     "publish:linux": "electron-builder --linux --p always",
     "publish:mac": "electron-builder --mac --p always",
     "publish:win": "electron-builder --win --p always",
-    "prestart:main": "yarn lint && yarn build:main",
+    "prestart:main": "npm run lint && npm run build:main",
     "prebuild:renderer": "rimraf ./public/renderer/",
     "prebuild:main": "rimraf ./public/main/",
     "prepack:mac": "npm run build",
@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@sentry/electron": "^4.2.0",
-    "@types/i18n": "^0.13.2",
     "@types/lodash": "^4.14.191",
     "chalk": "4.x",
     "classnames": "^2.3.2",
@@ -58,12 +57,10 @@
     "electron-store": "^8.0.1",
     "electron-updater": "^5.3.0",
     "electron-window-state": "^5.0.3",
-    "i18n": "^0.14.2",
     "i18next": "^20.6.1",
     "ipv6": "*",
     "js-base64": "^2.4.0",
     "lodash": "^4.17.21",
-    "module-alias": "^2.2.2",
     "node-abort-controller": "^3.1.1",
     "node-fetch": "2.6.0",
     "node-schedule": "^2.1.1",
@@ -117,6 +114,7 @@
     "prettier": "2.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^3.17.3",
+    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-typescript2": "^0.34.1",
     "targz": "1.0.1",
     "turbo": "^1.8.3",
@@ -132,7 +130,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn clean && lint-staged && yarn lint"
+      "pre-commit": "npm run clean && lint-staged && npm run lint"
     }
   },
   "lint-staged": {
@@ -141,8 +139,12 @@
       "git add"
     ]
   },
+  "engines": {
+    "node": ">=16.19.1",
+    "npm": ">=8.19.3"
+  },
   "browserslist": [
-    "Electron >= 8"
+    "Electron >= 18"
   ],
   "__npminstall_done": false
 }

@@ -84,7 +84,7 @@ const AboutPage: React.FC = () => {
                     </div>
                     <div>
                       <Typography variant="caption" gutterBottom>
-                        i18next: { packageJsonMain.dependencies['i18n'] }
+                        i18next: { packageJsonRenderer.dependencies['i18next'] }
                       </Typography>
                     </div>
                     <div>

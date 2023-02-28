@@ -3,14 +3,16 @@ import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
 import URL from 'url';
+import { createRequire } from 'module';
 
 import logger from '@main/logs';
 import { globalPacConf, pacDir, userPacConf } from '@main/config';
-import { i18n } from '@main/electron';
+import { i18n } from '@main/i18n';
 import { Settings } from '@main/type';
 
 import { request, debounce } from './utils';
 
+const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
 let server: PacServer | null;
@@ -87,7 +89,7 @@ export class PacServer {
 
   static async downloadAndGeneratePac(url: string, text: string, settings: Settings) {
     if (!url && !text) {
-      throw new Error(i18n.__('invalid_parameter'));
+      throw new Error(i18n.t('invalid_parameter'));
     }
 
     logger.info(`Downloading GFWList from ${url}...`);

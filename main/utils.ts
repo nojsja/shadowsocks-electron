@@ -13,7 +13,7 @@ import {
   IpcMain, ServiceHandler
 } from './type';
 import { archMap, getPathRuntime, pathExecutable } from './config';
-import { i18n } from './electron';
+import { i18n } from '@main/i18n';
 import { ProxyURI } from './core/helpers/proxy-url';
 import logger from './logs';
 
@@ -401,7 +401,7 @@ export function parseServerGroup(text: string[] | string): Promise<{ error: stri
 
     if (!data.length) {
       return resolve({
-        error: i18n.__('invalid_parameter'),
+        error: i18n.t('invalid_parameter'),
         result: [],
       });
     }
@@ -436,7 +436,7 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
                 res?.data?.name ||
                 subHandler.name ||
                 (hostnameReg.exec(text) || [])[1]
-                || i18n.__('unknown_subscription')
+                || i18n.t('unknown_subscription')
             });
           }
         }).catch(err => {
@@ -450,14 +450,14 @@ export function parseSubscription(text: string): Promise<{ error: string | null,
       }
 
       return resolve({
-        error: i18n.__('invalid_subscription'),
+        error: i18n.t('invalid_subscription'),
         result: [],
         name: null
       });
     }
 
     return resolve({
-      error: i18n.__('invalid_subscription'),
+      error: i18n.t('invalid_subscription'),
       result: [],
       name: null
     });

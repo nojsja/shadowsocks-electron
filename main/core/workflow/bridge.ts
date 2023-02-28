@@ -12,8 +12,11 @@ import os from 'os';
 import url from 'url';
 import net from 'net';
 import fetch from 'node-fetch';
+import { createRequire } from 'module';
 
 import { LoadBrowserPageContext, type WorkflowTaskType } from './types';
+
+const require = createRequire(import.meta.url);
 
 /**
   * @name dispatch [trigger event to renderer process]

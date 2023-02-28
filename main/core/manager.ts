@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import os from 'os';
 import { BrowserWindow } from 'electron';
 
-import { i18n } from '@main/electron';
+import { i18n } from '@main/i18n';
 import logger, { info, warning } from '@main/logs';
 import { type Config, type Settings, type ServiceResult } from '@main/type';
 
@@ -33,7 +33,7 @@ export class StartClusterInterceptor extends Interceptor {
     const results = await checkPortInUse([settings.localPort], '127.0.0.1');
     if (results[0]?.isInUse) {
       warning(`Port ${settings.localPort} is in use`);
-      throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
+      throw new Error(`${i18n.t('port_already_in_use')} ${settings.localPort}`);
     }
     await Manager.disableProxy();
     await Manager.enableProxy(settings);
@@ -65,7 +65,7 @@ export class StartClientInterceptor extends Interceptor {
     const results = await checkPortInUse([settings.localPort], '127.0.0.1');
     if (results[0]?.isInUse) {
       warning(`Port ${settings.localPort} is in use`);
-      throw new Error(`${i18n.__('port_already_in_use')} ${settings.localPort}`);
+      throw new Error(`${i18n.t('port_already_in_use')} ${settings.localPort}`);
     }
     await Manager.disableProxy();
     await Manager.enableProxy(settings);
@@ -299,7 +299,7 @@ export class Manager {
       } else {
         resolve({
           code: 600,
-          result: `${i18n.__('unknown_shadowsocks_client_type')} ${config.type}`
+          result: `${i18n.t('unknown_shadowsocks_client_type')} ${config.type}`
         });
       }
     });
@@ -393,7 +393,7 @@ export class Manager {
             [settings.pacPort, settings.httpProxy.port]
           );
           if (!ports.length) {
-            throw new Error(i18n.__('no_available_ports'));
+            throw new Error(i18n.t('no_available_ports'));
           }
           return ports[0];
         })
@@ -411,7 +411,7 @@ export class Manager {
         /* sync status */
         .then(async (rsp) => {
           if (rsp.code !== 200) {
-            throw new Error(i18n.__('server_connect_failed'));
+            throw new Error(i18n.t('server_connect_failed'));
           }
           Manager.socketTransfer = new SocketTransfer({
             port: settings.localPort,
@@ -481,7 +481,7 @@ export class Manager {
           /* pick clients */
           .then(async () => {
             if (!configs.length) {
-              throw new Error(i18n.__('no_server_configs_found'));
+              throw new Error(i18n.t('no_server_configs_found'));
             }
 
             Manager.clusterConfig = configs;
@@ -510,7 +510,7 @@ export class Manager {
                 .map(rsp => rsp.result as SupportedClient);
 
             if (!Manager.pool.length) {
-              throw new Error(i18n.__('connections_pool_is_empty_tips'))
+              throw new Error(i18n.t('connections_pool_is_empty_tips'))
             }
 
             const cons = await Promise.all(Manager.pool.map(client => client.connect()));
@@ -526,7 +526,7 @@ export class Manager {
             });
 
             if (!targets.length) {
-              throw new Error(i18n.__('cluster_connect_failed'));
+              throw new Error(i18n.t('cluster_connect_failed'));
             }
 
             Manager.socketTransfer = new SocketTransfer({

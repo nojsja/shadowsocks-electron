@@ -10,7 +10,8 @@ import {
   getStartupOnBoot_linux, setStartupOnBoot_linux,
   getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '@main/core/helpers';
-import { i18n, ipcMainWindow } from '@main/electron';
+import { ipcMainWindow } from '@main/electron';
+import { i18n } from '@main/i18n';
 import { getPluginsPath } from '@main/utils';
 
 import {
@@ -37,7 +38,7 @@ export class DesktopService implements DesktopServiceType {
       new Notification({
         title:
           params.title
-          ?? (params.action && i18n.__(`action_${params.action}`))
+          ?? (params.action && i18n.t(`action_${params.action}`))
           ?? 'shadowsocks-electron',
         subtitle: params.subtitle,
         body: params.body,
@@ -369,9 +370,9 @@ export class DesktopService implements DesktopServiceType {
     });
   }
 
-  async setLocale(lang: 'en-US' | 'zh-CN'): Promise<void> {
+  async setLocale(lang: 'en-US' | 'zh-CN' | 'ru-RU'): Promise<void> {
     return new Promise((resolve) => {
-      i18n.setLocale(lang);
+      i18n.changeLanguage(lang);
       ipcMainWindow.setLocaleTrayMenu();
       resolve();
     });

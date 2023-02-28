@@ -4,6 +4,9 @@ const alias = require('@rollup/plugin-alias');
 const resolve = require('@rollup/plugin-node-resolve');
 const typescript = require('rollup-plugin-typescript2');
 const json = require('@rollup/plugin-json');
+const copy = require('rollup-plugin-copy');
+
+const pkg = require(path.resolve(__dirname, 'package.json'));
 
 module.exports = {
   // 核心选项
@@ -26,11 +29,22 @@ module.exports = {
     resolve({
       preferBuiltins: true
     }),
+    copy({
+      targets: [
+        { src: 'main/test/', dest: 'public/' },
+      ]
+    })
+  ],
+  external: [
+    ...Object.keys(pkg.dependencies || {}),
+    ...Object.keys(pkg.peerDependencies || {}),
+    ...Object.keys(pkg.devDependencies || {}),
   ],
   output: [
     {
       dir: path.resolve(__dirname, 'public/'),
-      format: 'cjs'
-    },
+      format: 'cjs',
+      sourcemap: true,
+    }
   ],
 };

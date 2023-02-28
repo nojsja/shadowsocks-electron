@@ -2,7 +2,7 @@ import net from 'net';
 import { EventEmitter } from 'events';
 
 import { info, error as errorLog } from '@main/logs';
-import { i18n } from '@main/electron';
+import { i18n } from '@main/i18n';
 
 import LoadBalancer, { ALGORITHM } from './LoadBalancer';
 import shadowChecker from './helpers/shadow-checker';
@@ -144,9 +144,9 @@ export class SocketTransfer extends EventEmitter {
     return new Promise(((resolve, reject) => {
       this.once('error:socket:transfer', ({ error }) => {
         if (error && error.code === 'EADDRINUSE') {
-          reject(`${i18n.__('port_already_used')}${this.port}`);
+          reject(`${i18n.t('port_already_used')}${this.port}`);
         } else {
-          reject(error ?? new Error(i18n.__('failed_to_start_socket_transfer')));
+          reject(error ?? new Error(i18n.t('failed_to_start_socket_transfer')));
         }
       });
       this.server.listen(this.port, () => {

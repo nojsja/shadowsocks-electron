@@ -7,7 +7,8 @@ import path from 'path';
 import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 
-import { electronStore, i18n } from '@main/electron';
+import { electronStore } from '@main/electron';
+import { i18n } from '@main/i18n';
 import { Manager } from '@main/core/manager';
 import { getBestWindowPosition } from '@main/core/helpers';
 import { IpcMainWindowType } from '@main/type';
@@ -171,18 +172,18 @@ export default class IpcMainWindow implements IpcMainWindowType {
     const { serverStatus: status, darkMode } = this;
     this.menus = [
       {
-        label: i18n.__('show_ui'),
+        label: i18n.t('show_ui'),
         icon: nativeImage.createFromPath(getIconByDarkMode('home', darkMode)),
 
         click: this.show.bind(this)
       },
       {
-        label: i18n.__('hide_ui'),
+        label: i18n.t('hide_ui'),
         icon: nativeImage.createFromPath(getIconByDarkMode('hide', darkMode)),
         click: this.hide.bind(this)
       },
       {
-        label: status ? i18n.__('disconnect') : i18n.__('connect'),
+        label: status ? i18n.t('disconnect') : i18n.t('connect'),
         icon: nativeImage.createFromPath(getIconByDarkMode('disconnected', darkMode)),
         click: () => {
           if (status) {
@@ -194,7 +195,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
       },
       { type: "separator" },
       {
-        label: i18n.__('quit'),
+        label: i18n.t('quit'),
         icon: nativeImage.createFromPath(getIconByDarkMode('quit', darkMode)),
         click: this.quit.bind(this)
       }

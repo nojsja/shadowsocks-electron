@@ -1,18 +1,12 @@
-import path from 'path';
-
-import { ElectronApp } from '../app';
-import { i18n } from '../electron';
+import { ElectronApp } from '@main/app';
+import { init } from '@main/i18n';
 
 const tasks: Array<(electronApp: ElectronApp) => void> = [];
 
 const configureLanguage = (electronApp: ElectronApp) => {
   electronApp.registryHooksSync('ready', 'configureLanguage', () => {
     console.log('hooks: >> configure language');
-    i18n.configure({
-      locales: ['en-US', 'zh-CN', 'ru-RU'],
-      defaultLocale: 'en-US',
-      directory: path.join(__dirname, '../', 'locales')
-    });
+    init();
   });
 };
 

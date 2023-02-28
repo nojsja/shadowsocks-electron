@@ -2,11 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import { session } from 'electron';
 import isDev from 'electron-is-dev';
+import { createRequire } from 'module';
 
-import logger from '../logs';
-import { pac } from '../core';
-import { getChromeExtensionsPath } from '../utils';
-import { pacDir } from '../config';
+import logger from '@main/logs';
+import { pac } from '@main/core';
+import { getChromeExtensionsPath } from '@main/utils';
+import { pacDir } from '@main/config';
+
+const require = createRequire(import.meta.url);
 
 const loadExtensionsManually = (paths: string[]) => {
   paths.forEach(async (_path) => {

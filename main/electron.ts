@@ -1,11 +1,9 @@
-require('module-alias/register');
-
 import { app, BrowserWindow, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
 import { autoUpdater } from'electron-updater';
-import { I18n } from 'i18n';
 import { MessageChannel, ProcessManager } from 'electron-re';
 import ElectronStore from 'electron-store';
+import { createRequire } from 'module';
 
 import App from './app';
 import { manager } from './core';
@@ -23,9 +21,9 @@ export let ipcMainProcess: IpcMainProcessType;
 export let ipcMainWindow: IpcMainWindowType;
 export const msgc = MessageChannel;
 export const electronStore = new ElectronStore();
-export const i18n = new I18n();
 
 const { Manager } = manager;
+const require = createRequire(import.meta.url);
 
 logger.info(`appDataPath: ${appDataPath}`);
 logger.info(`pathRuntime: ${pathRuntime}`);

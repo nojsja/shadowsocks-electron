@@ -1,4 +1,7 @@
+import { createRequire } from 'module';
 import { Socket } from 'net';
+
+const require = createRequire(import.meta.url);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
