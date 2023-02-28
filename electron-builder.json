@@ -1,7 +1,7 @@
 {
   "appId": "io.nojsja.shadowsocks-electron",
   "productName": "Shadowsocks Electron",
-  "asar": true,
+  "asar": false,
   "copyright": "© 2021 nojsja",
   "extends": null,
   "files": [
