@@ -5,7 +5,7 @@ import { Workflow } from './base';
 import { WorkflowRunner } from './runner';
 import { WorkflowBridge } from './bridge';
 
-import { catcher } from '../utils';
+import { catcher } from '@common/utils';
 
 import {
   RunnerCreateError,

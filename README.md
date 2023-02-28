@@ -271,11 +271,18 @@ $: cp pac/gfwlist.txt ~/Library/Application\ Support/shadowsocks-electron/pac/
 $: npm start
 ```
 
-## XII. Mention
+## XII. Publish
+
+### Linux
+
+- Snap: `snapcraft login && snapcraft upload dist/shadowsocks-electron_[x].[x].[x]_amd64.snap`
+
+
+## XIII. Mention
 
 > The repo is cloned from `robertying/shadowsocks-electron` which is no longer maintained. I create a new repo based on that in order to be found in github search list.
 
-## XIII. Credit
+## IX. Credit
 
 - [tindy2013/shadowsocks-static-binaries](https://github.com/tindy2013/shadowsocks-static-binaries)
 - [robertying/shadowsocks-electron](https://github.com/robertying/shadowsocks-electron)

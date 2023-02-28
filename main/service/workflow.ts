@@ -1,10 +1,10 @@
 import { IpcMain } from 'electron';
-import { workflowTaskDemoDir } from '../config';
-import { WorkflowManager } from '../core/workflow/manager';
-import { WorkflowTaskOptions } from '../core/workflow/types';
 
-import { type WorkflowService as WorkflowServiceType } from '../type';
-import { getPureRunners } from '../utils';
+import { workflowTaskDemoDir } from '@main/config';
+import { WorkflowManager } from '@main/core/workflow/manager';
+import { WorkflowTaskOptions } from '@main/core/workflow/types';
+import { type WorkflowService as WorkflowServiceType } from '@main/type';
+import { getPureRunners } from '@main/utils';
 
 export class WorkflowService implements WorkflowServiceType {
   ipc: IpcMain

@@ -7,11 +7,11 @@ import path from 'path';
 import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 
-import { IpcMainWindowType } from '../type';
-import { getBestWindowPosition } from '../core/helpers';
-import { electronStore, i18n } from '../electron';
-import { Manager } from '../core/manager';
-import { getPerfectDevicePixelRatioImage } from '../utils';
+import { electronStore, i18n } from '@main/electron';
+import { Manager } from '@main/core/manager';
+import { getBestWindowPosition } from '@main/core/helpers';
+import { IpcMainWindowType } from '@main/type';
+import { getPerfectDevicePixelRatioImage } from '@main/utils';
 
 const platform = os.platform();
 
@@ -56,7 +56,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
     this.serverStatus = false;
     this.url = isDev
       ? "http://localhost:3001"
-      : `file://${path.resolve(app.getAppPath(), "build/index.html")}`;
+      : `file://${path.resolve(app.getAppPath(), "public/renderer/index.html")}`;
     this.icon = path.resolve(app.getAppPath(), "assets/logo.png");
     this.trayIcon = getPerfectDevicePixelRatioImage(
       path.resolve(app.getAppPath(), "assets/icons/icon.png"), [1, 1.5, 2, 3]

@@ -1,4 +1,4 @@
-import { WorkflowManager } from '../core/workflow/manager';
+import { WorkflowManager } from '@main/core/workflow/manager';
 /**
 * @description: 主进程ipc信号监听器
 */

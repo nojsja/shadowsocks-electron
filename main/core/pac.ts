@@ -4,12 +4,12 @@ import path from 'path';
 import fetch from 'node-fetch';
 import URL from 'url';
 
-import logger from '../logs';
-import { globalPacConf, pacDir, userPacConf } from '../config';
-import { i18n } from '../electron';
-import { request } from './utils';
-import { Settings } from '../type';
-import { debounce } from './utils';
+import logger from '@main/logs';
+import { globalPacConf, pacDir, userPacConf } from '@main/config';
+import { i18n } from '@main/electron';
+import { Settings } from '@main/type';
+
+import { request, debounce } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');

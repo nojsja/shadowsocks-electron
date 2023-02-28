@@ -2,9 +2,10 @@ import { ChildProcess, spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { resolve } from 'path';
 
-import { DefinedPluginProps } from '../type';
-import logger from '../logs';
-import { getPluginsPath } from '../utils';
+import { DefinedPluginProps } from '@main/type';
+import logger from '@main/logs';
+import { getPluginsPath } from '@main/utils';
+
 import { debounce } from './utils';
 
 export class DefinedPlugin extends EventEmitter {

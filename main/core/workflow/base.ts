@@ -1,9 +1,10 @@
 
 import EventEmitter from 'events';
+
 import {
   workflowRootDir,
   workflowTaskDir,
-} from '../../config';
+} from '@main/config';
 
 export class Workflow extends EventEmitter {
   [key: string]: any;

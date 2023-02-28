@@ -45,11 +45,6 @@ jobs:
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Build Renderer & Main
-        env:
-          CI: false
-        run: npm run build
-
       - name: Publish DMG/Zip (mac)
         if: matrix.os == 'macos-12'
         env:

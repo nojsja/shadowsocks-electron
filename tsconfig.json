@@ -2,12 +2,25 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"],
-      "@main/*": ["main/*"],
-      "@renderer/*": ["renderer/*"],
+      "@/*": [
+        "./*"
+      ],
+      "@common/*": [
+        "common/*"
+      ],
+      "@main/*": [
+        "main/*"
+      ],
+      "@renderer/*": [
+        "renderer/*"
+      ],
     },
     "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,7 +34,9 @@
     "noEmit": false,
     "jsx": "react"
   },
-  "include": ["**/*"],
+  "include": [
+    "**/*"
+  ],
   "exclude": [
     "dist/*"
   ]

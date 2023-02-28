@@ -1,0 +1,14 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "lint": {},
+    "start:renderer": {},
+    "start:main": {},
+    "build:renderer": {
+      "outputs": ["./build/**"]
+    },
+    "build:main": {
+      "outputs": ["./public/**"]
+    }
+  }
+}

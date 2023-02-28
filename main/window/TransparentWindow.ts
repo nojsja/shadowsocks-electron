@@ -1,7 +1,7 @@
 import { app, BrowserWindow, screen } from 'electron';
 import path from 'path';
 
-import { TransparentWindowType, RectPoint } from '../type';
+import { TransparentWindowType, RectPoint } from '@main/type';
 
 export default class Transparentwindow implements TransparentWindowType {
   icon: string

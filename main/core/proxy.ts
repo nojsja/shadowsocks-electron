@@ -1,10 +1,11 @@
+import logger from '@main/logs';
+import { setupIfFirstRun } from '@main/install';
+import { Mode, ProxyStatus } from '@main/type';
+
 import * as networksetup from './helpers/networksetup';
 import * as gsettings from './helpers/gsettings';
 import * as sysproxy from './helpers/sysproxy';
 import { PacServer as PS } from './pac';
-import { Mode, ProxyStatus } from '../type';
-import { setupIfFirstRun } from '../install';
-import logger from '../logs';
 
 export class Proxy {
   mode: Mode;

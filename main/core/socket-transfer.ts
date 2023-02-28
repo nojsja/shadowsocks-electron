@@ -1,11 +1,12 @@
 import net from 'net';
 import { EventEmitter } from 'events';
 
+import { info, error as errorLog } from '@main/logs';
+import { i18n } from '@main/electron';
+
 import LoadBalancer, { ALGORITHM } from './LoadBalancer';
 import shadowChecker from './helpers/shadow-checker';
 import { Target } from './LoadBalancer/types';
-import { info, error as errorLog } from '../logs';
-import { i18n } from '../electron';
 
 export interface SocketTransferOptions {
   port?: number;

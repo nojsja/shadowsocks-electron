@@ -20,6 +20,9 @@ dist/
 .env.test.local
 .env.production.local
 
+# build
+.turbo
+
 yarn.lock
 npm-debug.log*
 yarn-debug.log*

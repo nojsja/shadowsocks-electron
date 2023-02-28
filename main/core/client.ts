@@ -2,11 +2,12 @@ import { EventEmitter } from 'events';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import path from 'path';
 
+import { getPluginsPath, getSSLocalBinPath } from '@main/utils';
+import { Settings, SSRConfig, SSConfig, ServiceResult } from '@main/type';
+import logger from '@main/logs';
+
 import checkPortInUse from './helpers/port-checker';
-import { getPluginsPath, getSSLocalBinPath } from '../utils';
 import { debounce } from './utils';
-import { Settings, SSRConfig, SSConfig, ServiceResult } from '../type';
-import logger from '../logs';
 import { DefinedPlugin } from './plugin';
 import { isWindows } from './config';
 

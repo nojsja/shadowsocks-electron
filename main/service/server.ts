@@ -2,20 +2,21 @@ import { IpcMain } from 'electron';
 import QRCode from 'qrcode';
 import fs from 'fs';
 
+import { i18n } from '@main/electron';
+import { manager, http, pac } from '@main/core';
+import { PacServer } from '@main/core/pac';
+import tcpPing from '@main/core/helpers/tcp-ping';
+import { ProxyURI } from '@main/core/helpers/proxy-url';
+import checkPortInUse from '@main/core/helpers/port-checker';
+import { getPathRuntime } from '@main/config';
+import logger, { warning } from '@main/logs';
+import { parseServerGroup, parseSubscription, parseUrl } from '@main/utils';
+
 import {
   MainService as MainServiceType,
   Config, Settings, ServiceResult,
   SSRConfig, OneOfConfig
-} from '../type';
-import { manager, http, pac } from '../core';
-import tcpPing from '../core/helpers/tcp-ping';
-import { getPathRuntime } from '../config';
-import { parseServerGroup, parseSubscription, parseUrl } from '../utils';
-import { ProxyURI } from '../core/helpers/proxy-url';
-import checkPortInUse from '../core/helpers/port-checker';
-import logger, { warning } from '../logs';
-import { i18n } from '../electron';
-import { PacServer } from '../core/pac';
+} from '@main/type';
 
 const { Manager } = manager;
 const { HttpProxyServer: HPS } = http;

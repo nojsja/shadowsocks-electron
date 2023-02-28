@@ -6,5 +6,5 @@
     "main/types/**/*"
   ],
   "ext": "ts,json",
-  "exec": "yarn lint && yarn build:main && electron ."
+  "exec": "yarn build:main && electron ."
 }

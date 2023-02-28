@@ -3,6 +3,8 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import schedule from 'node-schedule';
 
+import { catcher } from '@common/utils';
+
 import { Workflow } from './base';
 import { WorkflowTask } from './task';
 import { WorkflowBridge } from './bridge';
@@ -15,8 +17,6 @@ import {
   WorkflowTaskTimer,
 } from './types';
 import { TASK_TIMEOUT } from './consts';
-
-import { catcher } from '../utils';
 
 export class WorkflowRunner extends Workflow {
   constructor(options: Partial<WorkflowRunnerOptions>, bridge: WorkflowBridge) {

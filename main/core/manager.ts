@@ -3,6 +3,10 @@ import { EventEmitter } from 'events';
 import os from 'os';
 import { BrowserWindow } from 'electron';
 
+import { i18n } from '@main/electron';
+import logger, { info, warning } from '@main/logs';
+import { type Config, type Settings, type ServiceResult } from '@main/type';
+
 import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient, type SupportedClient } from './client';
 import pickPorts from './helpers/port-picker';
@@ -12,10 +16,6 @@ import checkPortInUse from './helpers/port-checker';
 import { Target } from './LoadBalancer/types';
 import { ALGORITHM } from './LoadBalancer';
 import { Interceptor } from './helpers/interceptor';
-import { i18n } from '../electron';
-import logger, { info, warning } from '../logs';
-
-import { type Config, type Settings, type ServiceResult } from '../type';
 
 const platform = os.platform();
 

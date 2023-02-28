@@ -1,3 +1,5 @@
+require('module-alias/register');
+
 import { app, BrowserWindow, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
 import { autoUpdater } from'electron-updater';
@@ -6,7 +8,7 @@ import { MessageChannel, ProcessManager } from 'electron-re';
 import ElectronStore from 'electron-store';
 
 import App from './app';
-import { manager } from "./core";
+import { manager } from './core';
 import logger from './logs';
 import { setupAfterInstall } from './install';
 import { IpcMainProcess } from './service/index';

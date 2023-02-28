@@ -3,22 +3,22 @@ import fs from 'fs';
 import os from 'os';
 import { ProcessManager } from 'electron-re';
 
-import { openLogDir } from '../logs';
-import TransparentWindow from '../window/TransparentWindow';
+import { openLogDir } from '@main/logs';
+import TransparentWindow from '@main/window/TransparentWindow';
 import {
   setStartupOnBoot_darwin, getStartupOnBoot_darwin,
   getStartupOnBoot_linux, setStartupOnBoot_linux,
   getStartupOnBoot_win32, setStartupOnBoot_win32
-} from '../core/helpers';
-import { i18n, ipcMainWindow } from '../electron';
-import { getPluginsPath } from '../utils';
+} from '@main/core/helpers';
+import { i18n, ipcMainWindow } from '@main/electron';
+import { getPluginsPath } from '@main/utils';
 
 import {
   contextAction,
   DesktopService as DesktopServiceType,
   RectPoint, ServiceResult,
   WindowInfo
-} from '../type';
+} from '@main/type';
 
 /* main service handler */
 export class DesktopService implements DesktopServiceType {

@@ -1,8 +1,8 @@
 import { IpcMain, nativeTheme } from 'electron';
 
-import { electronStore, ipcMainWindow } from '../electron';
-import { ServiceResult, ThemeService as ThemeServiceType } from '../type';
-import { debounce } from '../core/utils';
+import { electronStore, ipcMainWindow } from '@main/electron';
+import { debounce } from '@main/core/utils';
+import { ServiceResult, ThemeService as ThemeServiceType } from '@main/type';
 
 const updateTheme = debounce<boolean[]>((shouldUseDarkColors) => {
   ipcMainWindow.win?.webContents.send('theme:update', { shouldUseDarkColors });

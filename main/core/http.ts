@@ -3,9 +3,10 @@ import url from 'url';
 import http from 'http';
 import { Duplex } from 'stream';
 
-import { InnerCallback } from '../type';
+import { i18n } from '@main/electron';
+import { InnerCallback } from '@main/type';
+
 import checkPortInUse from './helpers/port-checker';
-import { i18n } from '../electron';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const socks = require('socks');
