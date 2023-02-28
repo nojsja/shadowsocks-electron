@@ -1,13 +1,9 @@
 import fs from 'fs';
-import path from 'path';
 import { session } from 'electron';
 import isDev from 'electron-is-dev';
 import { createRequire } from 'module';
 
-import logger from '@main/logs';
-import { pac } from '@main/core';
 import { getChromeExtensionsPath } from '@main/utils';
-import { pacDir } from '@main/config';
 
 const require = createRequire(import.meta.url);
 
@@ -46,27 +42,5 @@ export const setupAfterInstall = async (manually?: boolean) => {
     });
   } else if (!manually && isDev) {
     loadExtensionsWithInstaller();
-  }
-};
-
-export const setupIfFirstRun = async () => {
-  try {
-    let firstRun = false;
-    try {
-      await fs.promises.access(path.resolve(pacDir, "pac.txt"), fs.constants.F_OK);
-    } catch (error) {
-      firstRun = true;
-    }
-    const { PacServer: PS } = pac;
-
-    if (!firstRun) return;
-
-    logger.info("First run detected");
-
-    const data = await fs.promises.readFile(path.resolve(pacDir, "gfwlist.txt"));
-    const text = data.toString("ascii");
-    await PS.generatePacWithoutPort(text);
-  } catch (err) {
-    logger.error((err as any).message ?? err);
   }
 };

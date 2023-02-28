@@ -1,5 +1,5 @@
 import logger from '@main/logs';
-import { setupIfFirstRun } from '@main/install';
+import { setupIfFirstRun } from '@main/core/pac';
 import { Mode, ProxyStatus } from '@main/type';
 
 import * as networksetup from './helpers/networksetup';

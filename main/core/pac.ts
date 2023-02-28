@@ -17,6 +17,27 @@ const require = createRequire(import.meta.url);
 const socks = require('socks');
 let server: PacServer | null;
 
+export const setupIfFirstRun = async () => {
+  try {
+    let firstRun = false;
+    try {
+      await fs.promises.access(path.resolve(pacDir, "pac.txt"), fs.constants.F_OK);
+    } catch (error) {
+      firstRun = true;
+    }
+
+    if (!firstRun) return;
+
+    logger.info("First run detected");
+
+    const data = await fs.promises.readFile(path.resolve(pacDir, "gfwlist.txt"));
+    const text = data.toString("ascii");
+    await PacServer.generatePacWithoutPort(text);
+  } catch (err) {
+    logger.error((err as any).message ?? err);
+  }
+};
+
 export class PacServer {
   core: http.Server;
   pacPort: number;
