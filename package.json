@@ -121,19 +121,13 @@
     "v8-inspect-profiler": "^0.1.0",
     "wait-on": "4.0.1"
   },
-  "_moduleAliases": {
-    "@": "./public",
-    "@common": "./public/common",
-    "@main": "./public/main",
-    "@renderer": "./public/renderer"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "npm run clean && lint-staged && npm run lint"
     }
   },
   "lint-staged": {
-    "src2/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write",
       "git add"
     ]
