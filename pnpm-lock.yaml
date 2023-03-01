@@ -46,7 +46,6 @@ importers:
       eslint-plugin-react: ^7.30.1
       event-stream: ^4.0.1
       https-proxy-agent: ^5.0.1
-      husky: ^8.0.3
       i18next: ^20.6.1
       ipv6: '*'
       js-base64: ^2.4.0
@@ -77,6 +76,7 @@ importers:
       wait-on: 4.0.1
       winston: 3.2.1
       winston-daily-rotate-file: ^4.5.5
+      yorkie: ^2.0.0
     dependencies:
       '@sentry/electron': 4.3.0
       '@types/lodash': 4.14.191
@@ -137,7 +137,6 @@ importers:
       eslint-plugin-react: 7.32.2_eslint@8.35.0
       event-stream: 4.0.1
       https-proxy-agent: 5.0.1
-      husky: 8.0.3
       jsqr: 1.4.0
       lint-staged: 10.0.9
       nodemon: 2.0.2
@@ -152,6 +151,7 @@ importers:
       typescript: 4.9.5
       v8-inspect-profiler: 0.1.0
       wait-on: 4.0.1
+      yorkie: 2.0.0
 
   src/main:
     specifiers: {}
@@ -8422,6 +8422,19 @@ packages:
       strip-eof: 1.0.0
     dev: true
 
+  /execa/0.8.0:
+    resolution: {integrity: sha512-zDWS+Rb1E8BlqqhALSt9kUhss8Qq4nN3iof3gsOdyINksElaPyNBtKUMTR62qhvgVWR0CqCX7sdnKe4MnUbFEA==}
+    engines: {node: '>=4'}
+    dependencies:
+      cross-spawn: 5.1.0
+      get-stream: 3.0.0
+      is-stream: 1.1.0
+      npm-run-path: 2.0.2
+      p-finally: 1.0.0
+      signal-exit: 3.0.7
+      strip-eof: 1.0.0
+    dev: true
+
   /execa/1.0.0:
     resolution: {integrity: sha512-adbxcyWV46qiHyvSp50TKt05tB4tK3HcmF7/nxfAdhnox83seTDbwnaqKO4sXRy7roHAIFqJP/Rw/AuEbX61LA==}
     engines: {node: '>=6'}
@@ -9836,12 +9849,6 @@ packages:
   /human-signals/1.1.1:
     resolution: {integrity: sha512-SEQu7vl8KjNL2eoGBLF3+wAjpsNfA9XMlXAYj/3EdaNfAlxKthD1xjEQfGOUhllCGGJVNY34bRr6lPINhNjyZw==}
     engines: {node: '>=8.12.0'}
-    dev: true
-
-  /husky/8.0.3:
-    resolution: {integrity: sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==}
-    engines: {node: '>=14'}
-    hasBin: true
     dev: true
 
   /hyphenate-style-name/1.0.4:
@@ -12557,6 +12564,11 @@ packages:
       resolve: 1.22.1
       semver: 5.7.1
       validate-npm-package-license: 3.0.4
+    dev: true
+
+  /normalize-path/1.0.0:
+    resolution: {integrity: sha512-7WyT0w8jhpDStXRq5836AMmihQwq2nrUVQrgjvUo/p/NZf9uy/MeJ246lBJVmWuYXMlJuG9BNZHF0hWjfTbQUA==}
+    engines: {node: '>=0.10.0'}
     dev: true
 
   /normalize-path/2.1.1:
@@ -16471,6 +16483,11 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /strip-indent/2.0.0:
+    resolution: {integrity: sha512-RsSNPLpq6YUL7QYy44RnPVTn/lcVZtb48Uof3X5JLbF4zD/Gs7ZFDv2HWol+leoQN2mT86LAzSshGfkTlSOpsA==}
+    engines: {node: '>=4'}
+    dev: true
+
   /strip-json-comments/2.0.1:
     resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
     engines: {node: '>=0.10.0'}
@@ -18545,4 +18562,15 @@ packages:
   /yocto-queue/0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+    dev: true
+
+  /yorkie/2.0.0:
+    resolution: {integrity: sha512-jcKpkthap6x63MB4TxwCyuIGkV0oYP/YRyuQU5UO0Yz/E/ZAu+653/uov+phdmO54n6BcvFRyyt0RRrWdN2mpw==}
+    engines: {node: '>=4'}
+    requiresBuild: true
+    dependencies:
+      execa: 0.8.0
+      is-ci: 1.2.1
+      normalize-path: 1.0.0
+      strip-indent: 2.0.0
     dev: true
