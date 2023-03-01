@@ -4,11 +4,7 @@
     "lint": {},
     "start:renderer": {},
     "start:main": {},
-    "build:renderer": {
-      "outputs": ["./build/**"]
-    },
-    "build:main": {
-      "outputs": ["./public/**"]
-    }
+    "build:renderer": {},
+    "build:main": {}
   }
 }

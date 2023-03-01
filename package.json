@@ -13,13 +13,13 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
-    "bootstrap": "cd ./src/renderer && npm install --force && cd .. && npm install",
-    "start:renderer": "cd ./src/renderer && npm start && cd ..",
+    "bootstrap": "pnpm --filter './src/renderer' --filter '.' install",
+    "start:renderer": "pnpm --filter './src/renderer' start",
     "start:main": "nodemon --config nodemon.json",
     "start:main:cold": "electron .",
-    "start:main:inspect": "npm run build:main && cross-env electron . --inspect=5222",
+    "start:main:inspect": "pnpm build:main && cross-env electron . --inspect=5222",
     "start": "turbo start:renderer start:main",
-    "build:renderer": "cd ./src/renderer && npm run build && cd ..",
+    "build:renderer": "pnpm --filter './src/renderer' build",
     "build:main": "rollup --config rollup.config.js",
     "build:main:tsc": "npx tsc -p ./src/main/tsconfig.json",
     "build": "turbo build:main build:renderer",
@@ -29,20 +29,21 @@
     "publish:linux": "electron-builder --linux --p always",
     "publish:mac": "electron-builder --mac --p always",
     "publish:win": "electron-builder --win --p always",
-    "prestart:main": "npm run lint && npm run build:main",
+    "prestart:main": "pnpm lint && pnpm build:main",
     "prebuild:renderer": "rimraf ./public/renderer/",
     "prebuild:main": "rimraf ./public/main/",
-    "prepack:mac": "npm run build",
-    "prepack:win": "npm run build",
-    "prepack:linux": "npm run build",
-    "prepublish:linux": "npm run build",
-    "prepublish:mac": "npm run build",
-    "prepublish:win": "npm run build",
+    "prepack:mac": "pnpm build",
+    "prepack:win": "pnpm build",
+    "prepack:linux": "pnpm build",
+    "prepublish:linux": "pnpm build",
+    "prepublish:mac": "pnpm build",
+    "prepublish:win": "pnpm build",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "clean": "rm -rf dist/linux-*unpacked && rm -rf dist/__snap* && rm -rf dist/win-*unpacked",
     "lint": "eslint --ext .tsx,.ts .",
     "download": "node ./scripts/download.js",
-    "postinstall": "electron-builder install-app-deps && patch-package"
+    "postinstall": "electron-builder install-app-deps && patch-package",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@sentry/electron": "^4.2.0",
@@ -105,7 +106,7 @@
     "eslint-plugin-react": "^7.30.1",
     "event-stream": "^4.0.1",
     "https-proxy-agent": "^5.0.1",
-    "husky": "4.2.3",
+    "husky": "^8.0.0",
     "jsqr": "^1.4.0",
     "lint-staged": "10.0.9",
     "nodemon": "2.0.2",
@@ -123,7 +124,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run clean && lint-staged && npm run lint"
+      "pre-commit": "pnpm clean && lint-staged && pnpm lint"
     }
   },
   "lint-staged": {
@@ -134,7 +135,7 @@
   },
   "engines": {
     "node": ">=16.19.1",
-    "npm": ">=8.19.3"
+    "pnpm": ">=7.21.0"
   },
   "browserslist": [
     "Electron >= 18"
