@@ -8,9 +8,9 @@ import {
 } from 'crt-terminal';
 import { createStyles, DialogContent, makeStyles } from '@material-ui/core';
 
-import { AdaptiveDialog } from '@/renderer/components/Pices/Dialog';
-import { CONSOLE_BUFFER_SIZE, TaskConsoleData } from '@/renderer/hooks/useWorkflowTaskTerminal';
-import { useTerminalVisitor } from '@/renderer/hooks';
+import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
+import { CONSOLE_BUFFER_SIZE, TaskConsoleData } from '@renderer/hooks/useWorkflowTaskTerminal';
+import { useTerminalVisitor } from '@renderer/hooks';
 
 interface Props {
   open: boolean;

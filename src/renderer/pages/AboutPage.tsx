@@ -3,7 +3,7 @@ import { Container, Typography, Tooltip } from '@material-ui/core';
 import os from 'os';
 
 import authorPic from '@/assets/icons/256x256.png';
-import packageJsonRenderer from '@/renderer/package.json';
+import packageJsonRenderer from '@renderer/package.json';
 import packageJsonMain from '@/package.json';
 
 import ReleaseNotes from './about/ReleaseNotes';

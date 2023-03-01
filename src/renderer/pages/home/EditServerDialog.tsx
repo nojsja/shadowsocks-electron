@@ -31,7 +31,7 @@ import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
 import clsx from 'clsx';
 
-import { Message } from '@/renderer/hooks/useNotifier';
+import { Message } from '@renderer/hooks/useNotifier';
 
 import If from '@renderer/components/HOC/IF';
 import { AdaptiveAppBar } from '@renderer/components/Pices/AppBar';

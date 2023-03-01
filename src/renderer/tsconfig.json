@@ -1,20 +1,6 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@common/*": [
-        "common/*"
-      ],
-      "@main/*": [
-        "main/*"
-      ],
-      "@renderer/*": [
-        "renderer/*"
-      ],
-    },
     "target": "esnext",
     "lib": [
       "dom",
@@ -33,11 +19,5 @@
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "react"
-  },
-  "include": [
-    "**/*"
-  ],
-  "exclude": [
-    "dist/*"
-  ]
+  }
 }

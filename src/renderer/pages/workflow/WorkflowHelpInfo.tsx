@@ -9,9 +9,9 @@ import { MessageChannel } from 'electron-re';
 import path from 'path';
 import { useTranslation } from 'react-i18next';
 
-import { Message, useRequest, useTaskFS } from '@/renderer/hooks';
-import { Response } from '@/renderer/hooks/useRequest';
-import { WORKFLOW_TASK_FILE } from '@/renderer/types';
+import { Message, useRequest, useTaskFS } from '@renderer/hooks';
+import { Response } from '@renderer/hooks/useRequest';
+import { WORKFLOW_TASK_FILE } from '@renderer/types';
 import { scrollBarStyle, useStylesOfWorkflow } from '@renderer/pages/styles';
 
 const useStyles = makeStyles((theme) => createStyles({

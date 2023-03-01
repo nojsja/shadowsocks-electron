@@ -10,19 +10,19 @@ const pkg = require(path.resolve(__dirname, 'package.json'));
 
 module.exports = {
   // 核心选项
-  input: path.resolve(__dirname, './main/electron.ts'),     // 必须
+  input: path.resolve(__dirname, './src/main/electron.ts'),     // 必须
   plugins: [
     commonjs(),
     alias({
       entries: [
-        { find: '@', replacement: path.resolve(__dirname) },
-        { find: '@common', replacement: path.resolve(__dirname, 'common') },
-        { find: '@main', replacement: path.resolve(__dirname, 'main') },
-        { find: '@renderer', replacement: path.resolve(__dirname, 'renderer') },
+        { find: '@', replacement: path.resolve(__dirname, './src') },
+        { find: '@common', replacement: path.resolve(__dirname, './src/common') },
+        { find: '@main', replacement: path.resolve(__dirname, './src/main') },
+        { find: '@renderer', replacement: path.resolve(__dirname, './src/renderer') },
       ]
     }),
     typescript({
-      cwd: path.resolve(__dirname, 'main'),
+      cwd: path.resolve(__dirname, './src/main'),
       tsconfig: 'tsconfig.json'
     }),
     json(),
@@ -31,7 +31,7 @@ module.exports = {
     }),
     copy({
       targets: [
-        { src: 'main/test/', dest: 'public/' },
+        { src: './src/main/test/', dest: 'public/' },
       ]
     })
   ],

@@ -18,10 +18,10 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 
 import MenuButton from '@renderer/components/Pices/MenuButton';
-import { Response, useRequest } from '@/renderer/hooks/useRequest';
-import { Message } from '@/renderer/hooks/useNotifier';
-import NoRecord from '@/renderer/components/Pices/NoRecord';
-import { useDialogConfirm } from '@/renderer/hooks';
+import { Response, useRequest } from '@renderer/hooks/useRequest';
+import { Message } from '@renderer/hooks/useNotifier';
+import NoRecord from '@renderer/components/Pices/NoRecord';
+import { useDialogConfirm } from '@renderer/hooks';
 import {
   WorkflowTaskTimer,
   type WorkflowRunner,

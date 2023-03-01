@@ -9,7 +9,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import classNames from 'classnames';
 import ComputerIcon from '@material-ui/icons/Computer';
 
-import useMonacoEditorModal from '@/renderer/hooks/useMonacoEditorModal';
+import useMonacoEditorModal from '@renderer/hooks/useMonacoEditorModal';
 import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
 import { useStylesOfWorkflow } from '@renderer/pages/styles';
 import { type WorkflowTask } from '@renderer/types';

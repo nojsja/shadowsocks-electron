@@ -6,7 +6,7 @@ import { UseFormReturn } from 'react-hook-form';
 
 import { useTypedDispatch } from '@renderer/redux/actions';
 import { CLEAR_STORE } from '@renderer/redux/reducers';
-import { Message } from '@/renderer/hooks/useNotifier';
+import { Message } from '@renderer/hooks/useNotifier';
 import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
 import { Settings } from '@renderer/types';
 import defaultStore from '@renderer/redux/defaultStore';

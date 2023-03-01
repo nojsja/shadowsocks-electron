@@ -24,8 +24,8 @@ import { Save as SaveIcon, TimerTwoTone as TimerIcon } from '@material-ui/icons'
 import { useTranslation } from 'react-i18next';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
-import { WorkflowRunner, WorkflowTaskTimer } from '@/renderer/types';
-import { Response } from '@/renderer/hooks/useRequest';
+import { WorkflowRunner, WorkflowTaskTimer } from '@renderer/types';
+import { Response } from '@renderer/hooks/useRequest';
 
 type onCloseType = () => void;
 

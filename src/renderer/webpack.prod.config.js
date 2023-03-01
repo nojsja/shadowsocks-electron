@@ -6,18 +6,18 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, './index.tsx'),
+  entry: path.resolve(__dirname, 'index.tsx'),
   // devtool: 'hidden-source-map',
   mode: 'production',
   output: {
     filename: 'bundle_[hash:8].js',
-    path: path.resolve(__dirname, '../public/renderer'),
+    path: path.resolve(__dirname, '../../public/renderer'),
     publicPath: '',
   },
   resolve: {
     alias: {
       // dir
-      '@': path.resolve(__dirname, '..'),
+      '@': path.resolve(__dirname, '../..'),
       '@main': path.resolve(__dirname, '../main'),
       '@renderer': path.resolve(__dirname, '.'),
       '@common': path.resolve(__dirname, '../common'),

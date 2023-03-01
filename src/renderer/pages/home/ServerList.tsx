@@ -14,7 +14,7 @@ import { SET_SETTING } from '@renderer/redux/actions/settings';
 import { REMOVE_CONFIG } from '@renderer/redux/actions/config';
 
 import useDialogConfirm from '@renderer/hooks/useDialogConfirm';
-import { Message } from '@/renderer/hooks/useNotifier';
+import { Message } from '@renderer/hooks/useNotifier';
 import If from '@renderer/components/HOC/IF';
 import GradientDivider from '@renderer/components/Pices/GradientDivider';
 
@@ -24,7 +24,7 @@ import ServerListItem from './ServerListItem';
 import ConfShareDialog from './ConfShareDialog';
 
 import { findAndCallback } from '@renderer/utils';
-import NoRecord from '@/renderer/components/Pices/NoRecord';
+import NoRecord from '@renderer/components/Pices/NoRecord';
 
 const useStyles = makeStyles((theme: Theme) =>
 

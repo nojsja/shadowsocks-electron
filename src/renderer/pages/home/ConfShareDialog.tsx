@@ -19,7 +19,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
-import { Message } from '@/renderer/hooks/useNotifier';
+import { Message } from '@renderer/hooks/useNotifier';
 import { saveDataURLAsFile } from '@renderer/utils';
 import { CloseOptions } from '@renderer/types';
 

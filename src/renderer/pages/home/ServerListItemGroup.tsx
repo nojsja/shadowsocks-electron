@@ -30,7 +30,7 @@ import If from '@renderer/components/HOC/IF';
 import { GroupConfig } from '@renderer/types';
 
 import ServerListItemSingle from './ServerListItemSingle';
-import { Message } from '@/renderer/hooks/useNotifier';
+import { Message } from '@renderer/hooks/useNotifier';
 
 const StyledBadge = withStyles(() =>
   createStyles({

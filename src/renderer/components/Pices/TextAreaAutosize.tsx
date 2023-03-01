@@ -6,7 +6,7 @@ import {
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import { grey } from '@material-ui/core/colors';
 import classNames from 'classnames';
-import { scrollBarStyle } from '@/renderer/pages/styles';
+import { scrollBarStyle } from '@renderer/pages/styles';
 
 export interface TextAreaProps extends TextareaAutosizeProps {
   onTextChange?: (text: string, e: React.ChangeEvent<HTMLTextAreaElement>) => void;

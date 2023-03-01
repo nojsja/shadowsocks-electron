@@ -18,8 +18,9 @@ settings:
   'import/resolver':
     alias:
       map:
-        - ['@', '../']
+        - ['@', '../..']
         - ['@main', '../main']
+        - ['@common', '../common']
         - ['@renderer', '.']
       extensions:
         - .ts

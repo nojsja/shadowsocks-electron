@@ -16,7 +16,7 @@ import InfoIcon from "@material-ui/icons/Info";
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
 import { Link } from "react-router-dom";
 
-import banner from '../../assets/banner.png';
+import banner from '@/assets/banner.png';
 
 const useStyles = makeStyles(theme => createStyles({
   text: {

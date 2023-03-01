@@ -1,4 +1,4 @@
-import If from '@/renderer/components/HOC/IF';
+import If from '@renderer/components/HOC/IF';
 import { IconButton, Link, SwipeableDrawer } from '@material-ui/core';
 import { CloseOutlined } from '@material-ui/icons';
 import { shell } from 'electron';
