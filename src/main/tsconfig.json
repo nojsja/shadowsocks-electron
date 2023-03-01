@@ -1,22 +1,11 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "lib": [
-      "esnext"
-    ],
-    "module": "ESNext",
-    "noEmit": false,
-    "noImplicitAny": true,
-    "isolatedModules": false,
-    "outDir": "../public",
-    "resolveJsonModule": true,
-    "typeRoots": [
-      "../node_modules/@types/",
-      "./types/"
-    ]
+    "module": "esnext",
+    "target": "esnext",
+    "lib": ["esnext"],
+    "outDir": "../../public",
+    "typeRoots": ["../node_modules/@types/", "./types/"]
   },
-  "include": [
-    "**/*",
-    "locales/**/*.json"
-  ]
+  "include": ["**/*", "locales/**/*.json"]
 }
