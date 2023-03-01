@@ -7,15 +7,16 @@ import http from 'http';
 import { MessageChannel } from 'electron-re';
 import { screen } from 'electron';
 
+import { i18n } from '@main/i18n';
+
 import {
   Config, SSRConfig, SSConfig, SubscriptionResult,
   MonoSubscriptionSSR, SubscriptionParserConfig, OneOfConfig, WorkflowRunner,
   IpcMain, ServiceHandler
 } from './type';
 import { archMap, getPathRuntime, pathExecutable } from './config';
-import { i18n } from '@main/i18n';
 import { ProxyURI } from './core/helpers/proxy-url';
-import logger from './logs';
+import logger from './helpers/logger';
 
 export type JsonResult = {
   error: Error | null,

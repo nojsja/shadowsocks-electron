@@ -1,21 +1,18 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
 import { autoUpdater } from 'electron-updater';
 import { MessageChannel, ProcessManager } from 'electron-re';
-import ElectronStore from 'electron-store';
 import { createRequire } from 'module';
 
-import App from './app';
+import { appEventCenter } from './event';
 import { manager } from './core';
-import logger from './logs';
-import { setupAfterInstall } from './install';
+import logger from './helpers/logger';
+import { setupAfterInstall } from './helpers/devtools-installer';
 import { IpcMainProcess } from './service/index';
 import {
   IpcMainProcess as IpcMainProcessType,
-  IpcMainWindowType,
 } from './type';
-import IpcMainWindow from './window/MainWindow';
-import { startProfiler } from './performance/v8-inspect-profiler';
+import { startProfiler } from './helpers/v8-inspect-profiler';
 import registryHooks from './hooks';
 
 import {
@@ -28,9 +25,7 @@ import {
 } from './config';
 
 export let ipcMainProcess: IpcMainProcessType;
-export let ipcMainWindow: IpcMainWindowType;
 export const msgc = MessageChannel;
-export const electronStore = new ElectronStore();
 
 const { Manager } = manager;
 const require = createRequire(import.meta.url);
@@ -41,6 +36,7 @@ logger.info(`pathExecutable: ${pathExecutable}`);
 
 /* -------------- pre work -------------- */
 
+const { app } = appEventCenter;
 const gotTheLock = app.requestSingleInstanceLock(); // singleton lock
 if (!gotTheLock) app.quit();
 
@@ -48,31 +44,23 @@ require('v8-compile-cache');
 app.setAppUserModelId(`io.nojsja.${packageName}`);
 app.dock?.hide();
 
-export const electronApp = new App();
-
-registryHooks(electronApp);
-
-electronApp.beforeReady(app);
+registryHooks(appEventCenter);
+appEventCenter.beforeReady();
 
 /* -------------- electron life cycle -------------- */
 
 app.on('ready', async () => {
   let mainProfiler: any;
 
-  electronApp.afterReady(app, (err) => {
+  appEventCenter.afterReady((err) => {
     if (err) console.log(err);
   });
-  electronApp.ready(app);
+  appEventCenter.ready();
   isInspect && (mainProfiler = await startProfiler('main', 5222));
   ipcMainProcess = new IpcMainProcess(ipcMain);
   await setupAfterInstall(true);
 
-  ipcMainWindow = new IpcMainWindow({
-    width: 460,
-    height: 540,
-  });
-
-  ipcMainWindow.create().then((win: BrowserWindow) => {
+  appEventCenter.initIpcMainWindow().then((win: BrowserWindow) => {
     (global as any).win = win;
     if (isDev) {
       win.webContents.openDevTools({ mode: 'undocked' });
@@ -80,16 +68,14 @@ app.on('ready', async () => {
     }
   });
 
-  ipcMainWindow.createTray();
-
   !isDev && autoUpdater.checkForUpdatesAndNotify();
   isInspect &&
     setTimeout(() => {
       mainProfiler?.stop();
     }, 5e3);
 
-  electronApp.registryHooksSync('beforeQuit', 'ipcMainWindowActions', () => {
-    ipcMainWindow.beforeQuitting();
+  appEventCenter.registryHooksSync('beforeQuit', 'ipcMainWindowActions', () => {
+    appEventCenter.handlers.ipcMainWindow?.beforeQuitting();
   });
 });
 
@@ -100,18 +86,18 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', () => {
-  electronApp.beforeQuit(app);
+  appEventCenter.beforeQuit();
 });
 
 app.on('will-quit', async () => {
   logger.info('App will quit. Cleaning up...');
-  electronApp.beforeQuit(app);
+  appEventCenter.beforeQuit();
   await Manager.stopClient();
 });
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    ipcMainWindow?.create();
+    appEventCenter.handlers.ipcMainWindow?.create();
   }
 });
 

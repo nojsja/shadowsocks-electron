@@ -43,7 +43,7 @@ jobs:
 
       - name: Install NPM Dependencies
         if: steps.cache-desktop-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm install --force
 
       - name: Publish DMG/Zip (mac)
         if: matrix.os == 'macos-12'

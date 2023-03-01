@@ -117,6 +117,7 @@ export interface IpcMainWindowType {
   url: string;
   quitting: boolean;
   resizable: boolean;
+  getStoreData: (name: string) => any;
   create: () => Promise<any>;
   createTray: () => Promise<any>;
   setLocaleTrayMenu: () => void;

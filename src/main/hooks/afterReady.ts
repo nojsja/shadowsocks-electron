@@ -9,14 +9,14 @@ import {
 import electronIsDev from 'electron-is-dev';
 
 import { i18n } from '@main/i18n';
-import { ElectronApp } from '@main/app';
+import { AppEvent } from '@main/event';
 import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '@main/config';
-import { warning } from '@main/logs';
+import { warning } from '@main/helpers/logger';
 import { workflowManager } from '@main/service';
 
-const tasks: Array<(electronApp: ElectronApp) => void> = [];
+const tasks: Array<(electronApp: AppEvent) => void> = [];
 
-const electronReServiceTest = (electronApp: ElectronApp) => {
+const electronReServiceTest = (electronApp: AppEvent) => {
   if (!electronIsDev) return;
 
   electronApp.registryHooksAsyncWhenReady('electronReServiceTest', async () => {
@@ -115,7 +115,7 @@ const setAsDefaultProtocolClient = () => {
   });
 };
 
-const initWorkflow = async (electronApp: ElectronApp) => {
+const initWorkflow = async (electronApp: AppEvent) => {
   electronApp.registryHooksAsyncWhenReady('initWorkflow', async () => {
     console.log('hooks: >> init workflow');
     try {
@@ -136,7 +136,7 @@ tasks.push(
   initWorkflow,
 );
 
-export default (electronApp: ElectronApp) => {
+export default (electronApp: AppEvent) => {
   tasks.forEach((task) => {
     task(electronApp);
   });

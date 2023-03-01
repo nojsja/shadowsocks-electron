@@ -3,14 +3,14 @@ import fs from 'fs';
 import os from 'os';
 import { ProcessManager } from 'electron-re';
 
-import { openLogDir } from '@main/logs';
+import { openLogDir } from '@main/helpers/logger';
 import TransparentWindow from '@main/window/TransparentWindow';
 import {
   setStartupOnBoot_darwin, getStartupOnBoot_darwin,
   getStartupOnBoot_linux, setStartupOnBoot_linux,
   getStartupOnBoot_win32, setStartupOnBoot_win32
 } from '@main/core/helpers';
-import { ipcMainWindow } from '@main/electron';
+import { appEventCenter } from '@main/event';
 import { i18n } from '@main/i18n';
 import { getPluginsPath } from '@main/utils';
 
@@ -358,14 +358,14 @@ export class DesktopService implements DesktopServiceType {
       //   message: 'Close server and quit?',
       //   type: 'question',
       // });
-      ipcMainWindow?.quit();
+      appEventCenter.emit('ipcMainWindow:quit');
       resolve();
     });
   }
 
   async minimumApp(): Promise<void> {
     return new Promise(resolve => {
-      ipcMainWindow?.hide();
+      appEventCenter.emit('ipcMainWindow:hide');
       resolve();
     });
   }
@@ -373,7 +373,7 @@ export class DesktopService implements DesktopServiceType {
   async setLocale(lang: 'en-US' | 'zh-CN' | 'ru-RU'): Promise<void> {
     return new Promise((resolve) => {
       i18n.changeLanguage(lang);
-      ipcMainWindow.setLocaleTrayMenu();
+      appEventCenter.emit('ipcMainWindow:set-locale');
       resolve();
     });
   }

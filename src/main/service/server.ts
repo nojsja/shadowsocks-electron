@@ -9,7 +9,7 @@ import tcpPing from '@main/core/helpers/tcp-ping';
 import { ProxyURI } from '@main/core/helpers/proxy-url';
 import checkPortInUse from '@main/core/helpers/port-checker';
 import { getPathRuntime } from '@main/config';
-import logger, { warning } from '@main/logs';
+import logger, { warning } from '@main/helpers/logger';
 import { parseServerGroup, parseSubscription, parseUrl } from '@main/utils';
 
 import {

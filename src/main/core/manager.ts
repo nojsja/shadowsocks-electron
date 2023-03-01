@@ -4,8 +4,12 @@ import os from 'os';
 import { BrowserWindow } from 'electron';
 
 import { i18n } from '@main/i18n';
-import logger, { info, warning } from '@main/logs';
-import { type Config, type Settings, type ServiceResult } from '@main/type';
+import logger, { info, warning } from '@main/helpers/logger';
+import {
+  type Config,
+  type Settings,
+  type ServiceResult
+} from '@main/type';
 
 import { SocketTransfer } from './socket-transfer';
 import { SSClient, SSRClient, type SupportedClient } from './client';

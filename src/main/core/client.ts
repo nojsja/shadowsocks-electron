@@ -4,7 +4,7 @@ import path from 'path';
 
 import { getPluginsPath, getSSLocalBinPath } from '@main/utils';
 import { Settings, SSRConfig, SSConfig, ServiceResult } from '@main/type';
-import logger from '@main/logs';
+import logger from '@main/helpers/logger';
 
 import checkPortInUse from './helpers/port-checker';
 import { debounce } from './utils';

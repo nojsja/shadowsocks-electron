@@ -62,7 +62,7 @@ const useStyles = makeStyles(() => createStyles({
       color: '#a2a2ca'
     },
     '&.help': {
-      fontWeight: 'bold',
+      fontStyle: 'italic'
     }
   },
   crtTerminalWrapper: {

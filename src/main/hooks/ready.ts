@@ -1,9 +1,9 @@
-import { ElectronApp } from '@main/app';
+import { AppEvent } from '@main/event';
 import { init } from '@main/i18n';
 
-const tasks: Array<(electronApp: ElectronApp) => void> = [];
+const tasks: Array<(electronApp: AppEvent) => void> = [];
 
-const configureLanguage = (electronApp: ElectronApp) => {
+const configureLanguage = (electronApp: AppEvent) => {
   electronApp.registryHooksSync('ready', 'configureLanguage', () => {
     console.log('hooks: >> configure language');
     init();
@@ -12,7 +12,7 @@ const configureLanguage = (electronApp: ElectronApp) => {
 
 tasks.push(configureLanguage);
 
-export default (electronApp: ElectronApp) => {
+export default (electronApp: AppEvent) => {
   tasks.forEach((task) => {
     task(electronApp);
   });

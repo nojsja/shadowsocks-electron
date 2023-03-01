@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { resolve } from 'path';
 
 import { DefinedPluginProps } from '@main/type';
-import logger from '@main/logs';
+import logger from '@main/helpers/logger';
 import { getPluginsPath } from '@main/utils';
 
 import { debounce } from './utils';

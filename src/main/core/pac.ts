@@ -5,7 +5,7 @@ import fetch from 'node-fetch';
 import URL from 'url';
 import { createRequire } from 'module';
 
-import logger from '@main/logs';
+import logger from '@main/helpers/logger';
 import { globalPacConf, pacDir, userPacConf } from '@main/config';
 import { i18n } from '@main/i18n';
 import { Settings } from '@main/type';

@@ -1,7 +1,7 @@
 import net from 'net';
 import { EventEmitter } from 'events';
 
-import { info, error as errorLog } from '@main/logs';
+import { info, error as errorLog } from '@main/helpers/logger';
 import { i18n } from '@main/i18n';
 
 import LoadBalancer, { ALGORITHM } from './LoadBalancer';

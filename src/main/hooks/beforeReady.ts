@@ -5,8 +5,9 @@ import * as Sentry from '@sentry/electron';
 import isDev from 'electron-is-dev';
 import pie from 'puppeteer-in-electron2';
 
-import logger from '../logs';
-import { ElectronApp } from '../app';
+import logger from '@main/helpers/logger';
+import { AppEvent } from '@main/event';
+
 import {
   appDataPath,
   platform,
@@ -14,19 +15,20 @@ import {
   pathExecutable,
   pathWorkflow,
   workflowTaskDemoDir,
-} from '../config';
+  pacDir,
+  binDir
+} from '@main/config';
 import {
   checkEnvFiles as check, copyDir, chmod,
   getPluginsPath, getExecutableFilePath,
   copyFileToPluginDir,
-} from '../utils';
-import { pacDir, binDir } from '../config';
-import { warning } from '../logs';
+} from '@main/utils';
+import { warning } from '@main/helpers/logger';
 
-const tasks: Array<(electronApp: ElectronApp) => void> = [];
+const tasks: Array<(AppEvent: AppEvent) => void> = [];
 
-const checkEnvFiles = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'checkEnvFiles', () => {
+const checkEnvFiles = (AppEvent: AppEvent) => {
+  AppEvent.registryHooksSync('beforeReady', 'checkEnvFiles', () => {
     console.log('hooks: >> checkEnvFiles');
     check(
       [
@@ -63,15 +65,15 @@ const checkEnvFiles = (electronApp: ElectronApp) => {
   });
 }
 
-const chmodFiles = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'chmodFiles', () => {
+const chmodFiles = (AppEvent: AppEvent) => {
+  AppEvent.registryHooksSync('beforeReady', 'chmodFiles', () => {
     console.log('hooks: >> chmod bin files');
     chmod(path.join(pathRuntime, 'bin'), 0o711);
   });
 };
 
-const checkPlatform = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'checkPlatform', (app: Electron.App) => {
+const checkPlatform = (AppEvent: AppEvent) => {
+  AppEvent.registryHooksSync('beforeReady', 'checkPlatform', (app: Electron.App) => {
     console.log('hooks: >> handle platform specific');
     if (platform === 'linux') {
       try {
@@ -83,8 +85,8 @@ const checkPlatform = (electronApp: ElectronApp) => {
   });
 };
 
-const injectSentryMonitor = (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'injectSentryMonitor', () => {
+const injectSentryMonitor = (AppEvent: AppEvent) => {
+  AppEvent.registryHooksSync('beforeReady', 'injectSentryMonitor', () => {
     if (isDev) {
       console.log('hooks: >> uncaughtException handler');
       // 未捕获的全局错误
@@ -101,8 +103,8 @@ const injectSentryMonitor = (electronApp: ElectronApp) => {
   });
 };
 
-const initPuppeteerInElectron = async (electronApp: ElectronApp) => {
-  electronApp.registryHooksSync('beforeReady', 'initPuppeteerInElectron', async () => {
+const initPuppeteerInElectron = async (AppEvent: AppEvent) => {
+  AppEvent.registryHooksSync('beforeReady', 'initPuppeteerInElectron', async () => {
     console.log('hooks: >> init puppeteer-in-electron');
     try {
       await pie.initialize(app);
@@ -120,8 +122,8 @@ tasks.push(
   initPuppeteerInElectron,
 );
 
-export default (electronApp: ElectronApp) => {
+export default (AppEvent: AppEvent) => {
   tasks.forEach((task) => {
-    task(electronApp);
+    task(AppEvent);
   });
 };

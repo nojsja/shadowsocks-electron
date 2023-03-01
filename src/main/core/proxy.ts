@@ -1,4 +1,4 @@
-import logger from '@main/logs';
+import logger from '@main/helpers/logger';
 import { setupIfFirstRun } from '@main/core/pac';
 import { Mode, ProxyStatus } from '@main/type';
 

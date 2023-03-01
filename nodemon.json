@@ -1,9 +1,10 @@
 {
   "watch": [
-    "main"
+    "src/main"
   ],
   "ignore": [
-    "main/types/**/*"
+    "src/main/types/**/*",
+    "src/main/test/**/*"
   ],
   "ext": "ts,json",
   "exec": "npm run build:main && electron ."

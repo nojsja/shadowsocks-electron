@@ -7,7 +7,6 @@ import path from 'path';
 import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 
-import { electronStore } from '@main/electron';
 import { i18n } from '@main/i18n';
 import { Manager } from '@main/core/manager';
 import { getBestWindowPosition } from '@main/core/helpers';
@@ -44,8 +43,10 @@ export default class IpcMainWindow implements IpcMainWindowType {
   maxWidth = 800;
   serverMode: 'single' | 'cluster';
   serverStatus: boolean;
+  getStoreData: (name: string) => any;
 
-  constructor(args?: Electron.BrowserWindowConstructorOptions) {
+  constructor(getStoreData: (name: string) => any, args?: Electron.BrowserWindowConstructorOptions) {
+    this.getStoreData = getStoreData;
     this.width = args?.width ?? this.width;
     this.height = args?.height ?? this.height;
     this.resizable = args?.resizable ?? this.resizable;
@@ -66,7 +67,7 @@ export default class IpcMainWindow implements IpcMainWindowType {
 
   create() {
     return new Promise((resolve, reject) => {
-      let autoHide = false;
+      const { autoHide } = this.getStoreData('settings');
       const mainWindowState = windowStateKeeper({
         defaultWidth: this.width,
         defaultHeight: this.height,
@@ -100,14 +101,6 @@ export default class IpcMainWindow implements IpcMainWindowType {
       });
 
       mainWindowState.manage(this.win);
-
-      try {
-        autoHide = JSON.parse(
-          JSON.parse(electronStore.get('persist:root') as string).settings
-        ).autoHide;
-      } catch(error) {
-        console.error(error);
-      }
 
       if (!autoHide) {
         this.win.show();
