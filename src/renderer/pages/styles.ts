@@ -125,8 +125,6 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
       flexDirection: 'column',
       height: 'calc(100vh - 64px)',
       padding: theme.spacing(2),
-      borderLeft: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : grey[300]}`,
-      borderRight: `solid 1px ${theme.palette.type === 'dark' ? grey[700] : grey[300]}`,
       overflowY: 'scroll',
       alignItems: 'center',
       ...scrollBarStyle(0, 0, theme)

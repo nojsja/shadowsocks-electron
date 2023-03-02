@@ -454,6 +454,7 @@ const WorkflowRunner: React.FC<Props> = ({
       <WorkflowTaskTerminal
         open={terminalOpen}
         taskId={terminalTaskId}
+        taskIdList={queue?.map((task) => task.id) || []}
         onCloseDialog={() => setTerminalOpen(false)}
         onRunnerStart={startRunnerInner}
       />
