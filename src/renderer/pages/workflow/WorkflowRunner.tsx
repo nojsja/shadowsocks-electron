@@ -305,6 +305,30 @@ const WorkflowRunner: React.FC<Props> = ({
     },
   });
 
+  const { run: runTaskOfWorkflowRunner } = useRequest<Response<string>>((runnerId: string, taskId: string, payload: unknown) => {
+    return MessageChannel.invoke('main', 'service:workflow', {
+      action: 'runTaskOfWorkflowRunner',
+      params: { runnerId, taskId, payload },
+    });
+  }, {
+    manual: true,
+    onError(error) {
+      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+    },
+  });
+
+  const { run: stopTaskOfWorkflowRunner } = useRequest<Response<string>>((runnerId: string, taskId: string) => {
+    return MessageChannel.invoke('main', 'service:workflow', {
+      action: 'stopTaskOfWorkflowRunner',
+      params: { runnerId, taskId },
+    });
+  }, {
+    manual: true,
+    onError(error) {
+      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+    },
+  });
+
   const onTaskDelete = async (taskId: string) => {
     openDialog({
       ...dialogOptions,
@@ -348,6 +372,14 @@ const WorkflowRunner: React.FC<Props> = ({
   const stopRunnerInner = () => {
     if (isEmptyRunner) return;
     stopRunner(id);
+  };
+
+  const startRunnerTask = (payload: unknown) => {
+    runTaskOfWorkflowRunner(id, terminalTaskId, payload);
+  };
+
+  const stopRunnerTask = () => {
+    stopTaskOfWorkflowRunner(id, terminalTaskId);
   };
 
   return (
@@ -457,6 +489,9 @@ const WorkflowRunner: React.FC<Props> = ({
         taskIdList={queue?.map((task) => task.id) || []}
         onCloseDialog={() => setTerminalOpen(false)}
         onRunnerStart={startRunnerInner}
+        onRunnerStop={stopRunnerInner}
+        onRunnerTaskStart={startRunnerTask}
+        onRunnerTaskStop={stopRunnerTask}
       />
       <LinearProgress className={classNames((!isRunning) && styles.noVisible)} color="secondary" />
     </div>

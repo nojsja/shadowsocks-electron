@@ -56,9 +56,9 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async runTaskOfWorkflowRunner(params: {id: string, taskId: string, payload: unknown}) {
-    const { id, taskId, payload } = params;
-    const error = await this.manager.runTaskOfWorkflowRunner(id, taskId, payload);
+  async runTaskOfWorkflowRunner(params: {runnerId: string, taskId: string, payload: unknown}) {
+    const { taskId, runnerId, payload } = params;
+    const error = await this.manager.runTaskOfWorkflowRunner(runnerId, taskId, payload);
 
     return {
       code: error ? 500 : 200,
@@ -66,9 +66,9 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
-  async stopTaskOfWorkflowRunner(params: {id: string, taskId: string}) {
-    const { id, taskId } = params;
-    const error = await this.manager.stopTaskOfWorkflowRunner(id, taskId);
+  async stopTaskOfWorkflowRunner(params: {runnderId: string, taskId: string}) {
+    const { runnderId, taskId } = params;
+    const error = await this.manager.stopTaskOfWorkflowRunner(runnderId, taskId);
 
     return {
       code: error ? 500 : 200,

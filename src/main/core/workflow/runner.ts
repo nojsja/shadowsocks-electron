@@ -310,7 +310,7 @@ export class WorkflowRunner extends Workflow {
   }
 
   async startOneTask(id: string, payload: unknown) {
-    const targetTask = this.queue.find(({ taskId }) => taskId === id);
+    const targetTask = this.queue.find(({ id: taskId }) => taskId === id);
 
     if (!targetTask) return new TaskNotFoundError(id);
 

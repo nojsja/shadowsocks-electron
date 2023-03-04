@@ -37,8 +37,8 @@ export default class IpcMainWindow implements IpcMainWindowType {
   darkMode = nativeTheme.shouldUseDarkColors;
   width = 460;
   height = 540;
-  minHeight = 480;
-  minWidth = 420;
+  minHeight = 640;
+  minWidth = 480;
   maxHeight = 980;
   maxWidth = 800;
   serverMode: 'single' | 'cluster';

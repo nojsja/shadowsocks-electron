@@ -15,6 +15,7 @@ import {
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
 import { CONSOLE_BUFFER_SIZE, TaskConsoleData } from '@renderer/hooks/useWorkflowTaskTerminal';
 import { useTerminalVisitor } from '@renderer/hooks';
+import useTerminalCommand from './hooks/useTerminalCommand';
 
 interface Props {
   open: boolean;
@@ -22,35 +23,16 @@ interface Props {
   taskIdList: string[];
   onCloseDialog: () => void;
   onRunnerStart: () => void;
+  onRunnerStop: () => void;
+  onRunnerTaskStart: (taskId: string) => void;
+  onRunnerTaskStop: () => void;
 }
 
 const bannerText = "< type 'help' to get tips >";
-const helpInfo = [
-  'You are in task terminal now.',
-  'Command List:',
-  '[help/h]: show help info.',
-  '[id/i]: get ID of current task.',
-  '[ls/l]: list tasks of workflow.',
-  '[run/r -a]: run whole workflow.',
-  '[run/r -i xxx]: run current task with input data [xxx].',
-  '[clear/c]: clear the terminal.',
-  '[wipe/w]: wipe the terminal.',
-  '[exit/e]: exit the terminal.',
-];
 
 const banner = [
   textLine({ words: [textWord({ characters: bannerText })] }),
 ];
-
-const commandAliasMap: { [key: string]: string } = {
-  h: 'help',
-  i: 'id',
-  l: 'ls',
-  c: 'clear',
-  w: 'wipe',
-  e: 'exit',
-  r: 'run',
-};
 
 const useStyles = makeStyles(() => createStyles({
   text: {
@@ -88,6 +70,9 @@ const useStyles = makeStyles(() => createStyles({
       '&::-webkit-scrollbar-thumb': {
         background: '#8aa950 !important',
       }
+    },
+    '& .crt-command-line': {
+      padding: '.5rem 1.4285714286rem .5rem 1.4285714286rem'
     }
   }
 }));
@@ -98,8 +83,12 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   taskIdList,
   onCloseDialog,
   onRunnerStart,
+  onRunnerStop,
+  onRunnerTaskStart,
+  onRunnerTaskStop,
 }) => {
   const eventQueue = useEventQueue();
+  const prompt = useTerminalCommand();
   const styles = useStyles();
   const { print, clear } = eventQueue.handlers;
   const {
@@ -110,16 +99,30 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   } = useTerminalVisitor();
 
   const onCommand = (command: string) => {
-    const commandString = commandAliasMap[command.trim()] || command.trim();
+    const [commandName, options] = prompt.parse(command);
 
-    switch (commandString) {
+    switch (commandName) {
       case 'help':
-        print(helpInfo.map((info) => textLine({
-          words: [textWord({ className: `${styles.text} help`, characters: info })]
-        })));
+        {
+          const infos = prompt.print();
+          print(infos.map((info) => textLine({
+            words: [textWord({ className: `${styles.text} help`, characters: info })]
+          })));
+        }
         break;
       case 'run':
-        onRunnerStart();
+        if (options.all) {
+          onRunnerStart();
+        } else {
+          onRunnerTaskStart((options.input || (options['_'] as string[])?.[0]) as string);
+        }
+        break;
+      case 'stop':
+        if (options.all) {
+          onRunnerStop();
+        } else {
+          onRunnerTaskStop();
+        }
         break;
       case 'id':
         print([
