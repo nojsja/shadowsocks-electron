@@ -15,6 +15,7 @@ import {
   WorkflowTaskOptions,
   WorkflowTaskStatus,
   WorkflowTaskTimer,
+  TaskNotFoundError,
 } from './types';
 import { TASK_TIMEOUT } from './consts';
 
@@ -306,6 +307,28 @@ export class WorkflowRunner extends Workflow {
 
     this.status.value = 'success';
     return null;
+  }
+
+  async startOneTask(id: string, payload: unknown) {
+    const targetTask = this.queue.find(({ taskId }) => taskId === id);
+
+    if (!targetTask) return new TaskNotFoundError(id);
+
+    const [error] = await targetTask.start(
+      payload,
+      this.bridge.context?.[targetTask.type] as { [key: string]: unknown },
+    );
+
+    return error;
+  }
+
+  async stopOneTask(id: string) {
+    const targetTask = this.queue.find(({ taskId }) => taskId === id);
+
+    if (!targetTask) return new TaskNotFoundError(id);
+    const result = await targetTask.stop();
+
+    return result;
   }
 
   async stop(): Promise<Error | null> {

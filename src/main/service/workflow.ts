@@ -56,6 +56,26 @@ export class WorkflowService implements WorkflowServiceType {
     };
   }
 
+  async runTaskOfWorkflowRunner(params: {id: string, taskId: string, payload: unknown}) {
+    const { id, taskId, payload } = params;
+    const error = await this.manager.runTaskOfWorkflowRunner(id, taskId, payload);
+
+    return {
+      code: error ? 500 : 200,
+      result: null,
+    };
+  }
+
+  async stopTaskOfWorkflowRunner(params: {id: string, taskId: string}) {
+    const { id, taskId } = params;
+    const error = await this.manager.stopTaskOfWorkflowRunner(id, taskId);
+
+    return {
+      code: error ? 500 : 200,
+      result: null,
+    };
+  }
+
 
   async enableWorkflowRunner(params: {id: string}) {
     const { id } = params;

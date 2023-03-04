@@ -1,11 +1,11 @@
 import { app as _app, nativeTheme } from 'electron';
 import EventEmitter from 'events';
 import { SyncHook, AsyncParallelHook } from 'tapable';
+import { type NativeTheme } from 'electron/main';
 import ElectronStore from 'electron-store';
 
 import { IpcMainWindowType } from './type';
 import IpcMainWindow from './window/MainWindow';
-import { NativeTheme } from 'electron/main';
 
 export type LifeCycles = 'beforeReady' | 'ready' | 'afterReady' | 'beforeQuit';
 

@@ -62,6 +62,13 @@ export class RunnerCreateError extends Error {
   }
 }
 
+export class TaskNotFoundError extends Error {
+  constructor(taskId: string) {
+    super(`Workflow Task ${taskId} not found.`);
+    this.name = 'TaskNotFoundError';
+  }
+}
+
 export class TaskIsRunningError extends Error {
   constructor(taskId: string) {
     super(`Workflow Task ${taskId} is already running.`);

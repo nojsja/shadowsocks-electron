@@ -31,7 +31,8 @@ const helpInfo = [
   '[help/h]: show help info.',
   '[id/i]: get ID of current task.',
   '[ls/l]: list tasks of workflow.',
-  '[run/r]: run whole workflow.',
+  '[run/r -a]: run whole workflow.',
+  '[run/r -i xxx]: run current task with input data [xxx].',
   '[clear/c]: clear the terminal.',
   '[wipe/w]: wipe the terminal.',
   '[exit/e]: exit the terminal.',
@@ -51,7 +52,7 @@ const commandAliasMap: { [key: string]: string } = {
   r: 'run',
 };
 
-const useStyles = makeStyles((theme) => createStyles({
+const useStyles = makeStyles(() => createStyles({
   text: {
     '&.error': {
       color: '#e97bb2'

@@ -108,6 +108,26 @@ export class WorkflowManager extends Workflow {
     return error;
   }
 
+  async runTaskOfWorkflowRunner(runnerId: string, taskId: string, payload: unknown) {
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    await this.ready();
+    const error = await targetRunner.startOneTask(taskId, payload);
+
+    return error;
+  }
+
+  async stopTaskOfWorkflowRunner(runnerId: string, taskId: string) {
+    const targetRunner = this.runners.find((runner) => runner.id === runnerId);
+    if (!targetRunner) return new RunnerNotFoundError(runnerId);
+
+    await this.ready();
+    const error = await targetRunner.stopOneTask(taskId);
+
+    return error;
+  }
+
   async editWorkflowRunner(runnerId: string, options: {
     enable?: boolean;
     timer?: {
