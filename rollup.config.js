@@ -8,6 +8,7 @@ const copy = require('rollup-plugin-copy');
 
 const pkg = require(path.resolve(__dirname, 'package.json'));
 delete pkg.dependencies['quick-lru'];
+delete pkg.dependencies.chatgpt;
 
 module.exports = {
   // 核心选项

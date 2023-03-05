@@ -1,5 +1,5 @@
 import path from 'path';
-import KeyvFile from 'keyv-file';
+import { KeyvFile } from 'keyv-file';
 import Keyv from 'keyv';
 
 interface AIStoreOptions {

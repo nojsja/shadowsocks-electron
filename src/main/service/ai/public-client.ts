@@ -1,12 +1,10 @@
 import path from 'path';
-import type { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
-import { createRequire } from 'module';
+import { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
+import fetch from 'node-fetch';
 
 import { AIStore } from '@main/dao';
 import { pathRuntime } from '@main/config';
 import { CHATGPT_CONSTANTS } from './constants';
-
-const require = createRequire(import.meta.url);
 
 interface ClientInfo {
   client: ChatGPTAPI;
@@ -24,7 +22,6 @@ export class PublicAIClient {
     index: number
 
     private async initCore() {
-      const { ChatGPTAPI } = require('chatgpt');
       const messageStore = AIStore.create({
         dirPath: path.join(pathRuntime, 'ai')
       });
@@ -33,6 +30,7 @@ export class PublicAIClient {
         const client = new ChatGPTAPI({
           apiKey: key,
           debug: true,
+          fetch,
           messageStore: messageStore,
         });
         this.core.add({
@@ -78,9 +76,7 @@ export class PublicAIClient {
           console.error(err);
           return null;
         });
-        if (res) {
-          return res;
-        }
+        if (res) return res;
       }
 
       throw new Error('Try send message error');

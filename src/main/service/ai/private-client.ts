@@ -1,12 +1,10 @@
 import { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
 import path from 'path';
 import QuickLRU from 'quick-lru';
-import { createRequire } from 'module';
+import fetch from 'node-fetch';
 
 import { pathRuntime } from '@main/config';
 import { AIStore } from '@main/dao';
-
-const require = createRequire(import.meta.url);
 
 interface Props {
   maxPoolSize?: number;
@@ -69,7 +67,6 @@ export class PrivateAIClient {
       return this.pool.get(key);
     }
 
-    const { ChatGPTAPI } = require('chatgpt');
     const messageStore = AIStore.create({
       dirPath: path.join(pathRuntime, 'ai'),
     });
@@ -77,6 +74,7 @@ export class PrivateAIClient {
     const client = new ChatGPTAPI({
       apiKey: key,
       debug: true,
+      fetch,
       messageStore: messageStore,
     });
 

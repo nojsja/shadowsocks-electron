@@ -26,11 +26,15 @@ export class AIConversation {
 
   async question(question: string, options: SendMessageOptions) {
     await this.publicClientReady();
-    return await this.publicClient?.trySendMessage(question, options);
+    const message = this.publicClient?.trySendMessage(question, options);
+
+    return message;
   }
 
   async questionWithPrivateKey(key: string, question: string, options: SendMessageOptions) {
     await this.privateClientReady();
-    return await this.privateClient?.trySendMessage(key, question, options);
+    const message = this.privateClient?.trySendMessage(key, question, options);
+
+    return message;
   }
 }
