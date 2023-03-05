@@ -16,6 +16,7 @@ import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
 import { CONSOLE_BUFFER_SIZE, TaskConsoleData } from '@renderer/hooks/useWorkflowTaskTerminal';
 import { useTerminalVisitor } from '@renderer/hooks';
 import useTerminalCommand from './hooks/useTerminalCommand';
+import { useAIPrompt } from './hooks/useAIPrompt';
 
 interface Props {
   open: boolean;
@@ -28,7 +29,7 @@ interface Props {
   onRunnerTaskStop: () => void;
 }
 
-const bannerText = "< type 'help' to get tips >";
+const bannerText = "<type 'help' to get tips>";
 
 const banner = [
   textLine({ words: [textWord({ characters: bannerText })] }),
@@ -88,6 +89,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   onRunnerTaskStop,
 }) => {
   const eventQueue = useEventQueue();
+  const { sendMessage } = useAIPrompt();
   const prompt = useTerminalCommand();
   const styles = useStyles();
   const { print, clear } = eventQueue.handlers;
@@ -122,6 +124,20 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           onRunnerStop();
         } else {
           onRunnerTaskStop();
+        }
+        break;
+      case 'ai':
+        {
+          const question = (options['_'] as string[])?.[0] as string;
+          if (!question) {
+            print([
+              textLine({
+                words: [textWord({ characters: 'you need say something.' })]
+              })
+            ]);
+            return;
+          }
+          sendMessage(question);
         }
         break;
       case 'id':

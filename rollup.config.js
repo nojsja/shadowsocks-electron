@@ -7,6 +7,7 @@ const json = require('@rollup/plugin-json');
 const copy = require('rollup-plugin-copy');
 
 const pkg = require(path.resolve(__dirname, 'package.json'));
+delete pkg.dependencies['quick-lru'];
 
 module.exports = {
   // 核心选项

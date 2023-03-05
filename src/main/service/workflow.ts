@@ -6,13 +6,15 @@ import { WorkflowTaskOptions } from '@main/core/workflow/types';
 import { type WorkflowService as WorkflowServiceType } from '@main/type';
 import { getPureRunners } from '@main/utils';
 
+export const workflowManager = new WorkflowManager();
+
 export class WorkflowService implements WorkflowServiceType {
   ipc: IpcMain
   manager: WorkflowManager
 
-  constructor(ipc: IpcMain, manager: WorkflowManager) {
+  constructor(ipc: IpcMain) {
     this.ipc = ipc;
-    this.manager = manager;
+    this.manager = workflowManager;
   }
 
   async getWorkflowRunners() {

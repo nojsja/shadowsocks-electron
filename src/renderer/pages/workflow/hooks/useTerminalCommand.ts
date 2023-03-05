@@ -128,6 +128,12 @@ const useTerminalCommand = () => {
       }
     ],
     [
+      'ai', {
+        alias: 'a',
+        desc: 'ai <question>, ask AI any you want.',
+      }
+    ],
+    [
       'run', {
         alias: 'r',
         desc: 'run [options], task as default.',

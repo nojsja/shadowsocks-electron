@@ -12,7 +12,7 @@ import { i18n } from '@main/i18n';
 import { AppEvent } from '@main/event';
 import { ssPrefix, ssProtocol, ssrPrefix, ssrProtocol } from '@main/config';
 import { warning } from '@main/helpers/logger';
-import { workflowManager } from '@main/service';
+import { workflowManager } from '@main/service/workflow';
 
 const tasks: Array<(electronApp: AppEvent) => void> = [];
 

@@ -1,3 +1,4 @@
+import { SendMessageOptions } from 'chatgpt';
 import {
   MenuItemConstructorOptions, BrowserWindow, IpcMain as _IpcMain,
   Tray, MenuItem, Menu,
@@ -5,6 +6,7 @@ import {
 
 import CONSTS from './core/LoadBalancer/consts';
 import { WorkflowTaskOptions } from './core/workflow/types';
+// import { AIConversation } from './service/ai/conversation';
 
 export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
@@ -133,7 +135,6 @@ export type ServiceResult = {
 };
 
 export interface MainService extends Service {
-  [attr: string]: IpcMain | ServiceHandler | any;
   isConnected: () => Promise<ServiceResult>;
   startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>;
   stopClient: () => Promise<ServiceResult>;
@@ -145,7 +146,6 @@ export interface MainService extends Service {
 }
 
 export interface DesktopService extends Service {
-  [attr: string]: IpcMain | ServiceHandler | any;
   createTransparentWindow: (params: RectPoint[]) => Promise<ServiceResult>;
   reloadMainWindow: (params: any) => Promise<ServiceResult>;
   setStartupOnBoot: (on: boolean) => Promise<ServiceResult>;
@@ -159,7 +159,6 @@ export interface ThemeService extends Service {
 }
 
 export interface WorkflowService extends Service {
-  [attr: string]: IpcMain | ServiceHandler | any;
   getWorkflowRunners: () => Promise<ServiceResult>;
   getWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
   runWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
@@ -178,12 +177,21 @@ export interface WorkflowService extends Service {
   removeWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
 }
 
+export interface AIService extends Service {
+  getSystemPrompts: () => Promise<ServiceResult>;
+  askQuestion: (params: { question: string; options: SendMessageOptions }) => Promise<ServiceResult>;
+  askQuestionWithPrivateKey: (params: { key: string; question: string; options: SendMessageOptions }) => Promise<ServiceResult>;
+}
+
 export type ServiceHandler = (params: any) => Promise<ServiceResult>
 
 export interface IpcMainProcess {
-  ipc: IpcMain
-  mainService: MainService
-  desktopService: DesktopService
+  ipc: IpcMain;
+  mainService: MainService;
+  desktopService: DesktopService;
+  themeService: ThemeService;
+  workflowService: WorkflowService;
+  aiService: AIService;
 }
 
 export type IpcMain = _IpcMain;

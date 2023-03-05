@@ -26,6 +26,7 @@ const defaultStore: RootState = {
     verbose: false,
     localPort: 1080,
     pacPort: 1090,
+    openApiKey: '',
     acl: {
       enable: false,
       url: ""

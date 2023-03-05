@@ -164,6 +164,7 @@ export interface Settings {
   autoLaunch: boolean;
   autoHide: boolean;
   lang: string;
+  openApiKey?: string;
 }
 
 export interface Status {
