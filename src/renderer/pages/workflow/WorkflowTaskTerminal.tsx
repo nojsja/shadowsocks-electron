@@ -4,16 +4,15 @@ import {
   useEventQueue,
   textLine,
   textWord,
-  commandWord
+  commandWord,
 } from 'crt-terminal';
-import {
-  createStyles,
-  DialogContent,
-  makeStyles,
-} from '@material-ui/core';
+import { createStyles, DialogContent, makeStyles } from '@material-ui/core';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
-import { CONSOLE_BUFFER_SIZE, TaskConsoleData } from '@renderer/hooks/useWorkflowTaskTerminal';
+import {
+  CONSOLE_BUFFER_SIZE,
+  TaskConsoleData,
+} from '@renderer/hooks/useWorkflowTaskTerminal';
 import { useTerminalVisitor } from '@renderer/hooks';
 import useTerminalCommand from './hooks/useTerminalCommand';
 import { useAIPrompt } from './hooks/useAIPrompt';
@@ -31,52 +30,53 @@ interface Props {
 
 const bannerText = "<type 'help' to get tips>";
 
-const banner = [
-  textLine({ words: [textWord({ characters: bannerText })] }),
-];
+const banner = [textLine({ words: [textWord({ characters: bannerText })] })];
 
-const useStyles = makeStyles(() => createStyles({
-  text: {
-    '&.error': {
-      color: '#e97bb2'
+const useStyles = makeStyles(() =>
+  createStyles({
+    text: {
+      '&.error': {
+        color: '#e97bb2',
+      },
+      '&.info': {
+        color: '#88abda',
+      },
+      '&.log': {
+        color: '#d0fc7e',
+      },
+      '&.warn': {
+        color: '#e9b97b',
+      },
+      '&.unknown': {
+        color: '#a2a2ca',
+      },
+      '&.help': {
+        fontStyle: 'italic',
+      },
     },
-    '&.info': {
-      color: '#88abda'
+    crtTerminalWrapper: {
+      padding: 0,
+      height: '70vh',
+      '&:first-child': {
+        paddingTop: 0,
+      },
+      '& .crt-terminal': {
+        maxHeight: '70vh',
+        borderRadius: 0,
+        boxShadow:
+          '0 0 1.8571428571rem #252925, inset 0 0 2rem 1.4285714286rem #000;',
+      },
+      '& .crt-terminal__overflow-container': {
+        '&::-webkit-scrollbar-thumb': {
+          background: '#8aa950 !important',
+        },
+      },
+      '& .crt-command-line': {
+        padding: '.5rem 1.4285714286rem .5rem 1.4285714286rem',
+      },
     },
-    '&.log': {
-      color: '#d0fc7e'
-    },
-    '&.warn': {
-      color: '#e9b97b'
-    },
-    '&.unknown': {
-      color: '#a2a2ca'
-    },
-    '&.help': {
-      fontStyle: 'italic'
-    }
-  },
-  crtTerminalWrapper: {
-    padding: 0,
-    height: '70vh',
-    '&:first-child': {
-      paddingTop: 0,
-    },
-    '& .crt-terminal': {
-      maxHeight: '70vh',
-      borderRadius: 0,
-      boxShadow: '0 0 1.8571428571rem #252925, inset 0 0 2rem 1.4285714286rem #000;'
-    },
-    '& .crt-terminal__overflow-container': {
-      '&::-webkit-scrollbar-thumb': {
-        background: '#8aa950 !important',
-      }
-    },
-    '& .crt-command-line': {
-      padding: '.5rem 1.4285714286rem .5rem 1.4285714286rem'
-    }
-  }
-}));
+  }),
+);
 
 const WorkflowTaskTerminal: React.FC<Props> = ({
   open,
@@ -93,12 +93,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   const prompt = useTerminalCommand();
   const styles = useStyles();
   const { print, clear } = eventQueue.handlers;
-  const {
-    get,
-    wipe,
-    registry,
-    unregistry
-  } = useTerminalVisitor();
+  const { get, wipe, registry, unregistry } = useTerminalVisitor();
 
   const onCommand = (command: string) => {
     const [commandName, options] = prompt.parse(command);
@@ -107,16 +102,41 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       case 'help':
         {
           const infos = prompt.print();
-          print(infos.map((info) => textLine({
-            words: [textWord({ className: `${styles.text} help`, characters: info })]
-          })));
+          print(
+            infos.map((info) =>
+              textLine({
+                words: [
+                  textWord({
+                    className: `${styles.text} help`,
+                    characters: info,
+                  }),
+                ],
+              }),
+            ),
+          );
+        }
+        break;
+      case 'demo':
+        {
+          const infos = prompt.printDemos();
+          print(
+            infos.map((info) =>
+              textLine({
+                words: [
+                  textWord({ className: `${styles.text}`, characters: info }),
+                ],
+              }),
+            ),
+          );
         }
         break;
       case 'run':
         if (options.all) {
           onRunnerStart();
         } else {
-          onRunnerTaskStart((options.input || (options['_'] as string[])?.[0]) as string);
+          onRunnerTaskStart(
+            (options.input || (options['_'] as string[])?.[0]) as string,
+          );
         }
         break;
       case 'stop':
@@ -132,8 +152,8 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           if (!question) {
             print([
               textLine({
-                words: [textWord({ characters: 'you need say something.' })]
-              })
+                words: [textWord({ characters: 'you need say something.' })],
+              }),
             ]);
             return;
           }
@@ -143,25 +163,29 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       case 'id':
         print([
           textLine({
-            words: [textWord({ characters: taskId ?? 'null' })]
-          })
+            words: [textWord({ characters: taskId ?? 'null' })],
+          }),
         ]);
         break;
       case 'ls':
-        print(taskIdList.map((id) => textLine({
-          words: [textWord({ characters: id })]
-        })));
+        print(
+          taskIdList.map((id) =>
+            textLine({
+              words: [textWord({ characters: id })],
+            }),
+          ),
+        );
         break;
       case 'exit':
         onCloseDialog();
-      break;
+        break;
       case 'clear':
         clear();
-      break;
+        break;
       case 'wipe':
         taskId && wipe(taskId);
         clear();
-      break;
+        break;
       default:
         print([
           textLine({
@@ -169,12 +193,12 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
               commandWord({
                 className: `${styles.text} unknown`,
                 characters: command,
-                prompt: '-> unknown command: '
+                prompt: '-> unknown command: ',
               }),
             ],
           }),
         ]);
-      break;
+        break;
     }
   };
 
@@ -188,20 +212,28 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       print([
         textLine({
           words: [
-            textWord({ className: `${styles.text} ${info.type}`, characters: info.data }),
+            textWord({
+              className: `${styles.text} ${info.type}`,
+              characters: info.data,
+            }),
           ],
         }),
       ]);
     };
 
     clear();
-    print(consoleInfo.map((info) => {
-      return textLine({
-        words: [
-          textWord({ className: `${styles.text} ${info.type}`, characters: info.data }),
-        ],
-      });
-    }));
+    print(
+      consoleInfo.map((info) => {
+        return textLine({
+          words: [
+            textWord({
+              className: `${styles.text} ${info.type}`,
+              characters: info.data,
+            }),
+          ],
+        });
+      }),
+    );
     registry(taskId, printListener);
 
     return () => {
@@ -210,12 +242,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   }, [taskId, open]);
 
   return (
-    <AdaptiveDialog
-      open={open}
-      onClose={onCloseDialog}
-      fullWidth
-      maxWidth="md"
-    >
+    <AdaptiveDialog open={open} onClose={onCloseDialog} fullWidth maxWidth="md">
       <DialogContent className={styles.crtTerminalWrapper}>
         <Terminal
           queue={eventQueue}
@@ -230,6 +257,6 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       </DialogContent>
     </AdaptiveDialog>
   );
-}
+};
 
 export default WorkflowTaskTerminal;

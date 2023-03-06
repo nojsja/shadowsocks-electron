@@ -4,14 +4,16 @@ import parser from 'minimist';
 interface OptionOptionsType {
   alias?: string;
   desc: string;
-  demand?: boolean;
   optional?: boolean;
+  demand?: boolean;
   demandSymbol?: string;
 }
 
 interface CommandOptionsType {
   alias?: string;
   desc: string;
+  demand?: boolean;
+  demandSymbol?: string;
   options?: [string, OptionOptionsType][];
 }
 
@@ -45,14 +47,28 @@ export class Option {
 
     return {
       ...params,
-      ...result
+      ...result,
     };
   }
 
   print() {
     const demandText = this.demand ? ` ${this.demandSymbol}` : '';
-    const optionalWrapper = (text: string) => this.optional ? `[${text}]` : text;
-    return `${optionalWrapper(`${this.name},${this.alias}`)}${demandText}: ${this.desc}`;
+    const optionalWrapper = (text: string) =>
+      this.optional ? `[${text}]` : text;
+    return `${optionalWrapper(`${this.name},${this.alias}`)}${demandText}: ${
+      this.desc
+    }`;
+  }
+
+  printDemo(command: string) {
+    const demandText = this.demand ? ` ${this.demandSymbol}` : '';
+    const demos = [`${command} ${this.name}${demandText}`];
+
+    if (this.alias) {
+      demos.push(`${command} ${this.alias}${demandText}`);
+    }
+
+    return demos;
   }
 }
 
@@ -61,12 +77,17 @@ export class Command {
     this.alias = opts.alias;
     this.desc = opts.desc;
     this.name = name;
-    this.options = opts.options?.map(([name, options]) => {
-      return new Option(name, options);
-    }) ?? [];
+    this.demand = opts.demand ?? false;
+    this.demandSymbol = opts.demandSymbol ?? '<data>';
+    this.options =
+      opts.options?.map(([name, options]) => {
+        return new Option(name, options);
+      }) ?? [];
   }
   options: Option[];
   name: string;
+  demand: boolean;
+  demandSymbol: string;
   alias?: string;
   desc: string;
   callback?: CommandCallback;
@@ -104,94 +125,131 @@ export class Command {
 
     return textInfo;
   }
+
+  printDemo() {
+    const textInfo: string[] = [];
+
+    textInfo.push(`● ${this.name}`);
+    if (this.demand) {
+      if (this.alias) textInfo.push(`  ○ ${this.alias} ${this.demandSymbol}`);
+      textInfo.push(`  ○ ${this.name} ${this.demandSymbol}`);
+    } else {
+      if (this.alias) textInfo.push(`  ○ ${this.alias}`);
+      textInfo.push(`  ○ ${this.name}`);
+    }
+    this.options?.forEach((option) => {
+      textInfo.push(...option.printDemo(this.name).map((str) => `  ○ ${str}`));
+    });
+
+    return textInfo;
+  }
 }
 
-
 const useTerminalCommand = () => {
-  const commandParams = useMemo<[string, CommandOptionsType][]>(() => [
-    [
-      'help', {
-        alias: 'h',
-        desc: 'show help menu.',
-      }
-    ],
-    [
-      'id', {
-        alias: 'i',
-        desc: 'get ID of current task.',
-      }
-    ],
-    [
-      'ls', {
-        alias: 'l',
-        desc: 'list tasks of workflow.',
-      }
-    ],
-    [
-      'ai', {
-        alias: 'a',
-        desc: 'ai <question>, ask AI any you want.',
-      }
-    ],
-    [
-      'run', {
-        alias: 'r',
-        desc: 'run [options], task as default.',
-        options: [
-          [
-            '--all',
-            {
-              alias: '-a',
-              desc: 'run whole workflow.',
-            }
+  const commandParams = useMemo<[string, CommandOptionsType][]>(
+    () => [
+      [
+        'help',
+        {
+          alias: 'h',
+          desc: 'show help menu.',
+        },
+      ],
+      [
+        'demo',
+        {
+          alias: 'd',
+          desc: 'show command demos.',
+        },
+      ],
+      [
+        'id',
+        {
+          alias: 'i',
+          desc: 'get ID of current task.',
+        },
+      ],
+      [
+        'ls',
+        {
+          alias: 'l',
+          desc: 'list tasks of workflow.',
+        },
+      ],
+      [
+        'ai',
+        {
+          alias: 'a',
+          demand: true,
+          demandSymbol: '<question>',
+          desc: 'ai <question>, ask AI any you want.',
+        },
+      ],
+      [
+        'run',
+        {
+          alias: 'r',
+          desc: 'run [options], task as default.',
+          demand: true,
+          options: [
+            [
+              '--all',
+              {
+                alias: '-a',
+                desc: 'run whole workflow.',
+              },
+            ],
+            [
+              '--input',
+              {
+                alias: '-i',
+                desc: 'run current task with input data.',
+                optional: true,
+                demand: true,
+              },
+            ],
           ],
-          [
-            '--input',
-            {
-              alias: '-i',
-              desc: 'run current task with input data.',
-              optional: true,
-              demand: true,
-            }
-          ]
-        ]
-      },
+        },
+      ],
+      [
+        'stop',
+        {
+          alias: 's',
+          desc: 'stop [options], task as default.',
+          options: [
+            [
+              '--all',
+              {
+                alias: '-a',
+                desc: 'stop whole workflow.',
+              },
+            ],
+          ],
+        },
+      ],
+      [
+        'clear',
+        {
+          alias: 'c',
+          desc: 'clear the terminal.',
+        },
+      ],
+      [
+        'wipe',
+        {
+          alias: 'w',
+          desc: 'wipe the terminal.',
+        },
+      ],
+      [
+        'exit',
+        {
+          alias: 'e',
+          desc: 'exit the terminal.',
+        },
+      ],
     ],
-    [
-      'stop', {
-        alias: 's',
-        desc: 'stop [options], task as default.',
-        options: [
-          [
-            '--all',
-            {
-              alias: '-a',
-              desc: 'stop whole workflow.'
-            }
-          ]
-        ]
-      },
-    ],
-    [
-      'clear', {
-        alias: 'c',
-        desc: 'clear the terminal.',
-      }
-    ],
-    [
-      'wipe', {
-        alias: 'w',
-        desc: 'wipe the terminal.',
-      }
-    ],
-    [
-      'exit', {
-        alias: 'e',
-        desc: 'exit the terminal.',
-      }
-    ],
-  ],
-    []
+    [],
   );
 
   const commandList = useMemo(() => {
@@ -199,18 +257,30 @@ const useTerminalCommand = () => {
   }, [commandParams]);
 
   const print = () => {
-    const textInfos = commandList.reduce<string[]>((total, command) => {
-      total.push(...command.print());
-      return total;
-    }, [
-      'You are in task terminal now.',
-      'Command List:',
-    ]);
+    const textInfos = commandList.reduce<string[]>(
+      (total, command) => {
+        total.push(...command.print());
+        return total;
+      },
+      ['You are in task terminal now.', 'Command List:'],
+    );
 
     return textInfos;
   };
 
-  const parse = (args: string, callback?: CommandCallback): [string | null, { [key: string]: unknown }] => {
+  const printDemos = () => {
+    const textInfos = commandList.reduce<string[]>((total, command) => {
+      total.push(...command.printDemo());
+      return total;
+    }, []);
+
+    return textInfos;
+  };
+
+  const parse = (
+    args: string,
+    callback?: CommandCallback,
+  ): [string | null, { [key: string]: unknown }] => {
     for (let index = 0; index < commandList.length; index++) {
       const command = commandList[index];
       const result = command.parse(args);
@@ -225,7 +295,8 @@ const useTerminalCommand = () => {
 
   return {
     print,
-    parse
+    printDemos,
+    parse,
   };
 };
 
