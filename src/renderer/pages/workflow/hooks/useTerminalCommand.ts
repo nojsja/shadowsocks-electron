@@ -131,14 +131,14 @@ export class Command {
 
     textInfo.push(`● ${this.name}`);
     if (this.demand) {
-      if (this.alias) textInfo.push(`  ○ ${this.alias} ${this.demandSymbol}`);
-      textInfo.push(`  ○ ${this.name} ${this.demandSymbol}`);
+      if (this.alias) textInfo.push(`  > ${this.alias} ${this.demandSymbol}`);
+      textInfo.push(`  > ${this.name} ${this.demandSymbol}`);
     } else {
-      if (this.alias) textInfo.push(`  ○ ${this.alias}`);
-      textInfo.push(`  ○ ${this.name}`);
+      if (this.alias) textInfo.push(`  > ${this.alias}`);
+      textInfo.push(`  > ${this.name}`);
     }
     this.options?.forEach((option) => {
-      textInfo.push(...option.printDemo(this.name).map((str) => `  ○ ${str}`));
+      textInfo.push(...option.printDemo(this.name).map((str) => `  > ${str}`));
     });
 
     return textInfo;

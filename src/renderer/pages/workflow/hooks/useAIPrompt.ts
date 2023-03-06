@@ -17,7 +17,7 @@ interface SystemPromps {
   act: string;
   prompt: string;
   act_zh: string;
-  id: number
+  id: number;
 }
 
 const getRandomKey = (keys: string[]) => {
@@ -26,23 +26,21 @@ const getRandomKey = (keys: string[]) => {
 
 export const useAIPrompt = () => {
   const lastMessageID = useRef(null);
-  const { openApiKey } = useTypedSelector(state => state.settings);
+  const { openApiKey } = useTypedSelector((state) => state.settings);
   const apiKeys = openApiKey ? openApiKey.split(',') : [];
   const hasKey = apiKeys.length;
 
   const { data: prompts = [] } = useRequest<SystemPromps[]>(() => {
-    return MessageChannel.invoke(
-      'main',
-      'service:ai',
-      { action: 'getSystemPrompts' }
-    )
+    return MessageChannel.invoke('main', 'service:ai', {
+      action: 'getSystemPrompts',
+    })
       .then(({ result }) => result)
       .catch((err) => {
         console.log(err);
       });
   });
 
-  const sendMessage = (question: string, prompts?: string) => {
+  const sendMessage = (question: string, prompts?: string): Promise<string> => {
     const targetUrl = hasKey ? 'askQuestionWithPrivateKey' : 'askQuestion';
     const key = hasKey ? getRandomKey(apiKeys) : undefined;
     const options: SendMessageOptions = {
@@ -55,17 +53,19 @@ export const useAIPrompt = () => {
       params: {
         key,
         question,
-        options
+        options,
+      },
+    }).then(({ code, result }) => {
+      if (code === 200) {
+        lastMessageID.current = result.id;
+        return result.text;
       }
-    }).then((rsp) => {
-      console.log(rsp);
-    }).catch((err) => {
-      console.log(err);
+      throw new Error(result.message ?? 'send message error');
     });
   };
 
   return {
     prompts,
-    sendMessage
+    sendMessage,
   };
 };

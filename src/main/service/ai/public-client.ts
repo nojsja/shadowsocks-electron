@@ -1,10 +1,12 @@
 import path from 'path';
 import { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
-import fetch from 'node-fetch';
 
 import { AIStore } from '@main/dao';
 import { pathRuntime } from '@main/config';
 import { CHATGPT_CONSTANTS } from './constants';
+import { fetchWithProxy } from './utils';
+
+const fetch = fetchWithProxy('127.0.0.1', 1095);
 
 interface ClientInfo {
   client: ChatGPTAPI;
@@ -13,89 +15,95 @@ interface ClientInfo {
 }
 
 export class PublicAIClient {
-    constructor() {
-      this.core = new Set<ClientInfo>();
-      this.initCore();
-      this.index = 0;
-    }
-    core: Set<ClientInfo>
-    index: number
+  constructor() {
+    this.core = new Set<ClientInfo>();
+    this.initCore();
+    this.index = 0;
+  }
+  core: Set<ClientInfo>;
+  index: number;
 
-    private async initCore() {
-      const messageStore = AIStore.create({
-        dirPath: path.join(pathRuntime, 'ai')
+  private async initCore() {
+    const messageStore = AIStore.create({
+      dirPath: path.join(pathRuntime, 'ai'),
+    });
+
+    CHATGPT_CONSTANTS.apiKeys.forEach((key) => {
+      const client = new ChatGPTAPI({
+        apiKey: key,
+        debug: true,
+        fetch,
+        messageStore: messageStore,
       });
-
-      CHATGPT_CONSTANTS.apiKeys.forEach(key => {
-        const client = new ChatGPTAPI({
-          apiKey: key,
-          debug: true,
-          fetch,
-          messageStore: messageStore,
-        });
-        this.core.add({
-          status: 'running',
-          errorCount: 0,
-          client,
-        });
+      this.core.add({
+        status: 'running',
+        errorCount: 0,
+        client,
       });
+    });
+  }
+
+  async getAvailableClient() {
+    const clients = this.getClientsInfo().filter(
+      (info) => info.status === 'running',
+    );
+    if (clients.length === 0) return null;
+
+    const client = clients[this.index % clients.length];
+    this.index++;
+
+    return client;
+  }
+
+  getClientsInfo() {
+    return Array.from(this.core.values());
+  }
+
+  setClientDirty(client: ClientInfo) {
+    client.errorCount++;
+    if (client.errorCount > CHATGPT_CONSTANTS.maxContinuousCount) {
+      client.status = 'invalid';
     }
+  }
 
-    async getAvailableClient() {
-      const clients = this.getClientsInfo().filter(info => info.status === 'running');
-      if (clients.length === 0) return null;
+  forceSetClientClean() {
+    const clients = this.getClientsInfo();
+    clients.forEach((client) => {
+      client.errorCount = 0;
+      client.status = 'running';
+    });
+  }
 
-      const client = clients[this.index % clients.length];
-      this.index++;
-
-      return client;
-    }
-
-    getClientsInfo() {
-      return Array.from(this.core.values());
-    }
-
-    setClientDirty(client: ClientInfo) {
-      client.errorCount++;
-      if (client.errorCount > CHATGPT_CONSTANTS.maxContinuousCount) {
-        client.status = 'invalid';
-      }
-    }
-
-    forceSetClientClean() {
-      const clients = this.getClientsInfo();
-      clients.forEach(client => {
-        client.errorCount = 0;
-        client.status = 'running';
+  async trySendMessage(
+    question: string,
+    options: SendMessageOptions,
+    tryCount = 2,
+  ) {
+    for (let i = 0; i < tryCount; i++) {
+      const res = await this.sendMessage(question, options).catch((err) => {
+        console.error(err);
+        return null;
       });
+      if (res) return res;
     }
 
-    async trySendMessage(question: string, options: SendMessageOptions, tryCount = 2) {
-      for (let i = 0; i < tryCount; i++) {
-        const res = await this.sendMessage(question, options).catch(err => {
-          console.error(err);
-          return null;
-        });
-        if (res) return res;
-      }
+    throw new Error('Try send message error');
+  }
 
-      throw new Error('Try send message error');
+  async sendMessage(question: string, options: SendMessageOptions) {
+    const client = await this.getAvailableClient();
+
+    if (!client) {
+      this.forceSetClientClean();
+      throw new Error('No available clients');
     }
 
-    async sendMessage(question: string, options: SendMessageOptions) {
-      const client = await this.getAvailableClient();
-
-      if (!client) {
-        this.forceSetClientClean();
-        throw new Error('No available clients');
-      }
-
-      try {
-        const res = await client.client.sendMessage(question, options);
-        return res;
-      } catch (err) {
-        this.setClientDirty(client);
-        throw err;
-      }
+    try {
+      const res = await client.client.sendMessage(question, options);
+      return res;
+    } catch (err) {
+      this.setClientDirty(client);
+      throw err;
     }
+  }
 }

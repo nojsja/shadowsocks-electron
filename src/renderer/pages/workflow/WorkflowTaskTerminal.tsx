@@ -56,12 +56,12 @@ const useStyles = makeStyles(() =>
     },
     crtTerminalWrapper: {
       padding: 0,
-      height: '70vh',
+      height: '90vh',
       '&:first-child': {
         paddingTop: 0,
       },
       '& .crt-terminal': {
-        maxHeight: '70vh',
+        maxHeight: '90vh',
         borderRadius: 0,
         boxShadow:
           '0 0 1.8571428571rem #252925, inset 0 0 2rem 1.4285714286rem #000;',
@@ -148,7 +148,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
         break;
       case 'ai':
         {
-          const question = (options['_'] as string[])?.[0] as string;
+          const question = (options['_'] as string[])?.join(' ') as string;
           if (!question) {
             print([
               textLine({
@@ -157,7 +157,37 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
             ]);
             return;
           }
-          sendMessage(question);
+          sendMessage(question)
+            .then((text) => {
+              /*
+              id: "chatcmpl-6r7hK80BySdYpqO1RydIuLEw0UIeB"
+              parentMessageId: "6a693b29-6e88-4f9e-a14e-343c30eceb4f"
+              role: "assistant"
+              text: "Hello! How can I assist you today?"
+              */
+              print([
+                textLine({
+                  words: [
+                    textWord({
+                      className: `${styles.text}`,
+                      characters: `${text}`,
+                    }),
+                  ],
+                }),
+              ]);
+            })
+            .catch((err) => {
+              print([
+                textLine({
+                  words: [
+                    textWord({
+                      className: `${styles.text} error`,
+                      characters: err.message,
+                    }),
+                  ],
+                }),
+              ]);
+            });
         }
         break;
       case 'id':

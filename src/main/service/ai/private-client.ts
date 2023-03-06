@@ -1,10 +1,12 @@
 import { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
 import path from 'path';
 import QuickLRU from 'quick-lru';
-import fetch from 'node-fetch';
 
 import { pathRuntime } from '@main/config';
 import { AIStore } from '@main/dao';
+import { fetchWithProxy } from './utils';
+
+const fetch = fetchWithProxy('127.0.0.1', 1095);
 
 interface Props {
   maxPoolSize?: number;
@@ -13,11 +15,11 @@ interface Props {
 export class PrivateAIClient {
   constructor(props?: Props) {
     this.pool = new QuickLRU<string, ChatGPTAPI>({
-      maxSize: props?.maxPoolSize ?? 12
+      maxSize: props?.maxPoolSize ?? 12,
     });
   }
 
-  pool: QuickLRU<string, ChatGPTAPI>
+  pool: QuickLRU<string, ChatGPTAPI>;
 
   async trySendMessage(
     apiKey: string,
@@ -36,10 +38,12 @@ export class PrivateAIClient {
     }
 
     for (let i = 0; i < tryCount; i++) {
-      const res = await this.sendMessage(client, question, options).catch(err => {
-        console.error(err);
-        return null;
-      });
+      const res = await this.sendMessage(client, question, options).catch(
+        (err) => {
+          console.error(err);
+          return null;
+        },
+      );
 
       if (res) {
         return res;
@@ -82,5 +86,4 @@ export class PrivateAIClient {
 
     return client;
   }
-
 }
