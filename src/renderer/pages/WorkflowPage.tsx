@@ -6,16 +6,17 @@ import i18n from 'i18next';
 import useBus, { EventAction } from 'use-bus';
 import { useTranslation } from 'react-i18next';
 
-import {
-  type WorkflowTaskType,
-  type WorkflowRunner as WorkflowRunnerType,
+import type {
+  WorkflowTaskType,
+  WorkflowRunner as WorkflowRunnerType,
 } from '@renderer/types';
 
 import { Message } from '@renderer/hooks';
 import MenuButton from '@renderer/components/Pices/MenuButton';
 import NoRecord from '@renderer/components/Pices/NoRecord';
 import StatusBar from '@renderer/components/StatusBar';
-import { useRequest, type Response } from '@renderer/hooks/useRequest';
+import { useRequest } from '@renderer/hooks/useRequest';
+import type { Response } from '@renderer/hooks/useRequest';
 import { MonacoEditorModalContextProvider } from '@renderer/hooks/useMonacoEditorModal';
 
 import WorkflowRunner from './workflow/WorkflowRunner';
@@ -26,11 +27,14 @@ const Workflow: React.FC = () => {
   const styles = useStylesOfWorkflow();
   const { t } = useTranslation();
 
-  const { data: runnersResp, run: getWorkflowRunners, setState } = useRequest<Response<WorkflowRunnerType[]>>(
-    () => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'getWorkflowRunners',
-      params: {},
-    }),
+  const { data: runnersResp, run: getWorkflowRunners, setState } = useRequest<
+    Response<WorkflowRunnerType[]>
+  >(
+    () =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'getWorkflowRunners',
+        params: {},
+      }),
     {
       onSuccess(rsp) {
         if (rsp.code !== 200) {
@@ -39,15 +43,16 @@ const Workflow: React.FC = () => {
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: updateRunner } = useRequest<Response<WorkflowRunnerType>>(
-    (id: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'getWorkflowRunner',
-      params: { id },
-    }),
+    (id: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'getWorkflowRunner',
+        params: { id },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
@@ -72,100 +77,113 @@ const Workflow: React.FC = () => {
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
-
   const { run: createRunner } = useRequest<Response<string | null>>(
-    (type: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'generateTaskOfRunner',
-      params: {
-        task: { type },
-        runnerId: null,
-      },
-    }),
+    (type: WorkflowTaskType) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'generateTaskOfRunner',
+        params: {
+          task: { type },
+          runnerId: null,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_create_workflow')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_create_workflow')}: ${rsp.result}`,
+          );
         }
         getWorkflowRunners();
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: removeRunner } = useRequest<Response<string | null>>(
-    (id: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'removeWorkflowRunner',
-      params: {
-        id,
-      },
-    }),
+    (id: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'removeWorkflowRunner',
+        params: {
+          id,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_remove_workflow')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_remove_workflow')}: ${rsp.result}`,
+          );
         }
         getWorkflowRunners();
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
-  useBus('event:stream:workflow:task-status', (event: EventAction) => {
-    const { payload } = event;
-    const { runnerId, taskId, status } = payload;
+  useBus(
+    'event:stream:workflow:task-status',
+    (event: EventAction) => {
+      const { payload } = event;
+      const { runnerId, taskId, status } = payload;
 
-    setState((result) => {
-      let { result: runners } = result;
-      let index = -1;
+      setState((result) => {
+        let { result: runners } = result;
+        let index = -1;
 
-      if (!runners) return result;
-      runners = runners.slice();
-      index = runners.findIndex((runner) => runner.id === runnerId);
-      if (index === -1) return result;
-      runners[index].queue = runners[index].queue.map((task) => {
-        if (task.id === taskId) {
-          task.status = status;
-        }
-        return task;
+        if (!runners) return result;
+        runners = runners.slice();
+        index = runners.findIndex((runner) => runner.id === runnerId);
+        if (index === -1) return result;
+        runners[index].queue = runners[index].queue.map((task) => {
+          if (task.id === taskId) {
+            task.status = status;
+          }
+          return task;
+        });
+
+        return {
+          ...result,
+          result: runners,
+        };
       });
+    },
+    [setState],
+  );
 
-      return {
-        ...result,
-        result: runners,
-      };
-    });
-  }, [setState]);
+  useBus(
+    'event:stream:workflow:status',
+    (event: EventAction) => {
+      const { payload } = event;
+      const { runnerId, status } = payload;
 
-  useBus('event:stream:workflow:status', (event: EventAction) => {
-    const { payload } = event;
-    const { runnerId, status } = payload;
+      setState((result) => {
+        let { result: runners } = result;
+        let index = -1;
 
-    setState((result) => {
-      let { result: runners } = result;
-      let index = -1;
+        if (!runners) return result;
+        runners = runners.slice();
+        index = runners.findIndex((runner) => runner.id === runnerId);
+        if (index === -1) return result;
+        runners[index].status = status;
 
-      if (!runners) return result;
-      runners = runners.slice();
-      index = runners.findIndex((runner) => runner.id === runnerId);
-      if (index === -1) return result;
-      runners[index].status = status;
-
-      return {
-        ...result,
-        result: runners,
-      };
-    });
-  }, [setState]);
+        return {
+          ...result,
+          result: runners,
+        };
+      });
+    },
+    [setState],
+  );
 
   return (
     <MonacoEditorModalContextProvider>
@@ -198,22 +216,20 @@ const Workflow: React.FC = () => {
           />
         </div>
         <div>
-          {
-            runnersResp?.result?.map((runner) => (
-              <WorkflowRunner
-                {...runner}
-                key={runner.id}
-                removeRunner={removeRunner}
-                updateRunner={updateRunner}
-              />
-            ))
-          }
+          {runnersResp?.result?.map((runner) => (
+            <WorkflowRunner
+              {...runner}
+              key={runner.id}
+              removeRunner={removeRunner}
+              updateRunner={updateRunner}
+            />
+          ))}
           <NoRecord hidden={!!runnersResp?.result?.length} />
         </div>
         <StatusBar />
       </Container>
     </MonacoEditorModalContextProvider>
   );
-}
+};
 
 export default Workflow;

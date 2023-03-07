@@ -4,9 +4,12 @@ import classNames from 'classnames';
 import { MessageChannel } from 'electron-re';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import {
-  createStyles, IconButton,
-  LinearProgress, makeStyles,
-  Switch, Tooltip
+  createStyles,
+  IconButton,
+  LinearProgress,
+  makeStyles,
+  Switch,
+  Tooltip,
 } from '@material-ui/core';
 import {
   TimerTwoTone as TimerIcon,
@@ -22,54 +25,67 @@ import { Response, useRequest } from '@renderer/hooks/useRequest';
 import { Message } from '@renderer/hooks/useNotifier';
 import NoRecord from '@renderer/components/Pices/NoRecord';
 import { useDialogConfirm } from '@renderer/hooks';
-import {
+import type {
   WorkflowTaskTimer,
-  type WorkflowRunner,
-  type WorkflowTaskType,
+  WorkflowRunner,
+  WorkflowTaskType,
 } from '@renderer/types';
 
 import EffectTask, { type as EffectTaskType } from './tasks/EffectTask';
-import NodeSourceTask, { type as NodeSourceTaskType } from './tasks/NodeSourceTask';
-import ProcessorTask, { type as ProcessorTaskType } from './tasks/ProcessorTask';
-import PuppeteerSourceTask, { type as PuppeteerSourceTaskType } from './tasks/PuppeteerSourceTask';
-import CrawlerSourceTask, { type as CrawlerSourceTaskTask } from './tasks/CrawlerSourceTask';
+import NodeSourceTask, {
+  type as NodeSourceTaskType,
+} from './tasks/NodeSourceTask';
+import ProcessorTask, {
+  type as ProcessorTaskType,
+} from './tasks/ProcessorTask';
+import PuppeteerSourceTask, {
+  type as PuppeteerSourceTaskType,
+} from './tasks/PuppeteerSourceTask';
+import CrawlerSourceTask, {
+  type as CrawlerSourceTaskTask,
+} from './tasks/CrawlerSourceTask';
 import WorkflowSchedule from './WorkflowSchedule';
 import WorkflowTaskTerminal from './WorkflowTaskTerminal';
 
-export const useStyles = makeStyles((theme) => createStyles({
-  runnerWrapper: {
-    padding: theme.spacing(.5),
-    marginBottom: theme.spacing(2),
-    marginLeft: theme.spacing(.5),
-    marginRight: theme.spacing(.5),
-    backgroundColor: theme.palette.type === "dark" ? '#383838' : '#ececec',
-    '& textarea': {
-      border: 'none',
+export const useStyles = makeStyles((theme) =>
+  createStyles({
+    runnerWrapper: {
+      padding: theme.spacing(0.5),
+      marginBottom: theme.spacing(2),
+      marginLeft: theme.spacing(0.5),
+      marginRight: theme.spacing(0.5),
+      backgroundColor: theme.palette.type === 'dark' ? '#383838' : '#ececec',
+      '& textarea': {
+        border: 'none',
+      },
     },
-  },
-  footerAction: {
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'center',
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-  },
-  footerActionFixed: {
-    position: 'absolute',
-    bottom: theme.spacing(.4),
-    left: theme.spacing(1),
-  },
-  footerActionButton: {
-    cursor: 'pointer',
-    color: theme.palette.secondary[theme.palette.type === 'dark' ? 'light' : 'dark'],
-    '&.disabled': {
-      color: theme.palette.secondary.main,
-    }
-  },
-  noVisible: {
-    opacity: 0,
-  },
-}));
+    footerAction: {
+      position: 'relative',
+      display: 'flex',
+      justifyContent: 'center',
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+    footerActionFixed: {
+      position: 'absolute',
+      bottom: theme.spacing(0.4),
+      left: theme.spacing(1),
+    },
+    footerActionButton: {
+      cursor: 'pointer',
+      color:
+        theme.palette.secondary[
+          theme.palette.type === 'dark' ? 'light' : 'dark'
+        ],
+      '&.disabled': {
+        color: theme.palette.secondary.main,
+      },
+    },
+    noVisible: {
+      opacity: 0,
+    },
+  }),
+);
 
 const TaskTypeMap = {
   [EffectTaskType]: EffectTask,
@@ -81,7 +97,7 @@ const TaskTypeMap = {
 };
 
 interface Props extends WorkflowRunner {
-  updateRunner: (runnerId: string) => Promise<Response<WorkflowRunner>>
+  updateRunner: (runnerId: string) => Promise<Response<WorkflowRunner>>;
   removeRunner: (runnerId: string) => Promise<Response<string | null>>;
 }
 
@@ -106,144 +122,170 @@ const WorkflowRunner: React.FC<Props> = ({
     title: t('warning'),
   };
 
+  const onTerminalClose = (
+    reason: 'backdropClick' | 'escapeKeyDown' | 'command',
+  ) => {
+    if (reason === 'backdropClick') return;
+    setTerminalOpen(false);
+  };
+
   const onTerminalOpen = (taskId: string) => {
     setTerminalOpen(true);
     setTerminalTaskId(taskId);
   };
 
   const { run: startRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'runWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
+    (runnerId: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'runWorkflowRunner',
+        params: {
+          id: runnerId,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_run_workflow')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_run_workflow')}: ${rsp.result}`,
+          );
         }
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { run: stopRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'stopWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
+    (runnerId: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'stopWorkflowRunner',
+        params: {
+          id: runnerId,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_stop_workflow')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_stop_workflow')}: ${rsp.result}`,
+          );
         }
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: putTaskIntoRunner } = useRequest<Response<string | null>>(
-    (runnerId: string, taskId: string, taskType: WorkflowTaskType) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'generateTaskOfRunner',
-      params: {
-        task: { type: taskType, id: taskId },
-        runnerId: runnerId,
-      },
-    }),
+    (runnerId: string, taskId: string, taskType: WorkflowTaskType) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'generateTaskOfRunner',
+        params: {
+          task: { type: taskType, id: taskId },
+          runnerId: runnerId,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_create_workflow_task')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_create_workflow_task')}: ${rsp.result}`,
+          );
         }
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: removeTaskFromRunner } = useRequest<Response<string | null>>(
-    (runnerId: string, taskId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'removeTaskOfRunner',
-      params: {
-        runnerId,
-        taskId,
-      },
-    }),
+    (runnerId: string, taskId: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'removeTaskOfRunner',
+        params: {
+          runnerId,
+          taskId,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_remove_workflow_task')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_remove_workflow_task')}: ${rsp.result}`,
+          );
         }
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: enableRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'enableWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
+    (runnerId: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'enableWorkflowRunner',
+        params: {
+          id: runnerId,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_enable_workflow')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_enable_workflow')}: ${rsp.result}`,
+          );
         }
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: disableRunner } = useRequest<Response<string | null>>(
-    (runnerId: string) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'disableWorkflowRunner',
-      params: {
-        id: runnerId,
-      },
-    }),
+    (runnerId: string) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'disableWorkflowRunner',
+        params: {
+          id: runnerId,
+        },
+      }),
     {
       manual: true,
       onSuccess(rsp) {
         if (rsp.code !== 200) {
-          Message.error(`${i18n.t<string>('fail_to_disable_workflow')}: ${rsp.result}`);
+          Message.error(
+            `${i18n.t<string>('fail_to_disable_workflow')}: ${rsp.result}`,
+          );
         }
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const { run: editTimerOfRunner } = useRequest<Response<string | null>>(
-    (runnerId: string, timer: WorkflowTaskTimer) => MessageChannel.invoke('main', 'service:workflow', {
-      action: 'editWorkflowRunner',
-      params: {
-        id: runnerId,
-        options: {
-          timer,
+    (runnerId: string, timer: WorkflowTaskTimer) =>
+      MessageChannel.invoke('main', 'service:workflow', {
+        action: 'editWorkflowRunner',
+        params: {
+          id: runnerId,
+          options: {
+            timer,
+          },
         },
-      },
-    }),
+      }),
     {
       manual: true,
       onSuccess(rsp) {
@@ -255,8 +297,8 @@ const WorkflowRunner: React.FC<Props> = ({
       },
       onError(error) {
         Message.error(error.message);
-      }
-    }
+      },
+    },
   );
 
   const onRemoveRunner = () => {
@@ -269,65 +311,100 @@ const WorkflowRunner: React.FC<Props> = ({
     });
   };
 
-  const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(() => {
-    return MessageChannel.invoke('main', 'service:workflow', {
-      action: 'getWorkflowTaskDemoDir',
-      params: {},
-    });
-  }, {
-    onError(error) {
-      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+  const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(
+    () => {
+      return MessageChannel.invoke('main', 'service:workflow', {
+        action: 'getWorkflowTaskDemoDir',
+        params: {},
+      });
     },
-    cacheKey: 'main/service:workflow/workflowTaskDemoDir',
-  });
+    {
+      onError(error) {
+        Message.error(
+          `${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${
+            error.message
+          }`,
+        );
+      },
+      cacheKey: 'main/service:workflow/workflowTaskDemoDir',
+    },
+  );
 
-  const { run: moveUpTaskOfRunner } = useRequest<Response<string>>((runnerId: string, taskId: string) => {
-    return MessageChannel.invoke('main', 'service:workflow', {
-      action: 'moveUpTaskOfRunner',
-      params: { runnerId, taskId },
-    });
-  }, {
-    manual: true,
-    onError(error) {
-      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+  const { run: moveUpTaskOfRunner } = useRequest<Response<string>>(
+    (runnerId: string, taskId: string) => {
+      return MessageChannel.invoke('main', 'service:workflow', {
+        action: 'moveUpTaskOfRunner',
+        params: { runnerId, taskId },
+      });
     },
-  });
+    {
+      manual: true,
+      onError(error) {
+        Message.error(
+          `${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${
+            error.message
+          }`,
+        );
+      },
+    },
+  );
 
-  const { run: moveDownTaskOfRunner } = useRequest<Response<string>>((runnerId: string, taskId: string) => {
-    return MessageChannel.invoke('main', 'service:workflow', {
-      action: 'moveDownTaskOfRunner',
-      params: { runnerId, taskId },
-    });
-  }, {
-    manual: true,
-    onError(error) {
-      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+  const { run: moveDownTaskOfRunner } = useRequest<Response<string>>(
+    (runnerId: string, taskId: string) => {
+      return MessageChannel.invoke('main', 'service:workflow', {
+        action: 'moveDownTaskOfRunner',
+        params: { runnerId, taskId },
+      });
     },
-  });
+    {
+      manual: true,
+      onError(error) {
+        Message.error(
+          `${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${
+            error.message
+          }`,
+        );
+      },
+    },
+  );
 
-  const { run: runTaskOfWorkflowRunner } = useRequest<Response<string>>((runnerId: string, taskId: string, payload: unknown) => {
-    return MessageChannel.invoke('main', 'service:workflow', {
-      action: 'runTaskOfWorkflowRunner',
-      params: { runnerId, taskId, payload },
-    });
-  }, {
-    manual: true,
-    onError(error) {
-      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+  const { run: runTaskOfWorkflowRunner } = useRequest<Response<string>>(
+    (runnerId: string, taskId: string, payload: unknown) => {
+      return MessageChannel.invoke('main', 'service:workflow', {
+        action: 'runTaskOfWorkflowRunner',
+        params: { runnerId, taskId, payload },
+      });
     },
-  });
+    {
+      manual: true,
+      onError(error) {
+        Message.error(
+          `${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${
+            error.message
+          }`,
+        );
+      },
+    },
+  );
 
-  const { run: stopTaskOfWorkflowRunner } = useRequest<Response<string>>((runnerId: string, taskId: string) => {
-    return MessageChannel.invoke('main', 'service:workflow', {
-      action: 'stopTaskOfWorkflowRunner',
-      params: { runnerId, taskId },
-    });
-  }, {
-    manual: true,
-    onError(error) {
-      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+  const { run: stopTaskOfWorkflowRunner } = useRequest<Response<string>>(
+    (runnerId: string, taskId: string) => {
+      return MessageChannel.invoke('main', 'service:workflow', {
+        action: 'stopTaskOfWorkflowRunner',
+        params: { runnerId, taskId },
+      });
     },
-  });
+    {
+      manual: true,
+      onError(error) {
+        Message.error(
+          `${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${
+            error.message
+          }`,
+        );
+      },
+    },
+  );
 
   const onTaskDelete = async (taskId: string) => {
     openDialog({
@@ -336,7 +413,7 @@ const WorkflowRunner: React.FC<Props> = ({
       onConfirm: async () => {
         await removeTaskFromRunner(id, taskId);
         await updateRunner(id);
-      }
+      },
     });
   };
 
@@ -384,34 +461,33 @@ const WorkflowRunner: React.FC<Props> = ({
 
   return (
     <div className={styles.runnerWrapper}>
-      {
-        queue.map((task, i) => {
-          const TaskComponent = TaskTypeMap[task.type] || TaskTypeMap.unknown;
-          return (
-            <TaskComponent
-              key={task.id}
-              {...task}
-              index={i}
-              total={queue.length}
-              onTaskDelete={onTaskDelete}
-              onTaskMoveDown={onTaskMoveDown}
-              onTaskMoveUp={onTaskMoveUp}
-              onTaskTerminalOpen={onTerminalOpen}
-              workflowTaskDemoDir={workflowTaskDemoRsp?.result}
-            />
-          );
-        })
-      }
-      {
-        isEmptyRunner && (
-          <NoRecord title={t('no_task')} />
-        )
-      }
-      <div className={styles.footerAction} >
+      {queue.map((task, i) => {
+        const TaskComponent = TaskTypeMap[task.type] || TaskTypeMap.unknown;
+        return (
+          <TaskComponent
+            key={task.id}
+            {...task}
+            index={i}
+            total={queue.length}
+            onTaskDelete={onTaskDelete}
+            onTaskMoveDown={onTaskMoveDown}
+            onTaskMoveUp={onTaskMoveUp}
+            onTaskTerminalOpen={onTerminalOpen}
+            workflowTaskDemoDir={workflowTaskDemoRsp?.result}
+          />
+        );
+      })}
+      {isEmptyRunner && <NoRecord title={t('no_task')} />}
+      <div className={styles.footerAction}>
         <div className={styles.footerActionFixed}>
           <Tooltip title={enableStatus}>
             <IconButton size="small" onClick={toggleEnable}>
-              <Switch checked={enable} size="small" color="primary" className={styles.footerActionButton} />
+              <Switch
+                checked={enable}
+                size="small"
+                color="primary"
+                className={styles.footerActionButton}
+              />
             </IconButton>
           </Tooltip>
         </div>
@@ -421,7 +497,9 @@ const WorkflowRunner: React.FC<Props> = ({
           </IconButton>
         </Tooltip>
         <WorkflowSchedule
-          renderButton={() => <TimerIcon className={styles.footerActionButton} color="action" />}
+          renderButton={() => (
+            <TimerIcon className={styles.footerActionButton} color="action" />
+          )}
           timerOption={timerOption}
           editTimerOfRunner={editTimerOfRunner}
           updateRunner={updateRunner}
@@ -464,38 +542,55 @@ const WorkflowRunner: React.FC<Props> = ({
             },
           ]}
         />
-        {
-          !isRunning && (
-            <Tooltip title={t('run_workflow')}>
-              <IconButton size="small" disabled={!enable || isEmptyRunner} onClick={startRunnerInner}>
-                <PlayCircleFilledWhiteIcon color="action" className={classNames(styles.footerActionButton, (!enable || isEmptyRunner) && 'disabled')} />
-              </IconButton>
-            </Tooltip>
-          )
-        }
-        {
-          isRunning && (
-            <Tooltip title={t('stop_workflow')}>
-              <IconButton size="small" disabled={!enable} onClick={stopRunnerInner}>
-                <CancelIcon color="action" className={classNames(styles.footerActionButton, !enable && 'disabled')} />
-              </IconButton>
-            </Tooltip>
-          )
-        }
+        {!isRunning && (
+          <Tooltip title={t('run_workflow')}>
+            <IconButton
+              size="small"
+              disabled={!enable || isEmptyRunner}
+              onClick={startRunnerInner}>
+              <PlayCircleFilledWhiteIcon
+                color="action"
+                className={classNames(
+                  styles.footerActionButton,
+                  (!enable || isEmptyRunner) && 'disabled',
+                )}
+              />
+            </IconButton>
+          </Tooltip>
+        )}
+        {isRunning && (
+          <Tooltip title={t('stop_workflow')}>
+            <IconButton
+              size="small"
+              disabled={!enable}
+              onClick={stopRunnerInner}>
+              <CancelIcon
+                color="action"
+                className={classNames(
+                  styles.footerActionButton,
+                  !enable && 'disabled',
+                )}
+              />
+            </IconButton>
+          </Tooltip>
+        )}
       </div>
       <WorkflowTaskTerminal
         open={terminalOpen}
         taskId={terminalTaskId}
         taskIdList={queue?.map((task) => task.id) || []}
-        onCloseDialog={() => setTerminalOpen(false)}
+        onCloseDialog={onTerminalClose}
         onRunnerStart={startRunnerInner}
         onRunnerStop={stopRunnerInner}
         onRunnerTaskStart={startRunnerTask}
         onRunnerTaskStop={stopRunnerTask}
       />
-      <LinearProgress className={classNames((!isRunning) && styles.noVisible)} color="secondary" />
+      <LinearProgress
+        className={classNames(!isRunning && styles.noVisible)}
+        color="secondary"
+      />
     </div>
   );
-}
+};
 
 export default WorkflowRunner;

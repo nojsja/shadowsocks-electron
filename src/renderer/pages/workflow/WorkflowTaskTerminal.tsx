@@ -21,7 +21,9 @@ interface Props {
   open: boolean;
   taskId: string | null;
   taskIdList: string[];
-  onCloseDialog: () => void;
+  onCloseDialog: (
+    reason: 'backdropClick' | 'escapeKeyDown' | 'command',
+  ) => void;
   onRunnerStart: () => void;
   onRunnerStop: () => void;
   onRunnerTaskStart: (taskId: string) => void;
@@ -152,7 +154,12 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           if (!question) {
             print([
               textLine({
-                words: [textWord({ characters: 'you need say something.' })],
+                words: [
+                  textWord({
+                    className: `${styles.text} warn`,
+                    characters: 'you need say something.',
+                  }),
+                ],
               }),
             ]);
             return;
@@ -207,7 +214,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
         );
         break;
       case 'exit':
-        onCloseDialog();
+        onCloseDialog('command');
         break;
       case 'clear':
         clear();
@@ -272,7 +279,11 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   }, [taskId, open]);
 
   return (
-    <AdaptiveDialog open={open} onClose={onCloseDialog} fullWidth maxWidth="md">
+    <AdaptiveDialog
+      fullWidth
+      maxWidth="md"
+      open={open}
+      onClose={(e, reason) => onCloseDialog(reason)}>
       <DialogContent className={styles.crtTerminalWrapper}>
         <Terminal
           queue={eventQueue}
