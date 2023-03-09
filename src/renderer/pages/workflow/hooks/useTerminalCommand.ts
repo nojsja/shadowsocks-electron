@@ -245,7 +245,7 @@ const useTerminalCommand = () => {
         'exit',
         {
           alias: 'e',
-          desc: 'exit the terminal.',
+          desc: `exit the terminal, same as pressing 'ESC'.`,
         },
       ],
     ],

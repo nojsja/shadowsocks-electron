@@ -5,7 +5,7 @@ import {
   textLine,
   textWord,
   commandWord,
-} from 'crt-terminal';
+} from '@nojsja/crt-terminal';
 import { createStyles, DialogContent, makeStyles } from '@material-ui/core';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
@@ -58,12 +58,12 @@ const useStyles = makeStyles(() =>
     },
     crtTerminalWrapper: {
       padding: 0,
-      height: '90vh',
+      height: '100vh',
       '&:first-child': {
         paddingTop: 0,
       },
       '& .crt-terminal': {
-        maxHeight: '90vh',
+        maxHeight: '100vh',
         borderRadius: 0,
         boxShadow:
           '0 0 1.8571428571rem #252925, inset 0 0 2rem 1.4285714286rem #000;',
@@ -166,12 +166,6 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           }
           sendMessage(question)
             .then((text) => {
-              /*
-              id: "chatcmpl-6r7hK80BySdYpqO1RydIuLEw0UIeB"
-              parentMessageId: "6a693b29-6e88-4f9e-a14e-343c30eceb4f"
-              role: "assistant"
-              text: "Hello! How can I assist you today?"
-              */
               print([
                 textLine({
                   words: [
@@ -280,7 +274,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
 
   return (
     <AdaptiveDialog
-      fullWidth
+      fullScreen
       maxWidth="md"
       open={open}
       onClose={(e, reason) => onCloseDialog(reason)}>
