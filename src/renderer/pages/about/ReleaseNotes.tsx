@@ -12,7 +12,10 @@ type Timeline = {
   children: React.ReactNode[];
 };
 
-const LinkButton: React.FC<{ href: string; children: React.ReactNode }> = ({ href, children }) => {
+const LinkButton: React.FC<{ href: string; children: React.ReactNode }> = ({
+  href,
+  children,
+}) => {
   const handleClick = () => {
     shell.openExternal(href);
   };
@@ -30,13 +33,21 @@ const timeline: Timeline[] = [
     children: [
       <div key="1">
         <span>
-          Feat: Support workflow - organize and execute your nodejs scripts with powerful
+          Feat: Support workflow - organize and execute your nodejs scripts with
+          powerful
         </span>
-        <LinkButton href="https://github.com/puppeteer/puppeteer">{'\u00A0'}puppeteer{'\u00A0'}</LinkButton>/
-        <LinkButton href="https://github.com/bda-research/node-crawler">{'\u00A0'}crawler{'\u00A0'}</LinkButton>tools.
+        <LinkButton href="https://github.com/puppeteer/puppeteer">
+          {'\u00A0'}puppeteer{'\u00A0'}
+        </LinkButton>
+        /
+        <LinkButton href="https://github.com/bda-research/node-crawler">
+          {'\u00A0'}crawler{'\u00A0'}
+        </LinkButton>
+        tools.
       </div>,
-      'Refactor: Event stream service.'
-    ]
+      'Feat: Support OpenAI in workflow terminal, now you can ask AI about how to write puppeteer/crawler scripts for web scraping.',
+      'Refactor: Event stream service.',
+    ],
   },
   {
     title: 'v1.2.3',
@@ -50,8 +61,8 @@ const timeline: Timeline[] = [
       'Fix: Bugs of PAC conf regenerating.',
       'Chore: Upgrade electron-re to v1.2.7.',
       'Chore: Upgrade sentry to v4.2.0.',
-      'Chore: Upgrade electron-updater to v5.3.0.'
-    ]
+      'Chore: Upgrade electron-updater to v5.3.0.',
+    ],
   },
   {
     title: 'v1.2.2',
@@ -67,7 +78,7 @@ const timeline: Timeline[] = [
       'Fix: Bugs of SIP003 plugin parameters and SSR obfs parameters.',
       'Fix: Fatal error when using Global/PAC mode on NO-Gnome Linux desktops, wait for future release to total support.',
       'Chore: Add icon assets of retina screen.',
-    ]
+    ],
   },
   {
     title: 'v1.2.1',
@@ -77,7 +88,7 @@ const timeline: Timeline[] = [
       'Feat: Small UI improvements, such as font color, icons, space.',
       'Fix: PAC mode bugs on Windows.',
       'Fix: Bugs when restore settings from local backup file.',
-    ]
+    ],
   },
   {
     title: 'v1.2.0',
@@ -92,7 +103,7 @@ const timeline: Timeline[] = [
       'Perf: Context menu perfomance improvement.',
       'Perf: Reduce useless server reconnection.',
       'Fix: Pac/Global mode bugs of IPv6 server.',
-    ]
+    ],
   },
   {
     title: 'v1.1.1',
@@ -105,7 +116,7 @@ const timeline: Timeline[] = [
       'Fix: Get wrong parsed conf info when re importing a server item sharing link from subscription group.',
       'Fix: Restore config from file but UI do not refresh.',
       'Fix: Long text display of server items info.',
-      'Fix: Server group header height.'
+      'Fix: Server group header height.',
     ],
   },
   {
@@ -136,7 +147,7 @@ const timeline: Timeline[] = [
     children: [
       'Feat: Support for MAC OS catalina (x64) system.',
       'Feat: Add client bootstrap hooks based on tapable.',
-      'Feat: Add new title bar for Mac OS.'
+      'Feat: Add new title bar for Mac OS.',
     ],
   },
   {
@@ -149,7 +160,7 @@ const timeline: Timeline[] = [
       'Feat: Support Window resizing.',
       'Perf: Improvements of dark/light mode.',
       'Perf: Improvements of server connecting actions.',
-      'Fix: Bugs of dark theme.'
+      'Fix: Bugs of dark theme.',
     ],
   },
   {
@@ -173,7 +184,7 @@ const timeline: Timeline[] = [
     children: [
       'Feat: Support for Windows platform.',
       'Feat: Small UI changes.',
-      'Fix: Bugs.'
+      'Fix: Bugs.',
     ],
   },
   {
@@ -181,7 +192,7 @@ const timeline: Timeline[] = [
     children: [
       'Feat: Support dark mode.',
       'Feat: Some UI widgets style changes.',
-      'Fix: Bugs.'
+      'Fix: Bugs.',
     ],
   },
 ];
@@ -205,10 +216,7 @@ const ReleaseNodes = React.memo(function ReleaseNodes() {
       <If
         condition={!visible}
         then={
-          <div
-            className={styles.releaseDrawerButton}
-            onClick={handleOpen}
-          >
+          <div className={styles.releaseDrawerButton} onClick={handleOpen}>
             <span>{t('release_notes')}</span>
           </div>
         }
@@ -218,28 +226,22 @@ const ReleaseNodes = React.memo(function ReleaseNodes() {
         open={visible}
         className={styles.releaseDrawerWrapper}
         onClose={handleClose}
-        onOpen={handleOpen}
-      >
-        {
-          timeline.map(item => (
-            <ol key={item.title}>
-              <p><b>{item.title}</b></p>
-              {
-                item.children.map((child, i) => (
-                  <li key={`${item.title}${i}`}>{child}</li>
-                ))
-              }
-            </ol>
-          ))
-        }
-        <span
-          className={styles.releaseDrawerClose}
-        >
+        onOpen={handleOpen}>
+        {timeline.map((item) => (
+          <ol key={item.title}>
+            <p>
+              <b>{item.title}</b>
+            </p>
+            {item.children.map((child, i) => (
+              <li key={`${item.title}${i}`}>{child}</li>
+            ))}
+          </ol>
+        ))}
+        <span className={styles.releaseDrawerClose}>
           <IconButton
             edge="start"
             color="inherit"
-            onClick={() => setVisible(false)}
-          >
+            onClick={() => setVisible(false)}>
             <CloseOutlined />
           </IconButton>
         </span>

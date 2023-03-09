@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Terminal,
   useEventQueue,
@@ -14,6 +14,7 @@ import {
   TaskConsoleData,
 } from '@renderer/hooks/useWorkflowTaskTerminal';
 import { useTerminalVisitor } from '@renderer/hooks';
+import { useTypedSelector } from '@renderer/redux/reducers';
 import useTerminalCommand from './hooks/useTerminalCommand';
 import { useAIPrompt } from './hooks/useAIPrompt';
 
@@ -90,12 +91,16 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   onRunnerTaskStart,
   onRunnerTaskStop,
 }) => {
+  const { openAIAPIKey, httpProxy } = useTypedSelector(
+    (state) => state.settings,
+  );
   const eventQueue = useEventQueue();
   const { sendMessage } = useAIPrompt();
   const prompt = useTerminalCommand();
   const styles = useStyles();
   const { print, clear } = eventQueue.handlers;
   const { get, wipe, registry, unregistry } = useTerminalVisitor();
+  const isFirstAskAI = useRef(true);
 
   const onCommand = (command: string) => {
     const [commandName, options] = prompt.parse(command);
@@ -157,12 +162,41 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
                 words: [
                   textWord({
                     className: `${styles.text} warn`,
-                    characters: 'you need say something.',
+                    characters: 'You need say something.',
                   }),
                 ],
               }),
             ]);
             return;
+          }
+          if (isFirstAskAI.current) {
+            if (!openAIAPIKey || !httpProxy?.enable) {
+              print([
+                textLine({
+                  words: [
+                    ...(!openAIAPIKey
+                      ? [
+                          textWord({
+                            className: `${styles.text} info`,
+                            characters:
+                              'For best speed and stability, add your private openAI key(s) in settings.',
+                          }),
+                        ]
+                      : []),
+                    ...(!httpProxy?.enable
+                      ? [
+                          textWord({
+                            className: `${styles.text} warn`,
+                            characters:
+                              'In some countries with internet restrictions, maybe you should enable http(s) proxy in settings to access openAI service.',
+                          }),
+                        ]
+                      : []),
+                  ],
+                }),
+              ]);
+            }
+            isFirstAskAI.current = false;
           }
           sendMessage(question)
             .then((text) => {

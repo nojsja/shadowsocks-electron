@@ -20,31 +20,33 @@ export const WORKFLOW_TASK_FILE = {
 };
 
 export interface Traffic {
-  GB: number, MB: number, KB: number
+  GB: number;
+  MB: number;
+  KB: number;
 }
 
 export const encryptMethods = [
-  "none",
-  "aes-128-gcm",
-  "aes-192-gcm",
-  "aes-256-gcm",
-  "rc4",
-  "rc4-md5",
-  "aes-128-cfb",
-  "aes-192-cfb",
-  "aes-256-cfb",
-  "aes-128-ctr",
-  "aes-192-ctr",
-  "aes-256-ctr",
-  "bf-cfb",
-  "camellia-128-cfb",
-  "camellia-192-cfb",
-  "camellia-256-cfb",
-  "chacha20-ietf-poly1305",
-  "xchacha20-ietf-poly1305",
-  "salsa20",
-  "chacha20",
-  "chacha20-ietf"
+  'none',
+  'aes-128-gcm',
+  'aes-192-gcm',
+  'aes-256-gcm',
+  'rc4',
+  'rc4-md5',
+  'aes-128-cfb',
+  'aes-192-cfb',
+  'aes-256-cfb',
+  'aes-128-ctr',
+  'aes-192-ctr',
+  'aes-256-ctr',
+  'bf-cfb',
+  'camellia-128-cfb',
+  'camellia-192-cfb',
+  'camellia-256-cfb',
+  'chacha20-ietf-poly1305',
+  'xchacha20-ietf-poly1305',
+  'salsa20',
+  'chacha20',
+  'chacha20-ietf',
 ] as const;
 
 export const serverTypes = ['ss', 'ssr'];
@@ -52,44 +54,54 @@ export const serverTypes = ['ss', 'ssr'];
 export const obfs = ['plain', 'http_simple', 'http_post', 'tls1.2_ticket_auth'];
 
 export const protocols = [
-  "origin",
-  "verify_deflate",
-  "auth_sha1_v4",
-  "auth_aes128_md5",
-  "auth_aes128_sha1",
-  "auth_chain_a",
-  "auth_chain_b",
-  "auth_chain_c",
-  "auth_chain_d",
+  'origin',
+  'verify_deflate',
+  'auth_sha1_v4',
+  'auth_aes128_md5',
+  'auth_aes128_sha1',
+  'auth_chain_a',
+  'auth_chain_b',
+  'auth_chain_c',
+  'auth_chain_d',
 ];
 
 export type Encryption = typeof encryptMethods[number];
 
 export const plugins = [
   {
-    label: "v2ray-plugin[SIP003]",
-    name: "v2ray-plugin",
-    tips: "please_confirm_v2ray-plugin_installed_on_your_system"
+    label: 'v2ray-plugin[SIP003]',
+    name: 'v2ray-plugin',
+    tips: 'please_confirm_v2ray-plugin_installed_on_your_system',
   },
   {
-    label: "kcptun[SIP003]",
-    name: "kcptun",
-    tips: "please_confirm_kcptun_installed_on_your_system"
-  }] as const;
+    label: 'kcptun[SIP003]',
+    name: 'kcptun',
+    tips: 'please_confirm_kcptun_installed_on_your_system',
+  },
+] as const;
 
 export type Plugin = 'v2ray-plugin' | 'kcptun' | 'define' | 'define_sip003';
 
 export type ACL = {
-  enable: boolean,
-  url: string
+  enable: boolean;
+  url: string;
 };
 
-export type CloseOptions = 'qrcode' | 'url' | 'manual' | 'share' | 'subscription' | '';
+export type CloseOptions =
+  | 'qrcode'
+  | 'url'
+  | 'manual'
+  | 'share'
+  | 'subscription'
+  | '';
 
 export type ClipboardParseType = 'url' | 'subscription';
 
 export type NotificationOptions = {
-  title?: string, body: string, subtitle?: string, urgency?: "normal" | "critical" | "low" | undefined
+  title?: string;
+  body: string;
+  subtitle?: string;
+  urgency?: 'normal' | 'critical' | 'low' | undefined;
 };
 
 interface CommonConfig {
@@ -121,33 +133,33 @@ export interface SSRConfig extends CommonConfig {
   type: 'ssr';
   protocol: typeof protocols[number];
   protocolParam: string;
-  obfs: typeof obfs[number],
-  obfsParam: string,
+  obfs: typeof obfs[number];
+  obfsParam: string;
 }
 
 export type Config = SSConfig | SSRConfig;
 
 export interface GroupConfig {
-  id: string,
-  name: string,
-  servers: Config[],
-  type: string,
-  url?: string
+  id: string;
+  name: string;
+  servers: Config[];
+  type: string;
+  url?: string;
 }
 
-export type Mode = "PAC" | "Global" | "Manual";
+export type Mode = 'PAC' | 'Global' | 'Manual';
 export type ThemeMode = 'dark' | 'light';
 export type ServerMode = 'single' | 'cluster';
 
 export interface Settings {
   selectedServer?: string | null;
-  serverMode?: ServerMode,
+  serverMode?: ServerMode;
   loadBalance?: {
-    enable: boolean,
-    count: number,
-    strategy: ALGORITHM
-  },
-  clusterId?: string,
+    enable: boolean;
+    count: number;
+    strategy: ALGORITHM;
+  };
+  clusterId?: string;
   mode: Mode;
   verbose: boolean;
   fixedMenu: boolean;
@@ -156,15 +168,15 @@ export interface Settings {
   localPort: number;
   pacPort: number;
   httpProxy: {
-    enable: boolean,
-    port: number
-  },
-  acl: ACL,
+    enable: boolean;
+    port: number;
+  };
+  acl: ACL;
   gfwListUrl: string;
   autoLaunch: boolean;
   autoHide: boolean;
   lang: string;
-  openApiKey?: string;
+  openAIAPIKey?: string;
 }
 
 export interface Status {
@@ -172,29 +184,37 @@ export interface Status {
   loading: boolean;
   waiting: boolean;
   delay: number | null | '';
-  mode?: ServerMode,
-  clusterId?: string,
-  traffic: Traffic
+  mode?: ServerMode;
+  clusterId?: string;
+  traffic: Traffic;
 }
 
 export type Notification = OptionsObject;
 export type EnqueueSnackbarOptions = {
-  message: string,
-  key: string,
-  dismissed?: boolean,
-  options: Notification
-}
+  message: string;
+  key: string;
+  dismissed?: boolean;
+  options: Notification;
+};
 
 export interface RootState {
-  notifications: EnqueueSnackbarOptions[],
+  notifications: EnqueueSnackbarOptions[];
   config: (Config | GroupConfig)[];
   status: Status;
   settings: Settings;
 }
 
-export interface ActionRspText { success: string, error: { [key: string]: string } }
+export interface ActionRspText {
+  success: string;
+  error: { [key: string]: string };
+}
 
-export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowTaskType =
+  | 'puppeteer-source'
+  | 'crawler-source'
+  | 'node-source'
+  | 'processor-pipe'
+  | 'effect-pipe';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskTimerType = 'schedule' | 'timer';

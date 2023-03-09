@@ -20,27 +20,27 @@ const defaultStore: RootState = {
       strategy: ALGORITHM.POLLING,
     },
     clusterId: '',
-    mode: "Manual",
+    mode: 'Manual',
     darkMode: false,
     autoTheme: false,
     verbose: false,
     localPort: 1080,
     pacPort: 1090,
-    openApiKey: '',
+    openAIAPIKey: '',
     acl: {
       enable: false,
-      url: ""
+      url: '',
     },
     httpProxy: {
       enable: false,
-      port: 1095
+      port: 1095,
     },
     gfwListUrl:
-      "https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt",
+      'https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt',
     autoLaunch: false,
     autoHide: false,
-    lang: 'zh-CN'
-  }
+    lang: 'zh-CN',
+  },
 };
 
 export default defaultStore;

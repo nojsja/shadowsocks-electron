@@ -28,7 +28,7 @@ export class PrivateAIClient {
     tryCount = 2,
   ) {
     if (!apiKey) {
-      throw new Error('Invalid OpenAPI Key');
+      throw new Error('Invalid OpenAI Key');
     }
 
     const client = await this.getAvailableClient(apiKey);

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
-import pie from 'puppeteer-in-electron2';
-import { type Browser } from 'puppeteer-core';
+import pie from '@nojsja/puppeteer-in-electron';
+import type { Browser } from 'puppeteer-core';
 import { clipboard } from 'electron';
 import fs from 'fs';
 import http from 'http';
@@ -14,32 +14,32 @@ import net from 'net';
 import fetch from 'node-fetch';
 import { createRequire } from 'module';
 
-import { LoadBrowserPageContext, type WorkflowTaskType } from './types';
+import type { LoadBrowserPageContext, WorkflowTaskType } from './types';
 
 const require = createRequire(import.meta.url);
 
 /**
-  * @name dispatch [trigger event to renderer process]
-  * @param action reconnect-server | add-server | disconnect-server | notifycation
-  * @param args unknown
-  * @returns void
-  * @example
-  * * demo1: connect client to server
-  * > dispatch('reconnect-server');
-  * * demo2-1: add server (ss/ssr) to client
-  * > dispatch('add-server', 'ss(r)://xxx');
-  * * demo2-2: add server group to client
-  * > dispatch('add-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
-  * * demo2-3: update server group of client
-  * > dispatch('update-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
-  * * demo3: disconnect client from server
-  * > dispatch('disconnect-server');
-  * * demo4: send notifycation
-  * > dispatch('notifycation', {
-  *     message: 'xxx',
-  *     type: 'default', // type - 'default' | 'error' | 'success' | 'warning' | 'info'
-  *   });
-  */
+ * @name dispatch [trigger event to renderer process]
+ * @param action reconnect-server | add-server | disconnect-server | notifycation
+ * @param args unknown
+ * @returns void
+ * @example
+ * * demo1: connect client to server
+ * > dispatch('reconnect-server');
+ * * demo2-1: add server (ss/ssr) to client
+ * > dispatch('add-server', 'ss(r)://xxx');
+ * * demo2-2: add server group to client
+ * > dispatch('add-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
+ * * demo2-3: update server group of client
+ * > dispatch('update-server-group', { name: 'xxx', text: ['ss(r)://xxx'] } });
+ * * demo3: disconnect client from server
+ * > dispatch('disconnect-server');
+ * * demo4: send notifycation
+ * > dispatch('notifycation', {
+ *     message: 'xxx',
+ *     type: 'default', // type - 'default' | 'error' | 'success' | 'warning' | 'info'
+ *   });
+ */
 export const dispatch = (action: string, args: unknown) => {
   (global as any).win.webContents.send('event:stream', {
     action,
@@ -127,7 +127,7 @@ export class WorkflowBridge {
   async init() {
     // FIXME: types error
     const puppeteer = require('puppeteer-core') as any;
-    const browser = await pie.connect(app, puppeteer) as any;
+    const browser = (await pie.connect(app, puppeteer)) as any;
     this.browser = browser;
     this.context = {
       /* puppeteer - Use [headless browser] to produce data. */
@@ -141,7 +141,7 @@ export class WorkflowBridge {
         async loadBrowserPage(
           this: LoadBrowserPageContext,
           url: string,
-          options: BrowserWindowConstructorOptions
+          options: BrowserWindowConstructorOptions,
         ) {
           let timer: NodeJS.Timeout;
           const { $timeout, $abortCtrl } = this;
@@ -155,8 +155,11 @@ export class WorkflowBridge {
             }
           };
 
-          $abortCtrl && $abortCtrl.signal.addEventListener('abort', closeBrowser, { once: true })
-          if($timeout) {
+          $abortCtrl &&
+            $abortCtrl.signal.addEventListener('abort', closeBrowser, {
+              once: true,
+            });
+          if ($timeout) {
             timer = setTimeout(closeBrowser, $timeout);
           }
 

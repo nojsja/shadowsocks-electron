@@ -15,7 +15,11 @@ import _ from 'lodash';
 
 import { useTypedDispatch } from '@renderer/redux/actions';
 import { useTypedSelector } from '@renderer/redux/reducers';
-import { getStartupOnBoot, setSetting, setStartupOnBoot } from '@renderer/redux/actions/settings';
+import {
+  getStartupOnBoot,
+  setSetting,
+  setStartupOnBoot,
+} from '@renderer/redux/actions/settings';
 import { setStatus } from '@renderer/redux/actions/status';
 import { setAclUrl as setAclUrlAction } from '@renderer/redux/actions/settings';
 import { Message } from '@renderer/hooks/useNotifier';
@@ -47,22 +51,28 @@ import LoadBalance from './settings/LoadBalance';
 import UserPacEditor from './settings/UserPacEditor';
 import OpenPluginsDir from './settings/OpenPluginsDir';
 import GlobalPacEditor from './settings/GlobalPacEditor';
+import OpenAIAPIKey from './settings/OpenAIAPIKey';
 
-const ListSubheaderStyled = withStyles((theme: Theme) => createStyles({
-  root: {
-    backgroundColor: theme.palette.type === 'light' ? theme.palette.grey[100] : '#4e4e4e',
-    color: theme.palette.type === 'light' ? theme.palette.grey[700] : theme.palette.grey[400],
-    lineHeight: '24px',
-    top: '-12px',
-  },
-}))(ListSubheader);
-
+const ListSubheaderStyled = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      backgroundColor:
+        theme.palette.type === 'light' ? theme.palette.grey[100] : '#4e4e4e',
+      color:
+        theme.palette.type === 'light'
+          ? theme.palette.grey[700]
+          : theme.palette.grey[400],
+      lineHeight: '24px',
+      top: '-12px',
+    },
+  }),
+)(ListSubheader);
 
 const SettingsPage: React.FC = () => {
   const styles = useStyles();
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
-  const settings = useTypedSelector(state => state.settings);
+  const settings = useTypedSelector((state) => state.settings);
   const changedFields = useRef<{ [key: string]: any }>({});
   const form = useForm<Settings>({
     mode: 'onChange',
@@ -92,15 +102,25 @@ const SettingsPage: React.FC = () => {
     let needReconnectServer = false,
       needReconnectHttp = false,
       needReconnectPac = false;
-    const serverConditions = ['localPort', 'pacPort', 'verbose', 'acl', 'aclRules', 'pac'];
+    const serverConditions = [
+      'localPort',
+      'pacPort',
+      'verbose',
+      'acl',
+      'aclRules',
+      'pac',
+    ];
     const httpConditions = ['localPort', 'httpProxyPort', 'httpProxy'];
     const pacConditions = ['pacPort'];
     const settingsCondition = '$settings';
 
-    Object.keys(changedFields.current).forEach(key => {
-      if (serverConditions.includes(key) || key === settingsCondition) needReconnectServer = true;
-      if (httpConditions.includes(key) || key === settingsCondition) needReconnectHttp = true;
-      if (pacConditions.includes(key) || key === settingsCondition) needReconnectPac = true;
+    Object.keys(changedFields.current).forEach((key) => {
+      if (serverConditions.includes(key) || key === settingsCondition)
+        needReconnectServer = true;
+      if (httpConditions.includes(key) || key === settingsCondition)
+        needReconnectHttp = true;
+      if (pacConditions.includes(key) || key === settingsCondition)
+        needReconnectPac = true;
     });
 
     if (needReconnectServer) dispatchEvent('event:stream:reconnect-server');
@@ -110,32 +130,36 @@ const SettingsPage: React.FC = () => {
 
   const touchField = (field: string, status: boolean) => {
     changedFields.current[field] = status;
-  }
+  };
 
   const isFieldTouched = (field: string) => {
     return !!changedFields.current[field];
   };
 
   const setAclUrl = () => {
-    dispatch<any>(setAclUrlAction({
-      success: t('successful_operation'),
-      error: {
-        default: t('failed_operation'),
-        404: t('user_canceled')
-      }
-    }));
-  }
+    dispatch<any>(
+      setAclUrlAction({
+        success: t('successful_operation'),
+        error: {
+          default: t('failed_operation'),
+          404: t('user_canceled'),
+        },
+      }),
+    );
+  };
 
-  const reGeneratePacFile = (params: { url?: string, text?: string }) => {
+  const reGeneratePacFile = (params: { url?: string; text?: string }) => {
     dispatch<any>(setStatus('waiting', true));
     MessageChannel.invoke('main', 'service:main', {
       action: 'reGeneratePacFile',
       params: {
         ...params,
         settings,
-      }
+      },
     }).then((rsp) => {
-      setTimeout(() => { dispatch<any>(setStatus('waiting', false)); }, 1e3);
+      setTimeout(() => {
+        dispatch<any>(setStatus('waiting', false));
+      }, 1e3);
       if (rsp.code === 200) {
         touchField('pac', true);
         Message.success(t('successful_operation'));
@@ -143,55 +167,60 @@ const SettingsPage: React.FC = () => {
         Message.error(t('failed_to_download_file'));
       }
     });
-  }
+  };
 
-  const onAutoThemeChange = (e: React.ChangeEvent<{ name?: string | undefined, checked: boolean; }>) => {
+  const onAutoThemeChange = (
+    e: React.ChangeEvent<{ name?: string | undefined; checked: boolean }>,
+  ) => {
     const checked = e.target.checked;
     MessageChannel.invoke('main', 'service:theme', {
       action: checked ? 'listenForUpdate' : 'unlistenForUpdate',
-      params: {}
-    }).then(rsp => {
+      params: {},
+    }).then((rsp) => {
       if (rsp.code === 200) {
         persistStore.set('autoTheme', checked ? 'true' : 'false');
       }
     });
     MessageChannel.invoke('main', 'service:theme', {
       action: 'getSystemThemeInfo',
-      params: {}
-    })
-      .then(rsp => {
-        if (rsp.code === 200) {
-          dispatchEvent({
-            type: 'theme:update',
-            payload: rsp.result
-          });
-          if (!checked) {
-            form.setValue('darkMode', rsp.result?.shouldUseDarkColors);
-          }
+      params: {},
+    }).then((rsp) => {
+      if (rsp.code === 200) {
+        dispatchEvent({
+          type: 'theme:update',
+          payload: rsp.result,
+        });
+        if (!checked) {
+          form.setValue('darkMode', rsp.result?.shouldUseDarkColors);
         }
-      });
-  }
+      }
+    });
+  };
 
   const onFieldChange = (value: any, key: keyof Settings) => {
     if (!key) return;
     let httpProxy, loadBalance, acl;
 
-    changedFields.current = Object.assign(changedFields.current || {}, { [key]: value });
+    changedFields.current = Object.assign(changedFields.current || {}, {
+      [key]: value,
+    });
 
     form.trigger(key).then((success) => {
       if (success) {
         switch (key) {
           case 'httpProxy':
             httpProxy = form.getValues('httpProxy');
-            dispatch(setSetting<'httpProxy'>(key, httpProxy))
+            dispatch(setSetting<'httpProxy'>(key, httpProxy));
             return;
           case 'loadBalance':
             loadBalance = form.getValues('loadBalance');
-            dispatch(setSetting<'loadBalance'>(key, {
-              strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
-              count: loadBalance?.count ?? 3,
-              enable: loadBalance?.enable ?? false,
-            }));
+            dispatch(
+              setSetting<'loadBalance'>(key, {
+                strategy: loadBalance?.strategy ?? ALGORITHM.POLLING,
+                count: loadBalance?.count ?? 3,
+                enable: loadBalance?.enable ?? false,
+              }),
+            );
             return;
           case 'acl':
             acl = form.getValues('acl');
@@ -203,7 +232,7 @@ const SettingsPage: React.FC = () => {
           case 'darkMode':
             dispatchEvent({
               type: 'theme:update',
-              payload: { shouldUseDarkColors: value }
+              payload: { shouldUseDarkColors: value },
             });
             break;
           default:
@@ -243,8 +272,8 @@ const SettingsPage: React.FC = () => {
       dispatchEvent({
         type: 'theme:update',
         payload: {
-          shouldUseDarkColors: !!settings.darkMode
-        }
+          shouldUseDarkColors: !!settings.darkMode,
+        },
       });
     }
   }, [settings.darkMode]);
@@ -262,12 +291,8 @@ const SettingsPage: React.FC = () => {
   return (
     <Container className={styles.container}>
       <form className={styles.form}>
-        <LocalPort
-          form={form}
-        />
-        <PacPort
-          form={form}
-        />
+        <LocalPort form={form} />
+        <PacPort form={form} />
         <GfwListUrl
           form={form}
           reGeneratePacFile={reGeneratePacFile}
@@ -275,17 +300,21 @@ const SettingsPage: React.FC = () => {
         />
         <List className={styles.list}>
           <ListSubheaderStyled>➤ {t('proxy_settings')}</ListSubheaderStyled>
-          <HttpProxy
-            form={form}
-          />
+          <HttpProxy form={form} />
           <Acl
             setAclUrl={setAclUrl}
             touchField={touchField}
             isFieldTouched={isFieldTouched}
             form={form}
           />
-          <UserPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
-          <GlobalPacEditor touchField={touchField} isFieldTouched={isFieldTouched} />
+          <UserPacEditor
+            touchField={touchField}
+            isFieldTouched={isFieldTouched}
+          />
+          <GlobalPacEditor
+            touchField={touchField}
+            isFieldTouched={isFieldTouched}
+          />
 
           <ListSubheaderStyled>➤ {t('basic_settings')}</ListSubheaderStyled>
 
@@ -301,9 +330,8 @@ const SettingsPage: React.FC = () => {
 
           <ListSubheaderStyled>➤ {t('experimental')}</ListSubheaderStyled>
 
-          <LoadBalance
-            form={form}
-          />
+          <LoadBalance form={form} />
+          <OpenAIAPIKey form={form} />
 
           <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
 
@@ -313,7 +341,7 @@ const SettingsPage: React.FC = () => {
           <OpenProcessManager />
         </List>
       </form>
-      <StatusBar/>
+      <StatusBar />
     </Container>
   );
 };

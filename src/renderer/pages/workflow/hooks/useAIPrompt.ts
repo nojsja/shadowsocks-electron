@@ -26,8 +26,8 @@ const getRandomKey = (keys: string[]) => {
 
 export const useAIPrompt = () => {
   const lastMessageID = useRef(null);
-  const { openApiKey } = useTypedSelector((state) => state.settings);
-  const apiKeys = openApiKey ? openApiKey.split(',') : [];
+  const { openAIAPIKey } = useTypedSelector((state) => state.settings);
+  const apiKeys = openAIAPIKey ? openAIAPIKey.split(',') : [];
   const hasKey = apiKeys.length;
 
   const { data: prompts = [] } = useRequest<SystemPromps[]>(() => {

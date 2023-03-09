@@ -16,7 +16,7 @@
  */
 
 /**
- * @name loadBrowserPage [load web pages with puppeteer-in-electron2]
+ * @name loadBrowserPage [load web pages with puppeteer-in-electron]
  * @param {string} url [web page url you want visit in].
  * @param {object} options [options to create Electron BrowserWindow]
  * @param {boolean} options.show [show browser window, optional, default true]

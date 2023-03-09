@@ -4,8 +4,9 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  TextField
-} from "@material-ui/core";
+  TextField,
+} from '@material-ui/core';
+import { Controller, UseFormReturn } from 'react-hook-form';
 
 import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
@@ -13,7 +14,6 @@ import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import { useStylesOfSettings as useStyles } from '../styles';
 import If from '../../components/HOC/IF';
 import { Settings } from '../../types';
-import { Controller, UseFormReturn } from 'react-hook-form';
 
 const MAX_PORT = 65535;
 const MIN_PORT = 1024;
@@ -22,14 +22,14 @@ interface HttpProxyProps {
   form: UseFormReturn<Settings>;
 }
 
-const HttpProxy: React.FC<HttpProxyProps> = ({
-  form,
-}) => {
+const HttpProxy: React.FC<HttpProxyProps> = ({ form }) => {
   const { t } = useTranslation();
   const styles = useStyles();
   const enable = form.watch('httpProxy.enable');
   const port = form.watch('httpProxy.port');
-  const { formState: { errors } } = form;
+  const {
+    formState: { errors },
+  } = form;
 
   useEffect(() => {
     if (port <= 0) {
@@ -40,7 +40,6 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
     }
   }, [port]);
 
-
   return (
     <>
       <ListItem>
@@ -48,9 +47,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
           primary={
             <TextWithTooltip
               text={t('http_proxy')}
-              tooltip={
-                t('restart_when_changed')
-              }
+              tooltip={t('restart_when_changed')}
             />
           }
         />
@@ -59,11 +56,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
             control={form.control}
             name="httpProxy.enable"
             render={({ field: { value, ...other } }) => (
-              <AdaptiveSwitch
-                {...other}
-                checked={value ?? false}
-                edge="end"
-              />
+              <AdaptiveSwitch {...other} checked={value ?? false} edge="end" />
             )}
           />
         </ListItemSecondaryAction>
@@ -72,28 +65,32 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
         condition={enable}
         then={
           <ListItem className={styles.listItemSub}>
-            <ListItemText
-              primary={`└── ${t('http_proxy_port')}`}
-            />
+            <ListItemText primary={`└── ${t('http_proxy_port')}`} />
             <ListItemSecondaryAction>
               <TextField
                 className={`${styles.textField} ${styles.indentInput}`}
-                {
-                  ...form.register('httpProxy.port', {
-                    min: 1024,
-                    max: 65535,
-                    validate: (value, record) => {
-                      const httpPort = +value;
-                      const pacPort = +record.pacPort;
-                      const localPort = +record.localPort;
-                      const num = localPort ^ pacPort ^ httpPort;
-                      return (num !== localPort && num !== pacPort && num !== httpPort) || t('the_same_port_is_not_allowed');
-                    },
-                  })
-                }
+                {...form.register('httpProxy.port', {
+                  min: 1024,
+                  max: 65535,
+                  validate: (value, record) => {
+                    const httpPort = +value;
+                    const pacPort = +record.pacPort;
+                    const localPort = +record.localPort;
+                    const num = localPort ^ pacPort ^ httpPort;
+                    return (
+                      (num !== localPort &&
+                        num !== pacPort &&
+                        num !== httpPort) ||
+                      t('the_same_port_is_not_allowed')
+                    );
+                  },
+                })}
                 required
                 error={!!errors.httpProxy?.port}
-                helperText={!!errors.httpProxy?.port && ( errors.httpProxy?.port?.message || t('invalid_value'))}
+                helperText={
+                  !!errors.httpProxy?.port &&
+                  (errors.httpProxy?.port?.message || t('invalid_value'))
+                }
                 size="small"
                 type="number"
                 placeholder={t('http_proxy_port')}
@@ -103,7 +100,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({
         }
       />
     </>
-  )
-}
+  );
+};
 
 export default HttpProxy;
