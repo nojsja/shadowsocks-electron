@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@material-ui/pickers": "^3.3.x",
-    "@nojsja/crt-terminal": "^1.0.14",
+    "@nojsja/crt-terminal": "^1.0.16",
     "@sentry/electron": "^4.2.0",
     "@types/lodash": "^4.14.191",
     "classnames": "^2.3.2",

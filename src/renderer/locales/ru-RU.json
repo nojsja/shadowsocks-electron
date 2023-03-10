@@ -156,7 +156,7 @@
   "langZhong": "中文",
   "langRussian": "Русский",
   "open_ai_api_key": "AI API Key",
-  "open_ai_api_key_tips": "AI API Key(s), multiple keys are separated by commas, such as xxxxxxx,ddddddd",
+  "open_ai_api_key_tips": "Open AI API Key(s), multiple keys are separated by commas, such as xxxxxxx,ddddddd",
   "open_ai_api_key_tips_short": "xxxxxxx,ddddddd,zzzzzzz",
   "workflow": "Рабочий процесс",
   "open_terminal": "Открыть терминал",
