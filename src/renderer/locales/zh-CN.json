@@ -67,6 +67,7 @@
   "http_proxy": "http 代理",
   "https_proxy": "https 代理",
   "http_proxy_port": "代理端口",
+  "proxy_for_open_ai": "开启 Open AI 代理",
   "restart_when_changed": "修改后回到主页时会自动重启相关服务",
   "restart_pac_tips": "修改后回到主页时会自动重启PAC服务，某些浏览器需要手动重启后PAC规则才能生效",
   "customize_global_pac_tips": "使用 'GFWList URL' 重新生成 PAC 文件时会导致全局规则被覆盖，建议优先尝试定制用户规则",

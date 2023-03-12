@@ -8,6 +8,7 @@ import { i18n } from '@main/i18n';
 import { InnerCallback } from '@main/type';
 
 import checkPortInUse from './helpers/port-checker';
+import { appEventCenter } from '@main/event';
 
 const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -30,7 +31,7 @@ interface AgentProps {
   authentication: {
     username: string | '' | undefined;
     password: string | '' | undefined;
-  }
+  };
 }
 
 interface SocksProps {
@@ -40,7 +41,11 @@ interface SocksProps {
   socksPort: number;
 }
 
-interface HttpProxyParams { port: number, host: string, proxyPort: number }
+interface HttpProxyParams {
+  port: number;
+  host: string;
+  proxyPort: number;
+}
 
 /**
  * @class HttpProxyServer
@@ -48,31 +53,32 @@ interface HttpProxyParams { port: number, host: string, proxyPort: number }
  * @description HttpProxyServer based on tunnel
  */
 export class HttpProxyServer extends EventEmitter {
-  socksConf: SocksProps
-  agentConf: AgentProps
-  http: http.Server | null
+  socksConf: SocksProps;
+  agentConf: AgentProps;
+  http: http.Server | null;
 
   /* Start Https Proxy server */
   static createHttpServer(options: HttpProxyParams, callback: InnerCallback) {
     const { port, host, proxyPort } = options;
 
-    checkPortInUse([port], host).then(results => {
-      if (results[0].isInUse) {
-        return callback(new Error(`${i18n.t('port_already_used')} ${port}`));
-      }
-      console.log('Start http proxy server...');
-      httpServer = new HttpProxyServer({
-        socksHost: '127.0.0.1',
-        socksPort: proxyPort,
-        listenHost: host,
-        listenPort: port,
+    checkPortInUse([port], host)
+      .then((results) => {
+        if (results[0].isInUse) {
+          return callback(new Error(`${i18n.t('port_already_used')} ${port}`));
+        }
+        console.log('Start http proxy server...');
+        httpServer = new HttpProxyServer({
+          socksHost: '127.0.0.1',
+          socksPort: proxyPort,
+          listenHost: host,
+          listenPort: port,
+        });
+        httpServer.start();
+        callback(null);
+      })
+      .catch((error) => {
+        callback(error);
       });
-      httpServer.start();
-      callback(null);
-    })
-    .catch(error => {
-      callback(error);
-    });
   }
 
   /* Stop Https Server */
@@ -83,7 +89,6 @@ export class HttpProxyServer extends EventEmitter {
     callback && callback(null);
   }
 
-
   constructor(props: ProxyProps) {
     super();
     const socksConf: SocksProps = {
@@ -91,7 +96,7 @@ export class HttpProxyServer extends EventEmitter {
       listenPort: 1095,
       socksHost: '127.0.0.1',
       socksPort: 1080,
-      ...props
+      ...props,
     };
 
     const agentConf: AgentProps = {
@@ -100,8 +105,8 @@ export class HttpProxyServer extends EventEmitter {
       type: 5,
       authentication: {
         username: props.authname ?? '',
-        password: props.authsecret ?? ''
-      }
+        password: props.authsecret ?? '',
+      },
     };
 
     this.socksConf = socksConf;
@@ -112,15 +117,19 @@ export class HttpProxyServer extends EventEmitter {
   }
 
   /**
-    * connect [HTTP CONNECT method for https proxy]
-    * @author nojsja
-    * @param  {http.IncomingMessage} request [request]
-    * @param  {Duplex} cSocket [cSocket]
-    * @param  {Buffer} head [head]
-    * @return {void}
-    */
-  private connect = (request: http.IncomingMessage, cSocket: Duplex, head: Buffer) => {
-    const u = url.parse('http://' + request.url)
+   * connect [HTTP CONNECT method for https proxy]
+   * @author nojsja
+   * @param  {http.IncomingMessage} request [request]
+   * @param  {Duplex} cSocket [cSocket]
+   * @param  {Buffer} head [head]
+   * @return {void}
+   */
+  private connect = (
+    request: http.IncomingMessage,
+    cSocket: Duplex,
+    head: Buffer,
+  ) => {
+    const u = url.parse('http://' + request.url);
     console.log('connect: ', request.url);
     const { agentConf } = this;
     const options = {
@@ -137,7 +146,9 @@ export class HttpProxyServer extends EventEmitter {
     // the entire process: https-client <--(tcp)--> sockets-client <--(tcp)--> sockets-server <--(tcp)--> https-server
     socks.createConnection(options, (error: Error | null, pSocket: Duplex) => {
       if (error) {
-        cSocket.write(`HTTP/${request.httpVersion} 500 Connection error\r\n\r\n`);
+        cSocket.write(
+          `HTTP/${request.httpVersion} 500 Connection error\r\n\r\n`,
+        );
         return;
       }
       pSocket.on('error', (err) => {
@@ -146,20 +157,22 @@ export class HttpProxyServer extends EventEmitter {
       pSocket.pipe(cSocket);
       cSocket.pipe(pSocket);
       pSocket.write(head);
-      cSocket.write(`HTTP/${request.httpVersion} 200 Connection established\r\n\r\n`)
+      cSocket.write(
+        `HTTP/${request.httpVersion} 200 Connection established\r\n\r\n`,
+      );
       pSocket.resume();
     });
-  }
+  };
 
   /**
-    * request [HTTP request method for http proxy]
-    * @author nojsja
-    * @param  {http.IncomingMessage} req [request]
-    * @param  {http.ServerResponse} res [response]
-    * @return {void}
-    */
+   * request [HTTP request method for http proxy]
+   * @author nojsja
+   * @param  {http.IncomingMessage} req [request]
+   * @param  {http.ServerResponse} res [response]
+   * @return {void}
+   */
   private request = (req: http.IncomingMessage, res: http.ServerResponse) => {
-    const u = url.parse(req.url || '')
+    const u = url.parse(req.url || '');
     console.log('request: ', req.url);
 
     // proxy get http-client request and send new http request to http-server with socks5-agent (carry old http request info),
@@ -174,23 +187,23 @@ export class HttpProxyServer extends EventEmitter {
       // agent: new socks5.HttpAgent({...socksConfig, proxyPort: 1079 })
       agent: new socks.Agent({
         proxy: this.agentConf,
-        target: { host: u.host, port: u.port }
-      })
+        target: { host: u.host, port: u.port },
+      }),
     });
 
     pRequest
-    .on('response', (pRes: http.ServerResponse) => {
-      res.writeHead(pRes.statusCode, (pRes as any).headers);
-      pRes.pipe(res);
-    })
-    .on('error', () => {
-      res.writeHead(500);
-      res.end('Connection error\n')
-      res.end();
-    });
+      .on('response', (pRes: http.ServerResponse) => {
+        res.writeHead(pRes.statusCode, (pRes as any).headers);
+        pRes.pipe(res);
+      })
+      .on('error', () => {
+        res.writeHead(500);
+        res.end('Connection error\n');
+        res.end();
+      });
 
     req.pipe(pRequest);
-  }
+  };
 
   private error(error: Error | null) {
     console.log(error);
@@ -205,6 +218,10 @@ export class HttpProxyServer extends EventEmitter {
         .on('request', this.request)
         .on('error', this.error)
         .listen(this.socksConf.listenPort, this.socksConf.listenHost);
+      appEventCenter.emit('http-proxy:start', {
+        host: this.socksConf.listenHost,
+        port: this.socksConf.listenPort,
+      });
     }
   }
 
@@ -212,6 +229,7 @@ export class HttpProxyServer extends EventEmitter {
     try {
       this?.http?.close();
       this.http = null;
+      appEventCenter.emit('http-proxy:stop');
     } catch (error) {
       console.log(error);
     }

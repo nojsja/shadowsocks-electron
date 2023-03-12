@@ -34,6 +34,7 @@ const defaultStore: RootState = {
     httpProxy: {
       enable: false,
       port: 1095,
+      enableAIProxy: true,
     },
     gfwListUrl:
       'https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt',

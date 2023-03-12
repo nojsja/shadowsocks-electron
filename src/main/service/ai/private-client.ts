@@ -6,7 +6,11 @@ import { pathRuntime } from '@main/config';
 import { AIStore } from '@main/dao';
 import { fetchWithProxy } from './utils';
 
-const fetch = fetchWithProxy('127.0.0.1', 1095);
+const fetch = fetchWithProxy({
+  proxyHost: '127.0.0.1',
+  proxyPort: 1095,
+  enable: true,
+});
 
 interface Props {
   maxPoolSize?: number;

@@ -1,6 +1,8 @@
 import fetch, { RequestInfo, RequestInit } from 'node-fetch';
-import { decrypt } from '@main/helpers/encryptor';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+
+import { decrypt } from '@main/helpers/encryptor';
+import { appEventCenter } from '@main/event';
 
 export function getApiKeys() {
   if (process.env.OPENAI_API_KEY) {
@@ -15,18 +17,34 @@ export function getApiKeys() {
   return keysStr.split(',');
 }
 
-export function fetchWithProxy(
-  proxyHost: string,
-  proxyPort: number,
+interface FetchWithProxyProps {
+  enable: boolean;
+  proxyHost: string;
+  proxyPort: number;
+  protocol?: 'http';
+}
+
+export function fetchWithProxy({
+  enable = false,
+  proxyHost,
+  proxyPort,
   protocol = 'http',
-) {
+}: FetchWithProxyProps) {
   const proxyAgent = new HttpsProxyAgent(
     `${protocol}://${proxyHost}:${proxyPort}`,
   );
 
+  appEventCenter.on('http-proxy:start', () => {
+    console.log('http:start');
+  });
+
+  appEventCenter.on('http-proxy:stop', () => {
+    console.log('http:stop');
+  });
+
   return (url: RequestInfo, init?: RequestInit | undefined) =>
     fetch(url, {
-      agent: proxyAgent,
+      agent: enable ? proxyAgent : undefined,
       ...(init ?? {}),
     });
 }

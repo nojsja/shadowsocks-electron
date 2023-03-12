@@ -65,7 +65,7 @@ const HttpProxy: React.FC<HttpProxyProps> = ({ form }) => {
         condition={enable}
         then={
           <ListItem className={styles.listItemSub}>
-            <ListItemText primary={`└── ${t('http_proxy_port')}`} />
+            <ListItemText primary={`├── ${t('http_proxy_port')}`} />
             <ListItemSecondaryAction>
               <TextField
                 className={`${styles.textField} ${styles.indentInput}`}
@@ -94,6 +94,27 @@ const HttpProxy: React.FC<HttpProxyProps> = ({ form }) => {
                 size="small"
                 type="number"
                 placeholder={t('http_proxy_port')}
+              />
+            </ListItemSecondaryAction>
+          </ListItem>
+        }
+      />
+      <If
+        condition={enable}
+        then={
+          <ListItem className={styles.listItemSub}>
+            <ListItemText primary={`└── ${t('proxy_for_open_ai')}`} />
+            <ListItemSecondaryAction>
+              <Controller
+                control={form.control}
+                name="httpProxy.enableAIProxy"
+                render={({ field: { value, ...other } }) => (
+                  <AdaptiveSwitch
+                    {...other}
+                    checked={value ?? false}
+                    edge="end"
+                  />
+                )}
               />
             </ListItemSecondaryAction>
           </ListItem>

@@ -170,6 +170,7 @@ export interface Settings {
   httpProxy: {
     enable: boolean;
     port: number;
+    enableAIProxy: boolean;
   };
   acl: ACL;
   gfwListUrl: string;
