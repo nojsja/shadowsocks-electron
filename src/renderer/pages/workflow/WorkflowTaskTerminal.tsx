@@ -7,6 +7,7 @@ import {
   commandWord,
 } from '@nojsja/crt-terminal';
 import { createStyles, DialogContent, makeStyles } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
 import {
@@ -101,6 +102,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   const { print, clear } = eventQueue.handlers;
   const { get, wipe, registry, unregistry } = useTerminalVisitor();
   const isFirstAskAI = useRef(true);
+  const { t } = useTranslation();
 
   const onCommand = (command: string) => {
     const [commandName, options] = prompt.parse(command);
@@ -178,17 +180,15 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
                       ? [
                           textWord({
                             className: `${styles.text} info`,
-                            characters:
-                              'For best speed and stability, add your private openAI key(s) in settings.',
+                            characters: t('open_ai_use_private_key_tips'),
                           }),
                         ]
                       : []),
-                    ...(!httpProxy?.enable
+                    ...(!httpProxy?.enable || !httpProxy?.enableAIProxy
                       ? [
                           textWord({
                             className: `${styles.text} warn`,
-                            characters:
-                              'In some countries with internet restrictions, maybe you should enable http(s) proxy in settings to access openAI service.',
+                            characters: t('open_ai_enable_proxy_tips'),
                           }),
                         ]
                       : []),

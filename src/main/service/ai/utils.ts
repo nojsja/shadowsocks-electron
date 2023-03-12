@@ -17,34 +17,47 @@ export function getApiKeys() {
   return keysStr.split(',');
 }
 
-interface FetchWithProxyProps {
-  enable: boolean;
-  proxyHost: string;
-  proxyPort: number;
-  protocol?: 'http';
-}
+export function fetchWithProxy() {
+  let proxyAgent: HttpsProxyAgent | undefined;
 
-export function fetchWithProxy({
-  enable = false,
-  proxyHost,
-  proxyPort,
-  protocol = 'http',
-}: FetchWithProxyProps) {
-  const proxyAgent = new HttpsProxyAgent(
-    `${protocol}://${proxyHost}:${proxyPort}`,
-  );
+  appEventCenter.on('http-proxy:start', ({ host, port }) => {
+    const appSettings = appEventCenter.getStoreData('settings');
+    const { enableAIProxy = false, enable = false } =
+      appSettings?.httpProxy ?? {};
 
-  appEventCenter.on('http-proxy:start', () => {
-    console.log('http:start');
+    if (enableAIProxy && enable) {
+      proxyAgent = new HttpsProxyAgent({
+        protocol: 'http',
+        host,
+        port,
+      });
+    } else {
+      proxyAgent = undefined;
+    }
   });
 
   appEventCenter.on('http-proxy:stop', () => {
-    console.log('http:stop');
+    proxyAgent = undefined;
+  });
+
+  appEventCenter.on('service:ai:proxy-status', ({ enabled }) => {
+    if (!enabled) {
+      proxyAgent = undefined;
+      return;
+    }
+    const appSettings = appEventCenter.getStoreData('settings');
+    const { port } = appSettings?.httpProxy ?? {};
+
+    proxyAgent = new HttpsProxyAgent({
+      protocol: 'http',
+      host: '127.0.0.1',
+      port,
+    });
   });
 
   return (url: RequestInfo, init?: RequestInit | undefined) =>
     fetch(url, {
-      agent: enable ? proxyAgent : undefined,
+      agent: proxyAgent,
       ...(init ?? {}),
     });
 }

@@ -2,6 +2,7 @@ import { IpcMain } from 'electron';
 import { AIService as AIServiceType } from '@main/type';
 import { catcher } from '@common/utils';
 import { AIConversation, SendMessageOptions } from './conversation';
+import { appEventCenter } from '@main/event';
 
 export class AIService implements AIServiceType {
   ipc: IpcMain;
@@ -10,6 +11,11 @@ export class AIService implements AIServiceType {
   constructor(ipc: IpcMain) {
     this.ipc = ipc;
     this.conversation = new AIConversation();
+  }
+
+  async setAIProxy(params: { enabled: boolean }) {
+    const { enabled } = params;
+    appEventCenter.emit('service:ai:proxy-status', { enabled });
   }
 
   async getSystemPrompts() {

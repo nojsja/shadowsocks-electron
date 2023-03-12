@@ -160,6 +160,8 @@
   "open_ai_api_key": "AI 密钥",
   "open_ai_api_key_tips": "Open AI 密钥，多个密钥之间使用英文逗号隔开，如：xxxxxxx,ddddddd",
   "open_ai_api_key_tips_short": "xxxxxxx,ddddddd,zzzzzzz",
+  "open_ai_use_private_key_tips": "为了更好的速度和稳定性，你可以在设置中添加 Open AI 个人密钥(Key).",
+  "open_ai_enable_proxy_tips": "在一些受网络限制的国家，可能需要在设置中开启 Open AI 服务代理.",
   "open_terminal": "打开终端",
   "source_task": "源任务",
   "processor_task": "处理器任务",

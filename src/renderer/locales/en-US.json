@@ -159,6 +159,8 @@
   "open_ai_api_key": "AI API Key",
   "open_ai_api_key_tips": " OpenAI API Key(s), multiple keys are separated by commas, such as xxxxxxx,ddddddd",
   "open_ai_api_key_tips_short": "xxxxxxx,ddddddd,zzzzzzz",
+  "open_ai_use_private_key_tips": "For best speed and stability, add your private openAI key(s) in settings.",
+  "open_ai_enable_proxy_tips": "In some countries with internet restrictions, maybe you should enable http(s) proxy in settings to access openAI service.",
   "workflow": "Workflow",
   "open_terminal": "Open Terminal",
   "source_task": "Source Task",

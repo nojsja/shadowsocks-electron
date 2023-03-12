@@ -7,13 +7,14 @@ import {
   TextField,
 } from '@material-ui/core';
 import { Controller, UseFormReturn } from 'react-hook-form';
+import { MessageChannel } from 'electron-re';
 
-import { AdaptiveSwitch } from '../../components/Pices/Switch';
-import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
+import { AdaptiveSwitch } from '@renderer/components/Pices/Switch';
+import { TextWithTooltip } from '@renderer/components/Pices/TextWithTooltip';
 
-import { useStylesOfSettings as useStyles } from '../styles';
-import If from '../../components/HOC/IF';
-import { Settings } from '../../types';
+import { useStylesOfSettings as useStyles } from '@renderer/pages/styles';
+import If from '@renderer/components/HOC/IF';
+import { Settings } from '@renderer/types';
 
 const MAX_PORT = 65535;
 const MIN_PORT = 1024;
@@ -30,6 +31,16 @@ const HttpProxy: React.FC<HttpProxyProps> = ({ form }) => {
   const {
     formState: { errors },
   } = form;
+
+  const onEnableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target;
+    MessageChannel.invoke('main', 'service:ai', {
+      action: 'setAIProxy',
+      params: {
+        enabled: checked,
+      },
+    });
+  };
 
   useEffect(() => {
     if (port <= 0) {
@@ -108,10 +119,14 @@ const HttpProxy: React.FC<HttpProxyProps> = ({ form }) => {
               <Controller
                 control={form.control}
                 name="httpProxy.enableAIProxy"
-                render={({ field: { value, ...other } }) => (
+                render={({ field: { value, onChange, ...other } }) => (
                   <AdaptiveSwitch
                     {...other}
                     checked={value ?? false}
+                    onChange={(e) => {
+                      onEnableChange(e);
+                      onChange(e);
+                    }}
                     edge="end"
                   />
                 )}
