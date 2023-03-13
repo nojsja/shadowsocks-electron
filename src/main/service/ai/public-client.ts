@@ -6,7 +6,7 @@ import { pathRuntime } from '@main/config';
 import { CHATGPT_CONSTANTS } from './constants';
 import { fetchWithProxy } from './utils';
 
-const fetch = fetchWithProxy('127.0.0.1', 1095);
+const fetch = fetchWithProxy();
 
 interface ClientInfo {
   client: ChatGPTAPI;
