@@ -315,6 +315,10 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       <DialogContent className={styles.crtTerminalWrapper}>
         <Terminal
           queue={eventQueue}
+          effects={{
+            textEffects: false,
+            pixels: true,
+          }}
           maxHistoryCommands={CONSOLE_BUFFER_SIZE}
           printer={{
             printerSpeed: 8,
