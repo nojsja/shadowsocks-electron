@@ -1,8 +1,9 @@
 import { IpcMain } from 'electron';
 import { AIService as AIServiceType } from '@main/type';
 import { catcher } from '@common/utils';
-import { AIConversation, SendMessageOptions } from './conversation';
 import { appEventCenter } from '@main/event';
+
+import { AIConversation, SendMessageOptions } from './conversation';
 
 export class AIService implements AIServiceType {
   ipc: IpcMain;
