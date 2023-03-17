@@ -34,6 +34,8 @@ module.exports = {
     copy({
       targets: [
         { src: './src/main/test/', dest: 'public/' },
+        { src: './src/main/helpers/entryptor/main.wasm', dest: 'public/' },
+        { src: './src/main/helpers/entryptor/wasm_exec.js', dest: 'public/' }
       ]
     })
   ],

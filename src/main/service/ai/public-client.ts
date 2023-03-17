@@ -4,7 +4,7 @@ import { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
 import { AIStore } from '@main/dao';
 import { pathRuntime } from '@main/config';
 import { CHATGPT_CONSTANTS } from './constants';
-import { fetchWithProxy } from './utils';
+import { fetchWithProxy, getApiKeys } from './utils';
 
 const fetch = fetchWithProxy();
 
@@ -28,7 +28,8 @@ export class PublicAIClient {
       dirPath: path.join(pathRuntime, 'ai'),
     });
 
-    CHATGPT_CONSTANTS.apiKeys.forEach((key) => {
+    const apiKeys = await getApiKeys();
+    apiKeys.forEach((key) => {
       const client = new ChatGPTAPI({
         apiKey: key,
         debug: true,
