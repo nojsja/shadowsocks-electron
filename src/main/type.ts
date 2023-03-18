@@ -1,14 +1,23 @@
 import { SendMessageOptions } from 'chatgpt';
 import {
-  MenuItemConstructorOptions, BrowserWindow, IpcMain as _IpcMain,
-  Tray, MenuItem, Menu,
+  MenuItemConstructorOptions,
+  BrowserWindow,
+  IpcMain as _IpcMain,
+  Tray,
+  MenuItem,
+  Menu,
 } from 'electron';
 
 import CONSTS from './core/LoadBalancer/consts';
 import { WorkflowTaskOptions } from './core/workflow/types';
 // import { AIConversation } from './service/ai/conversation';
 
-export type WorkflowTaskType = 'puppeteer-source' | 'crawler-source' | 'node-source' | 'processor-pipe' | 'effect-pipe';
+export type WorkflowTaskType =
+  | 'puppeteer-source'
+  | 'crawler-source'
+  | 'node-source'
+  | 'processor-pipe'
+  | 'effect-pipe';
 export type WorkflowRunnerStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskStatus = 'idle' | 'running' | 'success' | 'failed';
 export type WorkflowTaskTimerType = 'schedule' | 'timer';
@@ -38,27 +47,27 @@ export interface WorkflowRunner {
 }
 
 export const encryptMethods = [
-  "none",
-  "aes-128-gcm",
-  "aes-192-gcm",
-  "aes-256-gcm",
-  "rc4",
-  "rc4-md5",
-  "aes-128-cfb",
-  "aes-192-cfb",
-  "aes-256-cfb",
-  "aes-128-ctr",
-  "aes-192-ctr",
-  "aes-256-ctr",
-  "bf-cfb",
-  "camellia-128-cfb",
-  "camellia-192-cfb",
-  "camellia-256-cfb",
-  "chacha20-ietf-poly1305",
-  "xchacha20-ietf-poly1305",
-  "salsa20",
-  "chacha20",
-  "chacha20-ietf"
+  'none',
+  'aes-128-gcm',
+  'aes-192-gcm',
+  'aes-256-gcm',
+  'rc4',
+  'rc4-md5',
+  'aes-128-cfb',
+  'aes-192-cfb',
+  'aes-256-cfb',
+  'aes-128-ctr',
+  'aes-192-ctr',
+  'aes-256-ctr',
+  'bf-cfb',
+  'camellia-128-cfb',
+  'camellia-192-cfb',
+  'camellia-256-cfb',
+  'chacha20-ietf-poly1305',
+  'xchacha20-ietf-poly1305',
+  'salsa20',
+  'chacha20',
+  'chacha20-ietf',
 ] as const;
 
 export interface Settings {
@@ -68,24 +77,24 @@ export interface Settings {
   localPort: number;
   pacPort: number;
   httpProxy: {
-    enable: boolean,
-    port: number
-  },
+    enable: boolean;
+    port: number;
+  };
   loadBalance: {
-    enable: boolean,
-    count: number,
-    strategy: CONSTS
-  },
+    enable: boolean;
+    count: number;
+    strategy: CONSTS;
+  };
   acl: {
-    enable: boolean,
-    url: string
-  }
+    enable: boolean;
+    url: string;
+  };
   gfwListUrl: string;
   autoLaunch: boolean;
 }
 
 export type Encryption = typeof encryptMethods[number];
-export type Mode = "PAC" | "Global" | "Manual";
+export type Mode = 'PAC' | 'Global' | 'Manual';
 
 export interface Status {
   connected: boolean;
@@ -94,17 +103,17 @@ export interface Status {
 }
 
 export interface Service {
-  ipc: IpcMain
+  ipc: IpcMain;
 }
 
 export interface TransparentWindowType {
-  icon: string
-  url: string
-  win: null | BrowserWindow
-  width: number
-  height: number
-  create: (params: { fillRect: RectPoint[] }) => Promise<any>
-  destroy: () => void
+  icon: string;
+  url: string;
+  win: null | BrowserWindow;
+  width: number;
+  height: number;
+  create: (params: { fillRect: RectPoint[] }) => Promise<any>;
+  destroy: () => void;
 }
 
 export interface IpcMainWindowType {
@@ -113,7 +122,7 @@ export interface IpcMainWindowType {
   icon: string;
   trayIcon: string;
   trayMenu: Menu | null;
-  menus: (MenuItem| MenuItemConstructorOptions)[];
+  menus: (MenuItem | MenuItemConstructorOptions)[];
   width: number;
   height: number;
   url: string;
@@ -130,15 +139,21 @@ export interface IpcMainWindowType {
 }
 
 export type ServiceResult = {
-  code: number,
-  result: any
+  code: number;
+  result: any;
 };
 
 export interface MainService extends Service {
   isConnected: () => Promise<ServiceResult>;
-  startClient: (params: { config: Config, settings: Settings }) => Promise<ServiceResult>;
+  startClient: (params: {
+    config: Config;
+    settings: Settings;
+  }) => Promise<ServiceResult>;
   stopClient: () => Promise<ServiceResult>;
-  startCluster: (params: { configs: Config[], settings: Settings }) => Promise<ServiceResult>;
+  startCluster: (params: {
+    configs: Config[];
+    settings: Settings;
+  }) => Promise<ServiceResult>;
   stopCluster: () => Promise<ServiceResult>;
   parseServerURL: (params: { text: string }) => Promise<ServiceResult>;
   parseSubscriptionURL: (params: { text: string }) => Promise<ServiceResult>;
@@ -160,30 +175,57 @@ export interface ThemeService extends Service {
 
 export interface WorkflowService extends Service {
   getWorkflowRunners: () => Promise<ServiceResult>;
-  getWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
-  runWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
-  stopWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
-  disableWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
-  enableWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
-  editWorkflowRunner: (params: {id: string, options: {
-    enable?: boolean;
-    timer?: {
+  getWorkflowRunner: (params: { id: string }) => Promise<ServiceResult>;
+  runWorkflowRunner: (params: { id: string }) => Promise<ServiceResult>;
+  stopWorkflowRunner: (params: { id: string }) => Promise<ServiceResult>;
+  disableWorkflowRunner: (params: { id: string }) => Promise<ServiceResult>;
+  enableWorkflowRunner: (params: { id: string }) => Promise<ServiceResult>;
+  editWorkflowRunner: (params: {
+    id: string;
+    options: {
       enable?: boolean;
-      schedule?: string;
+      timer?: {
+        enable?: boolean;
+        schedule?: string;
+      };
     };
-  }}) => Promise<ServiceResult>;
-  generateTaskOfRunner: (params: { task: Partial<WorkflowTaskOptions>, runnerId?: string }) => Promise<ServiceResult>;
-  removeTaskOfRunner: (params: {taskId: string, runnerId: string}) => Promise<ServiceResult>;
-  removeWorkflowRunner: (params: {id: string}) => Promise<ServiceResult>;
+  }) => Promise<ServiceResult>;
+  generateTaskOfRunner: (params: {
+    task: Partial<WorkflowTaskOptions>;
+    runnerId?: string;
+  }) => Promise<ServiceResult>;
+  removeTaskOfRunner: (params: {
+    taskId: string;
+    runnerId: string;
+  }) => Promise<ServiceResult>;
+  removeWorkflowRunner: (params: { id: string }) => Promise<ServiceResult>;
 }
+
+export type SendMessageOptionsWithoutStream = Omit<
+  SendMessageOptions,
+  'onProgress' | 'stream'
+>;
+export type SendMessageOptionsWithStream = Omit<
+  SendMessageOptions,
+  'onProgress'
+> & { sessionId: string };
 
 export interface AIService extends Service {
   getSystemPrompts: () => Promise<ServiceResult>;
-  askQuestion: (params: { question: string; options: SendMessageOptions }) => Promise<ServiceResult>;
-  askQuestionWithPrivateKey: (params: { key: string; question: string; options: SendMessageOptions }) => Promise<ServiceResult>;
+  askQuestion: (params: {
+    question: string;
+    key?: string;
+    options: SendMessageOptions;
+  }) => Promise<ServiceResult>;
+  askQuestionWithStream: (params: {
+    question: string;
+    key?: string;
+    sessionId: string;
+    options: SendMessageOptionsWithStream;
+  }) => Promise<ServiceResult>;
 }
 
-export type ServiceHandler = (params: any) => Promise<ServiceResult>
+export type ServiceHandler = (params: any) => Promise<ServiceResult>;
 
 export interface IpcMainProcess {
   ipc: IpcMain;
@@ -196,7 +238,7 @@ export interface IpcMainProcess {
 
 export type IpcMain = _IpcMain;
 
-export const plugins = ["v2ray-plugin", "kcptun", "define"] as const;
+export const plugins = ['v2ray-plugin', 'kcptun', 'define'] as const;
 export type Plugin = typeof plugins[number] | string;
 export type ACL = boolean;
 export type Config = SSConfig & SSRConfig;
@@ -204,54 +246,54 @@ export type OneOfConfig = SSConfig | SSRConfig;
 export type MonoSubscription = MonoSubscriptionSS | MonoSubscriptionSSR;
 export type SubscriptionParserStore = SubscriptionParserConfig[];
 export type SubscriptionParserConfig = {
-  name: string,
-  test: RegExp,
-  parse: (data: any) => OneOfConfig[]
-}
+  name: string;
+  test: RegExp;
+  parse: (data: any) => OneOfConfig[];
+};
 
 export interface SubscriptionResult {
-  name: string,
-  server: MonoSubscription[],
-  version: number
+  name: string;
+  server: MonoSubscription[];
+  version: number;
 }
 
 export interface MonoSubscriptionSSR {
-  id: string,
-  remarks: string,
-  name: string,
-  server: string,
-  server_port: number,
-  password: string,
-  method: string,
-  protocol: string,
-  protocol_param: string,
-  obfs: string,
-  obfs_param: string,
+  id: string;
+  remarks: string;
+  name: string;
+  server: string;
+  server_port: number;
+  password: string;
+  method: string;
+  protocol: string;
+  protocol_param: string;
+  obfs: string;
+  obfs_param: string;
 }
 
 export interface MonoSubscriptionSS {
-  id: string,
-  remarks: string,
-  name: string,
-  server: string,
-  server_port: number,
-  password: string,
-  method: string,
+  id: string;
+  remarks: string;
+  name: string;
+  server: string;
+  server_port: number;
+  password: string;
+  method: string;
 }
 
 export type ClipboardParseType = 'url' | 'subscription';
 export const obfs = ['plain', 'http_simple', 'http_post', 'tls1.2_ticket_auth'];
 
 export const protocols = [
-  "origin",
-  "verify_deflate",
-  "auth_sha1_v4",
-  "auth_aes128_md5",
-  "auth_aes128_sha1",
-  "auth_chain_a",
-  "auth_chain_b",
-  "auth_chain_c",
-  "auth_chain_d",
+  'origin',
+  'verify_deflate',
+  'auth_sha1_v4',
+  'auth_aes128_md5',
+  'auth_aes128_sha1',
+  'auth_chain_a',
+  'auth_chain_b',
+  'auth_chain_c',
+  'auth_chain_d',
 ];
 
 interface CommonConfig {
@@ -284,27 +326,27 @@ export interface SSRConfig extends CommonConfig {
   protocol: typeof protocols[number];
   protocolParam: string;
   obfs: typeof obfs[number];
-  obfsParam: string,
+  obfsParam: string;
 }
 
-export type ProxyStatus = "off" | "on";
-export type platform = "win32" | "darwin" | "linux";
-export type RectPoint = { x: number, y: number, width: number, height: number };
+export type ProxyStatus = 'off' | 'on';
+export type platform = 'win32' | 'darwin' | 'linux';
+export type RectPoint = { x: number; y: number; width: number; height: number };
 
 export type WindowInfo = {
-  devicePixelRatio: number,
-  width: number,
-  height: number,
-  types: string[]
+  devicePixelRatio: number;
+  width: number;
+  height: number;
+  types: string[];
 };
 
 export type InnerCallback = (params: Error | null) => void;
 
 export type contextAction = {
-  label: string,
-  action: string,
-  accelerator: string,
-}
+  label: string;
+  action: string;
+  accelerator: string;
+};
 
 export interface DefinedPluginProps {
   name: string;

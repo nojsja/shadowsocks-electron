@@ -1,12 +1,9 @@
-import type {
-  SendMessageOptions,
-  ChatMessage
-} from 'chatgpt';
+import type { SendMessageOptions, ChatMessage } from 'chatgpt';
 
 import { PrivateAIClient } from './private-client';
 import { PublicAIClient } from './public-client';
 
-export { ChatMessage, SendMessageOptions };
+export type { ChatMessage, SendMessageOptions };
 
 export class AIConversation {
   private publicClient?: PublicAIClient;
@@ -15,6 +12,7 @@ export class AIConversation {
   async publicClientReady() {
     if (!this.publicClient) {
       this.publicClient = new PublicAIClient();
+      await this.publicClient.ready();
     }
   }
 
@@ -31,7 +29,11 @@ export class AIConversation {
     return message;
   }
 
-  async questionWithPrivateKey(key: string, question: string, options: SendMessageOptions) {
+  async questionWithPrivateKey(
+    key: string,
+    question: string,
+    options: SendMessageOptions,
+  ) {
     await this.privateClientReady();
     const message = this.privateClient?.trySendMessage(key, question, options);
 

@@ -96,7 +96,9 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
     (state) => state.settings,
   );
   const eventQueue = useEventQueue();
-  const { sendMessage } = useAIPrompt();
+  const { sendMessageWithStream, onStreamMessageComing } = useAIPrompt({
+    sessionId: taskId || undefined,
+  });
   const prompt = useTerminalCommand();
   const styles = useStyles();
   const { print, clear } = eventQueue.handlers;
@@ -198,19 +200,19 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
             }
             isFirstAskAI.current = false;
           }
-          sendMessage(question)
-            .then((text) => {
-              print([
-                textLine({
-                  words: [
-                    textWord({
-                      className: `${styles.text}`,
-                      characters: `${text}`,
-                    }),
-                  ],
-                }),
-              ]);
-            })
+          sendMessageWithStream(question)
+            // .then((text) => {
+            //   print([
+            //     textLine({
+            //       words: [
+            //         textWord({
+            //           className: `${styles.text}`,
+            //           characters: `${text}`,
+            //         }),
+            //       ],
+            //     }),
+            //   ]);
+            // })
             .catch((err) => {
               print([
                 textLine({
@@ -305,6 +307,21 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
       unregistry(taskId, printListener);
     };
   }, [taskId, open]);
+
+  useEffect(() => {
+    return onStreamMessageComing((msg) => {
+      print([
+        textLine({
+          words: [
+            textWord({
+              className: `${styles.text} info`,
+              characters: msg,
+            }),
+          ],
+        }),
+      ]);
+    });
+  }, [onStreamMessageComing]);
 
   return (
     <AdaptiveDialog

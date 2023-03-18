@@ -1,8 +1,11 @@
 import path from 'path';
+import EventEmitter from 'events';
 import { ChatGPTAPI, SendMessageOptions } from 'chatgpt';
 
 import { AIStore } from '@main/dao';
 import { pathRuntime } from '@main/config';
+import { catcher } from '@common/utils';
+
 import { CHATGPT_CONSTANTS } from './constants';
 import { fetchWithProxy, getApiKeys } from './utils';
 
@@ -14,21 +17,31 @@ interface ClientInfo {
   errorCount: number;
 }
 
-export class PublicAIClient {
+export class PublicAIClient extends EventEmitter {
   constructor() {
+    super();
     this.core = new Set<ClientInfo>();
-    this.initCore();
+    this.status = 'uninitialized';
+    this.init();
     this.index = 0;
   }
   core: Set<ClientInfo>;
+  status: 'uninitialized' | 'ready' | 'error';
   index: number;
 
-  private async initCore() {
+  private async init() {
     const messageStore = AIStore.create({
       dirPath: path.join(pathRuntime, 'ai'),
     });
+    const [err, apiKeys = []] = await catcher(getApiKeys());
 
-    const apiKeys = await getApiKeys();
+    if (err) {
+      console.log(err);
+      this.status = 'error';
+      this.emit('error');
+      return;
+    }
+
     apiKeys.forEach((key) => {
       const client = new ChatGPTAPI({
         apiKey: key,
@@ -42,6 +55,9 @@ export class PublicAIClient {
         client,
       });
     });
+
+    this.status = 'ready';
+    this.emit('ready');
   }
 
   async getAvailableClient() {
@@ -54,6 +70,18 @@ export class PublicAIClient {
     this.index++;
 
     return client;
+  }
+
+  async ready() {
+    if (this.status === 'ready') {
+      return true;
+    }
+
+    return new Promise((resolve) => {
+      this.once('ready', () => {
+        resolve(true);
+      });
+    });
   }
 
   getClientsInfo() {
