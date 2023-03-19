@@ -5,6 +5,8 @@ import {
   textLine,
   textWord,
   commandWord,
+  inlineTextLine,
+  inlineTextWord,
 } from '@nojsja/crt-terminal';
 import { createStyles, DialogContent, makeStyles } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
@@ -75,9 +77,6 @@ const useStyles = makeStyles(() =>
           background: '#8aa950 !important',
         },
       },
-      '& .crt-command-line': {
-        padding: '.5rem 1.4285714286rem .5rem 1.4285714286rem',
-      },
     },
   }),
 );
@@ -104,6 +103,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   const { print, clear } = eventQueue.handlers;
   const { get, wipe, registry, unregistry } = useTerminalVisitor();
   const isFirstAskAI = useRef(true);
+  const lastMessageText = useRef('');
   const { t } = useTranslation();
 
   const onCommand = (command: string) => {
@@ -310,12 +310,15 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
 
   useEffect(() => {
     return onStreamMessageComing((msg) => {
+      let message = msg;
+      message = message.replace(lastMessageText.current, '');
+      lastMessageText.current = msg;
+
       print([
-        textLine({
+        inlineTextLine({
           words: [
-            textWord({
-              className: `${styles.text} info`,
-              characters: msg,
+            inlineTextWord({
+              characters: message,
             }),
           ],
         }),
