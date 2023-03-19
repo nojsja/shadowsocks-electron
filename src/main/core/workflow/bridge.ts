@@ -14,6 +14,7 @@ import net from 'net';
 import fetch from 'node-fetch';
 import { createRequire } from 'module';
 
+import { appEventCenter } from '@main/event';
 import type { LoadBrowserPageContext, WorkflowTaskType } from './types';
 
 const require = createRequire(import.meta.url);
@@ -41,7 +42,7 @@ const require = createRequire(import.meta.url);
  *   });
  */
 export const dispatch = (action: string, args: unknown) => {
-  (global as any).win.webContents.send('event:stream', {
+  appEventCenter.emit('sendToWeb', 'event:stream', {
     action,
     args,
   });
