@@ -113,6 +113,13 @@ export const useAIPrompt = ({ sessionId: _sessionId }: UseAIPromptOptions) => {
     });
   };
 
+  const cancelReply = () => {
+    return MessageChannel.invoke('main', 'service:ai', {
+      action: 'cancelReply',
+      params: {},
+    });
+  };
+
   useEffect(() => {
     return MessageChannel.on('ai:stream-message', (e, message: ChatMessage) => {
       if (message.sessionId !== sessionId) return;
@@ -128,5 +135,6 @@ export const useAIPrompt = ({ sessionId: _sessionId }: UseAIPromptOptions) => {
     sendMessage,
     sendMessageWithStream,
     onStreamMessageComing,
+    cancelReply,
   };
 };

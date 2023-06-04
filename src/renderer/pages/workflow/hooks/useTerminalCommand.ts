@@ -186,6 +186,13 @@ const useTerminalCommand = () => {
         },
       ],
       [
+        'AI',
+        {
+          alias: 'A',
+          desc: 'enter/exit ai mode, each input will be send to ai assistant.',
+        },
+      ],
+      [
         'run',
         {
           alias: 'r',
@@ -279,15 +286,25 @@ const useTerminalCommand = () => {
 
   const parse = (
     args: string,
-    callback?: CommandCallback,
+    options: {
+      callback?: CommandCallback;
+      isInAIMode?: boolean;
+    } = {},
   ): [string | null, { [key: string]: unknown }] => {
+    const { callback } = options;
+
+    if (options?.isInAIMode) {
+      return ['ai', { _: [args] }];
+    }
+
     for (let index = 0; index < commandList.length; index++) {
       const command = commandList[index];
       const result = command.parse(args);
-      if (result) {
-        callback?.(command.name, result);
-        return [command.name, result];
-      }
+
+      if (!result) continue;
+      callback?.(command.name, result);
+
+      return [command.name, result];
     }
 
     return [null, {}];

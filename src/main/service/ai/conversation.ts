@@ -8,6 +8,11 @@ export type { ChatMessage, SendMessageOptions };
 export class AIConversation {
   private publicClient?: PublicAIClient;
   private privateClient?: PrivateAIClient;
+  private abortController?: AbortController;
+
+  constructor() {
+    this.abortController = new AbortController();
+  }
 
   async publicClientReady() {
     if (!this.publicClient) {
@@ -24,7 +29,10 @@ export class AIConversation {
 
   async question(question: string, options: SendMessageOptions) {
     await this.publicClientReady();
-    const message = this.publicClient?.trySendMessage(question, options);
+    const message = await this.publicClient?.trySendMessage(question, {
+      abortSignal: this.abortController?.signal,
+      ...options,
+    });
 
     return message;
   }
@@ -35,8 +43,16 @@ export class AIConversation {
     options: SendMessageOptions,
   ) {
     await this.privateClientReady();
-    const message = this.privateClient?.trySendMessage(key, question, options);
+    const message = await this.privateClient?.trySendMessage(key, question, {
+      abortSignal: this.abortController?.signal,
+      ...options,
+    });
 
     return message;
+  }
+
+  async cancelReply() {
+    this.abortController?.abort();
+    this.abortController = new AbortController();
   }
 }

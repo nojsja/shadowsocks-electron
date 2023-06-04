@@ -2,6 +2,7 @@ import { IpcMain } from 'electron';
 import { AIService as AIServiceType } from '@main/type';
 import { catcher } from '@common/utils';
 import { appEventCenter } from '@main/event';
+import { SendMessageOptions } from 'chatgpt';
 
 import type {
   SendMessageOptionsWithStream,
@@ -42,7 +43,7 @@ export class AIService implements AIServiceType {
     const { question, options, key, sessionId } = params;
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
     const { stream, ...others } = options;
-    const messageOptions = {
+    const messageOptions: SendMessageOptions = {
       stream: true,
       onProgress: (message: ChatMessage) => {
         appEventCenter.emit('sendToWeb', 'ai:stream-message', {
@@ -91,6 +92,15 @@ export class AIService implements AIServiceType {
     return {
       code: err ? 500 : 200,
       result: err || result,
+    };
+  }
+
+  async cancelReply() {
+    this.conversation.cancelReply();
+
+    return {
+      code: 200,
+      result: 'ok',
     };
   }
 }

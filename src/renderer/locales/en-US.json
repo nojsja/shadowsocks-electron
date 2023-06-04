@@ -161,6 +161,8 @@
   "open_ai_api_key_tips_short": "xxxxxxx,ddddddd,zzzzzzz",
   "open_ai_use_private_key_tips": "For best speed and stability, add your private openAI key(s) in settings.",
   "open_ai_enable_proxy_tips": "In some countries with internet restrictions, maybe you should enable http(s) proxy in settings to access openAI service.",
+  "stop_ai_output": "Stop AI Output",
+  "terminal_mode": "Terminal Mode",
   "workflow": "Workflow",
   "open_terminal": "Open Terminal",
   "source_task": "Source Task",

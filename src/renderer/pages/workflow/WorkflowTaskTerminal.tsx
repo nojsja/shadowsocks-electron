@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Terminal,
   useEventQueue,
@@ -8,7 +8,16 @@ import {
   inlineTextLine,
   inlineTextWord,
 } from '@nojsja/crt-terminal';
-import { createStyles, DialogContent, makeStyles } from '@material-ui/core';
+import {
+  createStyles,
+  DialogActions,
+  DialogContent,
+  IconButton,
+  makeStyles,
+  MenuItem,
+  Select,
+  Tooltip,
+} from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
@@ -20,6 +29,7 @@ import { useTerminalVisitor } from '@renderer/hooks';
 import { useTypedSelector } from '@renderer/redux/reducers';
 import useTerminalCommand from './hooks/useTerminalCommand';
 import { useAIPrompt } from './hooks/useAIPrompt';
+import { Clear } from '@material-ui/icons';
 
 interface Props {
   open: boolean;
@@ -95,7 +105,11 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
     (state) => state.settings,
   );
   const eventQueue = useEventQueue();
-  const { sendMessageWithStream, onStreamMessageComing } = useAIPrompt({
+  const {
+    sendMessageWithStream,
+    onStreamMessageComing,
+    cancelReply,
+  } = useAIPrompt({
     sessionId: taskId || undefined,
   });
   const prompt = useTerminalCommand();
@@ -104,10 +118,11 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   const { get, wipe, registry, unregistry } = useTerminalVisitor();
   const isFirstAskAI = useRef(true);
   const lastMessageText = useRef('');
+  const [isInAIMode, setAIMode] = useState(false);
   const { t } = useTranslation();
 
   const onCommand = (command: string) => {
-    const [commandName, options] = prompt.parse(command);
+    const [commandName, options] = prompt.parse(command, { isInAIMode });
 
     switch (commandName) {
       case 'help':
@@ -326,6 +341,20 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
     });
   }, [onStreamMessageComing]);
 
+  useEffect(() => {
+    if (!isInAIMode) return;
+    print([
+      textLine({
+        words: [
+          textWord({
+            className: `${styles.text} info`,
+            characters: `AI mode is on.`,
+          }),
+        ],
+      }),
+    ]);
+  }, [isInAIMode]);
+
   return (
     <AdaptiveDialog
       fullScreen
@@ -337,7 +366,9 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           queue={eventQueue}
           effects={{
             textEffects: false,
-            pixels: true,
+            pixels: false,
+            screenEffects: false,
+            scanner: false,
           }}
           maxHistoryCommands={CONSOLE_BUFFER_SIZE}
           printer={{
@@ -348,6 +379,21 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           onCommand={onCommand}
         />
       </DialogContent>
+      <DialogActions>
+        <Tooltip title={t('stop_ai_output')}>
+          <IconButton onClick={cancelReply}>
+            <Clear />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={t('terminal_mode')}>
+          <Select
+            value={isInAIMode ? 'ai' : 'normal'}
+            onChange={(e) => setAIMode(e.target.value === 'ai')}>
+            <MenuItem value="ai">AI</MenuItem>
+            <MenuItem value="normal">Normal</MenuItem>
+          </Select>
+        </Tooltip>
+      </DialogActions>
     </AdaptiveDialog>
   );
 };
