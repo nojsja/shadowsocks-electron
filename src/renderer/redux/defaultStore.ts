@@ -27,6 +27,7 @@ const defaultStore: RootState = {
     localPort: 1080,
     pacPort: 1090,
     openAIAPIKey: '',
+    terminalDefaultMode: 'normal',
     acl: {
       enable: false,
       url: '',

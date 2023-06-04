@@ -101,7 +101,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   onRunnerTaskStart,
   onRunnerTaskStop,
 }) => {
-  const { openAIAPIKey, httpProxy } = useTypedSelector(
+  const { openAIAPIKey, httpProxy, terminalDefaultMode } = useTypedSelector(
     (state) => state.settings,
   );
   const eventQueue = useEventQueue();
@@ -118,7 +118,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   const { get, wipe, registry, unregistry } = useTerminalVisitor();
   const isFirstAskAI = useRef(true);
   const lastMessageText = useRef('');
-  const [isInAIMode, setAIMode] = useState(false);
+  const [isInAIMode, setAIMode] = useState(terminalDefaultMode === 'ai');
   const { t } = useTranslation();
 
   const onCommand = (command: string) => {
@@ -389,8 +389,8 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           <Select
             value={isInAIMode ? 'ai' : 'normal'}
             onChange={(e) => setAIMode(e.target.value === 'ai')}>
-            <MenuItem value="ai">AI</MenuItem>
-            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="ai">{t('ai_mode')}</MenuItem>
+            <MenuItem value="normal">{t('normal_mode')}</MenuItem>
           </Select>
         </Tooltip>
       </DialogActions>

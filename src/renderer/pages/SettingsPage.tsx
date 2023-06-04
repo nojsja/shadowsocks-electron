@@ -52,6 +52,7 @@ import UserPacEditor from './settings/UserPacEditor';
 import OpenPluginsDir from './settings/OpenPluginsDir';
 import GlobalPacEditor from './settings/GlobalPacEditor';
 import OpenAIAPIKey from './settings/OpenAIAPIKey';
+import TerminalDefaultMode from './settings/TerminalDefaultMode';
 
 const ListSubheaderStyled = withStyles((theme: Theme) =>
   createStyles({
@@ -332,6 +333,7 @@ const SettingsPage: React.FC = () => {
 
           <LoadBalance form={form} />
           <OpenAIAPIKey form={form} />
+          <TerminalDefaultMode form={form} />
 
           <ListSubheaderStyled>➤ {t('debugging')}</ListSubheaderStyled>
 

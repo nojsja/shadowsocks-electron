@@ -178,6 +178,7 @@ export interface Settings {
   autoHide: boolean;
   lang: string;
   openAIAPIKey?: string;
+  terminalDefaultMode: 'ai' | 'normal';
 }
 
 export interface Status {
