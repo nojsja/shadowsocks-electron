@@ -32,6 +32,7 @@ import { useTerminalVisitor } from '@renderer/hooks';
 import { useTypedSelector } from '@renderer/redux/reducers';
 import useTerminalCommand from './hooks/useTerminalCommand';
 import { useAIPrompt } from './hooks/useAIPrompt';
+import { grey } from '@material-ui/core/colors';
 
 interface Props {
   open: boolean;
@@ -50,7 +51,7 @@ const bannerText = "<type 'help' to get tips>";
 
 const banner = [textLine({ words: [textWord({ characters: bannerText })] })];
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     text: {
       '&.error': {
@@ -92,6 +93,14 @@ const useStyles = makeStyles(() =>
     },
     dialogActionsWrapper: {
       padding: 4,
+      color: 'grey',
+      backgroundColor: theme.palette.type === 'dark' ? grey[900] : grey[200],
+    },
+    dialogActionsText: {
+      color:
+        theme.palette.type === 'dark'
+          ? 'rgba(255,255,255, .6)'
+          : 'rgba(0, 0, 0, .7)',
     },
   }),
 );
@@ -421,26 +430,26 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           <Grid item>
             <Tooltip title={t('exit_terminal')}>
               <IconButton size="small" onClick={closeTerminal}>
-                <HighlightOff />
+                <HighlightOff className={styles.dialogActionsText} />
               </IconButton>
             </Tooltip>
           </Grid>
           <Grid item>
             <Tooltip title={t('clear_screen')}>
               <IconButton size="small" onClick={clearScreen}>
-                <DeleteOutline />
+                <DeleteOutline className={styles.dialogActionsText} />
               </IconButton>
             </Tooltip>
             {isInAIMode && (
               <>
                 <Tooltip title={t('regenerate_ai_answer')}>
                   <IconButton size="small" onClick={reReply}>
-                    <Replay />
+                    <Replay className={styles.dialogActionsText} />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title={t('stop_ai_output')}>
                   <IconButton size="small" onClick={cancelReply}>
-                    <Clear />
+                    <Clear className={styles.dialogActionsText} />
                   </IconButton>
                 </Tooltip>
               </>
