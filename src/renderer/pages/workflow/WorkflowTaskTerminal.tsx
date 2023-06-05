@@ -3,6 +3,7 @@ import {
   Terminal,
   useEventQueue,
   textLine,
+  commandLine,
   textWord,
   commandWord,
   inlineTextLine,
@@ -12,6 +13,7 @@ import {
   createStyles,
   DialogActions,
   DialogContent,
+  Grid,
   IconButton,
   makeStyles,
   MenuItem,
@@ -19,6 +21,7 @@ import {
   Tooltip,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
+import { Clear, DeleteOutline, HighlightOff, Replay } from '@material-ui/icons';
 
 import { AdaptiveDialog } from '@renderer/components/Pices/Dialog';
 import {
@@ -29,7 +32,6 @@ import { useTerminalVisitor } from '@renderer/hooks';
 import { useTypedSelector } from '@renderer/redux/reducers';
 import useTerminalCommand from './hooks/useTerminalCommand';
 import { useAIPrompt } from './hooks/useAIPrompt';
-import { Clear } from '@material-ui/icons';
 
 interface Props {
   open: boolean;
@@ -88,6 +90,9 @@ const useStyles = makeStyles(() =>
         },
       },
     },
+    dialogActionsWrapper: {
+      padding: 4,
+    },
   }),
 );
 
@@ -118,12 +123,38 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   const { get, wipe, registry, unregistry } = useTerminalVisitor();
   const isFirstAskAI = useRef(true);
   const lastMessageText = useRef('');
+  const lastActionText = useRef('');
   const [isInAIMode, setAIMode] = useState(terminalDefaultMode === 'ai');
   const { t } = useTranslation();
+
+  const reReply = () => {
+    if (!lastActionText.current) return;
+    print([
+      commandLine({
+        words: [
+          commandWord({
+            className: `${styles.text}`,
+            characters: lastActionText.current,
+            prompt: '> ',
+          }),
+        ],
+      }),
+    ]);
+    onCommand(lastActionText.current);
+  };
+
+  const clearScreen = () => {
+    clear();
+  };
+
+  const closeTerminal = () => {
+    onCloseDialog('command');
+  };
 
   const onCommand = (command: string) => {
     const [commandName, options] = prompt.parse(command, { isInAIMode });
 
+    lastActionText.current = command;
     switch (commandName) {
       case 'help':
         {
@@ -287,6 +318,8 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   useEffect(() => {
     if (!open || !taskId) {
       clear();
+      lastActionText.current = '';
+      lastMessageText.current = '';
       return;
     }
     const consoleInfo = get(taskId);
@@ -342,7 +375,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
   }, [onStreamMessageComing]);
 
   useEffect(() => {
-    if (!isInAIMode) return;
+    if (!isInAIMode || !open) return;
     print([
       textLine({
         words: [
@@ -353,7 +386,7 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
         ],
       }),
     ]);
-  }, [isInAIMode]);
+  }, [isInAIMode, open]);
 
   return (
     <AdaptiveDialog
@@ -379,20 +412,51 @@ const WorkflowTaskTerminal: React.FC<Props> = ({
           onCommand={onCommand}
         />
       </DialogContent>
-      <DialogActions>
-        <Tooltip title={t('stop_ai_output')}>
-          <IconButton onClick={cancelReply}>
-            <Clear />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title={t('terminal_mode')}>
-          <Select
-            value={isInAIMode ? 'ai' : 'normal'}
-            onChange={(e) => setAIMode(e.target.value === 'ai')}>
-            <MenuItem value="ai">{t('ai_mode')}</MenuItem>
-            <MenuItem value="normal">{t('normal_mode')}</MenuItem>
-          </Select>
-        </Tooltip>
+      <DialogActions className={styles.dialogActionsWrapper}>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={1}>
+          <Grid item>
+            <Tooltip title={t('exit_terminal')}>
+              <IconButton size="small" onClick={closeTerminal}>
+                <HighlightOff />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip title={t('clear_screen')}>
+              <IconButton size="small" onClick={clearScreen}>
+                <DeleteOutline />
+              </IconButton>
+            </Tooltip>
+            {isInAIMode && (
+              <>
+                <Tooltip title={t('regenerate_ai_answer')}>
+                  <IconButton size="small" onClick={reReply}>
+                    <Replay />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t('stop_ai_output')}>
+                  <IconButton size="small" onClick={cancelReply}>
+                    <Clear />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+          </Grid>
+          <Grid item>
+            <Tooltip title={t('terminal_mode')}>
+              <Select
+                value={isInAIMode ? 'ai' : 'normal'}
+                onChange={(e) => setAIMode(e.target.value === 'ai')}>
+                <MenuItem value="ai">{t('ai')}</MenuItem>
+                <MenuItem value="normal">{t('normal')}</MenuItem>
+              </Select>
+            </Tooltip>
+          </Grid>
+        </Grid>
       </DialogActions>
     </AdaptiveDialog>
   );
