@@ -1,24 +1,33 @@
-import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { Theme } from "@material-ui/core";
-import { grey } from "@material-ui/core/colors";
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
 
-export const scrollBarStyle = (width = 10, radius = 5, theme: Theme, color = '') => ({
-  "&::-webkit-scrollbar": {
+export const scrollBarStyle = (
+  width = 10,
+  radius = 5,
+  theme: Theme,
+  color = '',
+) => ({
+  '&::-webkit-scrollbar': {
     width: width,
     height: width,
   },
-  "&::-webkit-scrollbar-track": {
-    "-webkit-box-shadow": `inset 0 0 3px ${theme.palette.type === 'dark' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.3)'}`,
-    borderRadius: radius
-  },
-  "&::-webkit-scrollbar-thumb": {
-    ...color ? {
-      background: `color !important`,
-    } : {
-      background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
-    },
+  '&::-webkit-scrollbar-track': {
+    '-webkit-box-shadow': `inset 0 0 3px ${
+      theme.palette.type === 'dark' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.3)'
+    }`,
     borderRadius: radius,
-  }
+  },
+  '&::-webkit-scrollbar-thumb': {
+    ...(color
+      ? {
+          background: `color !important`,
+        }
+      : {
+          background: theme.palette.type === 'dark' ? 'darkgrey' : 'lightgrey',
+        }),
+    borderRadius: radius,
+  },
 });
 
 export const useStylesOfHome = makeStyles((theme: Theme) =>
@@ -32,21 +41,21 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
       paddingTop: 0,
     },
     list: {
-      width: "100%",
+      width: '100%',
       flex: 1,
-      overflowY: "auto",
+      overflowY: 'auto',
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
-      borderBottom: 'solid 2px white'
+      borderBottom: 'solid 2px white',
     },
     scrollbar: scrollBarStyle(6, 0, theme),
     extendedIcon: {
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
     },
     snackbar: {
-      marginBottom: theme.spacing(10)
-    }
-  })
+      marginBottom: theme.spacing(10),
+    },
+  }),
 );
 
 export const useStylesOfAbout = makeStyles((theme: Theme) =>
@@ -60,7 +69,7 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       padding: theme.spacing(2),
     },
     textCenter: {
-      textAlign: 'center'
+      textAlign: 'center',
     },
     authorInfoWrapper: {
       display: 'inline-flex',
@@ -72,11 +81,11 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       marginRight: 'auto',
       marginBottom: '0',
       textAlign: 'center',
-      borderRadius: '50%'
+      borderRadius: '50%',
     },
     authorInfoImage: {
       width: '80%',
-      height: 'auto'
+      height: 'auto',
     },
     authorInfoOthers: {
       display: 'inline-block',
@@ -89,15 +98,15 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
     },
     releaseDrawerButton: {
       position: 'fixed',
-      bottom: theme.spacing(.5),
-      right: theme.spacing(.5),
+      bottom: theme.spacing(0.5),
+      right: theme.spacing(0.5),
       textAlign: 'right',
       color: theme.palette.type === 'dark' ? grey[400] : grey[600],
       cursor: 'pointer',
       zIndex: 2000,
       '&:hover': {
         color: theme.palette.primary.main,
-      }
+      },
     },
     copyright: {
       textAlign: 'center',
@@ -115,7 +124,7 @@ export const useStylesOfAbout = makeStyles((theme: Theme) =>
       top: theme.spacing(1),
       right: theme.spacing(1),
     },
-  })
+  }),
 );
 
 export const useStylesOfSettings = makeStyles((theme: Theme) =>
@@ -127,141 +136,166 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
       padding: theme.spacing(2),
       overflowY: 'scroll',
       alignItems: 'center',
-      ...scrollBarStyle(0, 0, theme)
+      ...scrollBarStyle(0, 0, theme),
     },
     form: {
-      width: "100%",
+      width: '100%',
     },
     list: {
-      width: "100%",
-      padding: 0
+      width: '100%',
+      padding: 0,
     },
     listItemSub: {
-      marginLeft: '10px'
+      marginLeft: '10px',
     },
     indentInput: {
       '& input': {
         width: theme.spacing(10),
-        textAlign: 'right'
-      }
+        textAlign: 'right',
+      },
     },
     cursorPointer: {
       position: 'relative',
       cursor: 'pointer',
-      top: '-2px'
+      top: '-2px',
     },
     colorGrey: {
-      color: 'grey'
+      color: 'grey',
     },
     textField: {
-      marginBottom: `${theme.spacing(2)}px !important`
-    }
-  })
+      marginBottom: `${theme.spacing(2)}px !important`,
+    },
+  }),
 );
 
-export const useStylesOfWorkflow = makeStyles((theme) => createStyles({
-  container: {
-    position: 'relative',
-    display: 'flex !important',
-    flexDirection: 'column',
-    height: 'calc(100vh - 64px)',
-    padding: theme.spacing(.5),
-    paddingTop: 0,
-    [theme.breakpoints.up('sm')]: {
-      height: `calc(100vh - 64px)`,
+export const useStylesOfWorkflow = makeStyles((theme) =>
+  createStyles({
+    container: {
+      position: 'relative',
+      display: 'flex !important',
+      flexDirection: 'column',
+      height: 'calc(100vh - 64px)',
+      padding: theme.spacing(0.5),
+      paddingTop: 0,
+      [theme.breakpoints.up('sm')]: {
+        height: `calc(100vh - 64px)`,
+      },
+      overflowY: 'auto',
+      ...scrollBarStyle(6, 0, theme),
     },
-    overflowY: 'auto',
-    ...scrollBarStyle(6, 0, theme),
-  },
-  headerActions: {
-    position: 'sticky',
-    top: theme.spacing(.5),
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginBottom: theme.spacing(1),
-    padding: `0 ${theme.spacing(.5)}px`,
-    zIndex: 1000,
-  },
-  headerActionButton: {
-    cursor: 'pointer',
-    color: theme.palette.text.secondary,
-    '&.highlight': {
-      color: theme.palette.primary.light,
-    }
-  },
-  headerHelpInfoWrapper: {
-    padding: theme.spacing(1),
-    maxHeight: '80vh',
-    maxWidth: '80vw',
-    overflowY: 'auto',
-    '& h1': {
-      fontSize: '1.5em',
+    headerActions: {
+      position: 'sticky',
+      top: theme.spacing(0.5),
+      display: 'flex',
+      justifyContent: 'flex-end',
+      marginBottom: theme.spacing(1),
+      padding: `0 ${theme.spacing(0.5)}px`,
+      zIndex: 1000,
     },
-    '& h2': {
-      fontSize: '1.25em',
+    headerActionButton: {
+      cursor: 'pointer',
+      color: theme.palette.text.secondary,
+      '&.highlight': {
+        color: theme.palette.primary.light,
+      },
     },
-    ...scrollBarStyle(6, 0, theme),
-  },
-  scriptWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    paddingLeft: theme.spacing(.5),
-    margin: `${theme.spacing(1)}px 0px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
-  },
-  textEditorTitle: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    fontSize: 12,
-    fontWeight: 500,
-  },
-  textEditorWrapper: {
-    position: 'relative',
-    height: '20vh',
-    width: '80%',
-    '&.wide': {
-      width: '85%',
+    headerHelpInfoWrapper: {
+      padding: theme.spacing(1),
+      maxHeight: '80vh',
+      maxWidth: '80vw',
+      overflowY: 'auto',
+      '& h1': {
+        fontSize: '1.5em',
+      },
+      '& h2': {
+        fontSize: '1.25em',
+      },
+      ...scrollBarStyle(6, 0, theme),
     },
-    '&.high': {
-      height: '30vh',
+    scriptWrapper: {
+      display: 'flex',
+      alignItems: 'center',
+      paddingLeft: theme.spacing(0.5),
+      margin: `${theme.spacing(1)}px 0px ${theme.spacing(1)}px ${theme.spacing(
+        1,
+      )}px`,
     },
-  },
-  textEditorContent: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-  textEditorActions: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  textEditorActionButton: {
-    cursor: 'pointer',
-    color: theme.palette.secondary.main,
-    transition: 'color .3s',
-    '&:hover': {
-      color: theme.palette.secondary[theme.palette.type === 'dark' ? 'light' : 'dark'],
+    textEditorTitle: {
+      marginLeft: theme.spacing(1),
+      marginRight: theme.spacing(1),
+      fontSize: 12,
+      fontWeight: 500,
     },
-  },
-  textEditorActionButtonActive: {
-    color: theme.palette.primary.light,
-  },
-  required: {
-    position: 'relative',
-    '&:after': {
+    textEditorWrapper: {
+      position: 'relative',
+      height: '20vh',
+      width: '80%',
+      '&.wide': {
+        width: '85%',
+      },
+      '&.high': {
+        height: '30vh',
+      },
+    },
+    textEditorContent: {
       position: 'absolute',
-      top: '1px',
-      display: 'inline-block',
-      content: '"*"',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
     },
-    '&.error:after': {
-      color: theme.palette.error.light,
+    textEditorActions: {
+      flex: 1,
+      display: 'flex',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
     },
-    '&.success:after': {
-      color: theme.palette.success.light,
-    }
-  }
-}));
+    textEditorActionButton: {
+      cursor: 'pointer',
+      color: theme.palette.secondary.main,
+      transition: 'color .3s',
+      '&:hover': {
+        color:
+          theme.palette.secondary[
+            theme.palette.type === 'dark' ? 'light' : 'dark'
+          ],
+      },
+    },
+    textEditorActionButtonActive: {
+      color: theme.palette.primary.light,
+    },
+    required: {
+      position: 'relative',
+      '&:after': {
+        position: 'absolute',
+        top: '1px',
+        display: 'inline-block',
+        content: '"*"',
+      },
+      '&.error:after': {
+        color: theme.palette.error.light,
+      },
+      '&.success:after': {
+        color: theme.palette.success.light,
+      },
+    },
+  }),
+);
+
+export const useStylesOfAI = makeStyles((theme) =>
+  createStyles({
+    container: {
+      position: 'relative',
+      display: 'flex !important',
+      flexDirection: 'column',
+      height: 'calc(100vh - 64px)',
+      padding: theme.spacing(0.5),
+      paddingTop: 0,
+      [theme.breakpoints.up('sm')]: {
+        height: `calc(100vh - 64px)`,
+      },
+      overflowY: 'auto',
+      ...scrollBarStyle(6, 0, theme),
+    },
+  }),
+);

@@ -1,71 +1,76 @@
-import React from "react";
+import React from 'react';
 import { useRouteMatch } from 'react-router';
 import {
   Divider,
   List,
   ListItem,
   ListItemIcon,
-  ListItemText
-} from "@material-ui/core";
-import clsx from "clsx";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
-import { useTranslation } from  'react-i18next';
-import HomeIcon from "@material-ui/icons/Home";
-import SettingsIcon from "@material-ui/icons/Settings";
-import InfoIcon from "@material-ui/icons/Info";
+  ListItemText,
+} from '@material-ui/core';
+import clsx from 'clsx';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
+import HomeIcon from '@material-ui/icons/Home';
+import SettingsIcon from '@material-ui/icons/Settings';
+import InfoIcon from '@material-ui/icons/Info';
 import DeveloperBoardIcon from '@material-ui/icons/DeveloperBoard';
-import { Link } from "react-router-dom";
+import { Adb } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
 
 import banner from '@/assets/banner.png';
 
-const useStyles = makeStyles(theme => createStyles({
-  text: {
-    color: theme.palette.type === 'dark' ? theme.palette.text.primary : 'black',
-  },
-  matchHighlight: {
-    color: theme.palette.primary.main
-  },
-  banner: {
-    textAlign: 'center',
-    width: '100%',
-    height: 'auto'
-  }
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    text: {
+      color:
+        theme.palette.type === 'dark' ? theme.palette.text.primary : 'black',
+    },
+    matchHighlight: {
+      color: theme.palette.primary.main,
+    },
+    banner: {
+      textAlign: 'center',
+      width: '100%',
+      height: 'auto',
+    },
+  }),
+);
 
 export const drawerWidth = 200;
 export interface DrawerMenuProps {
   onClick?: () => void;
-  hideIcon?: boolean
+  hideIcon?: boolean;
 }
 
-const DrawerMenu: React.FC<DrawerMenuProps> = props => {
+const DrawerMenu: React.FC<DrawerMenuProps> = (props) => {
   const { t } = useTranslation();
   const styles = useStyles();
   const { onClick, hideIcon } = props;
 
-  const getMatchedClasses = (matched: boolean) => clsx(styles['text'], matched && styles['matchHighlight']);
+  const getMatchedClasses = (matched: boolean) =>
+    clsx(styles['text'], matched && styles['matchHighlight']);
 
   const matchHomePath = getMatchedClasses(!!useRouteMatch('/home'));
   const matchSettingsPath = getMatchedClasses(!!useRouteMatch('/settings'));
   const matchAboutPath = getMatchedClasses(!!useRouteMatch('/about'));
   const matchWorkflowPath = getMatchedClasses(!!useRouteMatch('/workflow'));
+  const matchAIPath = getMatchedClasses(!!useRouteMatch('/ai'));
 
   return (
     <>
-      { !hideIcon && (
+      {!hideIcon && (
         <>
           <img className={styles.banner} alt="banner" src={banner}></img>
           <Divider />
         </>
-        )
-      }
+      )}
       <List>
         <Link to="/home" onClick={onClick}>
           <ListItem button>
             <ListItemIcon className={matchHomePath}>
               <HomeIcon />
             </ListItemIcon>
-            <ListItemText primary={t('home')} className={matchHomePath}/>
+            <ListItemText primary={t('home')} className={matchHomePath} />
           </ListItem>
         </Link>
         <Link to="/settings" onClick={props.onClick}>
@@ -73,18 +78,32 @@ const DrawerMenu: React.FC<DrawerMenuProps> = props => {
             <ListItemIcon className={matchSettingsPath}>
               <SettingsIcon />
             </ListItemIcon>
-            <ListItemText primary={t('settings')} className={matchSettingsPath}/>
+            <ListItemText
+              primary={t('settings')}
+              className={matchSettingsPath}
+            />
           </ListItem>
         </Link>
-        <Link to="/workflow" onClick={props.onClick} >
+        <Link to="/workflow" onClick={props.onClick}>
           <ListItem button>
             <ListItemIcon className={matchWorkflowPath}>
               <DeveloperBoardIcon />
             </ListItemIcon>
-            <ListItemText primary={t('workflow')} className={matchWorkflowPath} />
+            <ListItemText
+              primary={t('workflow')}
+              className={matchWorkflowPath}
+            />
           </ListItem>
         </Link>
-        <Link to="/about" onClick={props.onClick} >
+        <Link to="/ai" onClick={props.onClick}>
+          <ListItem button>
+            <ListItemIcon className={matchAIPath}>
+              <Adb />
+            </ListItemIcon>
+            <ListItemText primary="AI" className={matchAIPath} />
+          </ListItem>
+        </Link>
+        <Link to="/about" onClick={props.onClick}>
           <ListItem button>
             <ListItemIcon className={matchAboutPath}>
               <InfoIcon />

@@ -16,22 +16,19 @@ const AppNav: React.FC = () => {
     ['home', t('home')],
     ['settings', t('settings')],
     ['about', t('about')],
-    ['workflow', t('workflow')]
+    ['workflow', t('workflow')],
+    ['ai', t('ai')],
   ]);
 
   const location = useLocation();
-  const path = location.pathname.split("/")[1];
+  const path = location.pathname.split('/')[1];
   const title = titleMap.get(path) || '';
 
   return (
     <If
       condition={isMacOS}
-      then={
-        <AppNavMac title={title}/>
-      }
-      else={
-        <AppNavNormal title={title} />
-      }
+      then={<AppNavMac title={title} />}
+      else={<AppNavNormal title={title} />}
     />
   );
 };
