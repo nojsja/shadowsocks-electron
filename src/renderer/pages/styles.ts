@@ -285,14 +285,17 @@ export const useStylesOfWorkflow = makeStyles((theme) =>
 export const useStylesOfAI = makeStyles((theme) =>
   createStyles({
     container: {
+      border: 'solid 1px red',
       position: 'relative',
       display: 'flex !important',
-      flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      height: 'calc(100vh - 52px)',
+      width: 'calc(100vw - 48px)',
       padding: theme.spacing(0.5),
       paddingTop: 0,
       [theme.breakpoints.up('sm')]: {
-        height: `calc(100vh - 64px)`,
+        height: `calc(100vh - 52px)`,
       },
       overflowY: 'auto',
       ...scrollBarStyle(6, 0, theme),

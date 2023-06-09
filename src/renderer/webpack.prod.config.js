@@ -25,7 +25,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
   module: {
-    noParse:[/jquery/],
+    noParse: [/jquery/],
     rules: [
       {
         test: /\.tsx?$/,
@@ -35,7 +35,12 @@ module.exports = {
       {
         test: /(\.js?|\.jsx?)$/,
         exclude: /(node_modules|bower_components)/,
-        use: ['babel-loader?cacheDirectory']
+        use: ['babel-loader?cacheDirectory'],
+      },
+      {
+        test: /\.less$/,
+        use: ['style-loader', 'css-loader', 'less-loader'],
+        include: [/node_modules/, path.resolve(__dirname, '.')],
       },
       {
         test: /\.css$/,
@@ -49,9 +54,15 @@ module.exports = {
           },
           {
             loader: 'css-loader',
-            options: { minimize: true },
-          }
+            options: {
+              minimize: true,
+              modules: {
+                auto: true,
+              },
+            },
+          },
         ],
+        include: [/node_modules/, path.resolve(__dirname, '.')],
       },
       {
         test: /\.less$/,
@@ -65,11 +76,11 @@ module.exports = {
           },
           {
             loader: 'css-loader',
-            options: { minimize: true }
+            options: { minimize: true },
           },
           {
             loader: 'less-loader',
-          }
+          },
         ],
       },
       {
@@ -89,7 +100,7 @@ module.exports = {
               outputPath: 'resources/assets',
             },
           },
-        ]
+        ],
       },
       {
         test: /\.(png|jpg|gif|svg|jpeg)$/i,
@@ -100,7 +111,7 @@ module.exports = {
               name: '[name].[ext]',
               outputPath: 'resources/images',
             },
-          }
+          },
         ],
       },
     ],
@@ -126,10 +137,10 @@ module.exports = {
       template: './template.ejs',
       inject: 'body',
       publicPath: './',
-      minify: false
+      minify: false,
     }),
     new MonacoWebpackPlugin({
-      languages: ['json', 'javascript']
+      languages: ['json', 'javascript'],
     }),
   ],
 
@@ -156,7 +167,7 @@ module.exports = {
           reuseExistingChunk: true,
         },
       },
-    }
+    },
   },
-  target: 'electron-renderer'
+  target: 'electron-renderer',
 };

@@ -21,6 +21,7 @@
   "dependencies": {
     "@material-ui/pickers": "^3.3.x",
     "@nojsja/crt-terminal": "^1.0.19",
+    "@nojsja/react-chat": "^1.5.2",
     "@sentry/electron": "^4.2.0",
     "@types/lodash": "^4.14.191",
     "classnames": "^2.3.2",
@@ -35,7 +36,6 @@
     "monaco-editor": "^0.34.1",
     "react-code-blocks": "0.0.9-0",
     "react-js-cron-mui": "^1.0.x",
-    "react-jwchat": "^1.5.1",
     "react-monaco-editor": "^0.51.0",
     "uuid": "7.0.2"
   },

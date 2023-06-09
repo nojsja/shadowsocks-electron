@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container } from '@material-ui/core';
-import { Chat, ContactList } from 'react-jwchat';
+import { Chat, ContactList } from '@nojsja/react-chat';
 
 import { useStylesOfAI as useStyles } from './styles';
 
@@ -38,7 +38,7 @@ const AIPage: React.FC = () => {
   const [contact, setContact] = useState<ContactItem>(contactList[0]);
 
   return (
-    <Container className={styles.container} maxWidth="sm">
+    <Container className={styles.container}>
       <ContactList
         data={contactList}
         onSelect={(contact: ContactItem) => setContact(contact)}
@@ -46,12 +46,18 @@ const AIPage: React.FC = () => {
       <Chat
         contact={contact}
         me={me}
-        chatList={[]}
+        chatList={[
+          {
+            _id: '1',
+            date: '1212121212',
+            user: me,
+            message: {
+              type: 'text',
+              content: 'test text',
+            },
+          },
+        ]}
         onSend={(msg: any) => console.log(msg)}
-        style={{
-          width: 600,
-          height: 500,
-        }}
       />
     </Container>
   );

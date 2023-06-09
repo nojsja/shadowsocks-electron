@@ -24,25 +24,37 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
   },
   module: {
-    noParse:[/jquery/],
+    noParse: [/jquery/],
     rules: [
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        use: ['ts-loader']
+        use: ['ts-loader'],
       },
       {
         test: /(\.js?|\.jsx?)$/,
         exclude: /(node_modules|bower_components)/,
-        use: ["babel-loader?cacheDirectory"]
+        use: ['babel-loader?cacheDirectory'],
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                auto: true,
+              },
+            },
+          },
+        ],
+        include: [/node_modules/, path.resolve(__dirname, '.')],
       },
       {
         test: /\.less$/,
-        use: ['style-loader', 'css-loader', 'less-loader']
+        use: ['style-loader', 'css-loader', 'less-loader'],
+        include: [/node_modules/, path.resolve(__dirname, '.')],
       },
       {
         test: /\.html$/,
@@ -61,7 +73,7 @@ module.exports = {
               outputPath: 'resources/assets',
             },
           },
-        ]
+        ],
       },
       {
         test: /\.(png|jpg|gif|svg|jpeg)$/i,
@@ -72,7 +84,7 @@ module.exports = {
               name: '[name].[ext]',
               outputPath: 'resources/images',
             },
-          }
+          },
         ],
       },
     ],
@@ -94,10 +106,10 @@ module.exports = {
       filename: 'index.html',
       template: './index.html',
       inject: 'body',
-      minify: true
+      minify: true,
     }),
     new MonacoWebpackPlugin({
-      languages: ['json', 'javascript']
+      languages: ['json', 'javascript'],
     }),
   ],
 
@@ -124,7 +136,7 @@ module.exports = {
           reuseExistingChunk: true,
         },
       },
-    }
+    },
   },
 
   devServer: {
@@ -135,7 +147,7 @@ module.exports = {
     historyApiFallback: true,
     hot: true,
     inline: true,
-    liveReload: false
+    liveReload: false,
   },
-  target: 'electron-renderer'
+  target: 'electron-renderer',
 };
