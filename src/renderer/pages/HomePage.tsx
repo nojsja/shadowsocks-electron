@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  Container,
-} from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -22,10 +20,7 @@ import useDidUpdate from '@renderer/hooks/useDidUpdate';
 import { Message } from '@renderer/hooks/useNotifier';
 
 import { findAndCallback } from '@renderer/utils';
-import {
-  Config, CloseOptions, GroupConfig,
-  ServerMode,
-} from '@renderer/types';
+import { Config, CloseOptions, GroupConfig, ServerMode } from '@renderer/types';
 
 import FooterBar from '@renderer/components/FooterBar';
 import StatusBar from '@renderer/components/StatusBar';
@@ -34,43 +29,43 @@ import ServerList from './home/ServerList';
 import AddServerDialog from './home/AddServerDialog';
 import EditServerDialog from './home/EditServerDialog';
 
-import { useStylesOfHome as useStyles } from './styles';
-
 /**
  * HomePage
  * @returns React.FC
  */
 const HomePage: React.FC = () => {
-  const styles = useStyles();
-  const { t } =  useTranslation();
+  const { t } = useTranslation();
 
   const dispatch = useDispatch();
-  const config = useTypedSelector(state => state.config);
+  const config = useTypedSelector((state) => state.config);
   const selectedServer = useTypedSelector(
-    state => state.settings.selectedServer
+    (state) => state.settings.selectedServer,
   );
-  const mode = useTypedSelector(state => state.settings.mode);
-  const settings = useTypedSelector(state => state.settings);
-  const connected = useTypedSelector(state => state.status.connected);
+  const mode = useTypedSelector((state) => state.settings.mode);
+  const settings = useTypedSelector((state) => state.settings);
+  const connected = useTypedSelector((state) => state.status.connected);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editServerDialogOpen, setEditServerDialogOpen] = useState(false);
   const [editingServerId, setEditingServerId] = useState<string | null>(null);
-  const {serverMode, clusterId} = settings;
+  const { serverMode, clusterId } = settings;
 
   /* -------- hooks ------- */
 
   /* do connect by mode */
-  const connectByMode = useCallback((mode?: ServerMode) => {
-    const modeToConnect = mode ?? serverMode;
-    if (modeToConnect === 'cluster') {
-      if (clusterId) {
-        dispatch(startClusterAction(config, clusterId, settings));
+  const connectByMode = useCallback(
+    (mode?: ServerMode) => {
+      const modeToConnect = mode ?? serverMode;
+      if (modeToConnect === 'cluster') {
+        if (clusterId) {
+          dispatch(startClusterAction(config, clusterId, settings));
+        }
+      } else {
+        selectedServer && connectedToServer(config, selectedServer);
       }
-    } else {
-      selectedServer && connectedToServer(config, selectedServer);
-    }
-  }, [config, selectedServer, mode, serverMode, clusterId, settings]);
+    },
+    [config, selectedServer, mode, serverMode, clusterId, settings],
+  );
 
   /* reconnect when settings/selected update */
   useDidUpdate(() => {
@@ -115,68 +110,68 @@ const HomePage: React.FC = () => {
       const id = uuidV4();
       dispatch({ type: ADD_CONFIG, config: values, id });
       selectedServer === id && connectedToServer(config, id, values);
-      Message.success(t("added_a_server"));
+      Message.success(t('added_a_server'));
     } else {
       dispatch({
         type: EDIT_CONFIG,
         config: values,
-        id: values.id
+        id: values.id,
       });
-      selectedServer === values.id && connectedToServer(config, values.id, values);
-      Message.success(t("edited_a_server"));
+      selectedServer === values.id &&
+        connectedToServer(config, values.id, values);
+      Message.success(t('edited_a_server'));
     }
   };
 
-  const handleEditServerDialogClose = (event: any, reason: "backdropClick" | "escapeKeyDown") => {
+  const handleEditServerDialogClose = (
+    event: any,
+    reason: 'backdropClick' | 'escapeKeyDown',
+  ) => {
     if (reason === 'backdropClick') return;
 
     setEditServerDialogOpen(false);
     setEditingServerId(null);
   };
 
-  const handleServerConnect = useCallback(async (useValue?: string) => {
-    const value = useValue === undefined ? selectedServer : useValue;
-    if (!value || !selectedServer) return
-    if (connected) {
-      if (settings.serverMode === 'single') {
-        dispatch(stopClientAction());
+  const handleServerConnect = useCallback(
+    async (useValue?: string) => {
+      const value = useValue === undefined ? selectedServer : useValue;
+      if (!value || !selectedServer) return;
+      if (connected) {
+        if (settings.serverMode === 'single') {
+          dispatch(stopClientAction());
+        }
+      } else {
+        findAndCallback(config, value, (conf: Config) => {
+          dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
+          dispatch(startClientAction(conf, settings));
+        });
       }
-    } else {
-      findAndCallback(config, value, (conf: Config) => {
-        dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
-        dispatch(
-          startClientAction(
-            conf,
-            settings,
-          )
-        );
-      });
-    }
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  }, [selectedServer, connected, config, settings]);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    },
+    [selectedServer, connected, config, settings],
+  );
 
   const handleEditButtonClick = useCallback((id: string) => {
     setEditingServerId(id);
     setEditServerDialogOpen(true);
   }, []);
 
-  const connectedToServer = (config: (Config | GroupConfig)[], selectedServer: string, useConfig?: Config) => {
+  const connectedToServer = (
+    config: (Config | GroupConfig)[],
+    selectedServer: string,
+    useConfig?: Config,
+  ) => {
     findAndCallback(config, selectedServer, (c: Config) => {
       const conf = useConfig || c;
       dispatch(getConnectionDelay(conf.serverHost, conf.serverPort));
-      dispatch(
-        startClientAction(
-          conf,
-          settings,
-        )
-      )});
+      dispatch(startClientAction(conf, settings));
+    });
   };
 
   return (
-    <Container className={styles.container}>
-
+    <Container>
       {/* -------- main ------- */}
-
       <ServerList
         config={config}
         selectedServer={selectedServer}
@@ -184,21 +179,16 @@ const HomePage: React.FC = () => {
         handleEditButtonClick={handleEditButtonClick}
         handleServerConnect={handleServerConnect}
       />
-
       <FooterBar mode={mode} setDialogOpen={setDialogOpen} />
-
-      <StatusBar/>
-
+      <StatusBar />
       {/* -------- dialog ------- */}
-
-      <AddServerDialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-      />
+      <AddServerDialog open={dialogOpen} onClose={handleDialogClose} />
       <EditServerDialog
         open={editServerDialogOpen}
         defaultValues={
-          editingServerId ? findAndCallback(config, editingServerId) as Config : null
+          editingServerId
+            ? (findAndCallback(config, editingServerId) as Config)
+            : null
         }
         onClose={handleEditServerDialogClose}
         onValues={handleEditServer}

@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Theme,
-  ButtonGroup,
-  Fab,
-  Button
-} from '@material-ui/core';
+import { Theme, ButtonGroup, Fab, Button } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { useDispatch } from 'react-redux';
 import AddIcon from '@material-ui/icons/Add';
@@ -15,26 +10,26 @@ import { Mode } from '@renderer/types';
 import { SET_SETTING } from '@renderer/redux/actions/settings';
 
 type StatusBarProps = {
-  mode: string,
-  setDialogOpen: (status: boolean) => void
+  mode: string;
+  setDialogOpen: (status: boolean) => void;
 };
 
-const menuItems = ["Global", "PAC", "Manual"];
+const menuItems = ['Global', 'PAC', 'Manual'];
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     fabPlaceholder: {
-      height: theme.spacing(4)
+      height: theme.spacing(7),
     },
     fabs: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      "& > *": {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      '& > *': {
         marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2)
+        marginRight: theme.spacing(2),
       },
-      position: "fixed",
+      position: 'fixed',
       bottom: theme.spacing(2.5),
       right: 0,
       left: theme.spacing(-1),
@@ -44,29 +39,29 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     noShadow: {
       backgroundColor: 'transparent',
-      boxShadow: 'none'
+      boxShadow: 'none',
     },
-  })
+  }),
 );
 
-const FooterBar: React.FC<StatusBarProps> =  (props) => {
+const FooterBar: React.FC<StatusBarProps> = (props) => {
   const styles = useStyles();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { mode, setDialogOpen } = props;
 
-  const handleModeChange = ((value: string) => {
+  const handleModeChange = (value: string) => {
     if (value === mode) return;
     dispatch({
       type: SET_SETTING,
       key: 'mode',
-      value: value as Mode
+      value: value as Mode,
     });
     dispatchEvent({
       type: 'event:stream:reconnect-pac',
       payload: { enable: value === 'PAC' },
     });
-  });
+  };
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
@@ -81,25 +76,20 @@ const FooterBar: React.FC<StatusBarProps> =  (props) => {
           color="secondary"
           className={styles.noShadow}
           variant="circular"
-          onClick={handleDialogOpen}
-        >
+          onClick={handleDialogOpen}>
           <AddIcon />
         </Fab>
         <span>
-
           <ButtonGroup size="small" aria-label="small outlined button group">
-            {
-              menuItems.map(value => (
-                <Button
-                  key={value}
-                  variant="text"
-                  className={mode === value ? styles.button : undefined}
-                  onClick={() => handleModeChange(value)}
-                >
-                  {t(value.toLocaleLowerCase())}
-                </Button>
-              ))
-            }
+            {menuItems.map((value) => (
+              <Button
+                key={value}
+                variant="text"
+                className={mode === value ? styles.button : undefined}
+                onClick={() => handleModeChange(value)}>
+                {t(value.toLocaleLowerCase())}
+              </Button>
+            ))}
           </ButtonGroup>
         </span>
       </div>

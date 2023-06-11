@@ -13,7 +13,7 @@ const AboutPage: React.FC = () => {
   const styles = useStyles();
 
   return (
-    <Container className={styles.container} maxWidth="sm">
+    <Container className={styles.contentWrapper}>
       <div className={styles.authorInfoWrapper}>
         <img
           src={authorPic}

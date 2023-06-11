@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Container } from '@material-ui/core';
 import { Chat, ContactList } from '@nojsja/react-chat';
+import { Container } from '@material-ui/core';
 
-import { useStylesOfAI as useStyles } from './styles';
+import { useStylesOfAI } from '@renderer/pages/styles';
 
 interface ContactItem {
   id: number;
@@ -34,11 +34,11 @@ const me = {
 };
 
 const AIPage: React.FC = () => {
-  const styles = useStyles();
   const [contact, setContact] = useState<ContactItem>(contactList[0]);
+  const styles = useStylesOfAI();
 
   return (
-    <Container className={styles.container}>
+    <Container className={styles.contentWrapper}>
       <ContactList
         data={contactList}
         onSelect={(contact: ContactItem) => setContact(contact)}

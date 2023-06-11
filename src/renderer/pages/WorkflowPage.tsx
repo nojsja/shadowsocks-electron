@@ -187,7 +187,7 @@ const Workflow: React.FC = () => {
 
   return (
     <MonacoEditorModalContextProvider>
-      <Container className={styles.container}>
+      <Container className={styles.contentWrapper}>
         <div className={styles.headerActions}>
           <WorkflowHelpInfo />
           <MenuButton

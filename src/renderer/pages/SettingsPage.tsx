@@ -27,8 +27,7 @@ import StatusBar from '@renderer/components/StatusBar';
 
 import { ALGORITHM, Settings } from '@renderer/types';
 import { persistStore } from '@renderer/App';
-
-import { useStylesOfSettings as useStyles } from './styles';
+import { useStylesOfSettings } from './styles';
 
 import LocalPort from './settings/LocalPort';
 import PacPort from './settings/PacPort';
@@ -64,13 +63,12 @@ const ListSubheaderStyled = withStyles((theme: Theme) =>
           ? theme.palette.grey[700]
           : theme.palette.grey[400],
       lineHeight: '24px',
-      top: '-12px',
     },
   }),
 )(ListSubheader);
 
 const SettingsPage: React.FC = () => {
-  const styles = useStyles();
+  const styles = useStylesOfSettings();
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
   const settings = useTypedSelector((state) => state.settings);
@@ -290,7 +288,7 @@ const SettingsPage: React.FC = () => {
   }, [form.watch]);
 
   return (
-    <Container className={styles.container}>
+    <Container>
       <form className={styles.form}>
         <LocalPort form={form} />
         <PacPort form={form} />

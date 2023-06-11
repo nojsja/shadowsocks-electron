@@ -30,16 +30,45 @@ export const scrollBarStyle = (
   },
 });
 
-export const useStylesOfHome = makeStyles((theme: Theme) =>
+export const useLayoutStyles = makeStyles((theme) =>
   createStyles({
+    root: {
+      display: 'flex',
+    },
+    toolbar: {
+      minHeight: '42px',
+    },
+    content: {
+      display: 'flex',
+      flexDirection: 'column',
+      flex: 1,
+      minHeight: 0,
+      overflow: 'hidden',
+    },
     container: {
+      position: 'relative',
       display: 'flex !important',
       flexDirection: 'column',
+      flexGrow: 1,
+      flexShrink: 0,
       alignItems: 'center',
-      height: 'calc(100vh - 64px)',
       padding: theme.spacing(1),
       paddingTop: 0,
     },
+    scrollContainer: {
+      position: 'absolute',
+      overflow: 'auto',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      ...scrollBarStyle(6, 0, theme),
+    },
+  }),
+);
+
+export const useStylesOfHome = makeStyles((theme: Theme) =>
+  createStyles({
     list: {
       width: '100%',
       flex: 1,
@@ -60,12 +89,11 @@ export const useStylesOfHome = makeStyles((theme: Theme) =>
 
 export const useStylesOfAbout = makeStyles((theme: Theme) =>
   createStyles({
-    container: {
+    contentWrapper: {
       position: 'relative',
-      display: 'flex !important',
+      display: 'flex',
       alignItems: 'center',
       flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
       padding: theme.spacing(2),
     },
     textCenter: {
@@ -132,13 +160,16 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
     container: {
       display: 'flex !important',
       flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
+      flexGrow: 1,
+      flexShrink: 0,
       padding: theme.spacing(2),
       overflowY: 'scroll',
       alignItems: 'center',
       ...scrollBarStyle(0, 0, theme),
     },
     form: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(3),
       width: '100%',
     },
     list: {
@@ -170,18 +201,8 @@ export const useStylesOfSettings = makeStyles((theme: Theme) =>
 
 export const useStylesOfWorkflow = makeStyles((theme) =>
   createStyles({
-    container: {
-      position: 'relative',
-      display: 'flex !important',
-      flexDirection: 'column',
-      height: 'calc(100vh - 64px)',
-      padding: theme.spacing(0.5),
-      paddingTop: 0,
-      [theme.breakpoints.up('sm')]: {
-        height: `calc(100vh - 64px)`,
-      },
-      overflowY: 'auto',
-      ...scrollBarStyle(6, 0, theme),
+    contentWrapper: {
+      paddingBottom: theme.spacing(2),
     },
     headerActions: {
       position: 'sticky',
@@ -282,23 +303,13 @@ export const useStylesOfWorkflow = makeStyles((theme) =>
   }),
 );
 
-export const useStylesOfAI = makeStyles((theme) =>
+export const useStylesOfAI = makeStyles(() =>
   createStyles({
-    container: {
-      border: 'solid 1px red',
-      position: 'relative',
+    contentWrapper: {
+      backgroundColor: '#eeeeee',
       display: 'flex !important',
       justifyContent: 'center',
       flexDirection: 'row',
-      height: 'calc(100vh - 52px)',
-      width: 'calc(100vw - 48px)',
-      padding: theme.spacing(0.5),
-      paddingTop: 0,
-      [theme.breakpoints.up('sm')]: {
-        height: `calc(100vh - 52px)`,
-      },
-      overflowY: 'auto',
-      ...scrollBarStyle(6, 0, theme),
     },
   }),
 );
