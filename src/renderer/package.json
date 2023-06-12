@@ -21,7 +21,7 @@
   "dependencies": {
     "@material-ui/pickers": "^3.3.x",
     "@nojsja/crt-terminal": "^1.0.19",
-    "@nojsja/react-chat": "^1.5.2",
+    "@nojsja/react-chat": "1.5.5",
     "@sentry/electron": "^4.2.0",
     "@types/lodash": "^4.14.191",
     "classnames": "^2.3.2",
