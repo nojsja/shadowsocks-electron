@@ -19,12 +19,12 @@ import { useRequest } from '@renderer/hooks/useRequest';
 import type { Response } from '@renderer/hooks/useRequest';
 import { MonacoEditorModalContextProvider } from '@renderer/hooks/useMonacoEditorModal';
 
-import WorkflowRunner from './workflow/WorkflowRunner';
-import { useStylesOfWorkflow } from './styles';
-import WorkflowHelpInfo from './workflow/WorkflowHelpInfo';
+import WorkflowRunner from './WorkflowRunner';
+import WorkflowHelpInfo from './WorkflowHelpInfo';
+import { useStyles } from './style';
 
 const Workflow: React.FC = () => {
-  const styles = useStylesOfWorkflow();
+  const styles = useStyles();
   const { t } = useTranslation();
 
   const { data: runnersResp, run: getWorkflowRunners, setState } = useRequest<

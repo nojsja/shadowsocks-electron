@@ -24,7 +24,7 @@ import useTheme from '@renderer/hooks/useTheme';
 import prepareForLanguage, { getFirstLanguage } from '@renderer/i18n';
 import { getDefaultLang } from '@renderer/utils';
 import { ServerMode } from '@renderer/types';
-import { useLayoutStyles } from '@renderer/pages/styles';
+import { useLayoutStyles } from '@renderer/pages/style';
 
 export const persistStore = new ElectronStore();
 

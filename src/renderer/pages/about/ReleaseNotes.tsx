@@ -5,7 +5,7 @@ import { shell } from 'electron';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useStylesOfAbout as useStyles } from '../styles';
+import { useStyles } from './style';
 
 type Timeline = {
   title: string;

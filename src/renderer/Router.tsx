@@ -7,11 +7,11 @@ import {
   useTerminalService,
 } from './hooks';
 
-import HomePage from './pages/HomePage';
-import SettingsPage from './pages/SettingsPage';
-import AboutPage from './pages/AboutPage';
-import WorkflowPage from './pages/WorkflowPage';
-import AIPage from './pages/AIPage';
+import HomePage from './pages/home';
+import SettingsPage from './pages/settings';
+import AboutPage from './pages/about';
+import WorkflowPage from './pages/workflow';
+import AIPage from './pages/ai';
 
 const Router = () => {
   useNotifier();

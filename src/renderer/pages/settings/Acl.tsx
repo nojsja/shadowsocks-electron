@@ -15,7 +15,7 @@ import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 import { Settings } from '../../types';
 import AclEditor from './AclEditor';
 
-import { useStylesOfSettings as useStyles } from '../styles';
+import { useStyles } from './style';
 
 interface AclProps {
   form: UseFormReturn<Settings>;
@@ -44,65 +44,56 @@ const Acl: React.FC<AclProps> = ({
     <>
       <ListItem>
         <ListItemTextMultipleLine
-          primary={
-            <TextWithTooltip
-              text="ACL"
-              tooltip={
-                t('readme_acl')
-              }
-            />
-          }
+          primary={<TextWithTooltip text="ACL" tooltip={t('readme_acl')} />}
         />
         <ListItemSecondaryAction>
           <Controller
             control={form.control}
             name="acl.enable"
             render={({ field: { value, ...other } }) => (
-              <AdaptiveSwitch
-                edge="end"
-                {...other}
-                checked={value ?? false}
-              />)
-            }
+              <AdaptiveSwitch edge="end" {...other} checked={value ?? false} />
+            )}
           />
           <input style={{ display: 'none' }} type="file"></input>
         </ListItemSecondaryAction>
       </ListItem>
-      {
-        enable && (
-          <ListItem className={styles.listItemSub}>
-            <ListItemTextMultipleLine
-              primary={
-                <Controller
-                  control={form.control}
-                  name="acl.url"
-                  render={({ field }) => (
-                    url ?
-                      (
-                        <Tooltip
-                          arrow
-                          placement="top"
-                          title={!!url && url}
-                        >
-                          <span>└─ {path.basename(field.value || '(none)')}</span>
-                        </Tooltip>
-                      )
-                      : (
-                        <span>└─ {path.basename(field.value || '(none)')}</span>
-                      )
-                  )}
-                />
-              }
-            />
-            <ListItemSecondaryAction>
-              {enable && (<Button onClick={setAclAction} size="small">{t('select')}</Button>)}
-              {url && (<AclEditor url={url} touchField={touchField} isFieldTouched={isFieldTouched} />)}
-            </ListItemSecondaryAction>
-          </ListItem>
-        )
-      }
+      {enable && (
+        <ListItem className={styles.listItemSub}>
+          <ListItemTextMultipleLine
+            primary={
+              <Controller
+                control={form.control}
+                name="acl.url"
+                render={({ field }) =>
+                  url ? (
+                    <Tooltip arrow placement="top" title={!!url && url}>
+                      <span>└─ {path.basename(field.value || '(none)')}</span>
+                    </Tooltip>
+                  ) : (
+                    <span>└─ {path.basename(field.value || '(none)')}</span>
+                  )
+                }
+              />
+            }
+          />
+          <ListItemSecondaryAction>
+            {enable && (
+              <Button onClick={setAclAction} size="small">
+                {t('select')}
+              </Button>
+            )}
+            {url && (
+              <AclEditor
+                url={url}
+                touchField={touchField}
+                isFieldTouched={isFieldTouched}
+              />
+            )}
+          </ListItemSecondaryAction>
+        </ListItem>
+      )}
     </>
-  )
-}
+  );
+};
 
 export default Acl;

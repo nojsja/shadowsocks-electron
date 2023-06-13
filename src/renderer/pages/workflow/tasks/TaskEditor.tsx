@@ -7,14 +7,16 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import cls from 'classnames';
 import CodeIcon from '@material-ui/icons/Code';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 import ComputerIcon from '@material-ui/icons/Computer';
 
 import useMonacoEditorModal from '@renderer/hooks/useMonacoEditorModal';
-import TextEditor, { TextEditorRef } from '@renderer/components/Pices/TextEditor';
-import { useStylesOfWorkflow } from '@renderer/pages/styles';
-import { type WorkflowTask } from '@renderer/types';
+import TextEditor, {
+  TextEditorRef,
+} from '@renderer/components/Pices/TextEditor';
+import type { WorkflowTask } from '@renderer/types';
 import { useDidUpdate, usePreviousValue, useTaskFS } from '@renderer/hooks';
-import { useTranslation } from 'react-i18next';
+import { useStyles } from '../style';
 
 interface Props extends WorkflowTask {
   onTaskDelete: (taskId: string) => Promise<void>;
@@ -29,7 +31,7 @@ const TaskEditor: React.FC<Props> = ({
   onTaskTerminalOpen,
   templateCodePath,
 }) => {
-  const styles = useStylesOfWorkflow();
+  const styles = useStyles();
   const { t } = useTranslation();
   const [scriptContent, setScriptContent] = useState<string>('');
   const taskFS = useTaskFS(scriptPath);
@@ -40,15 +42,18 @@ const TaskEditor: React.FC<Props> = ({
   const matchMaxWidth = useMediaQuery('(max-width: 500px)');
   const matchMaxHeight = useMediaQuery('(max-width: 700px)');
   const preScriptContent = usePreviousValue(scriptContent || null);
-  const { openModal, /* closeModal, */setValue } = useMonacoEditorModal();
+  const { openModal, /* closeModal, */ setValue } = useMonacoEditorModal();
 
   const onTemplateScriptLoad = () => {
-    taskFS.read(templateCodePath).then((templateCode) => {
-      editorRef.current?.setValue(templateCode);
-      setContentTouched(true);
-    }).catch((e) => {
-      console.log(e);
-    });
+    taskFS
+      .read(templateCodePath)
+      .then((templateCode) => {
+        editorRef.current?.setValue(templateCode);
+        setContentTouched(true);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   const onScriptReload = () => {
@@ -77,9 +82,12 @@ const TaskEditor: React.FC<Props> = ({
       });
   }, []);
 
-  const onScriptChange = useCallback((content: string) => {
-    setContentTouched(content !== scriptContent);
-  }, [scriptContent]);
+  const onScriptChange = useCallback(
+    (content: string) => {
+      setContentTouched(content !== scriptContent);
+    },
+    [scriptContent],
+  );
 
   const onScriptOpen = () => {
     openModal({
@@ -104,7 +112,8 @@ const TaskEditor: React.FC<Props> = ({
 
   useDidUpdate(() => {
     editorRef.current?.setValue(scriptContent);
-    if (preScriptContent !== null) { // not first load
+    if (preScriptContent !== null) {
+      // not first load
       editorRef.current?.focus();
       editorRef.current?.restoreCursor(...cursorRef.current);
     }
@@ -113,14 +122,11 @@ const TaskEditor: React.FC<Props> = ({
   return (
     <div className={styles.scriptWrapper}>
       <div
-        className={
-          classNames(
-            styles.textEditorWrapper,
-            matchMaxWidth && 'wide',
-            matchMaxHeight && 'high',
-          )
-        }
-      >
+        className={classNames(
+          styles.textEditorWrapper,
+          matchMaxWidth && 'wide',
+          matchMaxHeight && 'high',
+        )}>
         <TextEditor
           className={styles.textEditorContent}
           onContentSave={onScriptSave}
@@ -135,33 +141,45 @@ const TaskEditor: React.FC<Props> = ({
       <div className={styles.textEditorActions}>
         <Tooltip title={t('delete')} placement="left">
           <IconButton onClick={onTaskDeleteInner} size="small">
-            <DeleteIcon className={styles.textEditorActionButton} color="action" />
+            <DeleteIcon
+              className={styles.textEditorActionButton}
+              color="action"
+            />
           </IconButton>
         </Tooltip>
         <Tooltip title={t('open_terminal')} placement="left">
           <IconButton size="small" onClick={() => onTaskTerminalOpen(id)}>
-            <ComputerIcon className={styles.textEditorActionButton} color="action" />
+            <ComputerIcon
+              className={styles.textEditorActionButton}
+              color="action"
+            />
           </IconButton>
         </Tooltip>
         <Tooltip title={t('open_with_code_editor')} placement="left">
           <IconButton size="small" onClick={onScriptOpen}>
-            <LaunchIcon className={styles.textEditorActionButton} color="action" />
+            <LaunchIcon
+              className={styles.textEditorActionButton}
+              color="action"
+            />
           </IconButton>
         </Tooltip>
         <Tooltip title={t('restore')} placement="left">
           <IconButton size="small" onClick={onScriptReload}>
-            <RotateLeftIcon className={styles.textEditorActionButton} color="action" />
+            <RotateLeftIcon
+              className={styles.textEditorActionButton}
+              color="action"
+            />
           </IconButton>
         </Tooltip>
         <Tooltip title={t('save_editor_content_tips')} placement="left">
-          <IconButton size="small" onClick={() => onScriptSave(editorRef.current?.getValue() ?? '')}>
+          <IconButton
+            size="small"
+            onClick={() => onScriptSave(editorRef.current?.getValue() ?? '')}>
             <SaveIcon
-              className={
-                cls(
-                  styles.textEditorActionButton,
-                  isContentTouched && styles.textEditorActionButtonActive
-                )
-              }
+              className={cls(
+                styles.textEditorActionButton,
+                isContentTouched && styles.textEditorActionButtonActive,
+              )}
               color="action"
             />
           </IconButton>

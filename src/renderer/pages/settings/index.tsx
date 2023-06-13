@@ -27,31 +27,31 @@ import StatusBar from '@renderer/components/StatusBar';
 
 import { ALGORITHM, Settings } from '@renderer/types';
 import { persistStore } from '@renderer/App';
-import { useStylesOfSettings } from './styles';
 
-import LocalPort from './settings/LocalPort';
-import PacPort from './settings/PacPort';
-import GfwListUrl from './settings/GfwListUrl';
-import HttpProxy from './settings/HttpProxy';
-import Acl from './settings/Acl';
-import LaunchOnBoot from './settings/LaunchOnBoot';
-import FixedMenu from './settings/FixedMenu';
-import AutoHide from './settings/AutoHide';
-import AutoTheme from './settings/AutoTheme';
-import DarkMode from './settings/DarkMode';
-import Backup from './settings/Backup';
-import Language from './settings/Language';
-import Restore from './settings/Restore';
-import ResetData from './settings/ResetData';
-import Verbose from './settings/Verbose';
-import OpenLogDir from './settings/OpenLogDir';
-import OpenProcessManager from './settings/OpenProcessManager';
-import LoadBalance from './settings/LoadBalance';
-import UserPacEditor from './settings/UserPacEditor';
-import OpenPluginsDir from './settings/OpenPluginsDir';
-import GlobalPacEditor from './settings/GlobalPacEditor';
-import OpenAIAPIKey from './settings/OpenAIAPIKey';
-import TerminalDefaultMode from './settings/TerminalDefaultMode';
+import LocalPort from './LocalPort';
+import PacPort from './PacPort';
+import GfwListUrl from './GfwListUrl';
+import HttpProxy from './HttpProxy';
+import Acl from './Acl';
+import LaunchOnBoot from './LaunchOnBoot';
+import FixedMenu from './FixedMenu';
+import AutoHide from './AutoHide';
+import AutoTheme from './AutoTheme';
+import DarkMode from './DarkMode';
+import Backup from './Backup';
+import Language from './Language';
+import Restore from './Restore';
+import ResetData from './ResetData';
+import Verbose from './Verbose';
+import OpenLogDir from './OpenLogDir';
+import OpenProcessManager from './OpenProcessManager';
+import LoadBalance from './LoadBalance';
+import UserPacEditor from './UserPacEditor';
+import OpenPluginsDir from './OpenPluginsDir';
+import GlobalPacEditor from './GlobalPacEditor';
+import OpenAIAPIKey from './OpenAIAPIKey';
+import TerminalDefaultMode from './TerminalDefaultMode';
+import { useStyles } from './style';
 
 const ListSubheaderStyled = withStyles((theme: Theme) =>
   createStyles({
@@ -68,7 +68,7 @@ const ListSubheaderStyled = withStyles((theme: Theme) =>
 )(ListSubheader);
 
 const SettingsPage: React.FC = () => {
-  const styles = useStylesOfSettings();
+  const styles = useStyles();
   const { t } = useTranslation();
   const dispatch = useTypedDispatch();
   const settings = useTypedSelector((state) => state.settings);

@@ -12,9 +12,9 @@ import { MessageChannel } from 'electron-re';
 import { AdaptiveSwitch } from '@renderer/components/Pices/Switch';
 import { TextWithTooltip } from '@renderer/components/Pices/TextWithTooltip';
 
-import { useStylesOfSettings as useStyles } from '@renderer/pages/styles';
 import If from '@renderer/components/HOC/IF';
 import { Settings } from '@renderer/types';
+import { useStyles } from './style';
 
 const MAX_PORT = 65535;
 const MIN_PORT = 1024;

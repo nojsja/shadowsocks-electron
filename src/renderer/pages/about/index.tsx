@@ -6,8 +6,8 @@ import authorPic from '@/assets/icons/256x256.png';
 import packageJsonRenderer from '@renderer/package.json';
 import packageJsonMain from '@/package.json';
 
-import ReleaseNotes from './about/ReleaseNotes';
-import { useStylesOfAbout as useStyles } from './styles';
+import ReleaseNotes from './ReleaseNotes';
+import { useStyles } from './style';
 
 const AboutPage: React.FC = () => {
   const styles = useStyles();

@@ -7,13 +7,13 @@ import {
   TextField,
   Select,
   MenuItem,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import { Controller, UseFormReturn } from 'react-hook-form';
 
 import { AdaptiveSwitch } from '../../components/Pices/Switch';
 import { TextWithTooltip } from '../../components/Pices/TextWithTooltip';
 
-import { useStylesOfSettings as useStyles } from '../styles';
+import { useStyles } from './style';
 import { ALGORITHM, Settings } from '../../types';
 
 const LOADBALANCE_MAX_NODES = 10;
@@ -23,9 +23,7 @@ interface LoadBalanceProps {
   form: UseFormReturn<Settings>;
 }
 
-const LoadBalance: React.FC<LoadBalanceProps> = ({
-  form
-}) => {
+const LoadBalance: React.FC<LoadBalanceProps> = ({ form }) => {
   const { t } = useTranslation();
   const styles = useStyles();
   const enable = form.watch('loadBalance.enable');
@@ -57,79 +55,71 @@ const LoadBalance: React.FC<LoadBalanceProps> = ({
             control={form.control}
             name="loadBalance.enable"
             render={({ field: { value, ...other } }) => (
-              <AdaptiveSwitch
-                edge="end"
-                {...other}
-                checked={value ?? false}
-              />
+              <AdaptiveSwitch edge="end" {...other} checked={value ?? false} />
             )}
           />
         </ListItemSecondaryAction>
       </ListItem>
-      {
-        enable && (
-          <ListItem className={styles.listItemSub}>
-            <ListItemText
-              primary={
-                <TextWithTooltip
-                  text={`├── ${t('nodes_count_limit')}`}
-                  tooltip={t('load_balance_tips')}
-                />
-              }
-            />
-            <ListItemSecondaryAction>
-              <TextField
-                className={`${styles.textField} ${styles.indentInput}`}
-                {
-                  ...form.register('loadBalance.count', {
-                    required: true,
-                    min: LOADBALANCE_MIN_NODES,
-                    max: LOADBALANCE_MAX_NODES,
-                  })
-                }
-                required
-                size="small"
-                type="number"
+      {enable && (
+        <ListItem className={styles.listItemSub}>
+          <ListItemText
+            primary={
+              <TextWithTooltip
+                text={`├── ${t('nodes_count_limit')}`}
+                tooltip={t('load_balance_tips')}
               />
-            </ListItemSecondaryAction>
-          </ListItem>
-        )
-      }
-      {
-        enable && (
-          <ListItem className={styles.listItemSub}>
-            <ListItemText
-              primary={
-                <TextWithTooltip
-                  text={`└── ${t('load_balance_strategy')}`}
-                  tooltip={
+            }
+          />
+          <ListItemSecondaryAction>
+            <TextField
+              className={`${styles.textField} ${styles.indentInput}`}
+              {...form.register('loadBalance.count', {
+                required: true,
+                min: LOADBALANCE_MIN_NODES,
+                max: LOADBALANCE_MAX_NODES,
+              })}
+              required
+              size="small"
+              type="number"
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+      )}
+      {enable && (
+        <ListItem className={styles.listItemSub}>
+          <ListItemText
+            primary={
+              <TextWithTooltip
+                text={`└── ${t('load_balance_strategy')}`}
+                tooltip={
+                  <div>
                     <div>
-                      <div>{t('polling')} - {t('polling_tips')}</div>
-                      <div>{t('random')} - {t('random_tips')}</div>
+                      {t('polling')} - {t('polling_tips')}
                     </div>
-                  }
-                />
-              }
-            />
-            <ListItemSecondaryAction>
-              <Controller
-                control={form.control}
-                name="loadBalance.strategy"
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                  >
-                    <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
-                    <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
-                  </Select>
-                )}
+                    <div>
+                      {t('random')} - {t('random_tips')}
+                    </div>
+                  </div>
+                }
               />
-            </ListItemSecondaryAction>
-          </ListItem>
-        )
-      }
+            }
+          />
+          <ListItemSecondaryAction>
+            <Controller
+              control={form.control}
+              name="loadBalance.strategy"
+              render={({ field }) => (
+                <Select {...field}>
+                  <MenuItem value={ALGORITHM.POLLING}>{t('polling')}</MenuItem>
+                  <MenuItem value={ALGORITHM.RANDOM}>{t('random')}</MenuItem>
+                </Select>
+              )}
+            />
+          </ListItemSecondaryAction>
+        </ListItem>
+      )}
     </>
-  )
-}
+  );
+};
 
 export default LoadBalance;

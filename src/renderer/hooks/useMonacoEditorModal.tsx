@@ -9,29 +9,35 @@ import {
   makeStyles,
   Theme,
   useTheme,
-  withStyles
+  withStyles,
 } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-import { scrollBarStyle } from '@renderer/pages/styles';
+import { scrollBarStyle } from '@renderer/pages/style';
 
-const StyledDialog = withStyles((theme: Theme) => (
+const StyledDialog = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      '& *': scrollBarStyle(6, 0, theme)
-    }
-  })
-))(Dialog);
+      '& *': scrollBarStyle(6, 0, theme),
+    },
+  }),
+)(Dialog);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     content: {
-      backgroundColor: theme.palette.type === 'dark' ? 'rgba(255,255,255, .1)' : 'rgba(255, 255, 255, 1)',
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? 'rgba(255,255,255, .1)'
+          : 'rgba(255, 255, 255, 1)',
     },
     footer: {
-      backgroundColor: theme.palette.type === 'dark' ? 'rgba(255,255,255, .1)' : 'rgba(255, 255, 255, 1)',
-    }
-  })
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? 'rgba(255,255,255, .1)'
+          : 'rgba(255, 255, 255, 1)',
+    },
+  }),
 );
 
 interface OpenEditorOptions {
@@ -48,16 +54,16 @@ interface EditorProps {
 
 export const MonacoEditorModalContext = React.createContext<EditorProps>({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setValue: () => { },
+  setValue: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  openModal: () => { },
+  openModal: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  closeModal: () => { },
+  closeModal: () => {},
 });
 
-export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const MonacoEditorModalContextProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   const styles = useStyles();
   const [editorProps, setEditorProps] = useState<MonacoEditorProps>({});
   const theme = useTheme();
@@ -69,7 +75,8 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
 
   const editorTheme = theme.palette.type === 'dark' ? 'vs-dark' : 'vs-light';
 
-  const getCurrentTextEditor = () => editorRef.current?.editor?.getEditors?.()[0];
+  const getCurrentTextEditor = () =>
+    editorRef.current?.editor?.getEditors?.()[0];
 
   const onClose = () => {
     setOpen(false);
@@ -113,15 +120,9 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
         setValue,
         openModal: onOpen,
         closeModal: onClose,
-      }}
-    >
+      }}>
       {children}
-      <StyledDialog
-        open={open}
-        keepMounted
-        fullWidth
-        maxWidth="lg"
-      >
+      <StyledDialog open={open} keepMounted fullWidth maxWidth="lg">
         <DialogContent className={styles.content}>
           <MonacoEditor
             height="70vh"
@@ -154,7 +155,9 @@ export const MonacoEditorModalContextProvider: React.FC<{ children: React.ReactN
 };
 
 export const useMonacoEditorModal = (): EditorProps => {
-  const { setValue, openModal, closeModal } = useContext<EditorProps>(MonacoEditorModalContext);
+  const { setValue, openModal, closeModal } = useContext<EditorProps>(
+    MonacoEditorModalContext,
+  );
 
   return {
     openModal,

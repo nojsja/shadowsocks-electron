@@ -18,14 +18,14 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  FormControl
+  FormControl,
 } from '@material-ui/core';
 import {
   useTheme,
   makeStyles,
   createStyles,
   Theme,
-  withStyles
+  withStyles,
 } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import CloseIcon from '@material-ui/icons/Close';
@@ -38,11 +38,15 @@ import { AdaptiveAppBar } from '@renderer/components/Pices/AppBar';
 import { TextWithTooltip } from '@renderer/components/Pices/TextWithTooltip';
 import InputPassword from '@renderer/components/Pices/InputPassword';
 
-import { scrollBarStyle } from '@renderer/pages/styles';
+import { scrollBarStyle } from '@renderer/pages/style';
 
 import {
-  Config, encryptMethods, plugins,
-  serverTypes, protocols, obfs,
+  Config,
+  encryptMethods,
+  plugins,
+  serverTypes,
+  protocols,
+  obfs,
   SSRConfig,
 } from '@renderer/types';
 
@@ -54,37 +58,40 @@ const useStyles = makeStyles((theme: Theme) =>
       '-webkit-app-region': 'none',
     },
     appBar: {
-      position: "fixed"
+      position: 'fixed',
     },
     appBarRelative: {
-      position: "relative"
+      position: 'relative',
     },
     scrollbar: scrollBarStyle(6, 0, theme),
     title: {
       marginLeft: theme.spacing(2),
-      flex: 1
+      flex: 1,
     },
     toolbar: theme.mixins.toolbar,
     container: {
       padding: theme.spacing(2),
       paddingTop: 0,
       paddingBottom: theme.spacing(4),
-      backgroundColor: theme.palette.type === "dark" ? 'rgba(255,255,255, .2)' : 'rgba(255, 255, 255, 1)',
-      "& > *": {
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? 'rgba(255,255,255, .2)'
+          : 'rgba(255, 255, 255, 1)',
+      '& > *': {
         marginTop: theme.spacing(1.5),
-        marginBottom: theme.spacing(1.5)
-      }
-    }
-  })
+        marginBottom: theme.spacing(1.5),
+      },
+    },
+  }),
 );
 
-const StyledDialog = withStyles((theme: Theme) => (
+const StyledDialog = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      '& *': scrollBarStyle(6, 0, theme)
-    }
-  })
-))(Dialog);
+      '& *': scrollBarStyle(6, 0, theme),
+    },
+  }),
+)(Dialog);
 
 export interface EditServerDialogProps extends DialogProps {
   defaultValues: Config | null | undefined;
@@ -98,9 +105,9 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
   const [values, setValues] = useState<Partial<Config>>(
     defaultValues ?? {
       timeout: 60,
-      encryptMethod: "none",
-      type: 'ss'
-    }
+      encryptMethod: 'none',
+      type: 'ss',
+    },
   );
   const form = useForm<Config>({
     mode: 'onChange',
@@ -125,9 +132,11 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
       fastOpen: !!values?.fastOpen,
       noDelay: !!values?.noDelay,
       udp: !!values?.udp,
-    }
+    },
   });
-  const { formState: { errors } } = form;
+  const {
+    formState: { errors },
+  } = form;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -136,9 +145,11 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
   const serverType = form.watch('type');
   const pluginInfo = form.watch('plugin');
 
-  const embededPluginEnabled = pluginInfo && (pluginInfo !== 'define' && pluginInfo !== 'define_sip003');
+  const embededPluginEnabled =
+    pluginInfo && pluginInfo !== 'define' && pluginInfo !== 'define_sip003';
   const definedPluginEnabled = pluginInfo && pluginInfo === 'define';
-  const definedSIP003PluginEnabled = pluginInfo && pluginInfo === 'define_sip003';
+  const definedSIP003PluginEnabled =
+    pluginInfo && pluginInfo === 'define_sip003';
   const isSSR = serverType === 'ssr';
   const isSS = serverType === 'ss';
 
@@ -149,37 +160,36 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
   };
 
   const handleAdd = () => {
-    form
-      .trigger(undefined, { shouldFocus: true }).then((sucess) => {
-        if (sucess) {
-          onValues({
-            ...form.getValues(),
-            id: defaultValues?.id ?? ''
-          });
-        } else {
-          Message.error(t('invalid_value'));
-        }
-      });
+    form.trigger(undefined, { shouldFocus: true }).then((sucess) => {
+      if (sucess) {
+        onValues({
+          ...form.getValues(),
+          id: defaultValues?.id ?? '',
+        });
+      } else {
+        Message.error(t('invalid_value'));
+      }
+    });
   };
 
   useLayoutEffect(() => {
     setValues(
       defaultValues ?? {
         timeout: 60,
-        encryptMethod: "none",
-        type: 'ss'
-      }
+        encryptMethod: 'none',
+        type: 'ss',
+      },
     );
     defaultValues && form.reset(defaultValues);
   }, [defaultValues]);
 
   return (
-    <StyledDialog
-      fullScreen={fullScreen}
-      open={open}
-      onClose={onClose}
-    >
-      <AdaptiveAppBar className={clsx(fullScreen ? styles.appBar : styles.appBarRelative, styles.disableDrag)}>
+    <StyledDialog fullScreen={fullScreen} open={open} onClose={onClose}>
+      <AdaptiveAppBar
+        className={clsx(
+          fullScreen ? styles.appBar : styles.appBarRelative,
+          styles.disableDrag,
+        )}>
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={handleCancel}>
             <CloseIcon />
@@ -195,9 +205,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
 
       <form>
         <Container className={`${styles.container}`}>
-          {
-            fullScreen && <div className={`${styles.toolbar}`} />
-          }
+          {fullScreen && <div className={`${styles.toolbar}`} />}
           <InputLabel required style={{ marginBottom: 0 }} shrink>
             {t('server_type')}
           </InputLabel>
@@ -212,9 +220,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
                 required
                 label={t('server_type')}
                 displayEmpty
-                fullWidth
-              >
-                {serverTypes.map(serverType => (
+                fullWidth>
+                {serverTypes.map((serverType) => (
                   <MenuItem key={serverType} value={serverType}>
                     {serverType}
                   </MenuItem>
@@ -253,14 +260,16 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             fullWidth
             type="number"
             error={!!errors.serverPort}
-            helperText={!!errors.serverPort && (errors.serverPort?.message || '0-65535')}
+            helperText={
+              !!errors.serverPort && (errors.serverPort?.message || '0-65535')
+            }
             label={t('server_port')}
           />
 
-          <FormControl
-            fullWidth
-          >
-            <InputLabel shrink htmlFor="password">{t('password')}</InputLabel>
+          <FormControl fullWidth>
+            <InputLabel shrink htmlFor="password">
+              {t('password')}
+            </InputLabel>
             <InputPassword
               {...form.register('password')}
               error={!!errors.password}
@@ -279,9 +288,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
                 label={t('encryption')}
                 displayEmpty
                 error={!!errors.encryptMethod}
-                fullWidth
-              >
-                {encryptMethods.map(method => (
+                fullWidth>
+                {encryptMethods.map((method) => (
                   <MenuItem key={method} value={method}>
                     {method}
                   </MenuItem>
@@ -305,9 +313,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
                       {...field}
                       label={t('protocol')}
                       displayEmpty
-                      fullWidth
-                    >
-                      {protocols.map(protocol => (
+                      fullWidth>
+                      {protocols.map((protocol) => (
                         <MenuItem key={protocol} value={protocol}>
                           {protocol}
                         </MenuItem>
@@ -335,13 +342,8 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
                   control={form.control}
                   name="obfs"
                   render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={t('obfs')}
-                      displayEmpty
-                      fullWidth
-                    >
-                      {obfs.map(value => (
+                    <Select {...field} label={t('obfs')} displayEmpty fullWidth>
+                      {obfs.map((value) => (
                         <MenuItem key={value} value={value}>
                           {value}
                         </MenuItem>
@@ -362,7 +364,7 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             {...form.register('timeout', {
               min: 60,
               valueAsNumber: true,
-              validate: (value) => !!value && (value >= 60),
+              validate: (value) => !!value && value >= 60,
             })}
             fullWidth
             type="number"
@@ -371,37 +373,34 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
             label={t('timeout')}
           />
 
-          <InputLabel shrink style={{ marginBottom: 0 }}><TextWithTooltip text={t('plugin')} tooltip={t('readme')} /></InputLabel>
+          <InputLabel shrink style={{ marginBottom: 0 }}>
+            <TextWithTooltip text={t('plugin')} tooltip={t('readme')} />
+          </InputLabel>
           <Controller
             control={form.control}
             name="plugin"
             render={({ field }) => (
-              <Select
-                {...field}
-                label={t('plugin')}
-                displayEmpty
-                fullWidth
-              >
+              <Select {...field} label={t('plugin')} displayEmpty fullWidth>
                 <MenuItem key="none" value="">
                   <em>{t('none')}</em>
                 </MenuItem>
-                {
-                  isSS && plugins.map(plugin => (
+                {isSS &&
+                  plugins.map((plugin) => (
                     <MenuItem key={plugin.name} value={plugin.name}>
-                      <TextWithTooltip text={plugin.label} tooltip={t(`${plugin.tips}`)} />
-                    </MenuItem>
-                  ))
-                }
-                {
-                  isSS && (
-                    <MenuItem key="define_sip003" value="define_sip003">
                       <TextWithTooltip
-                        text={<em>{t('customize_plugin_sip003')}</em>}
-                        tooltip={t('customize_plugin_tips_sip003')}
+                        text={plugin.label}
+                        tooltip={t(`${plugin.tips}`)}
                       />
                     </MenuItem>
-                  )
-                }
+                  ))}
+                {isSS && (
+                  <MenuItem key="define_sip003" value="define_sip003">
+                    <TextWithTooltip
+                      text={<em>{t('customize_plugin_sip003')}</em>}
+                      tooltip={t('customize_plugin_tips_sip003')}
+                    />
+                  </MenuItem>
+                )}
                 <MenuItem key="define" value="define">
                   <TextWithTooltip
                     text={<em>{t('customize_plugin')}</em>}
@@ -411,54 +410,44 @@ const EditServerDialog: React.FC<EditServerDialogProps> = (props) => {
               </Select>
             )}
           />
-          {
-            embededPluginEnabled && (
-              <TextField
-                {...form.register('pluginOpts')}
-                fullWidth
-                multiline
-                label={t('plugin_options')}
-              />
-            )
-          }
-          {
-            definedPluginEnabled && (
-              <TextField
-                {...form.register('definedPlugin')}
-                fullWidth
-                label={`${t('plugin_path')}[define]`}
-              />
-            )
-          }
-          {
-            definedPluginEnabled && (
-              <TextField
-                {...form.register('definedPluginOpts')}
-                fullWidth
-                multiline
-                label={`${t('plugin_options')}[define]`}
-              />
-            )
-          }
-          {
-            definedSIP003PluginEnabled && (
-              <TextField
-                {...form.register('definedPluginSIP003')}
-                fullWidth
-                label={`${t('plugin_path')}[define_sip003]`}
-              />
-            )
-          }
-          {
-            definedSIP003PluginEnabled && (
-              <TextField
-                {...form.register('definedPluginOptsSIP003')}
-                fullWidth
-                multiline
-                label={`${t('plugin_options')}[define_sip003]`}
-              />
-            )
-          }
+          {embededPluginEnabled && (
+            <TextField
+              {...form.register('pluginOpts')}
+              fullWidth
+              multiline
+              label={t('plugin_options')}
+            />
+          )}
+          {definedPluginEnabled && (
+            <TextField
+              {...form.register('definedPlugin')}
+              fullWidth
+              label={`${t('plugin_path')}[define]`}
+            />
+          )}
+          {definedPluginEnabled && (
+            <TextField
+              {...form.register('definedPluginOpts')}
+              fullWidth
+              multiline
+              label={`${t('plugin_options')}[define]`}
+            />
+          )}
+          {definedSIP003PluginEnabled && (
+            <TextField
+              {...form.register('definedPluginSIP003')}
+              fullWidth
+              label={`${t('plugin_path')}[define_sip003]`}
+            />
+          )}
+          {definedSIP003PluginEnabled && (
+            <TextField
+              {...form.register('definedPluginOptsSIP003')}
+              fullWidth
+              multiline
+              label={`${t('plugin_options')}[define_sip003]`}
+            />
+          )}
 
           <List>
             <OpenPluginsDir />

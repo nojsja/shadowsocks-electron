@@ -25,9 +25,9 @@ import { Config, CloseOptions, GroupConfig, ServerMode } from '@renderer/types';
 import FooterBar from '@renderer/components/FooterBar';
 import StatusBar from '@renderer/components/StatusBar';
 
-import ServerList from './home/ServerList';
-import AddServerDialog from './home/AddServerDialog';
-import EditServerDialog from './home/EditServerDialog';
+import ServerList from './ServerList';
+import AddServerDialog from './AddServerDialog';
+import EditServerDialog from './EditServerDialog';
 
 /**
  * HomePage

@@ -1,7 +1,13 @@
 import { shell } from 'electron';
 import React, { memo, useEffect, useState } from 'react';
 import Popover from '@material-ui/core/Popover';
-import { createStyles, IconButton, Link, makeStyles, useTheme } from '@material-ui/core';
+import {
+  createStyles,
+  IconButton,
+  Link,
+  makeStyles,
+  useTheme,
+} from '@material-ui/core';
 import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
 import i18n from 'i18next';
 import { CopyBlock, dracula, tomorrowNightBright } from 'react-code-blocks';
@@ -12,13 +18,16 @@ import { useTranslation } from 'react-i18next';
 import { Message, useRequest, useTaskFS } from '@renderer/hooks';
 import { Response } from '@renderer/hooks/useRequest';
 import { WORKFLOW_TASK_FILE } from '@renderer/types';
-import { scrollBarStyle, useStylesOfWorkflow } from '@renderer/pages/styles';
+import { scrollBarStyle } from '@renderer/pages/style';
+import { useStyles } from './style';
 
-const useStyles = makeStyles((theme) => createStyles({
-  scrollWrapper: {
-    '& *': scrollBarStyle(6, 0, theme)
-  }
-}));
+const useLocalStyles = makeStyles((theme) =>
+  createStyles({
+    scrollWrapper: {
+      '& *': scrollBarStyle(6, 0, theme),
+    },
+  }),
+);
 
 interface InstrunctionProps {
   codeScripts: { [key: string]: string };
@@ -29,8 +38,8 @@ const openLink = (url: string) => {
 };
 
 const InstrunctionEnUs: React.FC<InstrunctionProps> = ({ codeScripts }) => {
-  const styles = useStylesOfWorkflow();
-  const innerStyles = useStyles();
+  const styles = useStyles();
+  const innerStyles = useLocalStyles();
   const { t } = useTranslation();
   const theme = useTheme();
   const isDarkMode = theme.palette.type === 'dark';
@@ -38,26 +47,18 @@ const InstrunctionEnUs: React.FC<InstrunctionProps> = ({ codeScripts }) => {
   return (
     <div className={styles.headerHelpInfoWrapper}>
       {t('workflow_task_text_00_01')}
-      <p>
-        {t('workflow_task_text_00_02')}
-      </p>
-      <p>
-        {t('workflow_task_text_00_03')}
-      </p>
-      <p>
-        {t('workflow_task_text_00_04')}
-      </p>
+      <p>{t('workflow_task_text_00_02')}</p>
+      <p>{t('workflow_task_text_00_03')}</p>
+      <p>{t('workflow_task_text_00_04')}</p>
       <h1>{t('workflow_task_text_01_01_title')}</h1>
-      <p>
-        {t('workflow_task_text_01_01_block_01')}
-      </p>
+      <p>{t('workflow_task_text_01_01_block_01')}</p>
       <h2>{t('workflow_task_text_01_01_01_title')}</h2>
       <p>
         <Link
-          onClick={() => openLink('https://github.com/puppeteer/puppeteer')}
-        >
+          onClick={() => openLink('https://github.com/puppeteer/puppeteer')}>
           Puppeteer
-        </Link> - {t('workflow_task_text_01_01_01_01')}
+        </Link>{' '}
+        - {t('workflow_task_text_01_01_01_01')}
         <p className={innerStyles.scrollWrapper}>
           <CopyBlock
             language="javascript"
@@ -69,16 +70,16 @@ const InstrunctionEnUs: React.FC<InstrunctionProps> = ({ codeScripts }) => {
           />
         </p>
       </p>
-      <p>
-        {t('workflow_task_text_01_01_01_02')}
-      </p>
+      <p>{t('workflow_task_text_01_01_01_02')}</p>
       <h2>{t('workflow_task_text_01_01_02_title')}</h2>
       <p>
         <Link
-          onClick={() => openLink("https://github.com/bda-research/node-crawler")}
-        >
+          onClick={() =>
+            openLink('https://github.com/bda-research/node-crawler')
+          }>
           Crawler
-        </Link> - {t('workflow_task_text_01_01_02_01')}
+        </Link>{' '}
+        - {t('workflow_task_text_01_01_02_01')}
         <p className={innerStyles.scrollWrapper}>
           <CopyBlock
             language="javascript"
@@ -120,12 +121,8 @@ const InstrunctionEnUs: React.FC<InstrunctionProps> = ({ codeScripts }) => {
       </p>
       <h1>{t('workflow_task_text_01_03_title')}</h1>
       <p>
-        <p>
-          {t('workflow_task_text_01_03_block_01')}
-        </p>
-        <p>
-          {t('workflow_task_text_01_03_block_02')}
-        </p>
+        <p>{t('workflow_task_text_01_03_block_01')}</p>
+        <p>{t('workflow_task_text_01_03_block_02')}</p>
         <p className={innerStyles.scrollWrapper}>
           <CopyBlock
             language="javascript"
@@ -138,12 +135,14 @@ const InstrunctionEnUs: React.FC<InstrunctionProps> = ({ codeScripts }) => {
         </p>
       </p>
     </div>
-  )
+  );
 };
 
 function WorkflowHelpInfo() {
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const styles = useStylesOfWorkflow();
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null,
+  );
+  const styles = useStyles();
   const open = Boolean(anchorEl);
   const id = open ? 'help-popover' : undefined;
   const taskFS = useTaskFS();
@@ -155,17 +154,24 @@ function WorkflowHelpInfo() {
     [WORKFLOW_TASK_FILE.effectPipe]: '',
   });
 
-  const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(() => {
-    return MessageChannel.invoke('main', 'service:workflow', {
-      action: 'getWorkflowTaskDemoDir',
-      params: {},
-    });
-  }, {
-    onError(error) {
-      Message.error(`${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${error.message}`);
+  const { data: workflowTaskDemoRsp } = useRequest<Response<string>>(
+    () => {
+      return MessageChannel.invoke('main', 'service:workflow', {
+        action: 'getWorkflowTaskDemoDir',
+        params: {},
+      });
     },
-    cacheKey: 'main/service:workflow/workflowTaskDemoDir',
-  });
+    {
+      onError(error) {
+        Message.error(
+          `${i18n.t<string>('fail_to_load_workflow_demo_script')}: ${
+            error.message
+          }`,
+        );
+      },
+      cacheKey: 'main/service:workflow/workflowTaskDemoDir',
+    },
+  );
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -187,7 +193,8 @@ function WorkflowHelpInfo() {
               [taskFile]: templateCode,
             };
           });
-        }).catch((e) => {
+        })
+        .catch((e) => {
           console.log(e);
         });
     });
@@ -221,8 +228,7 @@ function WorkflowHelpInfo() {
         transformOrigin={{
           vertical: 'top',
           horizontal: 'center',
-        }}
-      >
+        }}>
         <InstrunctionEnUs codeScripts={taskDemoScripts} />
       </Popover>
     </div>
