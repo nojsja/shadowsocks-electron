@@ -33,6 +33,7 @@ export const useLayoutStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
+      height: '100vh',
     },
     toolbar: {
       minHeight: '42px',

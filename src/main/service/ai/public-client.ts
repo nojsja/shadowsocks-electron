@@ -32,6 +32,7 @@ export class PublicAIClient extends EventEmitter {
   private async init() {
     const messageStore = AIStore.create({
       dirPath: path.join(pathRuntime, 'ai'),
+      namespace: 'ai:public',
     });
     const [err, apiKeys = []] = await catcher(getApiKeys());
 

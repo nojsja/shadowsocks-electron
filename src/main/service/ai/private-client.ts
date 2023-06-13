@@ -73,6 +73,7 @@ export class PrivateAIClient {
 
     const messageStore = AIStore.create({
       dirPath: path.join(pathRuntime, 'ai'),
+      namespace: 'ai:private',
     });
 
     const client = new ChatGPTAPI({
